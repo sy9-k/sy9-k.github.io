@@ -1,5 +1,3 @@
-/* 既存Material Design 3スタイル全体+英字タブ・英字キー追加分 */
-
 :root {
     --md3-color-primary: #797979;
     --md3-color-on-primary: #ffffff;
@@ -42,7 +40,9 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* 中央揃えから上揃えに変更 */
+    overflow-y: auto; /* コンテンツがはみ出た場合にスクロールを有効化 */
+    -webkit-overflow-scrolling: touch; /* iOSでのスムーズなスクロール */
 }
 .md3-headline-large { font-size: 32px; font-weight: 400; margin-bottom: 16px; text-align: center; }
 .md3-body-large { font-size: 16px; margin-bottom: 48px; text-align: center; color: var(--md3-color-on-surface-variant); }
@@ -66,14 +66,14 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 24px;
     width: 100%;
-    max-width: 800px;
+    max-width: 960px; /* 1920x1080画面に合わせて最大幅を拡張 */
 }
 .md3-identification-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
     width: 100%;
-    max-width: 600px;
+    max-width: 720px; /* 1920x1080画面に合わせて最大幅を拡張 */
 }
 /* Cards */
 .md3-card {
@@ -110,7 +110,11 @@ body {
 .md3-card-text .en { display: block; font-size: 14px; color: var(--md3-color-on-surface-variant); }
 /* Booking Reference Input Screen Styles */
 .booking-input-content { justify-content: flex-start; padding-top: 24px; gap: 32px; }
-.input-display-container { width: 100%; max-width: 500px; margin-bottom: 32px; }
+.input-display-container {
+    width: 100%;
+    max-width: 600px; /* 1920x1080画面に合わせて最大幅を拡張 */
+    margin-bottom: 32px;
+}
 .input-display {
     background-color: var(--md3-color-surface-container-high);
     border: 2px solid var(--md3-color-outline);
@@ -132,10 +136,13 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
-    max-width: 300px;
+    max-width: 400px; /* 1920x1080画面に合わせて最大幅を拡張 */
     width: 100%;
 }
-#e-ticket-alpha-pad.number-pad { grid-template-columns: repeat(6, 1fr); }
+#e-ticket-alpha-pad.number-pad {
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 600px; /* 英字キーボードの最大幅を拡張 */
+}
 .number-button {
     background-color: var(--md3-color-primary-container);
     border: 1px solid var(--md3-color-outline);
@@ -163,8 +170,7 @@ body {
 .number-button.special { background-color: var(--md3-color-primary); color: var(--md3-color-on-primary); }
 .number-button.special:hover { background-color: rgba(var(--md3-color-primary-rgb), 0.9); }
 .number-button .material-symbols-rounded { font-size: 28px; }
-.action-buttons { display: flex; gap: 16px; margin-top: 32px; width: 100%; max-width: 300px; }
-.action-button {
+.action-button { /* These styles are now applied directly to buttons in the footer */
     flex: 1;
     padding: 16px 24px;
     border-radius: 24px;
@@ -174,17 +180,23 @@ body {
     transition: all 0.2s ease;
     border: 1px solid var(--md3-color-outline);
 }
-.action-button.primary { background-color: var(--md3-color-primary); color: var(--md3-color-on-primary); border-color: var(--md3-color-primary); }
-.action-button.primary:hover { background-color: rgba(var(--md3-color-primary-rgb), 0.9); }
+.action-button.primary, .md3-bottom-nav-bar .md3-button.primary { /* Apply primary style to new footer buttons */
+    background-color: var(--md3-color-primary);
+    color: var(--md3-color-on-primary);
+    border-color: var(--md3-color-primary);
+}
+.action-button.primary:hover, .md3-bottom-nav-bar .md3-button.primary:hover {
+    background-color: rgba(var(--md3-color-primary-rgb), 0.9);
+}
 .action-button.secondary { background-color: var(--md3-color-surface); color: var(--md3-color-primary); }
 .action-button.secondary:hover { background-color: rgba(var(--md3-color-primary-rgb), 0.08); }
-.action-button:disabled {
+.action-button:disabled, .md3-bottom-nav-bar .md3-button.primary:disabled { /* Apply disabled style to new footer buttons */
     background-color: var(--md3-color-outline);
     color: var(--md3-color-on-surface-variant);
     cursor: not-allowed;
     border-color: var(--md3-color-outline);
 }
-.action-button:disabled:hover {
+.action-button:disabled:hover, .md3-bottom-nav-bar .md3-button.primary:disabled:hover {
     background-color: var(--md3-color-outline);
     color: var(--md3-color-on-surface-variant);
     transform: none;
@@ -196,7 +208,10 @@ body {
     border-top: 1px solid var(--md3-color-outline);
     padding: 16px 24px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Space out items */
+    align-items: center; /* Vertically align items */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 8px; /* Gap between buttons */
 }
 .md3-button {
     background: none;
@@ -210,6 +225,7 @@ body {
     font-size: 14px;
     font-weight: 500;
     transition: all 0.2s ease;
+    text-decoration: none; /* Ensure no underline on links if used */
 }
 .md3-text-button { color: var(--md3-color-primary); }
 .md3-text-button:hover { background-color: rgba(var(--md3-color-primary-rgb), 0.08); }
@@ -238,7 +254,6 @@ body {
     margin-bottom: 24px;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.md3-loading-message { font-size: 16px; color: var(--md3-color-on-surface-variant); }
 #loading-screen {
     display: flex;
     flex-direction: column;
@@ -359,3 +374,548 @@ body {
     .input-display { font-size: 24px; padding: 20px 24px; }
     .md3-dialog { margin: 20px; }
 }
+/* For very small screens to ensure content fits and scrolls */
+@media (max-width: 480px) {
+    .md3-main-content { padding: 24px 16px; }
+    .md3-headline-large { font-size: 28px; margin-bottom: 12px; }
+    .md3-body-large { font-size: 15px; margin-bottom: 32px; }
+    .md3-card-grid, .md3-identification-grid { gap: 16px; }
+    .md3-card { padding: 16px; min-height: 100px; }
+    .md3-card img { max-height: 70px; }
+    .number-pad { gap: 12px; }
+    .number-button, .alpha-button { min-height: 60px; font-size: 20px; padding: 16px; }
+    .input-display { font-size: 28px; padding: 18px 24px; }
+    .md3-bottom-nav-bar { flex-direction: row; justify-content: space-around; gap: 8px; }
+}
+
+/* 危険物確認ページのスタイル */
+.dangerous-goods-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 960px;
+    margin: 32px 0;
+}
+.dangerous-good-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+.dangerous-good-item img {
+    width: 80px; height: 80px; object-fit: contain;
+    background-color: var(--md3-color-surface-container-high);
+    border-radius: 50%; padding: 12px; border: 1px solid var(--md3-color-outline);
+}
+.dangerous-good-item span { font-size: 14px; font-weight: 500; color: var(--md3-color-on-surface-variant); }
+.md3-bottom-nav-bar .md3-button.secondary {
+    background-color: transparent; color: var(--md3-color-on-surface-variant); border: 1px solid var(--md3-color-outline);
+}
+.md3-bottom-nav-bar .md3-button.secondary:hover { background-color: rgba(var(--md3-color-primary-rgb), 0.08); }
+
+
+/* ▼▼▼ 新規追加：スタッフ呼び出し画面 & 搭乗券画面のスタイル ▼▼▼ */
+
+/* スタッフ呼び出し画面 */
+#staff-assistance-screen {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.assistance-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+.assistance-icon {
+    font-size: 80px;
+    color: var(--md3-color-primary);
+}
+.sfm-button {
+    background-color: var(--md3-color-primary-container);
+    border: 1px solid var(--md3-color-outline);
+    border-radius: 24px;
+    padding: 16px 32px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--md3-color-on-primary-container);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 32px;
+}
+.sfm-button:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.16);
+    transform: translateY(-2px);
+}
+
+/* 搭乗券表示画面 */
+.boarding-pass-card {
+    background-color: #fff;
+    border: 1px solid var(--md3-color-outline);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "route route"
+        "details timing"
+        "qr qr";
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.pass-header { grid-area: header; border-bottom: 2px dashed var(--md3-color-outline); padding-bottom: 16px; }
+.pass-route { grid-area: route; display: flex; justify-content: space-between; align-items: center; }
+.pass-details { grid-area: details; display: flex; flex-direction: column; gap: 16px; }
+.pass-timing { grid-area: timing; display: flex; flex-direction: column; gap: 16px; text-align: right; }
+.pass-qr { grid-area: qr; text-align: center; padding-top: 16px; border-top: 2px dashed var(--md3-color-outline); }
+
+.pass-label { display: block; font-size: 12px; color: var(--md3-color-on-surface-variant); margin-bottom: 4px; }
+.pass-value { display: block; font-size: 18px; font-weight: 500; color: var(--md3-color-on-surface); }
+.pass-value.large { font-size: 28px; font-weight: 700; }
+.pass-sub-value { font-size: 14px; color: var(--md3-color-on-surface-variant); }
+.flight-icon { font-size: 32px; color: var(--md3-color-primary); }
+.pass-from, .pass-to { text-align: center; }
+.pass-to { text-align: right; }
+.pass-from { text-align: left; }
+.pass-qr img { border-radius: 8px; }
+
+/* (既存のCSSコードは省略) */
+:root {
+    --md3-color-primary: #797979;
+    --md3-color-on-primary: #ffffff;
+    --md3-color-primary-container: #e0e0e0;
+    --md3-color-on-primary-container: #1c1b1f;
+    --md3-color-surface: #fef7ff;
+    --md3-color-on-surface: #1d1b20;
+    --md3-color-surface-container-high: #e7e0ec;
+    --md3-color-outline: #cac4d0;
+    --md3-color-on-surface-variant: #49454f;
+    --md3-color-primary-rgb: 121, 121, 121;
+    --md3-color-primary-container-rgb: 224, 224, 224;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--md3-color-surface);
+    color: var(--md3-color-on-surface);
+    overflow: hidden;
+}
+.md3-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+.hidden { display: none !important; }
+.md3-top-app-bar {
+    background-color: var(--md3-color-surface);
+    color: var(--md3-color-on-surface);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.md3-app-bar-title { font-size: 22px; font-weight: 500; }
+.md3-app-bar-subtitle { font-size: 14px; opacity: 0.8; margin-left: 8px; }
+.md3-app-bar-airline-logo { height: 40px; width: auto; }
+.md3-main-content {
+    flex: 1;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.md3-headline-large { font-size: 32px; font-weight: 400; margin-bottom: 16px; text-align: center; }
+.md3-body-large { font-size: 16px; margin-bottom: 48px; text-align: center; color: var(--md3-color-on-surface-variant); }
+.md3-main-content.help-content { justify-content: flex-start; padding-top: 48px; overflow-y: auto; }
+.md3-headline-medium { font-size: 28px; font-weight: 400; margin-bottom: 32px; text-align: center; width: 100%; }
+.md3-help-section {
+    background-color: var(--md3-color-surface-container-high);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.md3-title-medium { font-size: 20px; font-weight: 500; margin-bottom: 12px; color: var(--md3-color-on-surface); }
+.md3-body-medium { font-size: 15px; line-height: 1.6; color: var(--md3-color-on-surface-variant); }
+.md3-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 960px;
+}
+.md3-identification-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 100%;
+    max-width: 720px;
+}
+.md3-card {
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+}
+.md3-elevated-card {
+    background-color: var(--md3-color-surface);
+    border: 1px solid var(--md3-color-outline);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.md3-elevated-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.16);
+    transform: translateY(-2px);
+}
+.md3-filled-card {
+    background-color: var(--md3-color-primary-container);
+    border: 1px solid var(--md3-color-outline);
+}
+.md3-filled-card:hover {
+    background-color: rgba(var(--md3-color-primary-container-rgb), 0.8);
+}
+.md3-card img { max-width: 100%; max-height: 80px; object-fit: contain; }
+.md3-card-icon { font-size: 48px; color: var(--md3-color-primary); margin-bottom: 12px; }
+.md3-card-text { text-align: center; }
+.md3-card-text .jp { display: block; font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+.md3-card-text .en { display: block; font-size: 14px; color: var(--md3-color-on-surface-variant); }
+.booking-input-content { justify-content: flex-start; padding-top: 24px; gap: 32px; }
+.input-display-container {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 32px;
+}
+.input-display {
+    background-color: var(--md3-color-surface-container-high);
+    border: 2px solid var(--md3-color-outline);
+    border-radius: 16px;
+    padding: 24px 32px;
+    font-size: 32px;
+    font-weight: 500;
+    text-align: center;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 4px;
+    font-family: 'Roboto Mono', monospace;
+}
+.input-display.focused { border-color: var(--md3-color-primary); background-color: rgba(var(--md3-color-primary-rgb), 0.05); }
+.input-display-placeholder { color: var(--md3-color-on-surface-variant); opacity: 0.6; }
+.number-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 400px;
+    width: 100%;
+}
+#e-ticket-alpha-pad.number-pad {
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 600px;
+}
+.number-button {
+    background-color: var(--md3-color-primary-container);
+    border: 1px solid var(--md3-color-outline);
+    border-radius: 16px;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+    color: var(--md3-color-on-primary-container);
+}
+.number-button:hover {
+    background-color: rgba(var(--md3-color-primary-container-rgb), 0.8);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.number-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.number-button.special { background-color: var(--md3-color-primary); color: var(--md3-color-on-primary); }
+.number-button.special:hover { background-color: rgba(var(--md3-color-primary-rgb), 0.9); }
+.number-button .material-symbols-rounded { font-size: 28px; }
+.action-button, .md3-bottom-nav-bar .md3-button.primary {
+    background-color: var(--md3-color-primary);
+    color: var(--md3-color-on-primary);
+    border-color: var(--md3-color-primary);
+}
+.action-button:hover, .md3-bottom-nav-bar .md3-button.primary:hover {
+    background-color: rgba(var(--md3-color-primary-rgb), 0.9);
+}
+.action-button:disabled, .md3-bottom-nav-bar .md3-button.primary:disabled {
+    background-color: var(--md3-color-outline);
+    color: var(--md3-color-on-surface-variant);
+    cursor: not-allowed;
+    border-color: var(--md3-color-outline);
+}
+.md3-bottom-nav-bar {
+    background-color: var(--md3-color-surface);
+    border-top: 1px solid var(--md3-color-outline);
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.md3-button {
+    background: none; border: none; padding: 12px 24px; border-radius: 20px;
+    cursor: pointer; display: flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 500; transition: all 0.2s ease; text-decoration: none;
+}
+.md3-text-button { color: var(--md3-color-primary); }
+.md3-text-button:hover { background-color: rgba(var(--md3-color-primary-rgb), 0.08); }
+.md3-icon-button {
+    background: none; border: none; width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    color: var(--md3-color-on-surface-variant); transition: background-color 0.2s ease;
+}
+.md3-icon-button:hover { background-color: rgba(var(--md3-color-on-surface-variant-rgb), 0.08); }
+.md3-loading-spinner {
+    width: 48px; height: 48px; border: 4px solid var(--md3-color-outline);
+    border-top: 4px solid var(--md3-color-primary); border-radius: 50%;
+    animation: spin 1s linear infinite; margin-bottom: 24px;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+#loading-screen {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    height: 100vh; width: 100%; position: fixed; top: 0; left: 0;
+    background-color: var(--md3-color-surface); z-index: 999;
+}
+.md3-dialog-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); display: flex;
+    align-items: center; justify-content: center; z-index: 1000;
+    opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+}
+.md3-dialog-overlay.show { opacity: 1; pointer-events: all; }
+.md3-dialog {
+    background-color: var(--md3-color-surface-container-high);
+    border-radius: 28px; padding: 24px; max-width: 400px; width: 90%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.24); transform: scale(0.9);
+    transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0;
+}
+.md3-dialog-overlay.show .md3-dialog { transform: scale(1); opacity: 1; }
+.md3-dialog-title { font-size: 24px; font-weight: 500; margin-bottom: 20px; color: var(--md3-color-on-surface); }
+.md3-dialog-content { font-size: 16px; color: var(--md3-color-on-surface-variant); margin-bottom: 24px; line-height: 1.5; }
+.md3-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 8px; }
+.md3-dialog .md3-button { min-width: 48px; padding: 10px 24px; height: 40px; border-radius: 20px; }
+.language-option {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px; border-radius: 12px; cursor: pointer;
+    transition: background-color 0.2s ease; margin-bottom: 8px; color: var(--md3-color-on-surface);
+}
+.language-option:hover { background-color: rgba(var(--md3-color-primary-rgb), 0.08); }
+.language-option.selected { background-color: var(--md3-color-primary-container); color: var(--md3-color-on-primary-container); }
+.language-option.selected .language-text { font-weight: 500; }
+.check-icon { opacity: 0; color: var(--md3-color-primary); transition: opacity 0.2s ease; }
+.language-option.selected .check-icon { opacity: 1; }
+.keyboard-tabs { display: flex; justify-content: center; margin-bottom: 12px; gap: 8px; }
+.keyboard-tab {
+    background: var(--md3-color-primary-container); color: var(--md3-color-on-primary-container);
+    border: none; padding: 10px 20px; border-radius: 16px 16px 0 0;
+    font-size: 16px; font-weight: 500; cursor: pointer; transition: background-color 0.2s;
+}
+.keyboard-tab.active { background: var(--md3-color-primary); color: var(--md3-color-on-primary); }
+.alpha-button {
+    background-color: var(--md3-color-primary-container); border: 1px solid var(--md3-color-outline);
+    border-radius: 16px; padding: 20px; font-size: 22px; font-weight: 500; cursor: pointer;
+    transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;
+    min-height: 70px; color: var(--md3-color-on-primary-container);
+}
+.alpha-button:hover { background-color: rgba(var(--md3-color-primary-container-rgb), 0.8); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+@media (max-width: 768px) { .md3-identification-grid, .md3-card-grid { grid-template-columns: 1fr; } }
+/* 危険物確認ページのスタイル */
+.dangerous-goods-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 24px; width: 100%; max-width: 960px; margin: 32px 0;
+}
+.dangerous-good-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+.dangerous-good-item img { width: 80px; height: 80px; object-fit: contain; background-color: var(--md3-color-surface-container-high); border-radius: 50%; padding: 12px; border: 1px solid var(--md3-color-outline); }
+.dangerous-good-item span { font-size: 14px; font-weight: 500; color: var(--md3-color-on-surface-variant); }
+.md3-bottom-nav-bar .md3-button.secondary { background-color: transparent; color: var(--md3-color-on-surface-variant); border: 1px solid var(--md3-color-outline); }
+.md3-bottom-nav-bar .md3-button.secondary:hover { background-color: rgba(var(--md3-color-primary-rgb), 0.08); }
+
+/* スタッフ呼び出し画面 */
+#staff-assistance-screen { justify-content: center; align-items: center; text-align: center; }
+.assistance-content { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.assistance-icon { font-size: 80px; color: var(--md3-color-primary); }
+.sfm-button {
+    background-color: var(--md3-color-primary-container); border: 1px solid var(--md3-color-outline);
+    border-radius: 24px; padding: 16px 32px; font-size: 18px; font-weight: 700;
+    color: var(--md3-color-on-primary-container); cursor: pointer; transition: all 0.2s ease; margin-top: 32px;
+}
+.sfm-button:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.16); transform: translateY(-2px); }
+
+/* 搭乗券表示画面 */
+.boarding-pass-card {
+    background-color: #fff; border: 1px solid var(--md3-color-outline); border-radius: 16px;
+    padding: 24px; width: 100%; max-width: 480px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: grid; grid-template-areas: "header header" "route route" "details timing" "qr qr";
+    grid-template-columns: 1fr 1fr; gap: 20px;
+}
+.pass-header { grid-area: header; border-bottom: 2px dashed var(--md3-color-outline); padding-bottom: 16px; }
+.pass-route { grid-area: route; display: flex; justify-content: space-between; align-items: center; }
+.pass-details { grid-area: details; display: flex; flex-direction: column; gap: 16px; }
+.pass-timing { grid-area: timing; display: flex; flex-direction: column; gap: 16px; text-align: right; }
+.pass-qr { grid-area: qr; text-align: center; padding-top: 16px; border-top: 2px dashed var(--md3-color-outline); }
+.pass-label { display: block; font-size: 12px; color: var(--md3-color-on-surface-variant); margin-bottom: 4px; }
+.pass-value { display: block; font-size: 18px; font-weight: 500; color: var(--md3-color-on-surface); }
+.pass-value.large { font-size: 28px; font-weight: 700; }
+.pass-sub-value { font-size: 14px; color: var(--md3-color-on-surface-variant); }
+.flight-icon { font-size: 32px; color: var(--md3-color-primary); }
+.pass-from { text-align: left; }
+.pass-to { text-align: right; }
+.pass-qr img { border-radius: 8px; }
+
+/* ▼▼▼ 新規追加：スタッフメニュー画面のスタイル ▼▼▼ */
+.staff-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 960px;
+    padding-top: 24px;
+}
+.staff-menu-button {
+    background-color: var(--md3-color-primary-container);
+    border: 1px solid var(--md3-color-outline);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 150px;
+}
+.staff-menu-button:hover {
+    background-color: rgba(var(--md3-color-primary-container-rgb), 0.8);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.16);
+    transform: translateY(-2px);
+}
+.staff-menu-button .md3-card-icon {
+    font-size: 48px;
+    color: var(--md3-color-primary);
+    margin-bottom: 16px;
+}
+.staff-menu-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--md3-color-on-primary-container);
+}
+/* Flight List Screen specific styles */
+#flight-list-screen .md3-main-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.flight-list-container {
+    width: 100%;
+    max-width: 800px; /* Adjust as needed */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.flight-item-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.flight-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--md3-color-outline-variant);
+    margin-bottom: 12px;
+}
+
+.flight-airline-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.flight-details-main {
+    display: flex;
+    flex-direction: column;
+}
+
+.flight-detail-label {
+    font-size: 0.8em;
+    color: var(--md3-color-on-surface-variant);
+}
+
+.flight-detail-value {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: var(--md3-color-on-surface);
+}
+
+.flight-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.flight-detail-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.flight-detail-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Distribute space evenly */
+}
+
+.flight-detail-item.full-width {
+    flex: none; /* Do not flex for full width items */
+    width: 100%;
+}
+
+.flight-card-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: space-around;
+    padding-top: 12px;
+    border-top: 1px solid var(--md3-color-outline-variant);
+}
+
+.flight-action-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 80px; /* Adjust button width */
+}
+
+.flight-action-button .material-symbols-rounded {
+    margin-bottom: 4px;
+    font-size: 24px;
+}
+
