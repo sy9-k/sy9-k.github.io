@@ -283,7 +283,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   opacity: 0.6;
   margin: 0 auto;
 }
-.hm-card-content .hm-card-btn {
+.hm-card-btn {
   margin-top: 32px;
   font-size: 1.1rem;
   padding: 15px 38px;
@@ -315,4 +315,258 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   padding: 0 40px;
   height: 130px;
   min-height: 130px;
-  max-height: 140px;}
+  max-height: 140px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.hm-footer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 140px;
+  justify-content: center; /* 上下中央揃え */
+  height: 100%;
+}
+.hm-footer-col-right {
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+}
+.hm-footer-label {
+  font-size: 1.08rem;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+.hm-footer-time {
+  font-size: 2.2rem;
+  font-weight: 400;
+  margin-top: 0;
+}
+
+.hm-footer-progress {
+  flex: 1 1 0;
+  margin: 0 18px 0 18px;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  position: relative;
+}
+.hm-progress-bar-bg {
+  position: relative;
+  width: 100%;
+  height: 22px;
+  background: #c7c7c7;
+  border-radius: 11px;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+}
+.hm-progress-bar {
+  height: 12px;
+  background: linear-gradient(to right, #0d74e2 60%, #5bcefa 100%);
+  border-radius: 10px;
+  margin-left: 8px;
+  margin-right: 8px;
+  transition: width 0.5s;
+  position: absolute;
+  top: 5px;
+  left: 0;
+}
+.hm-plane-icon {
+  position: absolute;
+  top: -18px;
+  left: calc(50% - 32px);
+  width: 64px;
+  height: 64px;
+  background: url('plane-icon.svg') center/contain no-repeat;
+  z-index: 2;
+  pointer-events: none;
+  transition: left 0.5s;
+}
+
+/* 設定パネル */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.32);
+  z-index: 100;
+  display: none;
+  transition: opacity 0.25s;
+}
+.settings-overlay.open {
+  display: block;
+}
+/* 設定パネル・通知パネル共通 */
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  max-width: 95vw;
+  height: 100vh;
+  background: #fff;
+  color: #222;
+  box-shadow: -4px 0 16px rgba(0,0,0,0.05);
+  z-index: 120;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.settings-panel.open {
+  transform: translateX(0);
+}
+
+/* 通知パネル専用: 設定パネルと同じ横幅・アニメーション */
+#notice-panel {
+  right: 0 !important;
+  width: 380px;
+  max-width: 95vw;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 1201;
+  /* transform/transitionは.settings-panelに準拠 */
+}
+
+/* 通知パネル用オーバーレイ（設定パネルと同じだがz-index調整） */
+#notice-overlay.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.32);
+  z-index: 1200;
+  display: none;
+  transition: opacity 0.25s;
+}
+#notice-overlay.open {
+  display: block;
+}
+.settings-panel-inner {
+  padding: 32px 30px 24px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.settings-title {
+  font-size: 2.1rem;
+  text-align: center;
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+.settings-row {
+  margin-bottom: 10px;
+}
+.settings-row-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.settings-label {
+  font-size: 1.05rem;
+  color: #222;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+.settings-value {
+  font-size: 1.12rem;
+  color: #888;
+}
+.settings-slider-row {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+.slider-btn {
+  background: #fff;
+  border: none;
+  color: #888;
+  font-size: 1.5rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px #0001;
+  cursor: pointer;
+  margin: 0 6px;
+  transition: background 0.15s;
+}
+.slider-btn:hover {
+  background: #f3f3f3;
+}
+.settings-slider-row input[type="range"] {
+  flex: 1;
+  margin: 0 12px;
+  accent-color: #888;
+  height: 3px;
+  background: #eee;
+  border-radius: 8px;
+}
+.settings-row-note {
+  margin-bottom: 0;
+}
+.settings-note {
+  font-size: 0.93rem;
+  color: #767676;
+  opacity: 0.92;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  margin-left: 18px;
+}
+.switch input { display: none; }
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  border-radius: 24px;
+  transition: .4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px #aaa2;
+  transition: .4s;
+}
+.switch input:checked + .slider {
+  background-color: #4b5563;
+}
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+.screen-off-btn {
+  display: block;
+  margin: 30px auto 0 auto;
+  width: 90%;
+  padding: 16px 0;
+  border: none;
+  border-radius: 6px;
+  background: #4b5563;
+  color: #fff;
+  font-size: 1.18rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.screen-off-btn:hover {
+  background: #232323;
+}
+
+@media (max-width: 1200px) {
+  .hm-main { flex-direction: column; }
+  .hm-card { min-height: 160px; }
+  .hm-header { font-size: 1.2rem; }
+  .hm-map-scroll { width: 100vw; min-width: 100vw; max-width: 100vw; }
+}

@@ -1,510 +1,99 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-ja="Airline_Kiosk" data-en="Airline_Kiosk" data-ko="Airline_Kiosk" data-zh="Airline_Kiosk">航空会社選択</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Start</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="home.css" />
 </head>
-<body>
-    <div id="airline-selection-screen" class="md3-container">
-        <header class="md3-top-app-bar">
-            <span id="airline-select-title" class="md3-app-bar-title" data-ja="航空会社を選択" data-en="Select Airline" data-ko="항공사 선택" data-zh="Select Airline">航空会社を選択</span>
-            <span id="airline-select-subtitle" class="md3-app-bar-subtitle" data-ja="Select Airline" data-en="Select Airline" data-ko="Select Airline" data-zh="Select Airline">Select Airline</span>
-        </header>
-        <main class="md3-main-content">
-            <h1 id="welcome-headline" class="md3-headline-large" data-ja="お選びください" data-en="Please choose" data-ko="선택하십시오" data-zh="请选择">お選びください</h1>
-            <p id="welcome-body" class="md3-body-large" data-ja="チェックインされる航空会社のロゴをタップしてください" data-en="Tap the logo of the airline you wish to check in for." data-ko="체크인하시려는 항공사 로고를 탭하십시오." data-zh="请点击您要办理登机手续的航空公司标志。">チェックインされる航空会社のロゴをタップしてください</p>
-            <div class="md3-card-grid">
-                <div class="md3-card md3-elevated-card" data-airline="ana" alt="ANA">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/All_Nippon_Airways_Logo.svg/1024px-All_Nippon_Airways_Logo.svg.png" alt="ANA Logo">
-                </div>
-                <div class="md3-card md3-elevated-card" data-airline="aircanada" alt="Air Canada">
-                    <img src="https://www.dataiku.com/wp-content/uploads/2023/10/Air-Canada-Logo.png" alt="Air Canada Logo">
-                </div>
-                <div class="md3-card md3-elevated-card" data-airline="asiana" alt="Asiana Airlines">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Asiana_Airlines-Logo_New.svg/1280px-Asiana_Airlines-Logo_New.svg.png" alt="Asiana Airlines Logo">
-                </div>
-                <div class="md3-card md3-elevated-card" data-airline="airjapan" alt="AirJapan">
-                    <img src="https://img.dsk.ne.jp/imgs/news/img_jVOygEi_def.jpg" alt="AirJapan Logo">
-                </div>
-                <div class="md3-card md3-elevated-card" data-airline="airbusan" alt="Air Busan">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfo8hnMwYzJtbvr8TzdzxBbijzcCDJUq3s0w&s" alt="Air Busan Logo">
-                </div>
-                <div class="md3-card md3-elevated-card" data-airline="airchina" alt="Air China">
-                    <img src="https://logowik.com/content/uploads/images/air-china3146.jpg" alt="Air China Logo">
-                </div>
-            </div>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="main-help-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">help</span>
-                <span data-ja="ヘルプ" data-en="Help" data-ko="도움말" data-zh="帮助">ヘルプ</span>
-            </button>
-            <button id="language-select-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">language</span>
-                <span data-ja="言語選択" data-en="Language" data-ko="언어 선택" data-zh="语言选择">言語選択</span>
-            </button>
-            <button id="staff-menu-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">engineering</span>
-                <span data-ja="スタッフメニュー" data-en="Staff Menu" data-ko="직원 메뉴" data-zh="员工菜单">スタッフメニュー</span>
-            </button>
-        </footer>
+<body class="start-screen" onclick="location.href='language.html'">
+  <!-- PAアナウンス中ダイアログ（ANA風：上部黄色帯＋下部白四角） -->
+  <div id="pa-announcement" class="pa-announcement">
+    <div class="pa-announcement-yellow">
+      <span id="pa-title">PA 作動中</span>
     </div>
-    <div id="loading-screen" class="md3-container hidden">
-        <div class="md3-loading-spinner"></div>
-        <p id="loading-message" class="md3-loading-message" data-ja="読み込み中..." data-en="Loading..." data-ko="로드 중..." data-zh="正在加载...">読み込み中...</p>
+    <div class="pa-announcement-white">
+      <div id="pa-message">アナウンス中</div>
+      <div id="pa-en">Passenger Announcement</div>
     </div>
-    <div id="ana-identification-screen" class="md3-container hidden">
-        <header class="md3-top-app-bar">
-            <img id="ana-selected-airline-logo" src="" alt="Selected Airline Logo" class="md3-app-bar-airline-logo">
-        </header>
-        <main class="md3-main-content">
-            <h1 id="id-headline" class="md3-headline-large" data-ja="チェックイン方法をお選びください" data-en="Please choose your check-in method" data-ko="체크인 방법을 선택하십시오" data-zh="请选择登机方式">チェックイン方法をお選びください</h1>
-            <p id="id-body" class="md3-body-large" data-ja="お客様に合った方法でご本人様確認ができます" data-en="You can verify your identity using a method that suits you." data-ko="고객님께 적합한 방법으로 본인 확인을 할 수 있습니다." data-zh="您可以选择适合您的方式进行身份验证。">お客様に合った方法でご本人様確認ができます</p>
-            <div class="md3-identification-grid">
-                <div class="md3-card md3-filled-card" data-method="booking-reference">
-                    <span class="material-symbols-rounded md3-card-icon">confirmation_number</span>
-                    <div class="md3-card-text">
-                        <span class="jp" data-ja="予約番号" data-en="Booking Reference" data-ko="예약 번호" data-zh="预约编号">予約番号</span>
-                        <span class="en" data-ja="Booking Reference" data-en="Booking Reference" data-ko="Booking Reference" data-zh="Booking Reference">Booking Reference</span>
-                    </div>
-                </div>
-                <div class="md3-card md3-filled-card" data-method="passport">
-                    <span class="material-symbols-rounded md3-card-icon">badge</span>
-                    <div class="md3-card-text">
-                        <span class="jp" data-ja="パスポート" data-en="Passport" data-ko="여권" data-zh="护照">パスポート</span>
-                        <span class="en" data-ja="Passport" data-en="Passport" data-ko="Passport" data-zh="Passport">Passport</span>
-                    </div>
-                </div>
-                <div class="md3-card md3-filled-card" data-method="mileage-member">
-                    <span class="material-symbols-rounded md3-card-icon">card_membership</span>
-                    <div class="md3-card-text">
-                        <span class="jp" data-ja="マイレージ会員番号" data-en="Mileage Member No." data-ko="마일리지 회원 번호" data-zh="里程会员号">マイレージ会員番号</span>
-                        <span class="en" data-ja="Mileage Member No." data-en="Mileage Member No." data-ko="Mileage Member No." data-zh="Mileage Member No.">Mileage Member No.</span>
-                    </div>
-                </div>
-                <div class="md3-card md3-filled-card" data-method="e-ticket-number">
-                    <span class="material-symbols-rounded md3-card-icon">qr_code</span>
-                    <div class="md3-card-text">
-                        <span class="jp" data-ja="Eチケット番号" data-en="E-Ticket No." data-ko="E-티켓 번호" data-zh="电子机票号">Eチケット番号</span>
-                        <span class="en" data-ja="E-Ticket No." data-en="E-Ticket No." data-ko="E-Ticket No." data-zh="E-Ticket No.">Eチケット番号</span>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="id-back-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">arrow_back</span>
-                <span data-ja="戻る" data-en="Back" data-ko="뒤로" data-zh="返回">戻る</span>
-            </button>
-            <button id="id-help-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">help</span>
-                <span data-ja="ヘルプ" data-en="Help" data-ko="도움말" data-zh="帮助">ヘルプ</span>
-            </button>
-        </footer>
-    </div>
-    <div id="booking-reference-input-screen" class="md3-container hidden">
-        <header class="md3-top-app-bar">
-            <img id="booking-selected-airline-logo" src="" alt="Selected Airline Logo" class="md3-app-bar-airline-logo">
-        </header>
-        <main class="md3-main-content booking-input-content">
-            <h1 id="booking-headline" class="md3-headline-large" data-ja="予約番号を入力してください" data-en="Enter your booking reference" data-ko="예약 번호를 입력하십시오" data-zh="请输入预订编号">予約番号を入力してください</h1>
-            <p id="booking-body" class="md3-body-large" data-ja="6桁の予約番号を入力してください" data-en="Please enter your 6-digit booking reference" data-ko="6자리 예약 번호를 입력하십시오" data-zh="请输入6位预订编号">6桁の予約番号を入力してください</p>
-            <div class="input-display-container">
-                <div id="booking-input-display" class="input-display focused">
-                    <span id="input-text" class="input-display-placeholder" data-ja="______" data-en="______" data-ko="______" data-zh="______">______</span>
-                </div>
-            </div>
-            <div class="number-pad">
-                <button class="number-button" data-number="1">1</button>
-                <button class="number-button" data-number="2">2</button>
-                <button class="number-button" data-number="3">3</button>
-                <button class="number-button" data-number="4">4</button>
-                <button class="number-button" data-number="5">5</button>
-                <button class="number-button" data-number="6">6</button>
-                <button class="number-button" data-number="7">7</button>
-                <button class="number-button" data-number="8">8</button>
-                <button class="number-button" data-number="9">9</button>
-                <button class="number-button special" id="backspace-button">
-                    <span class="material-symbols-rounded">backspace</span>
-                </button>
-                <button class="number-button" data-number="0">0</button>
-                <button class="number-button special" id="clear-all-button">
-                    <span class="material-symbols-rounded">clear</span>
-                </button>
-            </div>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="booking-back-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">arrow_back</span>
-                <span data-ja="戻る" data-en="Back" data-ko="뒤로" data-zh="返回">戻る</span>
-            </button>
-            <button id="booking-help-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">help</span>
-                <span data-ja="ヘルプ" data-en="Help" data-ko="도움말" data-zh="帮助">ヘルプ</span>
-            </button>
-            <button id="confirm-button" class="md3-button md3-text-button primary" data-ja="確認" data-en="Confirm" data-ko="확인" data-zh="确认" disabled>
-                <span data-ja="確認" data-en="Confirm" data-ko="확인" data-zh="确认">確認</span>
-                <span class="material-symbols-rounded">arrow_forward</span>
-            </button>
-        </footer>
-    </div>
-    <div id="mileage-member-input-screen" class="md3-container hidden">
-        <header class="md3-top-app-bar">
-            <img id="mileage-selected-airline-logo" src="" alt="Selected Airline Logo" class="md3-app-bar-airline-logo">
-        </header>
-        <main class="md3-main-content booking-input-content">
-            <h1 id="mileage-headline" class="md3-headline-large" data-ja="マイレージ会員番号を入力してください" data-en="Enter your Mileage Member No." data-ko="마일리지 회원 번호를 입력하십시오" data-zh="请输入里程会员号">マイレージ会員番号を入力してください</h1>
-            <p id="mileage-body" class="md3-body-large" data-ja="10桁のマイレージ会員番号を入力してください" data-en="Please enter your 10-digit mileage member number" data-ko="10자리 마일리지 회원 번호를 입력하십시오" data-zh="请输入10位里程会员号">10桁のマイレージ会員番号を入力してください</p>
-            <div class="input-display-container">
-                <div id="mileage-input-display" class="input-display focused">
-                    <span id="mileage-input-text" class="input-display-placeholder" data-ja="__________" data-en="__________" data-ko="__________" data-zh="__________">__________</span>
-                </div>
-            </div>
-            <div class="number-pad">
-                <button class="number-button" data-number="1">1</button>
-                <button class="number-button" data-number="2">2</button>
-                <button class="number-button" data-number="3">3</button>
-                <button class="number-button" data-number="4">4</button>
-                <button class="number-button" data-number="5">5</button>
-                <button class="number-button" data-number="6">6</button>
-                <button class="number-button" data-number="7">7</button>
-                <button class="number-button" data-number="8">8</button>
-                <button class="number-button" data-number="9">9</button>
-                <button class="number-button special" id="mileage-backspace-button">
-                    <span class="material-symbols-rounded">backspace</span>
-                </button>
-                <button class="number-button" data-number="0">0</button>
-                <button class="number-button special" id="mileage-clear-all-button">
-                    <span class="material-symbols-rounded">clear</span>
-                </button>
-            </div>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="mileage-back-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">arrow_back</span>
-                <span data-ja="戻る" data-en="Back" data-ko="뒤로" data-zh="返回">戻る</span>
-            </button>
-            <button id="mileage-help-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">help</span>
-                <span data-ja="ヘルプ" data-en="Help" data-ko="도움말" data-zh="帮助">ヘルプ</span>
-            </button>
-            <button id="mileage-confirm-button" class="md3-button md3-text-button primary" data-ja="確認" data-en="Confirm" data-ko="확인" data-zh="确认" disabled>
-                <span data-ja="確認" data-en="Confirm" data-ko="확인" data-zh="确认">確認</span>
-                <span class="material-symbols-rounded">arrow_forward</span>
-            </button>
-        </footer>
-    </div>
-    <div id="e-ticket-input-screen" class="md3-container hidden">
-        <header class="md3-top-app-bar">
-            <img id="e-ticket-selected-airline-logo" src="" alt="Selected Airline Logo" class="md3-app-bar-airline-logo">
-        </header>
-        <main class="md3-main-content booking-input-content">
-            <h1 id="e-ticket-headline" class="md3-headline-large" data-ja="Eチケット番号を入力してください" data-en="Enter your E-Ticket No." data-ko="E-티켓 번호를 입력하십시오" data-zh="请输入电子机票号">Eチケット番号を入力してください</h1>
-            <p id="e-ticket-body" class="md3-body-large" data-ja="13桁のEチケット番号を入力してください" data-en="Please enter your 13-digit E-Ticket number" data-ko="13자리 E-티켓 번호를 입력하십시오" data-zh="请输入13位电子机票号">13桁のEチケット番号を入力してください</p>
-            <div class="input-display-container">
-                <div id="e-ticket-input-display" class="input-display focused">
-                    <span id="e-ticket-input-text" class="input-display-placeholder" data-ja="_____________" data-en="_____________" data-ko="_____________" data-zh="_____________">_____________</span>
-                </div>
-            </div>
-            <div class="keyboard-tabs">
-                <button id="e-ticket-tab-numeric" class="keyboard-tab active" data-lang="ja" data-label="数字" data-en="123" data-ko="숫자" data-zh="数字">123</button>
-                <button id="e-ticket-tab-alpha" class="keyboard-tab" data-lang="ja" data-label="英字" data-en="ABC" data-ko="영문" data-zh="字母">ABC</button>
-            </div>
-            <div id="e-ticket-number-pad" class="number-pad">
-                <button class="number-button" data-number="1">1</button>
-                <button class="number-button" data-number="2">2</button>
-                <button class="number-button" data-number="3">3</button>
-                <button class="number-button" data-number="4">4</button>
-                <button class="number-button" data-number="5">5</button>
-                <button class="number-button" data-number="6">6</button>
-                <button class="number-button" data-number="7">7</button>
-                <button class="number-button" data-number="8">8</button>
-                <button class="number-button" data-number="9">9</button>
-                <button class="number-button special" id="e-ticket-backspace-button">
-                    <span class="material-symbols-rounded">backspace</span>
-                </button>
-                <button class="number-button" data-number="0">0</button>
-                <button class="number-button special" id="e-ticket-clear-all-button">
-                    <span class="material-symbols-rounded">clear</span>
-                </button>
-            </div>
-            <div id="e-ticket-alpha-pad" class="number-pad hidden" style="grid-template-columns: repeat(6, 1fr);">
-                <button class="alpha-button" data-alpha="A">A</button>
-                <button class="alpha-button" data-alpha="B">B</button>
-                <button class="alpha-button" data-alpha="C">C</button>
-                <button class="alpha-button" data-alpha="D">D</button>
-                <button class="alpha-button" data-alpha="E">E</button>
-                <button class="alpha-button" data-alpha="F">F</button>
-                <button class="alpha-button" data-alpha="G">G</button>
-                <button class="alpha-button" data-alpha="H">H</button>
-                <button class="alpha-button" data-alpha="I">I</button>
-                <button class="alpha-button" data-alpha="J">J</button>
-                <button class="alpha-button" data-alpha="K">K</button>
-                <button class="alpha-button" data-alpha="L">L</button>
-                <button class="alpha-button" data-alpha="M">M</button>
-                <button class="alpha-button" data-alpha="N">N</button>
-                <button class="alpha-button" data-alpha="O">O</button>
-                <button class="alpha-button" data-alpha="P">P</button>
-                <button class="alpha-button" data-alpha="Q">Q</button>
-                <button class="alpha-button" data-alpha="R">R</button>
-                <button class="alpha-button" data-alpha="S">S</button>
-                <button class="alpha-button" data-alpha="T">T</button>
-                <button class="alpha-button" data-alpha="U">U</button>
-                <button class="alpha-button" data-alpha="V">V</button>
-                <button class="alpha-button" data-alpha="W">W</button>
-                <button class="alpha-button" data-alpha="X">X</button>
-                <button class="alpha-button" data-alpha="Y">Y</button>
-                <button class="alpha-button" data-alpha="Z">Z</button>
-                <button class="number-button special" id="e-ticket-alpha-backspace-button">
-                    <span class="material-symbols-rounded">backspace</span>
-                </button>
-                <button class="number-button special" id="e-ticket-alpha-clear-all-button">
-                    <span class="material-symbols-rounded">clear</span>
-                </button>
-            </div>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="e-ticket-back-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">arrow_back</span>
-                <span data-ja="戻る" data-en="Back" data-ko="뒤로" data-zh="返回">戻る</span>
-            </button>
-            <button id="e-ticket-help-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">help</span>
-                <span data-ja="ヘルプ" data-en="Help" data-ko="도움말" data-zh="帮助">ヘルプ</span>
-            </button>
-            <button id="e-ticket-confirm-button" class="md3-button md3-text-button primary" data-ja="確認" data-en="Confirm" data-ko="확인" data-zh="确认" disabled>
-                <span data-ja="確認" data-en="Confirm" data-ko="확인" data-zh="确认">確認</span>
-                <span class="material-symbols-rounded">arrow_forward</span>
-            </button>
-        </footer>
-    </div>
-    <div id="help-screen" class="md3-container hidden">
-        <header class="md3-top-app-bar">
-            <button id="help-back-button" class="md3-button md3-icon-button">
-                <span class="material-symbols-rounded">arrow_back</span>
-            </button>
-            <span id="help-screen-title" class="md3-app-bar-title" data-ja="ヘルプ" data-en="Help" data-ko="도움말" data-zh="帮助">ヘルプ</span>
-        </header>
-        <main class="md3-main-content help-content">
-            <h2 class="md3-headline-medium" data-ja="よくある質問" data-en="Frequently Asked Questions" data-ko="자주 묻는 질문" data-zh="常见问题">よくある質問</h2>
-            <div class="md3-help-section">
-                <h3 class="md3-title-medium" data-ja="航空会社選択について" data-en="About Airline Selection" data-ko="항공사 선택에 대해" data-zh="关于航空公司选择">航空会社選択について</h3>
-                <p class="md3-body-medium" data-ja="チェックインしたい航空会社のロゴをタップしてください。表示されていない場合は、スタッフにお声がけください。" data-en="Please tap the logo of the airline you wish to check in for. If your airline is not listed, please speak to a staff member." data-ko="체크인하시려는 항공사 로고를 탭하십시오. 표시되지 않으면 직원에게 문의하십시오." data-zh="请点击您要办理登机手续的航空公司标志。如果未列出您的航空公司，请与工作人员联系。">チェックインしたい航空会社のロゴをタップしてください。表示されていない場合は、スタッフにお声がけください。</p>
-            </div>
-            <div class="md3-help-section">
-                <h3 class="md3-title-medium" data-ja="予約番号とは？" data-en="What is a booking reference?" data-ko="예약 번호는 무엇입까?" data-zh="什么是预订编号？">予約番号とは？</h3>
-                <p class="md3-body-medium" data-ja="予約番号は、航空券の予約時に発行される6桁の英数字です。Eチケットや予約確認メールに記載されています。" data-en="A booking reference is a 6-digit alphanumeric code issued when you book your flight ticket. It can be found on your e-ticket or in your booking confirmation email." data-ko="예약 번호는 항공권 예약 시 발급되는 6자리 영숫자 코드입니다. 전자 항공권 또는 예약 확인 이메일에서 찾을 수 있습니다." data-zh="预订编号是您预订机票时签发的6位字母数字代码。">予約番号は、航空券の予約時に発行される6桁の英数字です。</p>
-            </div>
-            <div class="md3-help-section">
-                <h3 class="md3-title-medium" data-ja="パスポートでのチェックイン" data-en="Check-in with Passport" data-ko="여권으로 체크인" data-zh="使用护照办理登机">パスポートでのチェックイン</h3>
-                <p class="md3-body-medium" data-ja="パスポートをスキャナーに置いて、画面の指示に従ってください。" data-en="Please place your passport on the scanner and follow the instructions on the screen." data-ko="여권을 스캐너에 놓고 화면의 지시에 따르십시오." data-zh="请将护照放在扫描仪上，然后按照屏幕上的说明进行操作。">パスポートをスキャナーに置いて、画面の指示に従ってください。</p>
-            </div>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="help-back-to-home-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">home</span>
-                <span data-ja="ホームへ戻る" data-en="Back to Home" data-ko="홈으로 돌아가기" data-zh="返回主页">ホームへ戻る</span>
-            </button>
-        </footer>
-    </div>
-    <div id="language-dialog-overlay" class="md3-dialog-overlay hidden">
-        <div class="md3-dialog">
-            <h3 class="md3-dialog-title" data-ja="言語選択" data-en="Select Language" data-ko="언어 선택" data-zh="选择语言">言語選択</h3>
-            <div class="md3-dialog-content">
-                <div class="language-option" data-lang="ja">
-                    <span class="language-text">日本語</span>
-                    <span class="material-symbols-rounded check-icon">check_circle</span>
-                </div>
-                <div class="language-option" data-lang="en">
-                    <span class="language-text">English</span>
-                    <span class="material-symbols-rounded check-icon">check_circle</span>
-                </div>
-                <div class="language-option" data-lang="ko">
-                    <span class="language-text">한국어</span>
-                    <span class="material-symbols-rounded check-icon">check_circle</span>
-                </div>
-                <div class="language-option" data-lang="zh">
-                    <span class="language-text">中文</span>
-                    <span class="material-symbols-rounded check-icon">check_circle</span>
-                </div>
-            </div>
-            <div class="md3-dialog-actions">
-                <button id="close-language-dialog" class="md3-button md3-text-button" data-ja="閉じる" data-en="Close" data-ko="닫기" data-zh="关闭">閉じる</button>
-            </div>
-        </div>
-    </div>
-    <div id="dangerous-goods-screen" class="md3-container hidden">
-        <header class="md3-top-app-bar">
-            <img id="dangerous-goods-selected-airline-logo" src="" alt="Selected Airline Logo" class="md3-app-bar-airline-logo">
-        </header>
-        <main class="md3-main-content help-content">
-            <h1 id="dangerous-goods-headline" class="md3-headline-large" data-ja="危険物の持ち込みについて" data-en="About Dangerous Goods" data-ko="위험물 반입에 대하여" data-zh="关于危险品">危険物の持ち込みについて</h1>
-            <p id="dangerous-goods-body" class="md3-body-large" data-ja="法令により、お荷物の中に以下の危険物に該当するものがないかご確認ください。" data-en="By law, please confirm you do not have any of the following dangerous goods in your baggage." data-ko="법률에 따라, 짐 안에 아래의 위험물에 해당하는 물건이 없는지 확인해 주십시오." data-zh="根据法律，请确认您的行李中没有下列危险品。">法令により、お荷物の中に以下の危険物に該当するものがないかご確認ください。</p>
-            <div class="dangerous-goods-grid">
-                <div class="dangerous-good-item">
-                    <img src="https://storage.googleapis.com/gemini-prod-us-west1-kimono-assets/4531832014023245824_1.png" alt="Explosives Icon">
-                    <span data-ja="爆発物" data-en="Explosives" data-ko="폭발물" data-zh="爆炸物">爆発物</span>
-                </div>
-                <div class="dangerous-good-item">
-                    <img src="https://storage.googleapis.com/gemini-prod-us-west1-kimono-assets/4531832014023245824_2.png" alt="Flammable Liquids Icon">
-                    <span data-ja="引火性液体" data-en="Flammable Liquids" data-ko="인화성 액체" data-zh="易燃液体">引火性液体</span>
-                </div>
-                <div class="dangerous-good-item">
-                    <img src="https://storage.googleapis.com/gemini-prod-us-west1-kimono-assets/4531832014023245824_3.png" alt="Compressed Gases Icon">
-                    <span data-ja="高圧ガス" data-en="Compressed Gases" data-ko="고압가스" data-zh="压缩气体">高圧ガス</span>
-                </div>
-                <div class="dangerous-good-item">
-                    <img src="https://storage.googleapis.com/gemini-prod-us-west1-kimono-assets/4531832014023245824_4.png" alt="Toxic Substances Icon">
-                    <span data-ja="毒物類" data-en="Toxic Substances" data-ko="독극물" data-zh="有毒物质">毒物類</span>
-                </div>
-                 <div class="dangerous-good-item">
-                    <img src="https://storage.googleapis.com/gemini-prod-us-west1-kimono-assets/4531832014023245824_5.png" alt="Corrosive Substances Icon">
-                    <span data-ja="腐食性物質" data-en="Corrosive Substances" data-ko="부식성 물질" data-zh="腐蚀性物质">腐食性物質</span>
-                </div>
-                 <div class="dangerous-good-item">
-                    <img src="https://storage.googleapis.com/gemini-prod-us-west1-kimono-assets/4531832014023245824_6.png" alt="Other Dangerous Goods Icon">
-                    <span data-ja="その他危険物" data-en="Other Goods" data-ko="기타 위험물" data-zh="其他危险品">その他危険物</span>
-                </div>
-            </div>
-            <p class="md3-body-medium" data-ja="詳細は係員にお尋ねください" data-en="Please ask a staff member for details" data-ko="자세한 내용은 직원에게 문의하십시오" data-zh="详情请咨询工作人员">詳細は係員にお尋ねください</p>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="dangerous-goods-yes-button" class="md3-button md3-text-button secondary">
-                 <span class="material-symbols-rounded">front_hand</span>
-                <span data-ja="はい、あります" data-en="Yes, I have" data-ko="예, 있습니다" data-zh="是的，我有">はい、あります</span>
-            </button>
-            <button id="dangerous-goods-no-button" class="md3-button md3-text-button primary">
-                <span data-ja="いいえ、ありません" data-en="No, I do not" data-ko="아니요, 없습니다" data-zh="不，我没有">いいえ、ありません</span>
-                <span class="material-symbols-rounded">check_circle</span>
-            </button>
-        </footer>
-    </div>
-    <div id="flight-list-screen" class="md3-container hidden">
-        <header class="md3-top-app-bar">
-            <img id="flight-list-selected-airline-logo" src="" alt="Selected Airline Logo" class="md3-app-bar-airline-logo">
-        </header>
-        <main class="md3-main-content">
-            <h1 class="md3-headline-large" data-ja="お客様のフライト" data-en="Your Flights" data-ko="고객님의 항공편" data-zh="您的航班">お客様のフライト</h1>
-            <div id="flight-list" class="flight-list-container">
-                </div>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="flight-list-done-button" class="md3-button md3-text-button primary">
-                <span class="material-symbols-rounded">check_circle</span>
-                <span data-ja="完了" data-en="Done" data-ko="완료" data-zh="完毕">完了</span>
-            </button>
-        </footer>
-    </div>
-    <div id="staff-assistance-screen" class="md3-container hidden">
-        <div class="assistance-content">
-            <span class="material-symbols-rounded assistance-icon">support_agent</span>
-            <h1 class="md3-headline-large" data-ja="ただいま、スタッフが参ります。" data-en="A staff member is on their way." data-ko="직원이 곧 도착할 것입니다." data-zh="工作人员正在前来。">ただいま、スタッフが参ります。</h1>
-            <p class="md3-body-large" data-ja="しばらくお待ち下さい。" data-en="Please wait a moment." data-ko="잠시만 기다려 주십시오." data-zh="请稍等。">しばらくお待ち下さい。</p>
-            <button id="sfm-button" class="sfm-button" data-ja="SFM" data-en="SFM" data-ko="SFM" data-zh="SFM">SFM</button>
-        </div>
-    </div>
-    <div id="boarding-pass-screen" class="md3-container hidden">
-        <header class="md3-top-app-bar">
-            <img id="boarding-pass-selected-airline-logo" src="" alt="Selected Airline Logo" class="md3-app-bar-airline-logo">
-        </header>
-        <main class="md3-main-content">
-            <h1 class="md3-headline-large" data-ja="ご搭乗ありがとうございます" data-en="Thank you for flying with us" data-ko="탑승해 주셔서 감사합니다" data-zh="感谢您搭乘航班">ご搭乗ありがとうございます</h1>
-            <div class="boarding-pass-card">
-                <div class="pass-header">
-                    <div class="pass-flight">
-                        <span class="pass-label" data-ja="便名" data-en="FLIGHT" data-ko="편명" data-zh="航班号">便名</span>
-                        <span class="pass-value">NH 205</span>
-                    </div>
-                </div>
-                <div class="pass-route">
-                    <div class="pass-from">
-                        <span class="pass-label" data-ja="出発地" data-en="FROM" data-ko="출발지" data-zh="出发">FROM</span>
-                        <span class="pass-value large">HND</span>
-                        <span class="pass-sub-value">TOKYO/HANEDA</span>
-                    </div>
-                    <span class="material-symbols-rounded flight-icon">flight_takeoff</span>
-                    <div class="pass-to">
-                        <span class="pass-label" data-ja="到着地" data-en="TO" data-ko="도착지" data-zh="到达">TO</span>
-                        <span class="pass-value large">CTS</span>
-                        <span class="pass-sub-value">SAPPORO/CTS</span>
-                    </div>
-                </div>
-                <div class="pass-details">
-                    <div class="pass-detail-item">
-                        <span class="pass-label" data-ja="搭乗者名" data-en="PASSENGER" data-ko="승객 이름" data-zh="旅客姓名">搭乗者名</span>
-                        <span class="pass-value">YAMADA TARO 様</span>
-                    </div>
-                    <div class="pass-detail-item">
-                        <span class="pass-label" data-ja="座席" data-en="SEAT" data-ko="좌석" data-zh="座位">座席</span>
-                        <span class="pass-value large">24A</span>
-                    </div>
-                </div>
-                <div class="pass-timing">
-                     <div class="pass-detail-item">
-                        <span class="pass-label" data-ja="搭乗日" data-en="DATE" data-ko="날짜" data-zh="日期">搭乗日</span>
-                        <span class="pass-value">JUN 29</span>
-                    </div>
-                    <div class="pass-detail-item">
-                        <span class="pass-label" data-ja="搭乗時刻" data-en="BOARDING" data-ko="탑승 시간" data-zh="登机时间">搭乗時刻</span>
-                        <span class="pass-value large">10:30</span>
-                    </div>
-                    <div class="pass-detail-item">
-                        <span class="pass-label" data-ja="ゲート" data-en="GATE" data-ko="게이트" data-zh="登机口">ゲート</span>
-                        <span class="pass-value large">65A</span>
-                    </div>
-                </div>
-                <div class="pass-qr">
-                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=M1YAMADA/TARO EABC123 HNDCTSNH 0205 180 24A 100" alt="QR Code">
-                </div>
-            </div>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="boarding-pass-done-button" class="md3-button md3-text-button primary">
-                <span class="material-symbols-rounded">check_circle</span>
-                <span data-ja="完了" data-en="Done" data-ko="완료" data-zh="完毕">完了</span>
-            </button>
-        </footer>
-    </div>
-    
-    <div id="staff-menu-screen" class="md3-container hidden">
-        <header class="md3-top-app-bar">
-            <button id="staff-menu-back-button" class="md3-button md3-icon-button">
-                <span class="material-symbols-rounded">arrow_back</span>
-            </button>
-            <span class="md3-app-bar-title" data-ja="スタッフメニュー" data-en="Staff Menu" data-ko="직원 메뉴" data-zh="员工菜单">スタッフメニュー</span>
-        </header>
-        <main class="md3-main-content">
-            <div class="staff-menu-grid">
-                <div class="staff-menu-button" data-function="search">
-                    <span class="material-symbols-rounded md3-card-icon">person_search</span>
-                    <span class="staff-menu-label" data-ja="旅客情報検索" data-en="Passenger Search" data-ko="승객 정보 검색" data-zh="旅客信息检索">旅客情報検索</span>
-                </div>
-                <div class="staff-menu-button" data-function="flight_info">
-                    <span class="material-symbols-rounded md3-card-icon">flight</span>
-                    <span class="staff-menu-label" data-ja="フライト情報" data-en="Flight Info" data-ko="항공편 정보" data-zh="航班信息">フライト情報</span>
-                </div>
-                <div class="staff-menu-button" data-function="settings">
-                    <span class="material-symbols-rounded md3-card-icon">settings</span>
-                    <span class="staff-menu-label" data-ja="システム設定" data-en="System Settings" data-ko="시스템 설정" data-zh="系统设置">システム設定</span>
-                </div>
-                <div class="staff-menu-button" data-function="print_test">
-                    <span class="material-symbols-rounded md3-card-icon">print</span>
-                    <span class="staff-menu-label" data-ja="印刷テスト" data-en="Print Test" data-ko="인쇄 테스트" data-zh="打印测试">印刷テスト</span>
-                </div>
-            </div>
-        </main>
-        <footer class="md3-bottom-nav-bar">
-            <button id="staff-menu-exit-button" class="md3-button md3-text-button">
-                <span class="material-symbols-rounded">logout</span>
-                <span data-ja="終了して通常画面に戻る" data-en="Exit to Main Menu" data-ko="종료하고 일반 화면으로 돌아가기" data-zh="退出到主菜单">終了して通常画面に戻る</span>
-            </button>
-        </footer>
-    </div>
-
-    <script src="main.js"></script>
+  </div>
+  <div class="top-left">
+    <h1 class="seat">31A</h1>
+    <p class="instruction">
+      画面のどこかをタッチしてスタート<br>
+      <span class="en">TAP ANYWHERE TO START.</span>
+    </p>
+  </div>
+  <!-- クリック無効用オーバーレイ -->
+  <div id="pa-blocker" style="display:none;position:fixed;inset:0;z-index:2100;"></div>
 </body>
+<style>
+html, body, .start-screen {
+  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+}
+body[lang="ja"], html[lang="ja"] .start-screen {
+  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+}
+body[lang="en"], html[lang="en"] .start-screen {
+  font-family: 'Open Sans', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+}
+body[lang="ko"], html[lang="ko"] .start-screen {
+  font-family: 'Noto Sans KR', 'Noto Sans JP', 'Open Sans', 'Noto Sans TC', sans-serif;
+}
+body[lang="zh"], html[lang="zh"] .start-screen {
+  font-family: 'Noto Sans TC', 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', sans-serif;
+}
+</style>
+<script>
+  // --- PAアナウンス中ダイアログ制御 ---
+  let paDialog = null, paTitle = null, paMessage = null, paEn = null, paKeyDown = false, paBlocker = null;
+  function setPADialogLang() {
+    const lang = localStorage.getItem('language') || 'ja';
+    if (!window.i18n) return;
+    const i18n = window.i18n[lang] || window.i18n['ja'];
+    if (paTitle) paTitle.textContent = i18n.pa_title || 'PA 作動中';
+    if (paMessage) paMessage.textContent = i18n.pa_message || 'ただいまアナウンス中です。';
+    if (paEn) paEn.innerHTML = (i18n.pa_en || 'Passenger Announcement');
+  }
+  function updatePADialog() {
+    if (!paDialog || !paBlocker) return;
+    if (paKeyDown) {
+      setPADialogLang();
+      paDialog.style.display = 'flex';
+      paBlocker.style.display = 'block';
+    } else {
+      paDialog.style.display = 'none';
+      paBlocker.style.display = 'none';
+    }
+  }
+  document.addEventListener('keydown', function(e) {
+    if ((e.key === 'a' || e.key === 'A')) {
+      if (!paKeyDown) {
+        paKeyDown = true;
+        updatePADialog();
+      }
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    if (e.key === 'a' || e.key === 'A') {
+      if (paKeyDown) {
+        paKeyDown = false;
+        updatePADialog();
+      }
+    }
+  });
+  window.addEventListener('DOMContentLoaded', () => {
+    paDialog = document.getElementById('pa-announcement');
+    paTitle = document.getElementById('pa-title');
+    paMessage = document.getElementById('pa-message');
+    paEn = document.getElementById('pa-en');
+    paBlocker = document.getElementById('pa-blocker');
+    paKeyDown = false;
+    updatePADialog();
+    if (window.i18n) setPADialogLang();
+    document.querySelector('.seat').textContent = localStorage.getItem('seatNumber') || '31A';
+    // 他の情報も同様に localStorage.getItem() で呼び出して使用できます
+  });
+</script>
+<link rel="stylesheet" href="common.css">
 </html>

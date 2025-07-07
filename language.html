@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>言語選択</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="home.css" />
+</head>
+<body class="language-screen">
+  <!-- PAアナウンス中ダイアログ（ANA風：上部黄色帯＋下部白四角） -->
+  <div id="pa-announcement" class="pa-announcement">
+    <div class="pa-announcement-yellow">
+      <span id="pa-title">PA 作動中</span>
+    </div>
+    <div class="pa-announcement-white">
+      <div id="pa-message">アナウンス中</div>
+      <div id="pa-en">Passenger Announcement</div>
+    </div>
+  </div>
+  <div class="language-options">
+  <!-- クリック無効用オーバーレイ -->
+  <div id="pa-blocker" style="display:none;position:fixed;inset:0;z-index:2100;"></div>
+<style>
+html, body, .language-screen {
+  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+}
+body[lang="ja"], html[lang="ja"] .language-screen {
+  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+}
+body[lang="en"], html[lang="en"] .language-screen {
+  font-family: 'Open Sans', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+}
+body[lang="ko"], html[lang="ko"] .language-screen {
+  font-family: 'Noto Sans KR', 'Noto Sans JP', 'Open Sans', 'Noto Sans TC', sans-serif;
+}
+body[lang="zh"], html[lang="zh"] .language-screen {
+  font-family: 'Noto Sans TC', 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', sans-serif;
+}
+</style>
+    <button onclick="setLang('ja')">日本語</button>
+    <button onclick="setLang('en')">English</button>
+    <button onclick="setLang('ko')">한국어</button>
+    <button onclick="setLang('zh')">中文</button>
+  </div>
+  <script>
+    // --- PAアナウンス中ダイアログ制御 ---
+    let paDialog = null, paTitle = null, paMessage = null, paEn = null, paKeyDown = false, paBlocker = null;
+    function setPADialogLang() {
+      const lang = localStorage.getItem('language') || 'ja';
+      if (!window.i18n) return;
+      const i18n = window.i18n[lang] || window.i18n['ja'];
+      if (paTitle) paTitle.textContent = i18n.pa_title || 'PA 作動中';
+      if (paMessage) paMessage.textContent = i18n.pa_message || 'ただいまアナウンス中です。';
+      if (paEn) paEn.innerHTML = (i18n.pa_en || 'Passenger Announcement');
+    }
+    function updatePADialog() {
+      if (!paDialog || !paBlocker) return;
+      if (paKeyDown) {
+        setPADialogLang();
+        paDialog.style.display = 'flex';
+        paBlocker.style.display = 'block';
+      } else {
+        paDialog.style.display = 'none';
+        paBlocker.style.display = 'none';
+      }
+    }
+    document.addEventListener('keydown', function(e) {
+      if ((e.key === 'a' || e.key === 'A')) {
+        if (!paKeyDown) {
+          paKeyDown = true;
+          updatePADialog();
+        }
+      }
+    });
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'a' || e.key === 'A') {
+        if (paKeyDown) {
+          paKeyDown = false;
+          updatePADialog();
+        }
+      }
+    });
+    window.addEventListener('DOMContentLoaded', function() {
+      paDialog = document.getElementById('pa-announcement');
+      paTitle = document.getElementById('pa-title');
+      paMessage = document.getElementById('pa-message');
+      paEn = document.getElementById('pa-en');
+      paBlocker = document.getElementById('pa-blocker');
+      paKeyDown = false;
+      updatePADialog();
+      if (window.i18n) setPADialogLang();
+    });
+    function setLang(lang) {
+      localStorage.setItem('language', lang);
+      location.href = 'home.html';
+    }
+  </script>
+  <link rel="stylesheet" href="common.css">
+</body>
+</html>
