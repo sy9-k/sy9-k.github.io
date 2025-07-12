@@ -4,57 +4,428 @@
   <meta charset="UTF-8" />
   <title>裏設定画面</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="common.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body.admin-screen {
+      /* Material 3のニュートラルな背景色 */
+      background-color: #fdf8fd;
+      font-family: 'Noto Sans JP', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .admin-panel {
+      background: #fffbfe; /* Surface色 */
+      padding: 32px;
+      border-radius: 28px; /* M3の大きな角丸 */
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15); /* M3 Elevation Level 2 */
+      text-align: left;
+      width: 100%;
+      max-width: 800px; /* パネルの最大幅を広げる */
+      height: calc(100vh - 32px); /* bodyのpaddingを考慮した高さ */
+      overflow-y: auto; /* コンテンツが多い場合にスクロール */
+      color: #1d1b20; /* On-Surface色 */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-panel h1 {
+      font-size: 1.5rem; /* M3 Headline Small */
+      font-weight: 400;
+      margin-top: 0;
+      margin-bottom: 28px;
+      text-align: center;
+      color: #1d1b20;
+    }
+
+    /* --- Summary View --- */
+    .summary-item {
+      padding: 16px 8px;
+      border-bottom: 1px solid #e0e0e0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .summary-item:hover {
+      background-color: #f5f5f5;
+    }
+    .summary-item-title {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #1d1b20;
+      margin-bottom: 4px;
+    }
+    .summary-item-value {
+      font-size: 0.9rem;
+      color: #49454f;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* --- Detail View --- */
+    .settings-view { display: none; }
+    .view-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+    .back-button {
+      background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #49454f; padding: 4px; line-height: 1;
+    }
+
+    .view-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: #1d1b20;
+    }
+
+    .settings-category {
+      margin-bottom: 28px;
+    }
+
+    .settings-category:last-of-type {
+      margin-bottom: 12px; /* 最後のカテゴリとボタンの間のマージンを調整 */
+    }
+
+    .category-title {
+      font-size: 0.9rem; /* M3 Body Small or Label Large */
+      font-weight: 500;
+      color: #212121; /* Primary color */
+      padding-left: 4px;
+      margin-bottom: 16px;
+      margin-top: 0;
+      letter-spacing: 0.02em;
+    }
+
+    .admin-panel label {
+      display: block;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #49454f; /* On-Surface-Variant */
+    }
+
+    .admin-panel input, .admin-panel select {
+      width: 100%;
+      padding: 16px;
+      font-size: 1rem;
+      margin-top: 8px;
+      border: 1px solid #79747e; /* M3 Outline */
+      border-radius: 8px;
+      background-color: #f5f5f5; /* Surface-Variantの少し明るい版 */
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+      color: #1d1b20;
+    }
+
+    .admin-panel input:focus, .admin-panel select:focus {
+      outline: none;
+      border-color: #212121; /* Primary */
+      background-color: #fff;
+      box-shadow: 0 0 0 2px #bdbdbd; /* フォーカスリング */
+    }
+
+    .admin-panel button {
+      width: 100%;
+      margin-top: 24px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 16px;
+      background-color: #212121; /* Primary */
+      color: #ffffff; /* On-Primary */
+      border: none;
+      border-radius: 100px; /* Pill-shape */
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0.01em;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.2); /* M3 Elevation Level 1 */
+      transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+    }
+
+    .admin-panel button:hover {
+      background-color: #424242;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.25); /* M3 Elevation Level 2 */
+      transform: translateY(-1px);
+    }
+    
+    .admin-panel button:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.2);
+      background-color: #000000;
+    }
+
+    /* 詳細設定画面の保存ボタンのスタイルを調整 */
+    .settings-view button {
+      width: auto;
+      display: block;
+      margin-left: auto; /* 右寄せにする */
+      padding: 16px 32px;
+    }
+
+    /* --- Password View --- */
+    #password-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 360px;
+      margin: auto;
+    }
+    #password-display {
+      width: 100%;
+      height: 60px;
+      background-color: #f5f5f5;
+      border-radius: 12px;
+      margin-bottom: 32px;
+      font-size: 2.5rem;
+      letter-spacing: 0.5em;
+      text-align: center;
+      line-height: 60px;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    #password-display.shake {
+      animation: shake 0.5s;
+      border-color: #ba1a1a; /* M3 Error color */
+    }
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      width: 100%;
+    }
+    .keypad button {
+      height: 80px;
+      font-size: 1.8rem;
+      border-radius: 24px;
+      border: 1px solid #cac4d0;
+      background-color: #fffbfe;
+      color: #1d1b20;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .keypad button:hover {
+      background-color: #f5f5f5;
+    }
+    .keypad button:active {
+      background-color: #e0e0e0;
+    }
+    .keypad .keypad-action {
+      background-color: #e0e0e0;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+  </style>
 </head>
 <body class="admin-screen">
-  <div class="admin-panel">
-    <h1>機内モニター設定</h1>
+  <!-- Password View -->
+  <div id="password-view">
+    <h1>パスワードを入力</h1>
+    <div id="password-display"></div>
+    <div class="keypad">
+      <button onclick="appendToPassword('1')">1</button>
+      <button onclick="appendToPassword('2')">2</button>
+      <button onclick="appendToPassword('3')">3</button>
+      <button onclick="appendToPassword('4')">4</button>
+      <button onclick="appendToPassword('5')">5</button>
+      <button onclick="appendToPassword('6')">6</button>
+      <button onclick="appendToPassword('7')">7</button>
+      <button onclick="appendToPassword('8')">8</button>
+      <button onclick="appendToPassword('9')">9</button>
+      <button class="keypad-action" onclick="clearPassword()">C</button>
+      <button onclick="appendToPassword('0')">0</button>
+      <button class="keypad-action" onclick="checkPassword()">✓</button>
+    </div>
+  </div>
 
-    <label>座席番号：<br>
-      <input type="text" id="seatInput" placeholder="例: 31A" />
-    </label><br><br>
+  <div id="admin-panel" class="admin-panel" style="display: none;">
+    <!-- Summary View -->
+    <div id="summary-view">
+      <h1>機内モニター設定</h1>
+      <div class="summary-item" onclick="showView('flight-info-view')">
+        <div class="summary-item-title">フライト情報</div>
+        <div class="summary-item-value" id="summary-flight-info"></div>
+      </div>
+      <div class="summary-item" onclick="showView('route-info-view')">
+        <div class="summary-item-title">ルート情報</div>
+        <div class="summary-item-value" id="summary-route-info"></div>
+      </div>
+      <div class="summary-item" onclick="showView('time-progress-view')">
+        <div class="summary-item-title">時刻 & 進捗</div>
+        <div class="summary-item-value" id="summary-time-progress"></div>
+      </div>
+      <button onclick="startApp()">設定を完了して開始</button>
+    </div>
 
-    <label>出発地：<br>
-      <select id="departureCity">
-        <option value="大阪（関西）">大阪（関西）</option>
-        <option value="東京（羽田）">東京（羽田）</option>
-        <option value="名古屋（中部）">名古屋（中部）</option>
-      </select>
-    </label><br><br>
+    <!-- Flight Info View -->
+    <div id="flight-info-view" class="settings-view">
+      <div class="view-header">
+        <button class="back-button" onclick="showView('summary-view')">←</button>
+        <h2>フライト情報</h2>
+      </div>
+      <label>便名 <input type="text" id="flightNumber" placeholder="例: OZ117" /></label>
+      <label>座席番号 <input type="text" id="seatInput" placeholder="例: 31A" /></label>
+      <button onclick="saveCategorySettings('flight-info')">保存</button>
+    </div>
 
-    <label>到着地：<br>
-      <select id="arrivalCity">
-        <option value="ソウル（仁川）">ソウル（仁川）</option>
-        <option value="釜山">釜山</option>
-        <option value="台北">台北</option>
-      </select>
-    </label><br><br>
+    <!-- Route Info View -->
+    <div id="route-info-view" class="settings-view">
+      <div class="view-header">
+        <button class="back-button" onclick="showView('summary-view')">←</button>
+        <h2>ルート情報</h2>
+      </div>
+      <label>出発地
+        <select id="departureCity">
+          <option value="大阪（関西）">大阪（関西）</option>
+          <option value="東京（羽田）">東京（羽田）</option>
+          <option value="名古屋（中部）">名古屋（中部）</option>
+        </select>
+      </label>
+      <label>到着地
+        <select id="arrivalCity">
+          <option value="ソウル（仁川）">ソウル（仁川）</option>
+          <option value="釜山">釜山</option>
+          <option value="台北">台北</option>
+        </select>
+      </label>
+      <label>出発空港ID <input type="text" id="departureID" placeholder="例: KIX" /></label>
+      <label>到着空港ID <input type="text" id="arrivalID" placeholder="例: ICN" /></label>
+      <button onclick="saveCategorySettings('route-info')">保存</button>
+    </div>
 
-    <label>出発空港ID：<br>
-      <input type="text" id="departureID" placeholder="例: KIX" />
-    </label><br><br>
+    <!-- Time & Progress View -->
+    <div id="time-progress-view" class="settings-view">
+      <div class="view-header">
+        <button class="back-button" onclick="showView('summary-view')">←</button>
+        <h2>時刻 & 進捗</h2>
+      </div>
+      <label>出発時刻 <input type="text" id="depTime" placeholder="例: 19:10" /></label>
+      <label>到着時刻 <input type="text" id="arrTime" placeholder="例: 21:00" /></label>
+      <label>飛行進捗率 (%) <input type="number" id="progressPercent" placeholder="例: 50" min="0" max="100" /></label>
+      <button onclick="saveCategorySettings('time-progress')">保存</button>
+    </div>
 
-    <label>到着空港ID：<br>
-      <input type="text" id="arrivalID" placeholder="例: ICN" />
-    </label><br><br>
-
-    <label>便名：<br>
-      <input type="text" id="flightNumber" placeholder="例: OZ117" />
-    </label><br><br>
-
-    <button onclick="saveSettings()">保存して開始</button>
   </div>
 
   <script>
-    function saveSettings() {
-      localStorage.setItem('seatNumber', document.getElementById('seatInput').value || '31A');
-      localStorage.setItem('departureCity', document.getElementById('departureCity').value);
-      localStorage.setItem('arrivalCity', document.getElementById('arrivalCity').value);
-      localStorage.setItem('departureID', document.getElementById('departureID').value || 'KIX');
-      localStorage.setItem('arrivalID', document.getElementById('arrivalID').value || 'ICN');
-      localStorage.setItem('flightNumber', document.getElementById('flightNumber').value || 'OZ117');
+    // --- Password Authentication ---
+    let enteredPassword = '';
+    const correctPassword = '1234';
+    const passwordDisplay = document.getElementById('password-display');
+
+    function appendToPassword(digit) {
+      if (enteredPassword.length < 10) {
+        enteredPassword += digit;
+        updatePasswordDisplay();
+      }
+    }
+
+    function clearPassword() {
+      enteredPassword = '';
+      updatePasswordDisplay();
+    }
+
+    function checkPassword() {
+      if (enteredPassword === correctPassword) {
+        document.getElementById('password-view').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'flex';
+        showView('summary-view');
+      } else {
+        passwordDisplay.classList.add('shake');
+        setTimeout(() => {
+          passwordDisplay.classList.remove('shake');
+          clearPassword();
+        }, 500);
+      }
+    }
+
+    function updatePasswordDisplay() {
+      passwordDisplay.textContent = '•'.repeat(enteredPassword.length);
+    }
+
+    // --- Settings Panel Logic ---
+    const views = ['summary-view', 'flight-info-view', 'route-info-view', 'time-progress-view'];
+
+    function showView(viewId) {
+      views.forEach(id => {
+        document.getElementById(id).style.display = (id === viewId) ? 'block' : 'none';
+      });
+      if (viewId === 'summary-view') {
+        loadSettings(); // サマリー表示時に値を更新
+      }
+    }
+
+    function loadSettings() {
+      // 値をフォームに設定
+      document.getElementById('flightNumber').value = localStorage.getItem('flightNumber') || '';
+      document.getElementById('seatInput').value = localStorage.getItem('seatNumber') || '';
+      document.getElementById('departureCity').value = localStorage.getItem('departureCity') || '大阪（関西）';
+      document.getElementById('arrivalCity').value = localStorage.getItem('arrivalCity') || 'ソウル（仁川）';
+      document.getElementById('departureID').value = localStorage.getItem('departureID') || '';
+      document.getElementById('arrivalID').value = localStorage.getItem('arrivalID') || '';
+      document.getElementById('depTime').value = localStorage.getItem('depTime') || '';
+      document.getElementById('arrTime').value = localStorage.getItem('arrTime') || '';
+      document.getElementById('progressPercent').value = localStorage.getItem('progressPercent') || '';
+
+      // サマリー表示を更新
+      const flightNumber = localStorage.getItem('flightNumber') || '未設定';
+      const seatNumber = localStorage.getItem('seatNumber') || '未設定';
+      document.getElementById('summary-flight-info').textContent = `便名: ${flightNumber}, 座席: ${seatNumber}`;
+
+      const depCity = localStorage.getItem('departureCity') || '未設定';
+      const arrCity = localStorage.getItem('arrivalCity') || '未設定';
+      document.getElementById('summary-route-info').textContent = `${depCity} → ${arrCity}`;
+
+      const depTime = localStorage.getItem('depTime') || '--:--';
+      const progress = localStorage.getItem('progressPercent') || '0';
+      document.getElementById('summary-time-progress').textContent = `出発: ${depTime}, 進捗: ${progress}%`;
+    }
+
+    function saveCategorySettings(category) {
+      if (category === 'flight-info') {
+        localStorage.setItem('flightNumber', document.getElementById('flightNumber').value);
+        localStorage.setItem('seatNumber', document.getElementById('seatInput').value);
+      } else if (category === 'route-info') {
+        localStorage.setItem('departureCity', document.getElementById('departureCity').value);
+        localStorage.setItem('arrivalCity', document.getElementById('arrivalCity').value);
+        localStorage.setItem('departureID', document.getElementById('departureID').value);
+        localStorage.setItem('arrivalID', document.getElementById('arrivalID').value);
+      } else if (category === 'time-progress') {
+        localStorage.setItem('depTime', document.getElementById('depTime').value);
+        localStorage.setItem('arrTime', document.getElementById('arrTime').value);
+        localStorage.setItem('progressPercent', document.getElementById('progressPercent').value);
+      }
+      showView('summary-view');
+    }
+
+    function startApp() {
+      // 開始前に最終的なデフォルト値を設定
+      if (!localStorage.getItem('seatNumber')) localStorage.setItem('seatNumber', '31A');
+      if (!localStorage.getItem('departureID')) localStorage.setItem('departureID', 'KIX');
+      if (!localStorage.getItem('arrivalID')) localStorage.setItem('arrivalID', 'ICN');
+      if (!localStorage.getItem('flightNumber')) localStorage.setItem('flightNumber', 'OZ117');
+      if (!localStorage.getItem('depTime')) localStorage.setItem('depTime', '19:10');
+      if (!localStorage.getItem('arrTime')) localStorage.setItem('arrTime', '21:00');
+      if (!localStorage.getItem('progressPercent')) localStorage.setItem('progressPercent', '50');
       location.href = 'start.html';
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initially, only the password view is shown.
+      // The settings view is shown after successful authentication.
+    });
   </script>
-  <link rel="stylesheet" href="common.css">
 </body>
 </html>

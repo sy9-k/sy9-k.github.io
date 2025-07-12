@@ -293,6 +293,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   border-radius: 5px;
   cursor: pointer;
   letter-spacing: 0.04em;
+  font-family: inherit;
   transition: background 0.12s, color 0.12s;
   text-shadow: none;
 }
@@ -490,6 +491,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   border-radius: 50%;
   box-shadow: 0 1px 4px #0001;
   cursor: pointer;
+  font-family: inherit;
   margin: 0 6px;
   transition: background 0.15s;
 }
@@ -557,6 +559,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   color: #fff;
   font-size: 1.18rem;
   letter-spacing: 0.05em;
+  font-family: inherit;
   cursor: pointer;
   transition: background 0.18s;
 }

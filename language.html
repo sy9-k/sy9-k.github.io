@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>言語選択</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Open+Sans:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="home.css" />
 </head>
 <body class="language-screen">
@@ -22,19 +23,52 @@
   <div id="pa-blocker" style="display:none;position:fixed;inset:0;z-index:2100;"></div>
 <style>
 html, body, .language-screen {
-  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f2f5;
+  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif !important;
 }
 body[lang="ja"], html[lang="ja"] .language-screen {
-  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif !important;
 }
 body[lang="en"], html[lang="en"] .language-screen {
-  font-family: 'Open Sans', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+  font-family: 'Open Sans', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans TC', sans-serif !important;
 }
 body[lang="ko"], html[lang="ko"] .language-screen {
-  font-family: 'Noto Sans KR', 'Noto Sans JP', 'Open Sans', 'Noto Sans TC', sans-serif;
+  font-family: 'Noto Sans KR', 'Noto Sans JP', 'Open Sans', 'Noto Sans TC', sans-serif !important;
 }
 body[lang="zh"], html[lang="zh"] .language-screen {
-  font-family: 'Noto Sans TC', 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', sans-serif;
+  font-family: 'Noto Sans TC', 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', sans-serif !important;
+}
+.language-options {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+}
+.language-options button {
+  flex: 1;
+  /* ★ 親要素(body)のフォント指定を継承させる */
+  font-family: inherit;
+  white-space: nowrap;
+  font-size: 1.4rem;
+  font-weight: 500;
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+.language-options button:hover {
+  background-color: #333;
+  color: #fff;
+  border-color: #333;
+  transform: translateY(-2px);
 }
 </style>
     <button onclick="setLang('ja')">日本語</button>

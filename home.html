@@ -232,6 +232,25 @@
           alert('客室乗務員をお呼び出ししました。しばらくお待ちください。');
         };
       }
+
+      // --- admin.htmlへの隠しボタン ---
+      // ヘッダーのフライト情報部分を3回クリックすると管理画面へ遷移
+      const flightInfoTrigger = document.querySelector('.hm-flight-info');
+      if (flightInfoTrigger) {
+        let clickCount = 0;
+        let clickTimer = null;
+        flightInfoTrigger.addEventListener('click', () => {
+          clickCount++;
+          if (clickCount === 1) {
+            clickTimer = setTimeout(() => { clickCount = 0; }, 1000); // 1秒以内に次のクリックがなければリセット
+          }
+          if (clickCount >= 3) {
+            clearTimeout(clickTimer);
+            clickCount = 0;
+            window.location.href = 'admin.html';
+          }
+        });
+      }
     });
     // 通知パネル制御（設定パネルと同じアニメーション/横幅/オーバーレイ）
     const noticeBtn = document.querySelector('.hm-btn-notice');
@@ -407,8 +426,8 @@
       }
       setLangTexts();
 
-      // 進捗バーの割合（例: 固定50%。実際は時刻から計算可能）
-      const percent = 50;
+      // 進捗バーの割合をlocalStorageから取得
+      const percent = localStorage.getItem('progressPercent') || 50;
       document.getElementById('hm-progress-bar').style.width = percent + '%';
       document.querySelector('.hm-plane-icon').style.left = `calc(${percent}% - 32px)`;
     });

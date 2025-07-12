@@ -15,9 +15,11 @@
   </style>
   <!-- Google Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Open+Sans:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <title>エンターテイメント</title>
   <link rel="stylesheet" href="home.css" />
+  <link rel="stylesheet" href="entertainment.css" />
   <script src="i18n.js"></script>
   <style>
 body[lang="ja"], html[lang="ja"] .home-modern {
@@ -70,6 +72,12 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     .hm-panel .hm-notice-list { margin: 0; padding: 0; list-style: none; }
     .hm-panel .hm-notice-list li { margin-bottom: 12px; font-size: 1.05rem; }
     .hm-panel .hm-notice-empty { color: #aaa; font-size: 1.1rem; margin-top: 18px; }
+  </style>
+  <style>
+    /* このページ固有のボタンにフォントを適用 */
+    #ent-watch-btn, #ent-detail-btn, #ent-plus-btn {
+      font-family: inherit;
+    }
   </style>
 </head>
 <body class="home-modern">
@@ -175,20 +183,33 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   </div>
   <!-- メイン -->
   <div class="hm-main" style="background:#232323;flex-direction:column;">
-    <div style="padding:32px 48px 0 48px;background:#18191c;">
-      <h1 id="ent-title" style="font-size:3.2rem;font-weight:500;margin-bottom:18px;color:#fff;"></h1>
-      <div id="ent-desc" style="font-size:1.25rem;opacity:0.92;margin-bottom:32px;color:#e0e0e0;"></div>
-      <div style="display:flex;gap:18px;margin-bottom:36px;">
-        <button id="ent-watch-btn" style="background:#1976d2;color:#fff;font-size:1.15rem;padding:12px 32px;border:none;border-radius:4px;"></button>
-        <button id="ent-detail-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 32px;border:1.5px solid #fff;border-radius:4px;"></button>
-        <button id="ent-plus-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 24px;border:1.5px solid #fff;border-radius:4px;"></button>
+    <!-- コンテンツエリア -->
+    <div class="entertainment-content-scroll">
+      <!-- 今月の最新作セクション -->
+      <div style="background:#18191c; border-radius: 16px; margin-bottom: 32px; padding: 32px;">
+        <h1 id="ent-title" style="font-size:3.2rem;font-weight:500;margin-bottom:18px;color:#fff;"></h1>
+        <div id="ent-desc" style="font-size:1.25rem;opacity:0.92;margin-bottom:32px;color:#e0e0e0;"></div>
+        <div style="display:flex;gap:18px;margin-bottom:36px;">
+          <button id="ent-watch-btn" style="background:#1976d2;color:#fff;font-size:1.15rem;padding:12px 32px;border:none;border-radius:4px;"></button>
+          <button id="ent-detail-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 32px;border:1.5px solid #fff;border-radius:4px;"></button>
+          <button id="ent-plus-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 24px;border:1.5px solid #fff;border-radius:4px;"></button>
+        </div>
       </div>
-    </div>
-    <div style="background:#fff;padding:32px 48px 48px 48px;">
-      <div id="ent-popular-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;">
-        <div id="ent-popular-main" style="background:#4b9cf5;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
-        <div id="ent-popular-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
+      <!-- 人気作品セクション -->
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+        <div id="ent-popular-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
+        <div class="clickable-content-item" onclick="alert('「Flight TV ep.1」を再生します。')">
+          <div id="ent-popular-main" style="background:#4b9cf5;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
+          <div id="ent-popular-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
+        </div>
+      </div>
+      <!-- おすすめTV番組セクション（追加） -->
+      <div style="background:#fff;padding:32px; border-radius: 16px;">
+        <div id="ent-recommended-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;">
+          <div id="ent-recommended-main" style="background:#33ab9f;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
+          <div id="ent-recommended-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -264,6 +285,13 @@ body[lang="zh"], html[lang="zh"] .home-modern {
           if (popMain) popMain.textContent = i18n.ent_flight_tv_title || 'Flight TV';
           const popEp = document.getElementById('ent-popular-ep');
           if (popEp) popEp.textContent = i18n.ent_flight_tv_ep1 || i18n.flight_tv_ep1 || 'Flight TV ep.1';
+          // 追加セクション
+          const recTitle = document.getElementById('ent-recommended-title');
+          if (recTitle) recTitle.textContent = i18n.ent_recommended_title || 'おすすめのテレビ番組';
+          const recMain = document.getElementById('ent-recommended-main');
+          if (recMain) recMain.textContent = i18n.ent_recommended_main || 'ドラマシリーズ';
+          const recEp = document.getElementById('ent-recommended-ep');
+          if (recEp) recEp.textContent = i18n.ent_recommended_ep || '第1話';
           // フッター
           const depLabel = document.getElementById('hm-dep-label');
           const arrLabel = document.getElementById('hm-arr-label');
