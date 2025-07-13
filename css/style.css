@@ -160,7 +160,7 @@ body[lang="zh"], html[lang="zh"] .language-screen { /* .home-modern を削除し
 }
 .hm-entertainment .hm-card-bg {
   position: absolute; inset: 0;
-  background-image: url('./entertainment-bg.jpg');
+  background-image: url('../entertainment-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -173,7 +173,7 @@ body[lang="zh"], html[lang="zh"] .language-screen { /* .home-modern を削除し
 }
 .hm-meal .hm-card-bg {
   position: absolute; inset: 0;
-  background-image: url('./meal-bg.jpg');
+  background-image: url('../meal-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -226,7 +226,7 @@ body[lang="zh"], html[lang="zh"] .language-screen { /* .home-modern を削除し
 }
 .hm-map-main .hm-card-bg {
   position: absolute; inset: 0;
-  background-image: url('./flightmap-bg.jpg');
+  background-image: url('../flightmap-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -282,19 +282,6 @@ body[lang="zh"], html[lang="zh"] .language-screen { /* .home-modern を削除し
   border-top: 1.2px solid #fff;
   opacity: 0.6;
   margin: 0 auto;
-}
-.hm-card-content .hm-card-btn {
-  margin-top: 32px;
-  font-size: 1.1rem;
-  padding: 15px 38px;
-  border: 2px solid #fff;
-  background: transparent;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-  letter-spacing: 0.04em;
-  transition: background 0.12s, color 0.12s;
-  text-shadow: none;
 }
 .hm-card-btn:hover { background: #fff; color: #d32d2d; }
 .hm-card-desc {

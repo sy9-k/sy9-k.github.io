@@ -160,7 +160,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 }
 .hm-entertainment .hm-card-bg {
   position: absolute; inset: 0;
-  background-image: url('./entertainment-bg.jpg');
+  background-image: url('../entertainment-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -173,7 +173,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 }
 .hm-meal .hm-card-bg {
   position: absolute; inset: 0;
-  background-image: url('./meal-bg.jpg');
+  background-image: url('../meal-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -226,7 +226,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 }
 .hm-map-main .hm-card-bg {
   position: absolute; inset: 0;
-  background-image: url('./flightmap-bg.jpg');
+  background-image: url('../flightmap-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -380,7 +380,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   left: calc(50% - 32px);
   width: 64px;
   height: 64px;
-  background: url('plane-icon.svg') center/contain no-repeat;
+  background: url('../plane-icon.svg') center/contain no-repeat;
   z-index: 2;
   pointer-events: none;
   transition: left 0.5s;
