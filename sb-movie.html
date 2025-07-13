@@ -60,18 +60,11 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       position: fixed;
       width: 100%;
       z-index: 100;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+      background: none; /* 背景を透明に */
       border-bottom: none;
-      padding-right: 60px; /* 右側の余白を増やしてボタンを左に移動 */
+      justify-content: flex-end; /* アイコンを右端に配置 */
+      box-sizing: border-box; /* はみ出し防止のため追加 */
     }
-    /* ヘッダーのテキストが長すぎてボタンがはみ出す問題の修正 */
-    .hm-header .hm-flight-info {
-      min-width: 0; /* Flex itemがコンテンツ幅以下に縮小できるようにする */
-      white-space: nowrap; /* テキストの折り返しを防ぐ */
-      overflow: hidden; /* はみ出したテキストを隠す */
-      text-overflow: ellipsis; /* はみ出した部分を...で表示 */
-    }
-
     /* クリックを検知するためのオーバーレイ */
     #clickable-overlay {
       position: absolute;
@@ -93,17 +86,43 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       opacity: 0.8;
     }
 
+    /* ローディング画面のスタイル */
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: #000;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #fff;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     /* 通知・設定パネルのスタイル（home.htmlと同等） */
     .hm-panel {
       position: fixed;
-      top: 0; right: 0;
+      top: 0; left: 0;
       width: 340px;
       height: 100vh;
       background: #232323;
       color: #fff;
       z-index: 1002;
-      box-shadow: -2px 0 16px #0008;
-      transform: translateX(100%);
+      box-shadow: 2px 0 16px #0008;
+      transform: translateX(-100%);
       transition: transform 0.35s cubic-bezier(.4,0,.2,1);
       display: flex;
       flex-direction: column;
@@ -148,18 +167,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       }
     });
   </script>
-  <!-- 通知パネル（home.htmlと同じ構造） -->
-  <div id="notice-overlay" class="settings-overlay"></div>
-  <aside id="notice-panel" class="settings-panel">
-    <div class="settings-panel-inner">
-      <h2 class="settings-title">お知らせ</h2>
-      <div class="settings-row">
-        <div id="notice-list">
-          <div class="settings-note">現在お知らせはありません。</div>
-        </div>
-      </div>
-    </div>
-  </aside>
   <!-- 設定パネル（home.htmlと同じ構造） -->
   <div id="settings-overlay" class="settings-overlay"></div>
   <aside id="settings-panel" class="settings-panel">
@@ -188,17 +195,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         <label class="settings-label">言語</label>
         <span class="settings-value">日本語</span>
       </div>
-      <!-- お知らせ -->
-      <div class="settings-row settings-row-flex">
-        <label class="settings-label">お知らせ</label>
-        <label class="switch">
-          <input type="checkbox" id="notice-toggle" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="settings-row settings-row-note">
-        <span class="settings-note">お知らせ機能のオン/オフ（重要かつ安全に関わるメッセージは表示されます）。</span>
-      </div>
       <!-- 保護者制限 -->
       <div class="settings-row settings-row-flex">
         <label class="settings-label">保護者制限</label>
@@ -207,21 +203,19 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       <div class="settings-row settings-row-note">
         <span class="settings-note">映画・テレビ番組・ミュージック・オーディオ...</span>
       </div>
-      <button class="screen-off-btn">画面オフ</button>
     </div>
   </aside>
-  <!-- 画面オフ用オーバーレイ（home.htmlと同じ） -->
-  <div id="screen-off-overlay" style="display:none;position:fixed;inset:0;z-index:2147483647;background:#000;opacity:0.98;transition:opacity 0.3s;width:100vw;height:100vh;"></div>
   <!-- ヘッダー（home.htmlと統一） -->
   <div class="hm-header">
-    <div class="hm-flight-info" id="video-status-message" style="color:#fff; font-size: 1.5rem;">
-      全員対象のビデオを再生中
-    </div>
     <div class="hm-header-icons">
-      <button class="hm-dot hm-btn-notice" title="お知らせ" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">chat</span></button>
-      <button class="hm-dot hm-btn-attendant" title="客室乗務員呼び出し" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">support_agent</span></button>
       <button class="hm-dot hm-btn-settings" title="設定" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">settings</span></button>
     </div>
+  </div>
+
+  <!-- ローディング画面（動画終了後に表示） -->
+  <div id="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+    <div id="loading-text" style="font-size: 1.2rem;">読み込み中...</div>
   </div>
 
   <!-- YouTube Player Container -->
@@ -289,7 +283,15 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         }
       }
       if (event.data == YT.PlayerState.ENDED) {
-        window.location.href = 'home.html'; // 再生終了時にホームへ
+        // ローディング画面を表示
+        const loadingOverlay = document.getElementById('loading-overlay');
+        if (loadingOverlay) {
+          loadingOverlay.style.display = 'flex';
+        }
+        // 3秒後にホームへリダイレクト
+        setTimeout(() => {
+          window.location.href = 'home.html';
+        }, 3000);
       }
     }
 
@@ -305,14 +307,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         };
       }
 
-      // 客室乗務員呼び出しボタン
-      const attendantBtn = document.querySelector('.hm-btn-attendant');
-      if (attendantBtn) {
-        attendantBtn.onclick = function() {
-          alert('客室乗務員をお呼び出しします。しばらくお待ちください。');
-        };
-      }
-
       // 言語切替
       const langNames = { ja: '日本語', en: 'English', ko: '한국어', zh: '中文' };
       const langSpan = document.querySelector('.settings-row .settings-value');
@@ -321,23 +315,20 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         if (langSpan) langSpan.textContent = langNames[langValue] || langValue;
         const i18n = window.i18n && (window.i18n[langValue] || window.i18n['ja']);
         if (i18n) {
-          // ヘッダーメッセージ
-          const videoStatusMsg = document.getElementById('video-status-message');
-          if (videoStatusMsg) videoStatusMsg.textContent = i18n.video_for_all || '全員対象のビデオを再生中';
+          const loadingText = document.getElementById('loading-text');
+          if (loadingText) loadingText.textContent = i18n.loading || '読み込み中...';
 
           // 設定・通知パネル
           const settingsTitles = document.querySelectorAll('.settings-title');
           if (settingsTitles && settingsTitles.length > 0) {
             if (settingsTitles[0]) settingsTitles[0].textContent = i18n.settings || '設定';
-            if (settingsTitles[1]) settingsTitles[1].textContent = i18n.notice || 'お知らせ';
           }
           const settingsLabels = document.querySelectorAll('.settings-label');
-          if (settingsLabels && settingsLabels.length >= 5) {
+          if (settingsLabels && settingsLabels.length >= 4) {
             settingsLabels[0].textContent = i18n.volume || '音量';
             settingsLabels[1].textContent = i18n.brightness || '画面の明るさ';
             settingsLabels[2].textContent = i18n.language || '言語';
-            settingsLabels[3].textContent = i18n.notice || 'お知らせ';
-            settingsLabels[4].textContent = i18n.parental || '保護者制限';
+            settingsLabels[3].textContent = i18n.parental || '保護者制限';
           }
           const settingsValues = document.querySelectorAll('.settings-value');
           if (settingsValues && settingsValues.length >= 2) {
@@ -345,16 +336,8 @@ body[lang="zh"], html[lang="zh"] .home-modern {
             settingsValues[1].textContent = i18n.parental_off || 'オフ';
           }
           const settingsNotes = document.querySelectorAll('.settings-note');
-          if (settingsNotes && settingsNotes.length > 0) {
-            if (settingsNotes[0]) settingsNotes[0].textContent = i18n.notice_note || 'お知らせ機能のオン/オフ（重要かつ安全に関わるメッセージは表示されます）。';
-            if (settingsNotes[1]) settingsNotes[1].textContent = i18n.parental_note || '映画・テレビ番組・ミュージック・オーディオ...';
-            if (settingsNotes[2]) settingsNotes[2].textContent = i18n.notice_empty || '現在お知らせはありません。';
-          }
-          const screenOffBtn = document.querySelector('.screen-off-btn');
-          if (screenOffBtn) screenOffBtn.textContent = i18n.screen_off || '画面オフ';
-          const noticeList = document.getElementById('notice-list');
-          if (noticeList && noticeList.children.length === 1 && noticeList.firstElementChild.classList.contains('settings-note')) {
-            noticeList.firstElementChild.textContent = i18n.notice_empty || '現在お知らせはありません。';
+          if (settingsNotes && settingsNotes.length > 0) { // parental note
+            if (settingsNotes[0]) settingsNotes[0].textContent = i18n.parental_note || '映画・テレビ番組・ミュージック・オーディオ...';
           }
         }
       }
@@ -372,26 +355,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       }
     });
 
-    // 通知パネル制御
-    const noticeBtn = document.querySelector('.hm-btn-notice');
-    const noticePanel = document.getElementById('notice-panel');
-    const noticeOverlay = document.getElementById('notice-overlay');
-    if (noticeBtn && noticePanel && noticeOverlay) {
-      noticeBtn.onclick = () => {
-        noticePanel.classList.add('open');
-        noticeOverlay.classList.add('open');
-      };
-      noticeOverlay.onclick = () => {
-        noticePanel.classList.remove('open');
-        noticeOverlay.classList.remove('open');
-      };
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-          noticePanel.classList.remove('open');
-          noticeOverlay.classList.remove('open');
-        }
-      });
-    }
     // 設定パネル制御
     const settingsBtn = document.querySelector('.hm-btn-settings');
     const settingsPanel = document.getElementById('settings-panel');
@@ -431,19 +394,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     if (brightnessSlider) {
       brightnessSlider.oninput = function() {
         document.body.style.filter = `brightness(${this.value}%)`;
-      };
-    }
-    // 画面オフボタン
-    const screenOffBtn = document.querySelector('.screen-off-btn');
-    const screenOffOverlay = document.getElementById('screen-off-overlay');
-    if (screenOffBtn && screenOffOverlay) {
-      screenOffBtn.onclick = () => {
-        screenOffOverlay.style.display = 'block';
-        setTimeout(() => { screenOffOverlay.style.opacity = '0.98'; }, 10);
-      };
-      screenOffOverlay.onclick = () => {
-        screenOffOverlay.style.opacity = '0';
-        setTimeout(() => { screenOffOverlay.style.display = 'none'; }, 300);
       };
     }
   </script>

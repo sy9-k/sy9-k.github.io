@@ -251,6 +251,25 @@
           }
         });
       }
+
+      // --- sb-movie.htmlへの隠しボタン ---
+      // フッターの到着地部分を3回クリックするとセーフティビデオページへ遷移
+      const arrivalTrigger = document.querySelector('.hm-footer-col-right');
+      if (arrivalTrigger) {
+        let clickCount = 0;
+        let clickTimer = null;
+        arrivalTrigger.addEventListener('click', () => {
+          clickCount++;
+          if (clickCount === 1) {
+            clickTimer = setTimeout(() => { clickCount = 0; }, 1000); // 1秒以内に次のクリックがなければリセット
+          }
+          if (clickCount >= 3) {
+            clearTimeout(clickTimer);
+            clickCount = 0;
+            window.location.href = 'sb-movie.html';
+          }
+        });
+      }
     });
     // 通知パネル制御（設定パネルと同じアニメーション/横幅/オーバーレイ）
     const noticeBtn = document.querySelector('.hm-btn-notice');
