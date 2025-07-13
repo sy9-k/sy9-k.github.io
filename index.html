@@ -72,6 +72,10 @@ body[lang="zh"], html[lang="zh"] .start-screen {
         paKeyDown = true;
         updatePADialog();
       }
+      }
+      if (e.key === 's' || e.key === 'S') {
+        // Sキーでセーフティビデオページへ遷移
+        window.location.href = 'sb-movie.html';
     }
   });
   document.addEventListener('keyup', function(e) {

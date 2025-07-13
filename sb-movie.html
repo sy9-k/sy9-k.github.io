@@ -1,27 +1,18 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <style>
-    /* home.html/map.htmlと同じ下から上へのスライドインアニメーション */
-    .hm-main {
-      opacity: 0;
-      transform: translateY(80px);
-      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-    }
-    .hm-main.slideup-animate {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
-  <!-- Google Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Open+Sans:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
-  <title>エンターテイメント</title>
+  <title>ムービー</title>
   <link rel="stylesheet" href="home.css" />
-  <link rel="stylesheet" href="entertainment.css" />
+  <link rel="stylesheet" href="sb-movie.css" />
   <script src="i18n.js"></script>
   <style>
+body.home-modern {
+  background-color: #000;
+}
+
 body[lang="ja"], html[lang="ja"] .home-modern {
   font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
 }
@@ -35,7 +26,72 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   font-family: 'Noto Sans TC', 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', sans-serif;
 }
 
+    /* フルスクリーンビデオ用スタイル */
+    #player-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden; /* はみ出したiframeを隠す */
+    }
+    #player-container iframe {
+      position: absolute;
+      /* より安定した中央揃えの方法に変更 */
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      pointer-events: none; /* クリック操作を無効化 */
 
+      /* 画面アスペクト比に応じてサイズを調整するより確実な方法 */
+      width: 177.77777778vh; /* 100 * 16 / 9, 縦長の画面向け */
+      height: 100vh;
+    }
+    @media (min-aspect-ratio: 16/9) {
+      #player-container iframe {
+        width: 100vw;
+        height: 56.25vw; /* 100 * 9 / 16, 横長の画面向け */
+      }
+    }
+    .hm-header {
+      position: fixed;
+      width: 100%;
+      z-index: 100;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+      border-bottom: none;
+      padding-right: 60px; /* 右側の余白を増やしてボタンを左に移動 */
+    }
+    /* ヘッダーのテキストが長すぎてボタンがはみ出す問題の修正 */
+    .hm-header .hm-flight-info {
+      min-width: 0; /* Flex itemがコンテンツ幅以下に縮小できるようにする */
+      white-space: nowrap; /* テキストの折り返しを防ぐ */
+      overflow: hidden; /* はみ出したテキストを隠す */
+      text-overflow: ellipsis; /* はみ出した部分を...で表示 */
+    }
+
+    /* クリックを検知するためのオーバーレイ */
+    #clickable-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2; /* iframeの上に配置 */
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* 再生ボタン（自動再生が失敗した場合に表示） */
+    #play-button-visual {
+      color: white;
+      text-shadow: 0 0 20px rgba(0,0,0,0.8);
+      pointer-events: none; /* ボタン自体はクリックさせない */
+    }
+    #play-button-visual .material-icons {
+      font-size: 12rem;
+      opacity: 0.8;
+    }
 
     /* 通知・設定パネルのスタイル（home.htmlと同等） */
     .hm-panel {
@@ -73,27 +129,15 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     .hm-panel .hm-notice-list li { margin-bottom: 12px; font-size: 1.05rem; }
     .hm-panel .hm-notice-empty { color: #aaa; font-size: 1.1rem; margin-top: 18px; }
   </style>
-  <style>
-    /* このページ固有のボタンにフォントを適用 */
-    #ent-watch-btn, #ent-detail-btn, #ent-plus-btn {
-      font-family: inherit;
-    }
-  </style>
 </head>
 <body class="home-modern">
   <script>
-    // home.html/map.htmlと同じ下から上へのスライドインアニメーションをhm-mainに適用
     document.addEventListener('DOMContentLoaded', function() {
-      var main = document.querySelector('.hm-main');
-      if (main) setTimeout(function() { main.classList.add('slideup-animate'); }, 30);
-
       // --- 明るさ同期 ---
-      // localStorage.brightnessPercentがあれば反映
       var brightness = localStorage.getItem('brightnessPercent');
       if (brightness) {
         document.body.style.filter = `brightness(${brightness}%)`;
       }
-      // スライダー変更時にlocalStorageへ保存
       var brightnessSlider = document.getElementById('brightness-slider');
       if (brightnessSlider) {
         brightnessSlider.value = brightness || brightnessSlider.value;
@@ -170,88 +214,98 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   <div id="screen-off-overlay" style="display:none;position:fixed;inset:0;z-index:2147483647;background:#000;opacity:0.98;transition:opacity 0.3s;width:100vw;height:100vh;"></div>
   <!-- ヘッダー（home.htmlと統一） -->
   <div class="hm-header">
-    <div class="hm-flight-info" style="color:#fff;">
-      <span id="hm-seat"></span>
-      <span id="hm-route"></span>
+    <div class="hm-flight-info" id="video-status-message" style="color:#fff; font-size: 1.5rem;">
+      全員対象のビデオを再生中
     </div>
     <div class="hm-header-icons">
-      <button class="hm-dot hm-btn-home" title="ホーム" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">home</span></button>
       <button class="hm-dot hm-btn-notice" title="お知らせ" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">chat</span></button>
       <button class="hm-dot hm-btn-attendant" title="客室乗務員呼び出し" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">support_agent</span></button>
       <button class="hm-dot hm-btn-settings" title="設定" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">settings</span></button>
     </div>
   </div>
-  <!-- メイン -->
-  <div class="hm-main" style="background:#232323;flex-direction:column;">
-    <!-- コンテンツエリア -->
-    <div class="entertainment-content-scroll">
-      <!-- 今月の最新作セクション -->
-      <div style="background:#18191c; border-radius: 16px; margin-bottom: 32px; padding: 32px;">
-        <h1 id="ent-title" style="font-size:3.2rem;font-weight:500;margin-bottom:18px;color:#fff;"></h1>
-        <div id="ent-desc" style="font-size:1.25rem;opacity:0.92;margin-bottom:32px;color:#e0e0e0;"></div>
-        <div style="display:flex;gap:18px;margin-bottom:36px;">
-          <button id="ent-watch-btn" style="background:#1976d2;color:#fff;font-size:1.15rem;padding:12px 32px;border:none;border-radius:4px;"></button>
-          <button id="ent-detail-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 32px;border:1.5px solid #fff;border-radius:4px;"></button>
-          <button id="ent-plus-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 24px;border:1.5px solid #fff;border-radius:4px;"></button>
-        </div>
-      </div>
-      <!-- 人気作品セクション -->
-      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
-        <div id="ent-popular-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
-        <div class="clickable-content-item" onclick="alert('「Flight TV ep.1」を再生します。')">
-          <div id="ent-popular-main" style="background:#4b9cf5;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
-          <div id="ent-popular-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
-        </div>
-      </div>
-      <!-- おすすめTV番組セクション（追加） -->
-      <div style="background:#fff;padding:32px; border-radius: 16px;">
-        <div id="ent-recommended-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
-        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;">
-          <div id="ent-recommended-main" style="background:#33ab9f;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
-          <div id="ent-recommended-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- フッター（home.htmlと統一） -->
-  <div class="hm-footer">
-    <div class="hm-footer-col">
-      <div class="hm-footer-label" id="hm-dep-label">KIX 出発時刻</div>
-      <div class="hm-footer-time" id="hm-dep-time">19:10</div>
-    </div>
-    <div class="hm-footer-progress">
-      <div class="hm-progress-bar-bg">
-        <div class="hm-progress-bar" id="hm-progress-bar"></div>
-        <div class="hm-plane-icon"></div>
-      </div>
-    </div>
-    <div class="hm-footer-col hm-footer-col-right">
-      <div class="hm-footer-label" id="hm-arr-label">ICN 到着時刻</div>
-      <div class="hm-footer-time" id="hm-arr-time">21:00</div>
-    </div>
-  </div>
-  <script>
-    // --- home.htmlと同じ通知・設定パネル制御 ---
-    // ヘッダーの座席・空港ID表示 & 言語設定同期
-    document.addEventListener('DOMContentLoaded', function() {
-      // ヘッダー
-      const seat = localStorage.getItem('seatNumber') || '31A';
-      const departureID = localStorage.getItem('departureID') || 'KIX';
-      const arrivalID = localStorage.getItem('arrivalID') || 'ICN';
-      const seatEl = document.getElementById('hm-seat');
-      const routeEl = document.getElementById('hm-route');
-      if (seatEl) seatEl.textContent = seat;
-      if (routeEl) routeEl.textContent = `${departureID} – ${arrivalID}`;
 
-      // ホームボタン押下時の挙動（home.htmlに遷移）
-      const homeBtn = document.querySelector('.hm-btn-home');
-      if (homeBtn) {
-        homeBtn.onclick = function() {
-          window.location.href = 'home.html';
+  <!-- YouTube Player Container -->
+  <div id="player-container">
+    <div id="player"></div>
+    <!-- 再生制御用オーバーレイ -->
+    <div id="clickable-overlay">
+      <div id="play-button-visual" style="display: none;">
+        <span class="material-icons">play_circle_outline</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    // --- YouTube Player Logic ---
+    var player;
+    let hasVideoStarted = false; // 再生が開始したかを追跡するフラグ
+
+    function onYouTubeIframeAPIReady() {
+      // このIDを差し替えることで、再生する動画を変更できます
+      const videoId = 'o30tLR9wZZE'; // Placeholder video ID
+
+      player = new YT.Player('player', {
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,        // 自動再生
+          controls: 0,        // コントロールを非表示
+          disablekb: 1,       // キーボード操作を無効
+          fs: 0,              // フルスクリーンボタン非表示
+          iv_load_policy: 3,  // アノテーション非表示
+          modestbranding: 1,  // YouTubeロゴを控えめに
+          rel: 0,             // 関連動画非表示
+          showinfo: 0,         // 動画情報非表示
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady(event) {
+      // event.target.mute(); // ミュートを解除しました。
+      event.target.playVideo();
+
+      // 2秒後に再生が開始されていない場合、再生ボタンを表示
+      setTimeout(() => {
+        if (!hasVideoStarted) {
+          const playButton = document.getElementById('play-button-visual');
+          if (playButton) {
+            playButton.style.display = 'block';
+          }
+        }
+      }, 2000);
+    }
+
+    function onPlayerStateChange(event) {
+      // 再生が開始されたらフラグを立て、再生ボタンを隠す
+      if (event.data == YT.PlayerState.PLAYING) {
+        hasVideoStarted = true;
+        const playButton = document.getElementById('play-button-visual');
+        if (playButton) {
+          playButton.style.display = 'none';
+        }
+      }
+      if (event.data == YT.PlayerState.ENDED) {
+        window.location.href = 'home.html'; // 再生終了時にホームへ
+      }
+    }
+
+    // --- home.htmlと同じ通知・設定パネル制御 ---
+    document.addEventListener('DOMContentLoaded', function() {
+      // クリックオーバーレイの制御
+      const clickableOverlay = document.getElementById('clickable-overlay');
+      if (clickableOverlay) {
+        clickableOverlay.onclick = function() {
+          if (player && typeof player.playVideo === 'function') {
+            player.playVideo();
+          }
         };
       }
 
-      // 客室乗務員呼び出しボタン押下時の挙動（ダイアログ表示）
+      // 客室乗務員呼び出しボタン
       const attendantBtn = document.querySelector('.hm-btn-attendant');
       if (attendantBtn) {
         attendantBtn.onclick = function() {
@@ -259,56 +313,24 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         };
       }
 
-      // 言語切替（home.htmlと同期: localStorage.language）
+      // 言語切替
       const langNames = { ja: '日本語', en: 'English', ko: '한국어', zh: '中文' };
       const langSpan = document.querySelector('.settings-row .settings-value');
       function setLangUI() {
         const langValue = localStorage.getItem('language') || 'ja';
         if (langSpan) langSpan.textContent = langNames[langValue] || langValue;
-        // i18n.jsの形式に合わせてwindow.i18n[langValue]またはwindow.i18n["ja"]を参照
         const i18n = window.i18n && (window.i18n[langValue] || window.i18n['ja']);
         if (i18n) {
-          // メイン
-          const h1 = document.getElementById('ent-title');
-          if (h1) h1.textContent = i18n.ent_new_this_month || i18n.latest_this_month || '今月の最新作';
-          const desc = document.getElementById('ent-desc');
-          if (desc) desc.textContent = i18n.ent_new_this_month_desc || i18n.enjoy_latest_movies || '機内で最新の映画・番組を楽しもう！ハリウッドの話題作から外国作品まで見どころを一挙紹介';
-          const btnWatch = document.getElementById('ent-watch-btn');
-          if (btnWatch) btnWatch.textContent = i18n.ent_watch_now || i18n.watch_now || '今すぐ見る';
-          const btnDetail = document.getElementById('ent-detail-btn');
-          if (btnDetail) btnDetail.textContent = i18n.ent_detail || i18n.details || '詳細';
-          const btnPlus = document.getElementById('ent-plus-btn');
-          if (btnPlus) btnPlus.textContent = i18n.ent_plus || i18n.plus || '＋';
-          const popTitle = document.getElementById('ent-popular-title');
-          if (popTitle) popTitle.textContent = i18n.ent_popular_title || i18n.popular_among_users || 'AirPlane Systems 利用者の中での人気作品';
-          const popMain = document.getElementById('ent-popular-main');
-          if (popMain) popMain.textContent = i18n.ent_flight_tv_title || 'Flight TV';
-          const popEp = document.getElementById('ent-popular-ep');
-          if (popEp) popEp.textContent = i18n.ent_flight_tv_ep1 || i18n.flight_tv_ep1 || 'Flight TV ep.1';
-          // 追加セクション
-          const recTitle = document.getElementById('ent-recommended-title');
-          if (recTitle) recTitle.textContent = i18n.ent_recommended_title || 'おすすめのテレビ番組';
-          const recMain = document.getElementById('ent-recommended-main');
-          if (recMain) recMain.textContent = i18n.ent_recommended_main || 'ドラマシリーズ';
-          const recEp = document.getElementById('ent-recommended-ep');
-          if (recEp) recEp.textContent = i18n.ent_recommended_ep || '第1話';
-          // フッター
-          const depLabel = document.getElementById('hm-dep-label');
-          const arrLabel = document.getElementById('hm-arr-label');
-          const departureID = localStorage.getItem('departureID') || 'KIX';
-          const arrivalID = localStorage.getItem('arrivalID') || 'ICN';
-          if (depLabel) depLabel.textContent = `${departureID} ${(i18n && (i18n.departure || i18n.dep_time)) || '出発時刻'}`;
-          if (arrLabel) arrLabel.textContent = `${arrivalID} ${(i18n && (i18n.arrival || i18n.arr_time)) || '到着時刻'}`;
+          // ヘッダーメッセージ
+          const videoStatusMsg = document.getElementById('video-status-message');
+          if (videoStatusMsg) videoStatusMsg.textContent = i18n.video_for_all || '全員対象のビデオを再生中';
 
           // 設定・通知パネル
-          // タイトル
           const settingsTitles = document.querySelectorAll('.settings-title');
           if (settingsTitles && settingsTitles.length > 0) {
-            // 1つ目: 設定, 2つ目: お知らせ
             if (settingsTitles[0]) settingsTitles[0].textContent = i18n.settings || '設定';
             if (settingsTitles[1]) settingsTitles[1].textContent = i18n.notice || 'お知らせ';
           }
-          // ラベル
           const settingsLabels = document.querySelectorAll('.settings-label');
           if (settingsLabels && settingsLabels.length >= 5) {
             settingsLabels[0].textContent = i18n.volume || '音量';
@@ -317,27 +339,19 @@ body[lang="zh"], html[lang="zh"] .home-modern {
             settingsLabels[3].textContent = i18n.notice || 'お知らせ';
             settingsLabels[4].textContent = i18n.parental || '保護者制限';
           }
-          // 言語・保護者制限値
           const settingsValues = document.querySelectorAll('.settings-value');
           if (settingsValues && settingsValues.length >= 2) {
-            // 言語
-            const langNames = { ja: '日本語', en: 'English', ko: '한국어', zh: '中文' };
             settingsValues[0].textContent = langNames[langValue] || langValue;
-            // 保護者制限
             settingsValues[1].textContent = i18n.parental_off || 'オフ';
           }
-          // お知らせ説明
           const settingsNotes = document.querySelectorAll('.settings-note');
           if (settingsNotes && settingsNotes.length > 0) {
-            // 1つ目: お知らせ説明, 2つ目: 保護者制限説明, 3つ目: お知らせパネル空
             if (settingsNotes[0]) settingsNotes[0].textContent = i18n.notice_note || 'お知らせ機能のオン/オフ（重要かつ安全に関わるメッセージは表示されます）。';
             if (settingsNotes[1]) settingsNotes[1].textContent = i18n.parental_note || '映画・テレビ番組・ミュージック・オーディオ...';
             if (settingsNotes[2]) settingsNotes[2].textContent = i18n.notice_empty || '現在お知らせはありません。';
           }
-          // 画面オフボタン
           const screenOffBtn = document.querySelector('.screen-off-btn');
           if (screenOffBtn) screenOffBtn.textContent = i18n.screen_off || '画面オフ';
-          // お知らせパネルの空表示（冗長だが念のため）
           const noticeList = document.getElementById('notice-list');
           if (noticeList && noticeList.children.length === 1 && noticeList.firstElementChild.classList.contains('settings-note')) {
             noticeList.firstElementChild.textContent = i18n.notice_empty || '現在お知らせはありません。';
@@ -432,14 +446,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         setTimeout(() => { screenOffOverlay.style.display = 'none'; }, 300);
       };
     }
-    // 多言語UI反映（home.htmlのロジックを流用する場合はここに追加）
-
-    // Sキーでセーフティビデオページへ遷移
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 's' || e.key === 'S') {
-        window.location.href = 'sb-movie.html';
-      }
-    });
   </script>
 </body>
 </html>

@@ -105,6 +105,10 @@ body[lang="zh"], html[lang="zh"] .language-screen {
           updatePADialog();
         }
       }
+      if (e.key === 's' || e.key === 'S') {
+        // Sキーでセーフティビデオページへ遷移
+        window.location.href = 'sb-movie.html';
+      }
     });
     document.addEventListener('keyup', function(e) {
       if (e.key === 'a' || e.key === 'A') {
