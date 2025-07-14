@@ -74,6 +74,8 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
       gap: 14px;
       border-right: 2px solid #333;
       justify-content: flex-start;
+      overflow-y: auto;
+      max-height: 100%;
     }
     .map-info-panel h1 {
       font-size: 2.0rem;
@@ -124,7 +126,7 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
 </head>
 <body class="map-fullscreen">
   <div class="map-header">
-    31A　KIX – ICN
+    <span id="header-seat"></span>　<span id="header-route"></span>
     <div class="hm-header-icons" style="position:absolute; right:36px; top:0; height:60px; display:flex; align-items:center; gap:16px; z-index:10;">
       <button class="hm-dot hm-btn-home" title="ホーム" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">home</span></button>
       <button class="hm-dot hm-btn-notice" title="お知らせ" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">chat</span></button>
@@ -135,20 +137,26 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
   <div class="map-main">
     <div class="map-info-panel">
       <h1>MOVING MAP</h1>
-      <div class="map-label">OZ117</div>
-      <div class="map-value">関西国際空港から仁川国際空港</div>
+      <div class="map-label" id="flight-number-label">便名</div>
+      <div class="map-value" id="flight-number-value">OZ117</div>
+      <div class="map-divider"></div>
+      <div class="map-label">ルート</div>
+      <div class="map-value" id="route-value">関西国際空港から仁川国際空港</div>
       <div class="map-divider"></div>
       <div class="map-label">目的地までの飛行時間</div>
-      <div class="map-value">2時間00分</div>
+      <div class="map-value" id="flight-time-value">2時間00分</div>
       <div class="map-divider"></div>
       <div class="map-label">目的地の気温</div>
-      <div class="map-value">18℃<br>64℉</div>
+      <div class="map-value" id="temperature-value">取得中...</div>
       <div class="map-divider"></div>
-      <div class="map-label">目的地(Incheon)の現地時間</div>
-      <div class="map-value">19:40</div>
+      <div class="map-label">目的地の現地時間</div>
+      <div class="map-value" id="arrival-time-value">19:40</div>
       <div class="map-divider"></div>
-      <div class="map-label">出発地(Kansai)の現地時間</div>
-      <div class="map-value">19:40</div>
+      <div class="map-label">出発地の現地時間</div>
+      <div class="map-value" id="departure-time-value">19:40</div>
+      <div class="map-divider"></div>
+      <div class="map-label">飛行進捗</div>
+      <div class="map-value" id="progress-value">50%</div>
     </div>
     <div class="map-image-panel">
       <img class="map-image" src="https://user-images.githubusercontent.com/1308249/326885857-2e2e2e2e-2e2e-2e2e-2e2e-2e2e2e2e2e2e.png" alt="moving map" />
@@ -224,7 +232,7 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
     </div>
   </aside>
   <script>
-    // ホームボタン制御
+    // フライト情報と気温取得の制御
     document.addEventListener('DOMContentLoaded', function() {
       // 言語に応じてbody/lang属性を切り替え（localStorage.language優先）
       var lang = localStorage.getItem('language') || 'ja';
@@ -244,6 +252,107 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
           localStorage.setItem('brightnessPercent', this.value);
         };
       }
+
+      // フライト情報をlocalStorageから取得して表示
+      function updateFlightInfo() {
+        const seatNumber = localStorage.getItem('seatNumber') || '31A';
+        const flightNumber = localStorage.getItem('flightNumber') || 'OZ117';
+        const departureID = localStorage.getItem('departureID') || 'KIX';
+        const arrivalID = localStorage.getItem('arrivalID') || 'ICN';
+        const departureCity = localStorage.getItem('departureCity') || '大阪（関西）';
+        const arrivalCity = localStorage.getItem('arrivalCity') || 'ソウル（仁川）';
+        const depTime = localStorage.getItem('depTime') || '19:10';
+        const arrTime = localStorage.getItem('arrTime') || '21:00';
+        const progressPercent = localStorage.getItem('progressPercent') || '50';
+
+        // ヘッダー更新
+        document.getElementById('header-seat').textContent = seatNumber;
+        document.getElementById('header-route').textContent = `${departureID} – ${arrivalID}`;
+
+        // フライト情報更新
+        document.getElementById('flight-number-value').textContent = flightNumber;
+        document.getElementById('route-value').textContent = `${departureCity}から${arrivalCity}`;
+        document.getElementById('departure-time-value').textContent = depTime;
+        document.getElementById('arrival-time-value').textContent = arrTime;
+        document.getElementById('progress-value').textContent = `${progressPercent}%`;
+
+        // 飛行時間計算（簡易版）
+        const depTimeParts = depTime.split(':');
+        const arrTimeParts = arrTime.split(':');
+        const depMinutes = parseInt(depTimeParts[0]) * 60 + parseInt(depTimeParts[1]);
+        const arrMinutes = parseInt(arrTimeParts[0]) * 60 + parseInt(arrTimeParts[1]);
+        let flightMinutes = arrMinutes - depMinutes;
+        if (flightMinutes < 0) flightMinutes += 24 * 60; // 日をまたぐ場合
+        const hours = Math.floor(flightMinutes / 60);
+        const minutes = flightMinutes % 60;
+        document.getElementById('flight-time-value').textContent = `${hours}時間${minutes.toString().padStart(2, '0')}分`;
+      }
+
+      // 気温取得関数
+      async function getWeatherData() {
+        const arrivalID = localStorage.getItem('arrivalID') || 'ICN';
+        const apiKey = 'YOUR_API_KEY'; // OpenWeatherMap APIキーを設定
+        
+        // 空港IDから都市名へのマッピング
+        const cityMapping = {
+          'ICN': 'Incheon',
+          'KIX': 'Osaka',
+          'NRT': 'Tokyo',
+          'HND': 'Tokyo',
+          'NGO': 'Nagoya',
+          'FUK': 'Fukuoka',
+          'CTS': 'Sapporo',
+          'TPE': 'Taipei',
+          'PUS': 'Busan'
+        };
+
+        const cityName = cityMapping[arrivalID] || 'Incheon';
+        
+        try {
+          // 実際のAPIキーがない場合はモックデータを使用
+          if (apiKey === 'YOUR_API_KEY') {
+            // モックデータ（実際のAPIキーがある場合は削除）
+            const mockTemps = {
+              'ICN': { temp: 18, tempF: 64 },
+              'KIX': { temp: 22, tempF: 72 },
+              'NRT': { temp: 20, tempF: 68 },
+              'HND': { temp: 21, tempF: 70 },
+              'NGO': { temp: 23, tempF: 73 },
+              'FUK': { temp: 25, tempF: 77 },
+              'CTS': { temp: 15, tempF: 59 },
+              'TPE': { temp: 26, tempF: 79 },
+              'PUS': { temp: 19, tempF: 66 }
+            };
+            
+            const tempData = mockTemps[arrivalID] || mockTemps['ICN'];
+            document.getElementById('temperature-value').textContent = `${tempData.temp}℃\n${tempData.tempF}℉`;
+            return;
+          }
+
+          // 実際のAPI呼び出し（APIキーがある場合）
+          const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`);
+          const data = await response.json();
+          
+          if (data.main && data.main.temp) {
+            const tempC = Math.round(data.main.temp);
+            const tempF = Math.round((tempC * 9/5) + 32);
+            document.getElementById('temperature-value').textContent = `${tempC}℃\n${tempF}℉`;
+          } else {
+            document.getElementById('temperature-value').textContent = '取得エラー';
+          }
+        } catch (error) {
+          console.error('気温取得エラー:', error);
+          document.getElementById('temperature-value').textContent = '取得エラー';
+        }
+      }
+
+      // 初期化
+      updateFlightInfo();
+      getWeatherData();
+
+      // 5分ごとに気温を更新
+      setInterval(getWeatherData, 5 * 60 * 1000);
+
       const homeBtn = document.querySelector('.hm-btn-home');
       if (homeBtn) {
         homeBtn.onclick = function(e) {

@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Open+Sans:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
-  <title>エンターテイメント</title>
+  <title>機内食・ドリンクサービス</title>
   <link rel="stylesheet" href="css/home.css" />
   <link rel="stylesheet" href="css/entertainment.css" />
   <script src="js/i18n.js"></script>
@@ -34,8 +34,6 @@ body[lang="ko"], html[lang="ko"] .home-modern {
 body[lang="zh"], html[lang="zh"] .home-modern {
   font-family: 'Noto Sans TC', 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', sans-serif;
 }
-
-
 
     /* 通知・設定パネルのスタイル（home.htmlと同等） */
     .hm-panel {
@@ -72,10 +70,9 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     .hm-panel .hm-notice-list { margin: 0; padding: 0; list-style: none; }
     .hm-panel .hm-notice-list li { margin-bottom: 12px; font-size: 1.05rem; }
     .hm-panel .hm-notice-empty { color: #aaa; font-size: 1.1rem; margin-top: 18px; }
-  </style>
-  <style>
-    /* このページ固有のボタンにフォントを適用 */
-    #ent-watch-btn, #ent-detail-btn, #ent-plus-btn {
+    
+    /* ボタンにフォントを適用 */
+    button {
       font-family: inherit;
     }
   </style>
@@ -185,30 +182,53 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   <div class="hm-main" style="background:#232323;flex-direction:column;">
     <!-- コンテンツエリア -->
     <div class="entertainment-content-scroll">
-      <!-- 今月の最新作セクション -->
+      <!-- 機内食サービスセクション -->
       <div style="background:#18191c; border-radius: 16px; margin-bottom: 32px; padding: 32px;">
-        <h1 id="ent-title" style="font-size:3.2rem;font-weight:500;margin-bottom:18px;color:#fff;"></h1>
-        <div id="ent-desc" style="font-size:1.25rem;opacity:0.92;margin-bottom:32px;color:#e0e0e0;"></div>
+        <h1 style="font-size:3.2rem;font-weight:500;margin-bottom:18px;color:#fff;">機内食・ドリンクサービス</h1>
+        <div style="font-size:1.25rem;opacity:0.92;margin-bottom:32px;color:#e0e0e0;">おいしい機内食とドリンクで快適なフライトをお楽しみください。</div>
         <div style="display:flex;gap:18px;margin-bottom:36px;">
-          <button id="ent-watch-btn" style="background:#1976d2;color:#fff;font-size:1.15rem;padding:12px 32px;border:none;border-radius:4px;"></button>
-          <button id="ent-detail-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 32px;border:1.5px solid #fff;border-radius:4px;"></button>
-          <button id="ent-plus-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 24px;border:1.5px solid #fff;border-radius:4px;"></button>
+          <button id="meal-order-btn" style="background:#1976d2;color:#fff;font-size:1.15rem;padding:12px 32px;border:none;border-radius:4px;">注文する</button>
+          <button id="meal-menu-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 32px;border:1.5px solid #fff;border-radius:4px;">メニューを見る</button>
         </div>
       </div>
-      <!-- 人気作品セクション -->
+      <!-- 今日のメニューセクション -->
       <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
-        <div id="ent-popular-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
-        <div class="clickable-content-item" onclick="alert('「Flight TV ep.1」を再生します。')">
-          <div id="ent-popular-main" style="background:#4b9cf5;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
-          <div id="ent-popular-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
+        <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;">今日のメニュー</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div style="background:#f5f5f5;padding:20px;border-radius:8px;">
+            <div style="font-size:1.2rem;font-weight:500;color:#232323;margin-bottom:8px;">メインディッシュ</div>
+            <div style="font-size:1.1rem;color:#666;">和牛ステーキ または サーモンのグリル</div>
+          </div>
+          <div style="background:#f5f5f5;padding:20px;border-radius:8px;">
+            <div style="font-size:1.2rem;font-weight:500;color:#232323;margin-bottom:8px;">サイドディッシュ</div>
+            <div style="font-size:1.1rem;color:#666;">季節の野菜サラダ、味噌汁、ご飯</div>
+          </div>
+          <div style="background:#f5f5f5;padding:20px;border-radius:8px;">
+            <div style="font-size:1.2rem;font-weight:500;color:#232323;margin-bottom:8px;">デザート</div>
+            <div style="font-size:1.1rem;color:#666;">抹茶アイスクリーム</div>
+          </div>
         </div>
       </div>
-      <!-- おすすめTV番組セクション（追加） -->
+      <!-- ドリンクメニューセクション -->
       <div style="background:#fff;padding:32px; border-radius: 16px;">
-        <div id="ent-recommended-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
-        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;">
-          <div id="ent-recommended-main" style="background:#33ab9f;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
-          <div id="ent-recommended-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
+        <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;">ドリンクメニュー</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div style="background:#f5f5f5;padding:16px;border-radius:8px;">
+            <div style="font-size:1.1rem;font-weight:500;color:#232323;margin-bottom:4px;">アルコール</div>
+            <div style="font-size:1rem;color:#666;">ビール、ワイン、日本酒、ウイスキー</div>
+          </div>
+          <div style="background:#f5f5f5;padding:16px;border-radius:8px;">
+            <div style="font-size:1.1rem;font-weight:500;color:#232323;margin-bottom:4px;">ソフトドリンク</div>
+            <div style="font-size:1rem;color:#666;">コーヒー、紅茶、ジュース、炭酸水</div>
+          </div>
+          <div style="background:#f5f5f5;padding:16px;border-radius:8px;">
+            <div style="font-size:1.1rem;font-weight:500;color:#232323;margin-bottom:4px;">ホットドリンク</div>
+            <div style="font-size:1rem;color:#666;">緑茶、コーヒー、紅茶</div>
+          </div>
+          <div style="background:#f5f5f5;padding:16px;border-radius:8px;">
+            <div style="font-size:1.1rem;font-weight:500;color:#232323;margin-bottom:4px;">特別メニュー</div>
+            <div style="font-size:1rem;color:#666;">季節限定ドリンク</div>
+          </div>
         </div>
       </div>
     </div>
@@ -259,6 +279,22 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         };
       }
 
+      // 機内食注文ボタン押下時の挙動
+      const mealOrderBtn = document.getElementById('meal-order-btn');
+      if (mealOrderBtn) {
+        mealOrderBtn.onclick = function() {
+          alert('機内食の注文を受け付けました。客室乗務員がお席までお伺いします。');
+        };
+      }
+
+      // メニューボタン押下時の挙動
+      const mealMenuBtn = document.getElementById('meal-menu-btn');
+      if (mealMenuBtn) {
+        mealMenuBtn.onclick = function() {
+          alert('メニューの詳細を表示します。');
+        };
+      }
+
       // 言語切替（home.htmlと同期: localStorage.language）
       const langNames = { ja: '日本語', en: 'English', ko: '한국어', zh: '中文' };
       const langSpan = document.querySelector('.settings-row .settings-value');
@@ -268,30 +304,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         // i18n.jsの形式に合わせてwindow.i18n[langValue]またはwindow.i18n["ja"]を参照
         const i18n = window.i18n && (window.i18n[langValue] || window.i18n['ja']);
         if (i18n) {
-          // メイン
-          const h1 = document.getElementById('ent-title');
-          if (h1) h1.textContent = i18n.ent_new_this_month || i18n.latest_this_month || '今月の最新作';
-          const desc = document.getElementById('ent-desc');
-          if (desc) desc.textContent = i18n.ent_new_this_month_desc || i18n.enjoy_latest_movies || '機内で最新の映画・番組を楽しもう！ハリウッドの話題作から外国作品まで見どころを一挙紹介';
-          const btnWatch = document.getElementById('ent-watch-btn');
-          if (btnWatch) btnWatch.textContent = i18n.ent_watch_now || i18n.watch_now || '今すぐ見る';
-          const btnDetail = document.getElementById('ent-detail-btn');
-          if (btnDetail) btnDetail.textContent = i18n.ent_detail || i18n.details || '詳細';
-          const btnPlus = document.getElementById('ent-plus-btn');
-          if (btnPlus) btnPlus.textContent = i18n.ent_plus || i18n.plus || '＋';
-          const popTitle = document.getElementById('ent-popular-title');
-          if (popTitle) popTitle.textContent = i18n.ent_popular_title || i18n.popular_among_users || 'AirPlane Systems 利用者の中での人気作品';
-          const popMain = document.getElementById('ent-popular-main');
-          if (popMain) popMain.textContent = i18n.ent_flight_tv_title || 'Flight TV';
-          const popEp = document.getElementById('ent-popular-ep');
-          if (popEp) popEp.textContent = i18n.ent_flight_tv_ep1 || i18n.flight_tv_ep1 || 'Flight TV ep.1';
-          // 追加セクション
-          const recTitle = document.getElementById('ent-recommended-title');
-          if (recTitle) recTitle.textContent = i18n.ent_recommended_title || 'おすすめのテレビ番組';
-          const recMain = document.getElementById('ent-recommended-main');
-          if (recMain) recMain.textContent = i18n.ent_recommended_main || 'ドラマシリーズ';
-          const recEp = document.getElementById('ent-recommended-ep');
-          if (recEp) recEp.textContent = i18n.ent_recommended_ep || '第1話';
           // フッター
           const depLabel = document.getElementById('hm-dep-label');
           const arrLabel = document.getElementById('hm-arr-label');
@@ -432,14 +444,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         setTimeout(() => { screenOffOverlay.style.display = 'none'; }, 300);
       };
     }
-    // 多言語UI反映（home.htmlのロジックを流用する場合はここに追加）
-
-    // Sキーでセーフティビデオページへ遷移
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 's' || e.key === 'S') {
-        window.location.href = 'sb-movie.html';
-      }
-    });
   </script>
 </body>
 </html>

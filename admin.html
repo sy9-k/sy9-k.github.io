@@ -289,8 +289,11 @@
       <label>出発地
         <select id="departureCity">
           <option value="大阪（関西）">大阪（関西）</option>
+          <option value="東京（成田）">東京（成田）</option>
           <option value="東京（羽田）">東京（羽田）</option>
           <option value="名古屋（中部）">名古屋（中部）</option>
+          <option value="福岡">福岡</option>
+          <option value="札幌">札幌</option>
         </select>
       </label>
       <label>到着地
@@ -379,6 +382,9 @@
       document.getElementById('arrTime').value = localStorage.getItem('arrTime') || '';
       document.getElementById('progressPercent').value = localStorage.getItem('progressPercent') || '';
 
+      // 空港IDを自動設定
+      updateAirportIDs();
+
       // サマリー表示を更新
       const flightNumber = localStorage.getItem('flightNumber') || '未設定';
       const seatNumber = localStorage.getItem('seatNumber') || '未設定';
@@ -391,6 +397,37 @@
       const depTime = localStorage.getItem('depTime') || '--:--';
       const progress = localStorage.getItem('progressPercent') || '0';
       document.getElementById('summary-time-progress').textContent = `出発: ${depTime}, 進捗: ${progress}%`;
+    }
+
+    // 空港IDの自動設定関数
+    function updateAirportIDs() {
+      const departureCity = document.getElementById('departureCity').value;
+      const arrivalCity = document.getElementById('arrivalCity').value;
+      
+      // 出発地の空港IDマッピング
+      const departureMapping = {
+        '大阪（関西）': 'KIX',
+        '東京（成田）': 'NRT',
+        '東京（羽田）': 'HND',
+        '名古屋（中部）': 'NGO',
+        '福岡': 'FUK',
+        '札幌': 'CTS'
+      };
+      
+      // 到着地の空港IDマッピング
+      const arrivalMapping = {
+        'ソウル（仁川）': 'ICN',
+        '釜山': 'PUS',
+        '台北': 'TPE'
+      };
+      
+      // 空港IDを自動設定
+      if (departureMapping[departureCity]) {
+        document.getElementById('departureID').value = departureMapping[departureCity];
+      }
+      if (arrivalMapping[arrivalCity]) {
+        document.getElementById('arrivalID').value = arrivalMapping[arrivalCity];
+      }
     }
 
     function saveCategorySettings(category) {
@@ -425,6 +462,10 @@
     window.addEventListener('DOMContentLoaded', () => {
       // Initially, only the password view is shown.
       // The settings view is shown after successful authentication.
+      
+      // 都市選択時の空港ID自動更新
+      document.getElementById('departureCity').addEventListener('change', updateAirportIDs);
+      document.getElementById('arrivalCity').addEventListener('change', updateAirportIDs);
     });
   </script>
 </body>
