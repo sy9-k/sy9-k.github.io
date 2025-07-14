@@ -1,0 +1,120 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background: #181a1b;
+  color: #fff;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+.game-detail-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  width: 100vw;
+  min-height: 60vh;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 0 0 0;
+}
+
+.game-detail-left {
+  flex: 1 1 480px;
+  min-width: 380px;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.game-title {
+  font-size: 3.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #302f2f;
+  letter-spacing: 0.02em;
+}
+
+.game-author {
+  font-size: 1.2rem;
+  font-weight: 550;
+  color: #6d6d6d;
+  margin-left: 8px;
+}
+
+.game-desc {
+  font-size: 1.15rem;
+  color: #444343;
+  margin-bottom: 32px;
+  line-height: 1.7;
+}
+
+.game-play-btn {
+  background: #2176ff;
+  color: #fff;
+  font-size: 1.15rem;
+  padding: 14px 38px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-top: 8px;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.game-play-btn:hover {
+  background: #185bb5;
+}
+
+.game-detail-right {
+  flex: 0 0 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-main-thumb {
+  width: 500px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  background: #222;
+  display: block;
+}
+
+.game-thumb-list {
+  display: flex;
+  gap: 28px;
+  margin: 40px auto 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  max-width: 1200px;
+}
+
+.game-thumb-item {
+  width: 200px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #222;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.2s, transform 0.2s;
+  display: block;
+}
+.game-thumb-item:hover,
+.game-thumb-item.selected {
+  border: 2px solid #2176ff;
+  transform: scale(1.05);
+} 
