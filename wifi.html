@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <style>
+    /* home.html/map.htmlと同じ下から上へのスライドインアニメーション */
+    .hm-main {
+      opacity: 0;
+      transform: translateY(80px);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
+    }
+    .hm-main.slideup-animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Open+Sans:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>機内Wi-Fiサービス</title>
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/entertainment.css" />
+  <script src="js/i18n.js"></script>
+  <style>
+body[lang="ja"], html[lang="ja"] .home-modern {
+  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+}
+body[lang="en"], html[lang="en"] .home-modern {
+  font-family: 'Open Sans', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+}
+body[lang="ko"], html[lang="ko"] .home-modern {
+  font-family: 'Noto Sans KR', 'Noto Sans JP', 'Open Sans', 'Noto Sans TC', sans-serif;
+}
+body[lang="zh"], html[lang="zh"] .home-modern {
+  font-family: 'Noto Sans TC', 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', sans-serif;
+}
+
+
+
+    /* 通知・設定パネルのスタイル（home.htmlと同等） */
+    .hm-panel {
+      position: fixed;
+      top: 0; right: 0;
+      width: 340px;
+      height: 100vh;
+      background: #232323;
+      color: #fff;
+      z-index: 1002;
+      box-shadow: -2px 0 16px #0008;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+    }
+    .hm-panel.open { transform: translateX(0); }
+    .hm-panel-header {
+      font-size: 1.3rem;
+      font-weight: 500;
+      padding: 22px 24px 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hm-panel-close {
+      background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer;
+    }
+    .hm-panel-content { flex: 1; padding: 0 24px 24px 24px; overflow-y: auto; }
+    .hm-panel-divider { border-bottom: 1px solid #444; margin: 12px 0; }
+    .hm-panel label { display: flex; align-items: center; gap: 10px; margin: 18px 0 0 0; }
+    .hm-panel input[type=range] { width: 120px; }
+    .hm-panel select { background: #232323; color: #fff; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; }
+    .hm-panel .hm-notice-list { margin: 0; padding: 0; list-style: none; }
+    .hm-panel .hm-notice-list li { margin-bottom: 12px; font-size: 1.05rem; }
+    .hm-panel .hm-notice-empty { color: #aaa; font-size: 1.1rem; margin-top: 18px; }
+  </style>
+  <style>
+    /* このページ固有のボタンにフォントを適用 */
+    #ent-watch-btn, #ent-detail-btn, #ent-plus-btn {
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body class="home-modern">
+  <script>
+    // home.html/map.htmlと同じ下から上へのスライドインアニメーションをhm-mainに適用
+    document.addEventListener('DOMContentLoaded', function() {
+      var main = document.querySelector('.hm-main');
+      if (main) setTimeout(function() { main.classList.add('slideup-animate'); }, 30);
+
+      // --- 明るさ同期 ---
+      // localStorage.brightnessPercentがあれば反映
+      var brightness = localStorage.getItem('brightnessPercent');
+      if (brightness) {
+        document.body.style.filter = `brightness(${brightness}%)`;
+      }
+      // スライダー変更時にlocalStorageへ保存
+      var brightnessSlider = document.getElementById('brightness-slider');
+      if (brightnessSlider) {
+        brightnessSlider.value = brightness || brightnessSlider.value;
+        brightnessSlider.oninput = function() {
+          document.body.style.filter = `brightness(${this.value}%)`;
+          localStorage.setItem('brightnessPercent', this.value);
+        };
+      }
+    });
+  </script>
+  <!-- 通知パネル（home.htmlと同じ構造） -->
+  <div id="notice-overlay" class="settings-overlay"></div>
+  <aside id="notice-panel" class="settings-panel">
+    <div class="settings-panel-inner">
+      <h2 class="settings-title">お知らせ</h2>
+      <div class="settings-row">
+        <div id="notice-list">
+          <div class="settings-note">現在お知らせはありません。</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <!-- 設定パネル（home.htmlと同じ構造） -->
+  <div id="settings-overlay" class="settings-overlay"></div>
+  <aside id="settings-panel" class="settings-panel">
+    <div class="settings-panel-inner">
+      <h2 class="settings-title">設定</h2>
+      <!-- 音量 -->
+      <div class="settings-row">
+        <label class="settings-label">音量</label>
+        <div class="settings-slider-row">
+          <button class="slider-btn" id="volume-down">-</button>
+          <input type="range" id="volume-slider" min="0" max="100" value="60">
+          <button class="slider-btn" id="volume-up">+</button>
+        </div>
+      </div>
+      <!-- 明るさ -->
+      <div class="settings-row">
+        <label class="settings-label">画面の明るさ</label>
+        <div class="settings-slider-row">
+          <button class="slider-btn" id="brightness-down">-</button>
+          <input type="range" id="brightness-slider" min="0" max="100" value="75">
+          <button class="slider-btn" id="brightness-up">+</button>
+        </div>
+      </div>
+      <!-- 言語 -->
+      <div class="settings-row settings-row-flex">
+        <label class="settings-label">言語</label>
+        <span class="settings-value">日本語</span>
+      </div>
+      <!-- お知らせ -->
+      <div class="settings-row settings-row-flex">
+        <label class="settings-label">お知らせ</label>
+        <label class="switch">
+          <input type="checkbox" id="notice-toggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="settings-row settings-row-note">
+        <span class="settings-note">お知らせ機能のオン/オフ（重要かつ安全に関わるメッセージは表示されます）。</span>
+      </div>
+      <!-- 保護者制限 -->
+      <div class="settings-row settings-row-flex">
+        <label class="settings-label">保護者制限</label>
+        <span class="settings-value">オフ</span>
+      </div>
+      <div class="settings-row settings-row-note">
+        <span class="settings-note">映画・テレビ番組・ミュージック・オーディオ...</span>
+      </div>
+      <button class="screen-off-btn">画面オフ</button>
+    </div>
+  </aside>
+  <!-- 画面オフ用オーバーレイ（home.htmlと同じ） -->
+  <div id="screen-off-overlay" style="display:none;position:fixed;inset:0;z-index:2147483647;background:#000;opacity:0.98;transition:opacity 0.3s;width:100vw;height:100vh;"></div>
+  <!-- ヘッダー（home.htmlと統一） -->
+  <div class="hm-header">
+    <div class="hm-flight-info" style="color:#fff;">
+      <span id="hm-seat"></span>
+      <span id="hm-route"></span>
+    </div>
+    <div class="hm-header-icons">
+      <button class="hm-dot hm-btn-home" title="ホーム" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">home</span></button>
+      <button class="hm-dot hm-btn-notice" title="お知らせ" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">chat</span></button>
+      <button class="hm-dot hm-btn-attendant" title="客室乗務員呼び出し" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">support_agent</span></button>
+      <button class="hm-dot hm-btn-settings" title="設定" style="display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">settings</span></button>
+    </div>
+  </div>
+  <!-- メイン -->
+  <div class="hm-main" style="background:#232323;flex-direction:column;">
+    <!-- コンテンツエリア -->
+    <div class="entertainment-content-scroll">
+      <!-- 今月の最新作セクション -->
+      <div style="background:#18191c; border-radius: 16px; margin-bottom: 32px; padding: 32px;">
+        <h1 id="ent-title" style="font-size:3.2rem;font-weight:500;margin-bottom:18px;color:#fff;"></h1>
+        <div id="ent-desc" style="font-size:1.25rem;opacity:0.92;margin-bottom:32px;color:#e0e0e0;"></div>
+        <div style="display:flex;gap:18px;margin-bottom:36px;">
+          <button id="ent-watch-btn" style="background:#1976d2;color:#fff;font-size:1.15rem;padding:12px 32px;border:none;border-radius:4px;"></button>
+          <button id="ent-detail-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 32px;border:1.5px solid #fff;border-radius:4px;"></button>
+          <button id="ent-plus-btn" style="background:transparent;color:#fff;font-size:1.15rem;padding:12px 24px;border:1.5px solid #fff;border-radius:4px;"></button>
+        </div>
+      </div>
+      <!-- 人気作品セクション -->
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+        <div id="ent-popular-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
+        <div class="clickable-content-item" onclick="alert('「Flight TV ep.1」を再生します。')">
+          <div id="ent-popular-main" style="background:#4b9cf5;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
+          <div id="ent-popular-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
+        </div>
+      </div>
+      <!-- おすすめTV番組セクション（追加） -->
+      <div style="background:#fff;padding:32px; border-radius: 16px;">
+        <div id="ent-recommended-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;">
+          <div id="ent-recommended-main" style="background:#33ab9f;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
+          <div id="ent-recommended-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- フッター（home.htmlと統一） -->
+  <div class="hm-footer">
+    <div class="hm-footer-col">
+      <div class="hm-footer-label" id="hm-dep-label">KIX 出発時刻</div>
+      <div class="hm-footer-time" id="hm-dep-time">19:10</div>
+    </div>
+    <div class="hm-footer-progress">
+      <div class="hm-progress-bar-bg">
+        <div class="hm-progress-bar" id="hm-progress-bar"></div>
+        <div class="hm-plane-icon"></div>
+      </div>
+    </div>
+    <div class="hm-footer-col hm-footer-col-right">
+      <div class="hm-footer-label" id="hm-arr-label">ICN 到着時刻</div>
+      <div class="hm-footer-time" id="hm-arr-time">21:00</div>
+    </div>
+  </div>
+  <script>
+    // --- home.htmlと同じ通知・設定パネル制御 ---
+    // ヘッダーの座席・空港ID表示 & 言語設定同期
+    document.addEventListener('DOMContentLoaded', function() {
+      // ヘッダー
+      const seat = localStorage.getItem('seatNumber') || '31A';
+      const departureID = localStorage.getItem('departureID') || 'KIX';
+      const arrivalID = localStorage.getItem('arrivalID') || 'ICN';
+      const seatEl = document.getElementById('hm-seat');
+      const routeEl = document.getElementById('hm-route');
+      if (seatEl) seatEl.textContent = seat;
+      if (routeEl) routeEl.textContent = `${departureID} – ${arrivalID}`;
+
+      // ホームボタン押下時の挙動（home.htmlに遷移）
+      const homeBtn = document.querySelector('.hm-btn-home');
+      if (homeBtn) {
+        homeBtn.onclick = function() {
+          window.location.href = 'home.html';
+        };
+      }
+
+      // 客室乗務員呼び出しボタン押下時の挙動（ダイアログ表示）
+      const attendantBtn = document.querySelector('.hm-btn-attendant');
+      if (attendantBtn) {
+        attendantBtn.onclick = function() {
+          alert('客室乗務員をお呼び出しします。しばらくお待ちください。');
+        };
+      }
+
+      // 言語切替（home.htmlと同期: localStorage.language）
+      const langNames = { ja: '日本語', en: 'English', ko: '한국어', zh: '中文' };
+      const langSpan = document.querySelector('.settings-row .settings-value');
+      function setLangUI() {
+        const langValue = localStorage.getItem('language') || 'ja';
+        if (langSpan) langSpan.textContent = langNames[langValue] || langValue;
+        // i18n.jsの形式に合わせてwindow.i18n[langValue]またはwindow.i18n["ja"]を参照
+        const i18n = window.i18n && (window.i18n[langValue] || window.i18n['ja']);
+        if (i18n) {
+          // メイン
+          const h1 = document.getElementById('ent-title');
+          if (h1) h1.textContent = i18n.ent_new_this_month || i18n.latest_this_month || '今月の最新作';
+          const desc = document.getElementById('ent-desc');
+          if (desc) desc.textContent = i18n.ent_new_this_month_desc || i18n.enjoy_latest_movies || '機内で最新の映画・番組を楽しもう！ハリウッドの話題作から外国作品まで見どころを一挙紹介';
+          const btnWatch = document.getElementById('ent-watch-btn');
+          if (btnWatch) btnWatch.textContent = i18n.ent_watch_now || i18n.watch_now || '今すぐ見る';
+          const btnDetail = document.getElementById('ent-detail-btn');
+          if (btnDetail) btnDetail.textContent = i18n.ent_detail || i18n.details || '詳細';
+          const btnPlus = document.getElementById('ent-plus-btn');
+          if (btnPlus) btnPlus.textContent = i18n.ent_plus || i18n.plus || '＋';
+          const popTitle = document.getElementById('ent-popular-title');
+          if (popTitle) popTitle.textContent = i18n.ent_popular_title || i18n.popular_among_users || 'AirPlane Systems 利用者の中での人気作品';
+          const popMain = document.getElementById('ent-popular-main');
+          if (popMain) popMain.textContent = i18n.ent_flight_tv_title || 'Flight TV';
+          const popEp = document.getElementById('ent-popular-ep');
+          if (popEp) popEp.textContent = i18n.ent_flight_tv_ep1 || i18n.flight_tv_ep1 || 'Flight TV ep.1';
+          // 追加セクション
+          const recTitle = document.getElementById('ent-recommended-title');
+          if (recTitle) recTitle.textContent = i18n.ent_recommended_title || 'おすすめのテレビ番組';
+          const recMain = document.getElementById('ent-recommended-main');
+          if (recMain) recMain.textContent = i18n.ent_recommended_main || 'ドラマシリーズ';
+          const recEp = document.getElementById('ent-recommended-ep');
+          if (recEp) recEp.textContent = i18n.ent_recommended_ep || '第1話';
+          // フッター
+          const depLabel = document.getElementById('hm-dep-label');
+          const arrLabel = document.getElementById('hm-arr-label');
+          const departureID = localStorage.getItem('departureID') || 'KIX';
+          const arrivalID = localStorage.getItem('arrivalID') || 'ICN';
+          if (depLabel) depLabel.textContent = `${departureID} ${(i18n && (i18n.departure || i18n.dep_time)) || '出発時刻'}`;
+          if (arrLabel) arrLabel.textContent = `${arrivalID} ${(i18n && (i18n.arrival || i18n.arr_time)) || '到着時刻'}`;
+
+          // 設定・通知パネル
+          // タイトル
+          const settingsTitles = document.querySelectorAll('.settings-title');
+          if (settingsTitles && settingsTitles.length > 0) {
+            // 1つ目: 設定, 2つ目: お知らせ
+            if (settingsTitles[0]) settingsTitles[0].textContent = i18n.settings || '設定';
+            if (settingsTitles[1]) settingsTitles[1].textContent = i18n.notice || 'お知らせ';
+          }
+          // ラベル
+          const settingsLabels = document.querySelectorAll('.settings-label');
+          if (settingsLabels && settingsLabels.length >= 5) {
+            settingsLabels[0].textContent = i18n.volume || '音量';
+            settingsLabels[1].textContent = i18n.brightness || '画面の明るさ';
+            settingsLabels[2].textContent = i18n.language || '言語';
+            settingsLabels[3].textContent = i18n.notice || 'お知らせ';
+            settingsLabels[4].textContent = i18n.parental || '保護者制限';
+          }
+          // 言語・保護者制限値
+          const settingsValues = document.querySelectorAll('.settings-value');
+          if (settingsValues && settingsValues.length >= 2) {
+            // 言語
+            const langNames = { ja: '日本語', en: 'English', ko: '한국어', zh: '中文' };
+            settingsValues[0].textContent = langNames[langValue] || langValue;
+            // 保護者制限
+            settingsValues[1].textContent = i18n.parental_off || 'オフ';
+          }
+          // お知らせ説明
+          const settingsNotes = document.querySelectorAll('.settings-note');
+          if (settingsNotes && settingsNotes.length > 0) {
+            // 1つ目: お知らせ説明, 2つ目: 保護者制限説明, 3つ目: お知らせパネル空
+            if (settingsNotes[0]) settingsNotes[0].textContent = i18n.notice_note || 'お知らせ機能のオン/オフ（重要かつ安全に関わるメッセージは表示されます）。';
+            if (settingsNotes[1]) settingsNotes[1].textContent = i18n.parental_note || '映画・テレビ番組・ミュージック・オーディオ...';
+            if (settingsNotes[2]) settingsNotes[2].textContent = i18n.notice_empty || '現在お知らせはありません。';
+          }
+          // 画面オフボタン
+          const screenOffBtn = document.querySelector('.screen-off-btn');
+          if (screenOffBtn) screenOffBtn.textContent = i18n.screen_off || '画面オフ';
+          // お知らせパネルの空表示（冗長だが念のため）
+          const noticeList = document.getElementById('notice-list');
+          if (noticeList && noticeList.children.length === 1 && noticeList.firstElementChild.classList.contains('settings-note')) {
+            noticeList.firstElementChild.textContent = i18n.notice_empty || '現在お知らせはありません。';
+          }
+        }
+      }
+      setLangUI();
+      if (langSpan) {
+        langSpan.style.cursor = 'pointer';
+        langSpan.onclick = function() {
+          const langs = ['ja', 'en', 'ko', 'zh'];
+          const current = localStorage.getItem('language') || 'ja';
+          let idx = langs.indexOf(current);
+          idx = (idx + 1) % langs.length;
+          localStorage.setItem('language', langs[idx]);
+          setLangUI();
+        };
+      }
+    });
+
+    // 通知パネル制御
+    const noticeBtn = document.querySelector('.hm-btn-notice');
+    const noticePanel = document.getElementById('notice-panel');
+    const noticeOverlay = document.getElementById('notice-overlay');
+    if (noticeBtn && noticePanel && noticeOverlay) {
+      noticeBtn.onclick = () => {
+        noticePanel.classList.add('open');
+        noticeOverlay.classList.add('open');
+      };
+      noticeOverlay.onclick = () => {
+        noticePanel.classList.remove('open');
+        noticeOverlay.classList.remove('open');
+      };
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          noticePanel.classList.remove('open');
+          noticeOverlay.classList.remove('open');
+        }
+      });
+    }
+    // 設定パネル制御
+    const settingsBtn = document.querySelector('.hm-btn-settings');
+    const settingsPanel = document.getElementById('settings-panel');
+    const settingsOverlay = document.getElementById('settings-overlay');
+    if (settingsBtn && settingsPanel && settingsOverlay) {
+      settingsBtn.onclick = () => {
+        settingsPanel.classList.add('open');
+        settingsOverlay.classList.add('open');
+      };
+      settingsOverlay.onclick = () => {
+        settingsPanel.classList.remove('open');
+        settingsOverlay.classList.remove('open');
+      };
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          settingsPanel.classList.remove('open');
+          settingsOverlay.classList.remove('open');
+        }
+      });
+    }
+    // スライダーの+-ボタン
+    function stepSlider(sliderId, diff) {
+      const slider = document.getElementById(sliderId);
+      slider.value = Math.max(Number(slider.min), Math.min(Number(slider.max), Number(slider.value) + diff));
+      slider.dispatchEvent(new Event('input'));
+    }
+    const volumeDown = document.getElementById('volume-down');
+    const volumeUp = document.getElementById('volume-up');
+    const volumeSlider = document.getElementById('volume-slider');
+    if (volumeDown && volumeSlider) volumeDown.onclick = () => stepSlider('volume-slider', -5);
+    if (volumeUp && volumeSlider) volumeUp.onclick = () => stepSlider('volume-slider', 5);
+    const brightnessDown = document.getElementById('brightness-down');
+    const brightnessUp = document.getElementById('brightness-up');
+    const brightnessSlider = document.getElementById('brightness-slider');
+    if (brightnessDown && brightnessSlider) brightnessDown.onclick = () => stepSlider('brightness-slider', -5);
+    if (brightnessUp && brightnessSlider) brightnessUp.onclick = () => stepSlider('brightness-slider', 5);
+    if (brightnessSlider) {
+      brightnessSlider.oninput = function() {
+        document.body.style.filter = `brightness(${this.value}%)`;
+      };
+    }
+    // 画面オフボタン
+    const screenOffBtn = document.querySelector('.screen-off-btn');
+    const screenOffOverlay = document.getElementById('screen-off-overlay');
+    if (screenOffBtn && screenOffOverlay) {
+      screenOffBtn.onclick = () => {
+        screenOffOverlay.style.display = 'block';
+        setTimeout(() => { screenOffOverlay.style.opacity = '0.98'; }, 10);
+      };
+      screenOffOverlay.onclick = () => {
+        screenOffOverlay.style.opacity = '0';
+        setTimeout(() => { screenOffOverlay.style.display = 'none'; }, 300);
+      };
+    }
+    // 多言語UI反映（home.htmlのロジックを流用する場合はここに追加）
+
+    // Sキーでセーフティビデオページへ遷移
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 's' || e.key === 'S') {
+        window.location.href = 'sb-movie.html';
+      }
+    });
+  </script>
+</body>
+</html>
