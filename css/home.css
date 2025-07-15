@@ -222,15 +222,12 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 
 /* 各パネルの背景色＆画像 */
 .hm-map-main {
-  background: #17212a;
+  background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); /* 青～水色 */
 }
 .hm-map-main .hm-card-bg {
   position: absolute; inset: 0;
-  background-image: url('../flightmap-bg.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 0.22;
+  background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+  opacity: 0.9;
   z-index: 1;
 }
 .hm-wifi-panel {
@@ -248,6 +245,24 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 .hm-game-panel .hm-card-bg {
   position: absolute; inset: 0;
   background: linear-gradient(to bottom, #000 0%, #6c6c6c 100%);
+  opacity: 0.9;
+  z-index: 1;
+}
+.hm-shop-panel {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); /* 緑 */
+}
+.hm-shop-panel .hm-card-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+  opacity: 0.9;
+  z-index: 1;
+}
+.hm-about-panel {
+  background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%); /* ピンク */
+}
+.hm-about-panel .hm-card-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
   opacity: 0.9;
   z-index: 1;
 }

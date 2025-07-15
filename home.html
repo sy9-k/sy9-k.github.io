@@ -49,33 +49,7 @@
         };
       }
 
-      // ===== 無限横スクロール実装 =====
-      const scrollWrap = document.querySelector('.hm-map-scroll-wrap');
-      const scroll = document.querySelector('.hm-map-scroll');
-      if (scroll && scrollWrap) {
-        // パネルを2セット並べる
-        const panels = Array.from(scroll.children);
-        panels.forEach(panel => {
-          const clone = panel.cloneNode(true);
-          clone.setAttribute('data-clone', '1');
-          scroll.appendChild(clone);
-        });
-        // スクロール位置を1セット目の先頭に
-        scroll.scrollLeft = 0;
-        // スクロール時に端でループ
-        scroll.addEventListener('scroll', function() {
-          const panelWidth = panels[0].offsetWidth;
-          const totalPanels = panels.length;
-          const totalWidth = panelWidth * totalPanels;
-          if (scroll.scrollLeft <= 0) {
-            // 左端に来たら2セット目の同じ位置にジャンプ
-            scroll.scrollLeft += totalWidth;
-          } else if (scroll.scrollLeft >= totalWidth * 2 - scrollWrap.offsetWidth) {
-            // 右端に来たら1セット目の同じ位置にジャンプ
-            scroll.scrollLeft -= totalWidth;
-          }
-        });
-      }
+
     });
   </script>
   <div id="screen-off-overlay" style="display:none;position:fixed;inset:0;z-index:2147483647;background:#000;opacity:0.98;transition:opacity 0.3s;width:100vw;height:100vh;"></div>
@@ -312,7 +286,7 @@
           if (clickCount >= 3) {
             clearTimeout(clickTimer);
             clickCount = 0;
-            window.location.href = 'sb-movie.html';
+            window.location.href = '/player/sb-movie.html';
           }
         });
       }
@@ -368,7 +342,7 @@
       }
       if (e.key === 's' || e.key === 'S') {
         // Sキーでセーフティビデオページへ遷移
-        window.location.href = 'sb-movie.html';
+        window.location.href = '/player/sb-movie.html';
       }
     });
     document.addEventListener('keyup', function(e) {
