@@ -411,16 +411,31 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     const volumeSlider = document.getElementById('volume-slider');
     if (volumeDown && volumeSlider) volumeDown.onclick = () => stepSlider('volume-slider', -5);
     if (volumeUp && volumeSlider) volumeUp.onclick = () => stepSlider('volume-slider', 5);
-    const brightnessDown = document.getElementById('brightness-down');
-    const brightnessUp = document.getElementById('brightness-up');
-    const brightnessSlider = document.getElementById('brightness-slider');
-    if (brightnessDown && brightnessSlider) brightnessDown.onclick = () => stepSlider('brightness-slider', -5);
-    if (brightnessUp && brightnessSlider) brightnessUp.onclick = () => stepSlider('brightness-slider', 5);
-    if (brightnessSlider) {
-      brightnessSlider.oninput = function() {
-        document.body.style.filter = `brightness(${this.value}%)`;
+    // 明るさ同期・スライダー制御
+    document.addEventListener('DOMContentLoaded', function() {
+      var brightness = localStorage.getItem('brightnessPercent');
+      if (brightness) {
+        document.body.style.filter = `brightness(${brightness}%)`;
+      }
+      var brightnessSlider = document.getElementById('brightness-slider');
+      if (brightnessSlider) {
+        brightnessSlider.value = brightness || brightnessSlider.value;
+        brightnessSlider.oninput = function() {
+          document.body.style.filter = `brightness(${this.value}%)`;
+          localStorage.setItem('brightnessPercent', this.value);
+        };
+      }
+      var brightnessDown = document.getElementById('brightness-down');
+      var brightnessUp = document.getElementById('brightness-up');
+      if (brightnessDown && brightnessSlider) brightnessDown.onclick = () => {
+        brightnessSlider.value = Math.max(Number(brightnessSlider.min), Number(brightnessSlider.value) - 5);
+        brightnessSlider.dispatchEvent(new Event('input'));
       };
-    }
+      if (brightnessUp && brightnessSlider) brightnessUp.onclick = () => {
+        brightnessSlider.value = Math.min(Number(brightnessSlider.max), Number(brightnessSlider.value) + 5);
+        brightnessSlider.dispatchEvent(new Event('input'));
+      };
+    });
     // 画面オフボタン
     const screenOffBtn = document.querySelector('.screen-off-btn');
     const screenOffOverlay = document.getElementById('screen-off-overlay');

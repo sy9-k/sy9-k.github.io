@@ -300,7 +300,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         <label class="settings-label">画面の明るさ</label>
         <div class="settings-slider-row">
           <button class="slider-btn" id="brightness-down">-</button>
-          <input type="range" id="brightness-slider" min="50" max="150" value="100">
+          <input type="range" id="brightness-slider" min="0" max="100" value="75">
           <button class="slider-btn" id="brightness-up">+</button>
         </div>
       </div>
@@ -510,16 +510,31 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     const volumeSlider = document.getElementById('volume-slider'); // 音量スライダー
     if (volumeDown && volumeSlider) volumeDown.onclick = () => stepSlider('volume-slider', -5);
     if (volumeUp && volumeSlider) volumeUp.onclick = () => stepSlider('volume-slider', 5);
-    const brightnessDown = document.querySelector('.slider-btn:first-of-type'); // 画面の明るさのマイナスボタン
-    const brightnessUp = document.querySelector('.slider-btn:last-of-type'); // 画面の明るさのプラスボタン
-    const brightnessSlider = document.getElementById('brightness-slider'); // 画面の明るさスライダー
-    if (brightnessDown && brightnessSlider) brightnessDown.onclick = () => stepSlider('brightness-slider', -5);
-    if (brightnessUp && brightnessSlider) brightnessUp.onclick = () => stepSlider('brightness-slider', 5);
-    if (brightnessSlider) {
-      brightnessSlider.oninput = function() {
-        document.body.style.filter = `brightness(${this.value}%)`;
+    // 明るさ同期・スライダー制御
+    document.addEventListener('DOMContentLoaded', function() {
+      var brightness = localStorage.getItem('brightnessPercent');
+      if (brightness) {
+        document.body.style.filter = `brightness(${brightness}%)`;
+      }
+      var brightnessSlider = document.getElementById('brightness-slider');
+      if (brightnessSlider) {
+        brightnessSlider.value = brightness || brightnessSlider.value;
+        brightnessSlider.oninput = function() {
+          document.body.style.filter = `brightness(${this.value}%)`;
+          localStorage.setItem('brightnessPercent', this.value);
+        };
+      }
+      var brightnessDown = document.getElementById('brightness-down');
+      var brightnessUp = document.getElementById('brightness-up');
+      if (brightnessDown && brightnessSlider) brightnessDown.onclick = () => {
+        brightnessSlider.value = Math.max(Number(brightnessSlider.min), Number(brightnessSlider.value) - 5);
+        brightnessSlider.dispatchEvent(new Event('input'));
       };
-    }
+      if (brightnessUp && brightnessSlider) brightnessUp.onclick = () => {
+        brightnessSlider.value = Math.min(Number(brightnessSlider.max), Number(brightnessSlider.value) + 5);
+        brightnessSlider.dispatchEvent(new Event('input'));
+      };
+    });
 
     // 画面オフボタン
     const screenOffBtn = document.querySelector('.screen-off-btn');
