@@ -78,6 +78,475 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     #ent-watch-btn, #ent-detail-btn, #ent-plus-btn {
       font-family: inherit;
     }
+    
+    /* コンテンツ詳細モーダル */
+    .content-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      display: none;
+      opacity: 0;
+      backdrop-filter: blur(0px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .content-modal-overlay.show {
+      display: block;
+      opacity: 1;
+      backdrop-filter: blur(4px);
+    }
+    
+    .content-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.7) rotateX(10deg);
+      width: 98%;
+      max-width: 1400px;
+      max-height: 90vh;
+      background: #ffffff;
+      border-radius: 16px;
+      z-index: 2001;
+      display: none;
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      perspective: 1000px;
+    }
+    
+    .content-modal.show {
+      display: block;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1) rotateX(0deg);
+    }
+    
+
+    
+    .content-modal-header {
+      position: relative;
+      padding: 20px 20px 0 20px;
+    }
+    
+    .content-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: #232323;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 3002;
+      opacity: 0;
+      transform: scale(0.8) rotate(90deg);
+    }
+    
+    .content-modal.show .content-modal-close {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+      transition-delay: 0.3s;
+    }
+    
+    .content-modal-close:hover {
+      background: rgba(0, 0, 0, 0.2);
+      transform: scale(1.1);
+    }
+    
+    .content-modal-body {
+      padding: 0 20px 20px 20px;
+      background: #ffffff;
+      border-radius: 0 0 16px 16px;
+      max-height: calc(90vh - 80px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #ccc transparent;
+    }
+    
+    .content-modal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .content-modal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .content-modal-body::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 3px;
+    }
+    
+    .content-modal-body::-webkit-scrollbar-thumb:hover {
+      background: #999;
+    }
+    
+    .content-modal-title {
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #232323;
+      margin: 0 0 8px 0;
+      text-align: left;
+      opacity: 0;
+      transform: translateY(30px) scale(0.9);
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition-delay: 0.2s;
+    }
+    
+    .content-modal.show .content-modal-title {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    
+    .content-modal-category {
+      font-size: 1rem;
+      color: #666666;
+      text-align: left;
+      margin-bottom: 16px;
+      opacity: 0;
+      transform: translateY(25px) scale(0.95);
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition-delay: 0.3s;
+    }
+    
+    .content-modal.show .content-modal-category {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    
+    .content-modal-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(30px) scale(0.9);
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition-delay: 0.4s;
+    }
+    
+    .content-modal.show .content-modal-buttons {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    
+    .content-modal-btn {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 4px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .content-modal-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .content-modal-btn:hover::before {
+      left: 100%;
+    }
+    
+    .content-modal-btn-primary {
+      background: #1976d2;
+      color: white;
+      width: 100%;
+    }
+    
+    .content-modal-btn-primary:hover {
+      background: #1565c0;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(25, 118, 210, 0.3);
+    }
+    
+    .content-modal-btn-row {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .content-modal-btn-secondary {
+      background: #4fc3f7;
+      color: white;
+      border: none;
+      flex: 1;
+    }
+    
+    .content-modal-btn-secondary:hover {
+      background: #29b6f6;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(79, 195, 247, 0.3);
+    }
+    
+    .content-modal-btn-outline {
+      background: #ffffff;
+      color: #1976d2;
+      border: 1px solid #1976d2;
+      flex: 1;
+    }
+    
+    .content-modal-btn-outline:hover {
+      background: #f5f5f5;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(25, 118, 210, 0.2);
+    }
+    
+    .content-modal-image {
+      width: 100%;
+      height: 300px;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .content-modal.show .content-modal-image {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    
+    .content-modal-image::before {
+      content: '';
+      width: 120px;
+      height: 180px;
+      background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+      border-radius: 8px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 8px 24px rgba(25, 118, 210, 0.3);
+    }
+    
+    .content-modal-description {
+      font-size: 1rem;
+      color: #555555;
+      line-height: 1.6;
+      text-align: left;
+      opacity: 0;
+      transform: translateY(25px) scale(0.95);
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition-delay: 0.5s;
+    }
+    
+    .content-modal.show .content-modal-description {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    
+    /* 言語選択モーダル */
+    .language-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 3000;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .language-modal-overlay.show {
+      display: block;
+      opacity: 1;
+    }
+    
+    .language-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 95%;
+      max-width: 800px;
+      background: #ffffff;
+      border-radius: 16px;
+      z-index: 3001;
+      display: none;
+      opacity: 0;
+      transition: all 0.3s ease;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    
+    .language-modal.show {
+      display: block;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .language-modal-header {
+      position: relative;
+      padding: 20px 20px 0 20px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .language-modal-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #232323;
+      margin: 0 0 16px 0;
+      text-align: center;
+    }
+    
+    .language-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 32px;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: #232323;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+    
+    .language-modal-close:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    
+    .language-modal-body {
+      padding: 20px;
+    }
+    
+    .language-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .language-option {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #ffffff;
+    }
+    
+    .language-option:hover {
+      background: #f5f5f5;
+      border-color: #1976d2;
+    }
+    
+    .language-option.selected {
+      background: #e3f2fd;
+      border-color: #1976d2;
+    }
+    
+    .language-flag {
+      font-size: 2rem;
+      margin-right: 16px;
+    }
+    
+    .language-info {
+      flex: 1;
+    }
+    
+    .language-name {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #232323;
+      margin-bottom: 4px;
+    }
+    
+    .language-native {
+      font-size: 0.9rem;
+      color: #666666;
+    }
+    
+    .language-check {
+      font-size: 1.2rem;
+      color: #1976d2;
+      font-weight: bold;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .language-sections-container {
+      display: flex;
+      gap: 24px;
+    }
+    
+    .language-section {
+      flex: 1;
+      margin-bottom: 24px;
+    }
+    
+    .language-section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #232323;
+      margin: 0 0 12px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .language-modal-actions {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+    }
+    
+    .language-confirm-btn {
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 32px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .language-confirm-btn:hover {
+      background: #1565c0;
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body class="home-modern">
@@ -168,6 +637,142 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   </aside>
   <!-- 画面オフ用オーバーレイ（home.htmlと同じ） -->
   <div id="screen-off-overlay" style="display:none;position:fixed;inset:0;z-index:2147483647;background:#000;opacity:0.98;transition:opacity 0.3s;width:100vw;height:100vh;"></div>
+  
+  <!-- コンテンツ詳細モーダル -->
+  <div id="content-modal-overlay" class="content-modal-overlay"></div>
+  <div id="content-modal" class="content-modal">
+  
+  <!-- 言語選択モーダル -->
+  <div id="language-modal-overlay" class="language-modal-overlay"></div>
+  <div id="language-modal" class="language-modal">
+    <div class="language-modal-header">
+      <h3 class="language-modal-title">言語・字幕選択</h3>
+      <button class="language-modal-close" onclick="closeLanguageModal()">×</button>
+    </div>
+    <div class="language-modal-body">
+      <div class="language-sections-container">
+        <!-- 音声言語選択 -->
+        <div class="language-section">
+          <h4 class="language-section-title">音声言語</h4>
+          <div class="language-options">
+                      <div class="language-option" onclick="selectAudioLanguage('ja')">
+            <div class="language-flag"><span class="material-icons">flag</span></div>
+            <div class="language-info">
+              <div class="language-name">日本語</div>
+              <div class="language-native">Japanese</div>
+            </div>
+            <div class="language-check" id="audio-ja">✓</div>
+          </div>
+          <div class="language-option" onclick="selectAudioLanguage('en')">
+            <div class="language-flag"><span class="material-icons">flag</span></div>
+            <div class="language-info">
+              <div class="language-name">English</div>
+              <div class="language-native">英語</div>
+            </div>
+            <div class="language-check" id="audio-en"></div>
+          </div>
+          <div class="language-option" onclick="selectAudioLanguage('ko')">
+            <div class="language-flag"><span class="material-icons">flag</span></div>
+            <div class="language-info">
+              <div class="language-name">한국어</div>
+              <div class="language-native">Korean</div>
+            </div>
+            <div class="language-check" id="audio-ko"></div>
+          </div>
+          <div class="language-option" onclick="selectAudioLanguage('zh')">
+            <div class="language-flag"><span class="material-icons">flag</span></div>
+            <div class="language-info">
+              <div class="language-name">中文</div>
+              <div class="language-native">Chinese</div>
+            </div>
+            <div class="language-check" id="audio-zh"></div>
+          </div>
+          </div>
+        </div>
+        
+        <!-- 字幕言語選択 -->
+        <div class="language-section">
+          <h4 class="language-section-title">字幕言語</h4>
+          <div class="language-options">
+            <div class="language-option" onclick="selectSubtitleLanguage('ja')">
+              <div class="language-flag"><span class="material-icons">flag</span></div>
+              <div class="language-info">
+                <div class="language-name">日本語</div>
+                <div class="language-native">Japanese</div>
+              </div>
+              <div class="language-check" id="subtitle-ja">✓</div>
+            </div>
+            <div class="language-option" onclick="selectSubtitleLanguage('en')">
+              <div class="language-flag"><span class="material-icons">flag</span></div>
+              <div class="language-info">
+                <div class="language-name">English</div>
+                <div class="language-native">英語</div>
+              </div>
+              <div class="language-check" id="subtitle-en"></div>
+            </div>
+            <div class="language-option" onclick="selectSubtitleLanguage('ko')">
+              <div class="language-flag"><span class="material-icons">flag</span></div>
+              <div class="language-info">
+                <div class="language-name">한국어</div>
+                <div class="language-native">Korean</div>
+              </div>
+              <div class="language-check" id="subtitle-ko"></div>
+            </div>
+            <div class="language-option" onclick="selectSubtitleLanguage('zh')">
+              <div class="language-flag"><span class="material-icons">flag</span></div>
+              <div class="language-info">
+                <div class="language-name">中文</div>
+                <div class="language-native">Chinese</div>
+              </div>
+              <div class="language-check" id="subtitle-zh"></div>
+            </div>
+            <div class="language-option" onclick="selectSubtitleLanguage('off')">
+              <div class="language-flag"><span class="material-icons">block</span></div>
+              <div class="language-info">
+                <div class="language-name">字幕なし</div>
+                <div class="language-native">Off</div>
+              </div>
+              <div class="language-check" id="subtitle-off"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 確定ボタン -->
+      <div class="language-modal-actions">
+        <button class="language-confirm-btn" onclick="confirmLanguageSelection()">確定</button>
+      </div>
+    </div>
+  </div>
+    <div class="content-modal-header">
+      <button class="content-modal-close" onclick="closeContentModal()">×</button>
+    </div>
+    <div class="content-modal-body">
+      <div class="content-modal-image"></div>
+      <h2 id="modal-title" class="content-modal-title">Flight TV ep.1</h2>
+      <div id="modal-category" class="content-modal-category">2025 ALL カテゴリー</div>
+      <div class="content-modal-buttons">
+        <button id="modal-play-btn" class="content-modal-btn content-modal-btn-primary"><span class="material-icons">play_arrow</span>再生する</button>
+        <div class="content-modal-btn-row">
+          <button id="modal-language-btn" class="content-modal-btn content-modal-btn-secondary"><span class="material-icons">language</span>言語選択をする</button>
+          <button id="modal-playlist-btn" class="content-modal-btn content-modal-btn-outline"><span class="material-icons">add</span>プレイリストに追加する</button>
+        </div>
+      </div>
+      <div id="modal-description" class="content-modal-description">
+        ここにエンターテイメントの紹介文章を入力する。ここにエンターテイメントの紹介文章を入力する。ここにエンターテイメントの紹介文章を入力する。<br><br>
+        
+        Flight TV ep.1は、機内で楽しめる特別なエンターテイメントコンテンツです。このエピソードでは、航空機の歴史や技術について詳しく紹介します。<br><br>
+        
+        視聴時間：約45分<br>
+        言語：日本語、英語、韓国語、中国語対応<br>
+        字幕：日本語、英語、韓国語、中国語対応<br><br>
+        
+        このコンテンツは、機内での快適な時間をお過ごしいただくために特別に制作されました。航空機の安全や快適性について学びながら、楽しい時間をお過ごしください。<br><br>
+        
+        ご視聴の際は、お好みの言語と字幕を選択してからご覧ください。また、プレイリストに追加することで、後で簡単にアクセスすることができます。
+      </div>
+    </div>
+  </div>
   <!-- ヘッダー（home.htmlと統一） -->
   <div class="hm-header">
     <div class="hm-flight-info" style="color:#fff;">
@@ -198,7 +803,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       <!-- 人気作品セクション -->
       <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
         <div id="ent-popular-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
-        <div class="clickable-content-item" onclick="alert('「Flight TV ep.1」を再生します。')">
+        <div class="clickable-content-item" onclick="openContentModal('Flight TV ep.1', '2025 ALL カテゴリー', 'Flight TV ep.1の詳細な紹介文をここに表示します。機内で楽しめる特別なエンターテイメントコンテンツです。\n\nFlight TV ep.1は、機内で楽しめる特別なエンターテイメントコンテンツです。このエピソードでは、航空機の歴史や技術について詳しく紹介します。\n\n視聴時間：約45分\n言語：日本語、英語、韓国語、中国語対応\n字幕：日本語、英語、韓国語、中国語対応\n\nこのコンテンツは、機内での快適な時間をお過ごしいただくために特別に制作されました。航空機の安全や快適性について学びながら、楽しい時間をお過ごしください。\n\nご視聴の際は、お好みの言語と字幕を選択してからご覧ください。また、プレイリストに追加することで、後で簡単にアクセスすることができます。')">
           <div id="ent-popular-main" style="background:#4b9cf5;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
           <div id="ent-popular-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
         </div>
@@ -206,8 +811,8 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       <!-- おすすめTV番組セクション（追加） -->
       <div style="background:#fff;padding:32px; border-radius: 16px;">
         <div id="ent-recommended-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
-        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;">
-          <div id="ent-recommended-main" style="background:#33ab9f;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;" onclick="openContentModal('ドラマシリーズ 第1話', '2025 ALL カテゴリー', '人気ドラマシリーズの第1話です。感動的なストーリーと素晴らしい演技をお楽しみください。\n\nこのドラマシリーズは、現代社会における人間関係や家族の絆をテーマにした感動的なストーリーです。第1話では、主人公の日常と彼を取り巻く人々との関係が描かれます。\n\n視聴時間：約60分\n言語：日本語、英語、韓国語、中国語対応\n字幕：日本語、英語、韓国語、中国語対応\n\n出演者：\n・主演：田中太郎\n・共演：佐藤花子、鈴木一郎\n・監督：山田次郎\n\nこの作品は、機内での快適な時間をお過ごしいただくために特別に制作されました。感動的なストーリーと素晴らしい演技をお楽しみください。\n\nご視聴の際は、お好みの言語と字幕を選択してからご覧ください。また、プレイリストに追加することで、後で簡単にアクセスすることができます。')">
+          <div id="ent-recommended-main" style="background:#33ab9f;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;"></div>
           <div id="ent-recommended-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
         </div>
       </div>
@@ -453,6 +1058,144 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     document.addEventListener('keydown', function(e) {
       if (e.key === 's' || e.key === 'S') {
         window.location.href = 'sb-movie.html';
+      }
+    });
+    
+    // コンテンツ詳細モーダル制御
+    function openContentModal(title, category, description) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-category').textContent = category;
+      document.getElementById('modal-description').innerHTML = description.replace(/\n/g, '<br>');
+      
+      document.getElementById('content-modal-overlay').classList.add('show');
+      document.getElementById('content-modal').classList.add('show');
+    }
+    
+    function closeContentModal() {
+      document.getElementById('content-modal-overlay').classList.remove('show');
+      document.getElementById('content-modal').classList.remove('show');
+    }
+    
+    // モーダルボタンのイベント
+    document.addEventListener('DOMContentLoaded', function() {
+      // オーバーレイクリックでモーダルを閉じる
+      document.getElementById('content-modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeContentModal();
+        }
+      });
+      
+      // 再生ボタン
+      document.getElementById('modal-play-btn').addEventListener('click', function() {
+        alert('コンテンツを再生します。');
+        closeContentModal();
+      });
+      
+      // 言語選択ボタン
+      document.getElementById('modal-language-btn').addEventListener('click', function() {
+        openLanguageModal();
+      });
+      
+      // プレイリスト追加ボタン
+      document.getElementById('modal-playlist-btn').addEventListener('click', function() {
+        alert('プレイリストに追加しました。');
+      });
+      
+      // Escapeキーでモーダルを閉じる
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeContentModal();
+          closeLanguageModal();
+        }
+      });
+    });
+    
+    // 言語選択モーダル制御
+    let selectedAudioLanguage = 'ja';
+    let selectedSubtitleLanguage = 'ja';
+    
+    function openLanguageModal() {
+      document.getElementById('language-modal-overlay').classList.add('show');
+      document.getElementById('language-modal').classList.add('show');
+      updateLanguageSelection();
+    }
+    
+    function closeLanguageModal() {
+      document.getElementById('language-modal-overlay').classList.remove('show');
+      document.getElementById('language-modal').classList.remove('show');
+    }
+    
+    function selectAudioLanguage(langCode) {
+      // 音声言語の選択をクリア
+      document.querySelectorAll('[id^="audio-"]').forEach(check => {
+        check.textContent = '';
+      });
+      
+      // 新しい選択をマーク
+      document.getElementById(`audio-${langCode}`).textContent = '✓';
+      selectedAudioLanguage = langCode;
+    }
+    
+    function selectSubtitleLanguage(langCode) {
+      // 字幕言語の選択をクリア
+      document.querySelectorAll('[id^="subtitle-"]').forEach(check => {
+        check.textContent = '';
+      });
+      
+      // 新しい選択をマーク
+      document.getElementById(`subtitle-${langCode}`).textContent = '✓';
+      selectedSubtitleLanguage = langCode;
+    }
+    
+    function updateLanguageSelection() {
+      // 保存された設定を読み込み
+      selectedAudioLanguage = localStorage.getItem('audioLanguage') || 'ja';
+      selectedSubtitleLanguage = localStorage.getItem('subtitleLanguage') || 'ja';
+      
+      // 音声言語の選択をクリア
+      document.querySelectorAll('[id^="audio-"]').forEach(check => {
+        check.textContent = '';
+      });
+      
+      // 字幕言語の選択をクリア
+      document.querySelectorAll('[id^="subtitle-"]').forEach(check => {
+        check.textContent = '';
+      });
+      
+      // 現在の選択をマーク
+      document.getElementById(`audio-${selectedAudioLanguage}`).textContent = '✓';
+      document.getElementById(`subtitle-${selectedSubtitleLanguage}`).textContent = '✓';
+    }
+    
+    function confirmLanguageSelection() {
+      // 設定を保存
+      localStorage.setItem('audioLanguage', selectedAudioLanguage);
+      localStorage.setItem('subtitleLanguage', selectedSubtitleLanguage);
+      
+      // モーダルを閉じる
+      closeLanguageModal();
+      
+      // 確認メッセージを表示
+      const audioName = getLanguageName(selectedAudioLanguage);
+      const subtitleName = selectedSubtitleLanguage === 'off' ? '字幕なし' : getLanguageName(selectedSubtitleLanguage);
+      alert(`音声: ${audioName}\n字幕: ${subtitleName}\n\n設定を保存しました。`);
+    }
+    
+    function getLanguageName(langCode) {
+      const langNames = {
+        'ja': '日本語',
+        'en': 'English',
+        'ko': '한국어',
+        'zh': '中文',
+        'off': '字幕なし'
+      };
+      return langNames[langCode] || langCode;
+    }
+    
+    // 言語選択モーダルのオーバーレイクリックで閉じる
+    document.getElementById('language-modal-overlay').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeLanguageModal();
       }
     });
   </script>
