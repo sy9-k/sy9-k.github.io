@@ -1329,57 +1329,59 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 
       // ライブ配信セクション
       const liveStreamContainer = document.getElementById('live-stream-container');
-      if (liveStreamContainer && contentData.liveStreams && contentData.liveStreams.items.length > 0) {
-        liveStreamContainer.innerHTML = `
-          <div style="display:flex;gap:24px;flex-wrap:wrap;">
-            ${contentData.liveStreams.items.map(item => {
-              const coverStyle = item.coverImage ? 
-                `background-image: url('${item.coverImage}'); background-size: cover; background-position: center;` : 
-                `background: ${item.backgroundColor || '#ff0000'};`;
-              
-              return `
-                <div class="live-stream-item clickable-content-item" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/"/g, '&quot;')}" data-live-id="${item.id}">
-                  <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;">
-                    ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
-                    <div class="live-stream-badge">LIVE</div>
+      console.log('liveStreamContainer:', liveStreamContainer);
+      console.log('contentData.liveStreams:', contentData.liveStreams);
+      if (liveStreamContainer) {
+        if (contentData.liveStreams && contentData.liveStreams.items && contentData.liveStreams.items.length > 0) {
+          liveStreamContainer.innerHTML = `
+            <div style="display:flex;gap:24px;flex-wrap:wrap;">
+              ${contentData.liveStreams.items.map(item => {
+                const coverStyle = item.coverImage ? 
+                  `background-image: url('${item.coverImage}'); background-size: cover; background-position: center;` : 
+                  `background: ${item.backgroundColor || '#ff0000'};`;
+                return `
+                  <div class="live-stream-item clickable-content-item" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/\"/g, '&quot;')}" data-live-id="${item.id}">
+                    <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;">
+                      ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
+                      <div class="live-stream-badge">LIVE</div>
+                    </div>
+                    <div style="font-size:1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.genre || 'ライブ配信'}</div>
                   </div>
-                  <div style="font-size:1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.genre || 'ライブ配信'}</div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `;
-        
-        // クリックイベントを追加
-        const liveStreamItems = liveStreamContainer.querySelectorAll('.live-stream-item');
-        liveStreamItems.forEach(item => {
-          item.addEventListener('click', function() {
-            const title = this.getAttribute('data-title');
-            const category = this.getAttribute('data-category');
-            const description = this.getAttribute('data-description');
-            const liveId = this.getAttribute('data-live-id');
-            
-            // ライブ配信の場合は特別なモーダルを開く
-            if (liveId) {
-              openLiveStreamModal(title, category, description, liveId);
-            } else {
-              openContentModal(title, category, description);
+                `;
+              }).join('')}
+            </div>
+          `;
+          // クリックイベントを追加
+          const liveStreamItems = liveStreamContainer.querySelectorAll('.live-stream-item');
+          liveStreamItems.forEach(item => {
+            item.addEventListener('click', function() {
+              const title = this.getAttribute('data-title');
+              const category = this.getAttribute('data-category');
+              const description = this.getAttribute('data-description');
+              const liveId = this.getAttribute('data-live-id');
+              console.log('ライブ配信クリック:', { title, category, description, liveId });
+              if (liveId) {
+                openLiveStreamModal(title, category, description, liveId);
+              } else {
+                openContentModal(title, category, description);
+              }
+            });
+          });
+          // カバー画像がある作品にタイトルオーバーレイを追加
+          contentData.liveStreams.items.forEach((item, index) => {
+            if (item.coverImage) {
+              const coverDivs = liveStreamContainer.querySelectorAll('div[style*="background-image"]');
+              if (coverDivs[index]) {
+                const overlayDiv = document.createElement('div');
+                overlayDiv.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:6px;font-size:1rem;text-align:center;border-radius:0 0 8px 8px;';
+                overlayDiv.textContent = item.title;
+                coverDivs[index].appendChild(overlayDiv);
+              }
             }
           });
-        });
-        
-        // カバー画像がある作品にタイトルオーバーレイを追加
-        contentData.liveStreams.items.forEach((item, index) => {
-          if (item.coverImage) {
-            const coverDivs = liveStreamContainer.querySelectorAll('div[style*="background-image"]');
-            if (coverDivs[index]) {
-              const overlayDiv = document.createElement('div');
-              overlayDiv.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:6px;font-size:1rem;text-align:center;border-radius:0 0 8px 8px;';
-              overlayDiv.textContent = item.title;
-              coverDivs[index].appendChild(overlayDiv);
-            }
-          }
-        });
+        } else {
+          liveStreamContainer.innerHTML = '<div style="color:#888;font-size:1.1rem;">現在ライブ配信はありません。</div>';
+        }
       }
     }
 
