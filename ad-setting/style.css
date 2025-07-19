@@ -1,0 +1,543 @@
+/* style.css */
+
+/* Material Design 3 カラーパレットの変数 (サンプル) */
+:root {
+    --md3-color-primary: #6750A4;
+    --md3-color-on-primary: #FFFFFF;
+    --md3-color-primary-container: #EADDFF;
+    --md3-color-on-primary-container: #21005D;
+    --md3-color-secondary: #625B71;
+    --md3-color-on-secondary: #FFFFFF;
+    --md3-color-secondary-container: #E8DEF8;
+    --md3-color-on-secondary-container: #1D192B;
+    --md3-color-tertiary: #7D5260;
+    --md3-color-on-tertiary: #FFFFFF;
+    --md3-color-tertiary-container: #FFD8E4;
+    --md3-color-on-tertiary-container: #31111D;
+    --md3-color-error: #BA1A1A;
+    --md3-color-on-error: #FFFFFF;
+    --md3-color-error-container: #FFDAD6;
+    --md3-color-on-error-container: #410002;
+    --md3-color-background: #FFFBFE;
+    --md3-color-on-background: #1C1B1F;
+    --md3-color-surface: #FFFBFE;
+    --md3-color-on-surface: #1C1B1F;
+    --md3-color-surface-variant: #E7E0EC;
+    --md3-color-on-surface-variant: #49454F;
+    --md3-color-outline: #79747E;
+    --md3-color-shadow: #000000;
+    --md3-color-inverse-surface: #313033;
+    --md3-color-inverse-on-surface: #F4EFF4;
+    --md3-color-inverse-primary: #D0BCFF;
+    --md3-color-surface-tint: #6750A4; /* primaryと同じ値 */
+  
+    /* Light Theme */
+    --md3-sys-color-primary-light: #6750A4;
+    --md3-sys-color-on-primary-light: #FFFFFF;
+    --md3-sys-color-primary-container-light: #EADDFF;
+    --md3-sys-color-on-primary-container-light: #21005D;
+    --md3-sys-color-secondary-light: #625B71;
+    --md3-sys-color-on-secondary-light: #FFFFFF;
+    --md3-sys-color-secondary-container-light: #E8DEF8;
+    --md3-sys-color-on-secondary-container-light: #1D192B;
+    --md3-sys-color-tertiary-light: #7D5260;
+    --md3-sys-color-on-tertiary-light: #FFFFFF;
+    --md3-sys-color-tertiary-container-light: #FFD8E4;
+    --md3-sys-color-on-tertiary-container-light: #31111D;
+    --md3-sys-color-error-light: #BA1A1A;
+    --md3-sys-color-on-error-light: #FFFFFF;
+    --md3-sys-color-error-container-light: #FFDAD6;
+    --md3-sys-color-on-error-container-light: #410002;
+    --md3-sys-color-background-light: #FFFBFE;
+    --md3-sys-color-on-background-light: #1C1B1F;
+    --md3-sys-color-surface-light: #FFFBFE;
+    --md3-sys-color-on-surface-light: #1C1B1F;
+    --md3-sys-color-surface-variant-light: #E7E0EC;
+    --md3-sys-color-on-surface-variant-light: #49454F;
+    --md3-sys-color-outline-light: #79747E;
+    --md3-sys-color-shadow-light: #000000;
+    --md3-sys-color-inverse-surface-light: #313033;
+    --md3-sys-color-inverse-on-surface-light: #F4EFF4;
+    --md3-sys-color-inverse-primary-light: #D0BCFF;
+    --md3-sys-color-surface-tint-light: #6750A4;
+  
+    /* Typography (サンプル) */
+    --md3-sys-typescale-display-large-font: Roboto;
+    --md3-sys-typescale-display-large-size: 57px;
+    --md3-sys-typescale-display-large-weight: 400;
+    --md3-sys-typescale-headline-large-font: Roboto;
+    --md3-sys-typescale-headline-large-size: 32px;
+    --md3-sys-typescale-headline-large-weight: 400;
+    --md3-sys-typescale-title-large-font: Roboto;
+    --md3-sys-typescale-title-large-size: 22px;
+    --md3-sys-typescale-title-large-weight: 400;
+    --md3-sys-typescale-body-large-font: Roboto;
+    --md3-sys-typescale-body-large-size: 16px;
+    --md3-sys-typescale-body-large-weight: 400;
+    --md3-sys-typescale-label-large-font: Roboto;
+    --md3-sys-typescale-label-large-size: 14px;
+    --md3-sys-typescale-label-large-weight: 500;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: var(--md3-sys-color-background-light);
+    color: var(--md3-sys-color-on-background-light);
+    display: flex; /* Flexbox for main layout */
+    min-height: 100vh;
+  }
+  
+  /* ナビゲーション (Aside) */
+  .md3-nav {
+    width: 280px; /* Standard width for M3 navigation drawer */
+    background-color: var(--md3-sys-color-surface-light);
+    padding: 16px;
+    box-shadow: 1px 0 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0; /* Nav should not shrink */
+  }
+  
+  .md3-nav-logo {
+    font-size: 1.5rem;
+    font-weight: 500;
+    padding: 16px 0;
+    color: var(--md3-sys-color-on-surface-light);
+    text-align: center;
+    margin-bottom: 24px; /* Space after logo */
+  }
+  
+  .md3-nav nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Spacing between navigation items */
+  }
+  
+  .md3-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px; /* Padding for the pill shape */
+    text-decoration: none;
+    color: var(--md3-sys-color-on-surface-variant-light);
+    border-radius: 28px; /* Pill shape for M3 navigation items */
+    transition: background-color 0.2s, color 0.2s;
+    font-size: var(--md3-sys-typescale-label-large-size);
+    font-weight: var(--md3-sys-typescale-label-large-weight);
+    position: relative; /* For potential ripple effect */
+  }
+  
+  .md3-nav-item .material-icons {
+    font-size: 24px;
+  }
+  
+  .md3-nav-item:hover {
+    background-color: var(--md3-sys-color-surface-variant-light);
+    color: var(--md3-sys-color-on-surface-variant-light);
+  }
+  
+  .md3-nav-item.selected {
+    background-color: var(--md3-sys-color-secondary-container-light);
+    color: var(--md3-sys-color-on-secondary-container-light);
+  }
+  
+  /* メインコンテンツ */
+  .md3-main {
+    flex-grow: 1; /* Main content takes remaining space */
+    display: flex;
+    flex-direction: column;
+    background-color: var(--md3-sys-color-background-light);
+  }
+  
+  /* アプリバー */
+  .md3-appbar {
+    background-color: var(--md3-sys-color-surface-light);
+    color: var(--md3-sys-color-on-surface-light);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0; /* App bar should not shrink */
+  }
+  
+  /* 戻るボタンを削除するため、このセレクタを削除または非表示にする */
+  .md3-appbar-icon {
+    /* display: none; */ /* CSSで完全に非表示にする場合 */
+    /* padding: 0; */ /* もし残すとしてもパディングをなくすなど */
+    margin-right: 0; /* マージンも削除 */
+    visibility: hidden; /* HTMLを残しつつ非表示にする場合 */
+    width: 0; /* 領域も削除 */
+    overflow: hidden; /* はみ出しも隠す */
+  }
+  
+  
+  .md3-appbar-title {
+    font-size: var(--md3-sys-typescale-title-large-size);
+    font-weight: var(--md3-sys-typescale-title-large-weight);
+    margin: 0;
+    color: var(--md3-sys-color-on-surface-light);
+  }
+  
+  /* カードグリッド */
+  .md3-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    padding: 24px;
+    flex-grow: 1; /* Allows grid to fill available space */
+    overflow-y: auto; /* Enable scrolling if content overflows */
+  }
+  
+  /* カード */
+  .md3-card {
+    background-color: var(--md3-sys-color-surface-light);
+    border-radius: 12px; /* M3 border radius */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.16);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .md3-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .md3-card-icon {
+    font-size: 24px;
+    color: var(--md3-sys-color-primary-light);
+  }
+  
+  .md3-card-title {
+    font-size: var(--md3-sys-typescale-title-large-size);
+    font-weight: var(--md3-sys-typescale-title-large-weight);
+    margin: 0;
+    color: var(--md3-sys-color-on-surface-light);
+  }
+  
+  .md3-card-desc {
+    font-size: var(--md3-sys-typescale-body-large-size);
+    color: var(--md3-sys-color-on-surface-variant-light);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  
+  .md3-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    justify-content: flex-end; /* Align buttons to the right */
+  }
+  
+  /* ボタン */
+  .md3-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    border-radius: 20px; /* Pill shape for buttons */
+    font-size: var(--md3-sys-typescale-label-large-size);
+    font-weight: var(--md3-sys-typescale-label-large-weight);
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
+    border: none;
+    text-decoration: none;
+    min-width: 80px; /* M3 minimum button width */
+  }
+  
+  .md3-btn .material-icons {
+    margin-right: 8px;
+    font-size: 20px; /* Slightly smaller icon for buttons */
+  }
+  
+  .md3-btn-primary {
+    background-color: var(--md3-sys-color-primary-light);
+    color: var(--md3-sys-color-on-primary-light);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .md3-btn-primary:hover {
+    background-color: var(--md3-sys-color-primary-light); /* Slight darkening or tint change for hover in M3 */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
+  }
+  
+  .md3-btn-tonal {
+    background-color: var(--md3-sys-color-secondary-container-light);
+    color: var(--md3-sys-color-on-secondary-container-light);
+  }
+  
+  .md3-btn-tonal:hover {
+    background-color: var(--md3-sys-color-secondary-container-light); /* Slight darkening or tint change for hover in M3 */
+    opacity: 0.9;
+  }
+  
+  /* テキストエリアと入力フィールド */
+  .md3-textarea,
+  .md3-input,
+  .md3-input select {
+    width: calc(100% - 24px); /* Account for padding */
+    padding: 12px;
+    margin-bottom: 16px;
+    border: 1px solid var(--md3-sys-color-outline-light);
+    border-radius: 8px;
+    font-size: var(--md3-sys-typescale-body-large-size);
+    color: var(--md3-sys-color-on-surface-light);
+    background-color: var(--md3-sys-color-surface-light);
+    box-sizing: border-box; /* Include padding in width */
+  }
+  
+  .md3-textarea::placeholder,
+  .md3-input::placeholder {
+    color: var(--md3-sys-color-on-surface-variant-light);
+    opacity: 0.7;
+  }
+  
+  .md3-textarea:focus,
+  .md3-input:focus,
+  .md3-input select:focus {
+    outline: none;
+    border-color: var(--md3-sys-color-primary-light);
+    box-shadow: 0 0 0 1px var(--md3-sys-color-primary-light);
+  }
+  
+  .md3-textarea {
+    resize: vertical; /* Allow vertical resizing for textareas */
+  }
+  
+  /* ステータス表示 */
+  .md3-status {
+    margin-top: 16px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: var(--md3-sys-typescale-body-large-size);
+    background-color: var(--md3-sys-color-primary-container-light);
+    color: var(--md3-sys-color-on-primary-container-light);
+    display: none; /* Initially hidden */
+  }
+  
+  .md3-status-error {
+    background-color: var(--md3-sys-color-error-container-light);
+    color: var(--md3-sys-color-on-error-container-light);
+  }
+  
+  /* チップ */
+  .md3-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background-color: var(--md3-sys-color-surface-variant-light);
+    color: var(--md3-sys-color-on-surface-variant-light);
+    font-size: var(--md3-sys-typescale-label-large-size);
+    font-weight: var(--md3-sys-typescale-label-large-weight);
+    margin-bottom: 16px;
+  }
+  
+  /* スイッチ */
+  .md3-switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding: 0 4px; /* Slight padding for alignment with other elements */
+  }
+  
+  .md3-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px; /* M3 switch width */
+    height: 32px; /* M3 switch height */
+  }
+  
+  .md3-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .md3-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--md3-sys-color-outline-light); /* Off state */
+    transition: 0.4s;
+    border-radius: 16px; /* Pill shape */
+  }
+  
+  .md3-switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 24px; /* Handle size */
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--md3-sys-color-surface-light); /* Handle color off */
+    border-radius: 50%; /* Circle handle */
+    transition: 0.4s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  input:checked + .md3-switch-slider {
+    background-color: var(--md3-sys-color-primary-light); /* On state */
+  }
+  
+  input:checked + .md3-switch-slider:before {
+    transform: translateX(20px); /* Move handle to right */
+    background-color: var(--md3-sys-color-on-primary-light); /* Handle color on */
+  }
+  
+  .md3-switch-row label {
+    font-size: var(--md3-sys-typescale-body-large-size);
+    color: var(--md3-sys-color-on-surface-light);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+  }
+  
+  /* リスト */
+  .md3-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 16px;
+    border-top: 1px solid var(--md3-sys-color-surface-variant-light);
+  }
+  
+  .md3-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--md3-sys-color-surface-variant-light);
+    color: var(--md3-sys-color-on-surface-light);
+    font-size: var(--md3-sys-typescale-body-large-size);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .md3-list li:last-child {
+    border-bottom: none;
+  }
+  
+  .md3-list li button {
+    background: none;
+    border: none;
+    color: var(--md3-sys-color-error-light);
+    cursor: pointer;
+    font-size: var(--md3-sys-typescale-label-large-size);
+    font-weight: var(--md3-sys-typescale-label-large-weight);
+    padding: 6px 12px;
+    border-radius: 16px;
+    transition: background-color 0.2s;
+  }
+  
+  .md3-list li button:hover {
+    background-color: rgba(var(--md3-sys-color-error-light), 0.08);
+  }
+  
+  
+  /* ダイアログの基本的なスタイル (画像から推測) */
+  .md3-dialog-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black overlay */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000; /* Ensure it's on top */
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  .md3-dialog-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+  }
+  
+  .md3-dialog {
+      background-color: var(--md3-sys-color-surface-light);
+      border-radius: 28px; /* M3 large radius for dialogs */
+      box-shadow: 0 11px 15px -7px rgba(0,0,0,0.2), 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12); /* M3 elevated shadow */
+      padding: 24px;
+      max-width: 360px; /* Common dialog width */
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  .md3-dialog-backdrop.open .md3-dialog {
+      opacity: 1;
+      transform: scale(1);
+  }
+  
+  .md3-dialog-title {
+      font-size: var(--md3-sys-typescale-headline-large-size);
+      font-weight: var(--md3-sys-typescale-headline-large-weight);
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: var(--md3-sys-color-on-surface-light);
+  }
+  
+  .md3-dialog-content {
+      font-size: var(--md3-sys-typescale-body-large-size);
+      color: var(--md3-sys-color-on-surface-variant-light);
+      margin-bottom: 24px;
+      line-height: 1.5;
+  }
+  
+  .md3-dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-top: 8px;
+  }
+  
+  /* ダイアログ内の選択肢 (ラジオボタンなど) のスタイル */
+  .md3-dialog-option {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      cursor: pointer;
+      font-size: var(--md3-sys-typescale-body-large-size);
+      color: var(--md3-sys-color-on-surface-variant-light);
+  }
+  
+  .md3-dialog-option input[type="radio"] {
+      margin-right: 12px;
+      accent-color: var(--md3-sys-color-primary-light); /* M3 radio button color */
+  }
+  
+  /* レスポンシブ対応 (簡易的な例) */
+  @media (max-width: 768px) {
+    .md3-nav {
+      width: 250px;
+      /* Hide nav by default and use a toggle for mobile if needed */
+    }
+  
+    .md3-main {
+      margin-left: 0; /* No margin on small screens if nav is hidden */
+    }
+  
+    .md3-card-grid {
+      grid-template-columns: 1fr; /* Single column on small screens */
+      padding: 16px;
+    }
+  
+    /* モバイルでアプリバーアイコンを常に非表示にする */
+    .md3-appbar-icon {
+      display: none;
+    }
+  }
