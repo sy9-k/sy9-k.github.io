@@ -88,7 +88,15 @@ window.i18n = {
     loading_video: "動画を読み込み中...",
     hide: "非表示",
     show: "表示",
-    close: "閉じる"
+    close: "閉じる",
+    // ライブ配信関連
+    ent_live_streams: "ライブ配信",
+    error_no_live_id: "ライブ配信IDが指定されていません。",
+    error_live_not_found: "指定されたライブ配信が見つかりません。",
+    error_no_stream_url: "このライブ配信のストリームURLが設定されていません。",
+    error_loading_failed_live: "ライブ配信の読み込みに失敗しました。",
+    loading_live: "ライブ配信を読み込み中...",
+    watch_live: "ライブ配信を見る"
   },
   en: {
     entertainment: "Entertainment",
@@ -180,7 +188,15 @@ window.i18n = {
     loading_video: "Loading video...",
     hide: "Hide",
     show: "Show",
-    close: "Close"
+    close: "Close",
+    // ライブ配信関連
+    ent_live_streams: "Live Streams",
+    error_no_live_id: "No live stream ID specified.",
+    error_live_not_found: "The specified live stream was not found.",
+    error_no_stream_url: "Stream URL is not set for this live stream.",
+    error_loading_failed_live: "Failed to load live stream.",
+    loading_live: "Loading live stream...",
+    watch_live: "Watch Live Stream"
   },
   ko: {
     entertainment: "엔터테인먼트",
@@ -272,7 +288,15 @@ window.i18n = {
     loading_video: "동영상 로딩 중...",
     hide: "숨기기",
     show: "표시",
-    close: "닫기"
+    close: "닫기",
+    // ライブ配信関連
+    ent_live_streams: "라이브 스트림",
+    error_no_live_id: "라이브 스트림 ID가 지정되지 않았습니다.",
+    error_live_not_found: "지정된 라이브 스트림을 찾을 수 없습니다.",
+    error_no_stream_url: "이 라이브 스트림의 스트림 URL이 설정되지 않았습니다.",
+    error_loading_failed_live: "라이브 스트림 로딩에 실패했습니다.",
+    loading_live: "라이브 스트림 로딩 중...",
+    watch_live: "라이브 스트림 보기"
   },
   zh: {
     entertainment: "娱乐",
@@ -364,6 +388,14 @@ window.i18n = {
     loading_video: "正在加载视频...",
     hide: "隐藏",
     show: "显示",
-    close: "关闭"
+    close: "关闭",
+    // ライブ配信関連
+    ent_live_streams: "直播",
+    error_no_live_id: "未指定直播ID。",
+    error_live_not_found: "未找到指定的直播。",
+    error_no_stream_url: "此直播的流媒体URL未设置。",
+    error_loading_failed_live: "直播加载失败。",
+    loading_live: "正在加载直播...",
+    watch_live: "观看直播"
   }
 };

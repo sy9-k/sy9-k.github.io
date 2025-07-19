@@ -21,7 +21,8 @@ window.contentData = {
         backgroundColor: "#4b9cf5",
         coverImage: "http://img.youtube.com/vi/D6EaJTkVsFQ/hqdefault.jpg", // カバー画像パス
         episode: "Myk LIVE KPOP",
-        youtubeId: "D6EaJTkVsFQ" // YouTube動画ID
+        youtubeId: "D6EaJTkVsFQ", // YouTube動画ID
+        availableLanguages: ["ko", "en"] // 利用可能言語（韓国語、英語のみ）
       }
     ]
   },
@@ -38,7 +39,8 @@ window.contentData = {
         backgroundColor: "#33ab9f",
         coverImage: "image/covers/drama-series-ep1.jpg",
         episode: "第1話",
-        youtubeId: "dQw4w9WgXcQ" // YouTube動画ID
+        youtubeId: "dQw4w9WgXcQ", // YouTube動画ID
+        availableLanguages: ["ja", "en", "ko", "zh"] // 利用可能言語（全言語対応）
       }
     ]
   },
@@ -55,27 +57,8 @@ window.contentData = {
         backgroundColor: "#ff6b35",
         coverImage: "image/covers/space-exploration-2025.jpg",
         genre: "アクション・SF",
-        youtubeId: "dQw4w9WgXcQ" // YouTube動画ID
-      },
-      {
-        id: "family-bonds",
-        title: "家族の絆",
-        category: "2025 ドラマ",
-        description: "心温まる家族ドラマ「家族の絆」です。家族愛と絆の大切さを描いた感動的な作品です。\n\n現代社会で忙しく過ごす家族が、ある出来事をきっかけに家族の絆について見つめ直す感動的なドラマです。仕事、学校、そして様々な問題に直面しながらも、家族の愛が人々を支えていく姿を描いています。\n\n視聴時間：約90分\n言語：日本語、英語、韓国語、中国語対応\n字幕：日本語、英語、韓国語、中国語対応\n\n出演者：\n・主演：田中花子\n・共演：佐藤次郎、鈴木美咲\n・監督：山田太郎\n\nこの作品は、機内での快適な時間をお過ごしいただくために特別に制作されました。心温まる家族の物語をお楽しみください。",
-        backgroundColor: "#4ecdc4",
-        coverImage: "image/covers/family-bonds.jpg",
-        genre: "ドラマ",
-        youtubeId: "dQw4w9WgXcQ" // YouTube動画ID
-      },
-      {
-        id: "mystery-hotel",
-        title: "ミステリー・ホテル",
-        category: "2025 サスペンス",
-        description: "謎に満ちたホテルを舞台にしたサスペンス映画「ミステリー・ホテル」です。\n\n古いホテルで起こる不可解な事件を追う刑事と、その事件に巻き込まれた人々の運命を描いたサスペンス映画です。複雑に絡み合った人間関係と、真相に迫る緊張感あふれるストーリーをお楽しみください。\n\n視聴時間：約105分\n言語：日本語、英語、韓国語、中国語対応\n字幕：日本語、英語、韓国語、中国語対応\n\n出演者：\n・主演：マイケル・デイビス\n・共演：サラ・ウィルソン、トム・ロバーツ\n・監督：デビッド・ミラー\n\nこの作品は、機内での快適な時間をお過ごしいただくために特別に制作されました。謎解きの楽しさとサスペンスの緊張感をお楽しみください。",
-        backgroundColor: "#8e44ad",
-        coverImage: "image/covers/mystery-hotel.jpg",
-        genre: "サスペンス",
-        youtubeId: "dQw4w9WgXcQ" // YouTube動画ID
+        youtubeId: "dQw4w9WgXcQ", // YouTube動画ID
+        availableLanguages: ["ja", "en", "ko", "zh"] // 利用可能言語（全言語対応）
       }
     ]
   },
@@ -92,17 +75,40 @@ window.contentData = {
         backgroundColor: "#f39c12",
         coverImage: "image/covers/adventure-world.jpg",
         genre: "ファンタジー",
-        youtubeId: "dQw4w9WgXcQ" // YouTube動画ID
+        youtubeId: "dQw4w9WgXcQ", // YouTube動画ID
+        availableLanguages: ["ja", "en", "ko", "zh"] // 利用可能言語（全言語対応）
+      },
+    ]
+  },
+
+  // ライブ配信
+  liveStreams: {
+    title: "ライブ配信",
+    items: [
+      {
+        id: "ntv-newslive",
+        title: "24H NEWS LIVE - 日テレ",
+        category: "2025 ニュース・情報",
+        description: "最新のニュースをライブ配信でお届けします。\n\n世界中で起こっている最新の出来事をリアルタイムでお届けするニュースライブ配信です。政治、経済、スポーツ、エンターテイメントなど、様々な分野の最新情報をお楽しみください。\n\n配信時間：24時間\n言語：日本語対応\n字幕：日本語対応\n\nこのライブ配信は、機内での最新情報をお届けするために特別に制作されています。リアルタイムのニュースをお楽しみください。",
+        backgroundColor: "#ff0000",
+        coverImage: "http://img.youtube.com/vi/t9kwjZBLI-A/maxresdefault.jpg",
+        genre: "ニュース",
+        liveStreamUrl: "https://www.youtube.com/watch?v=t9kwjZBLI-A", // ライブ配信URL
+        availableLanguages: [], // ライブ配信は言語選択不可
+        isLiveStream: true // ライブ配信フラグ
       },
       {
-        id: "future-city",
-        title: "未来都市",
-        category: "2025 アニメ・SF",
-        description: "近未来を舞台にしたSFアニメ「未来都市」です。テクノロジーと人間の関係を描いた作品です。\n\n高度なテクノロジーが発達した近未来都市を舞台に、人間とAIの共存について考えさせられるSFアニメです。美しい都市景観と、人間らしさについて深く考えさせられるストーリーをお楽しみください。\n\n視聴時間：約95分\n言語：日本語、英語、韓国語、中国語対応\n字幕：日本語、英語、韓国語、中国語対応\n\n声優：\n・主人公：田中未来\n・AIキャラクター：佐藤テック\n・ヒロイン：鈴木美咲\n・監督：山田サイエンス\n\nこの作品は、機内での快適な時間をお過ごしいただくために特別に制作されました。未来の世界観とテクノロジーの進歩をお楽しみください。",
-        backgroundColor: "#3498db",
-        coverImage: "image/covers/future-city.jpg",
-        genre: "SF",
-        youtubeId: "dQw4w9WgXcQ" // YouTube動画ID
+        id: "kbs-musiclive",
+        title: "THE KPOP:24/7 LIVE(K-POP시간 실시간 스트리밍 채널)",
+        category: "2025 音楽・KPOP",
+        description: "世界中のK-POPファンのために、「MUCIC BANK」をはじめとするKBSの音楽番組を24時間楽しむことができます。\nFor K-Pop fans around the world, you can enjoy 'Music Bank' and other KBS music programs during 24 hours.\n전세계 K-Pop 팬들을 위해 뮤직뱅크를 비롯해 다양한 KBS 음악프로그램을 24시간 언제든지 즐기실 수 있습니다.\n\nこのライブ配信は、機内での特別な音楽体験をお届けするために制作されています。生演奏の感動をお楽しみください。",
+        backgroundColor: "#9b59b6",
+        coverImage: "http://img.youtube.com/vi/JVocS7Yftw8/mqdefault.jpg",
+        genre: "音楽",
+        liveStreamUrl: "https://www.youtube.com/watch?v=JVocS7Yftw8", // ライブ配信URL
+        availableLanguages: [], // ライブ配信は言語選択不可
+        isLiveStream: true // ライブ配信フラグ
+      
       }
     ]
   }
@@ -116,7 +122,8 @@ window.getContentData = {
       ...this.getAllPopular(),
       ...this.getAllRecommended(),
       ...this.getAllLatestMovies(),
-      ...this.getAllAnime()
+      ...this.getAllAnime(),
+      ...this.getAllLiveStreams()
     ];
     return allItems.find(item => item.id === id);
   },
@@ -141,13 +148,19 @@ window.getContentData = {
     return contentData.anime.items;
   },
 
+  // ライブ配信をすべて取得
+  getAllLiveStreams: function() {
+    return contentData.liveStreams.items;
+  },
+
   // カテゴリー別に作品を取得
   getByCategory: function(category) {
     const allItems = [
       ...this.getAllPopular(),
       ...this.getAllRecommended(),
       ...this.getAllLatestMovies(),
-      ...this.getAllAnime()
+      ...this.getAllAnime(),
+      ...this.getAllLiveStreams()
     ];
     return allItems.filter(item => item.category === category);
   },
@@ -158,7 +171,8 @@ window.getContentData = {
       ...this.getAllPopular(),
       ...this.getAllRecommended(),
       ...this.getAllLatestMovies(),
-      ...this.getAllAnime()
+      ...this.getAllAnime(),
+      ...this.getAllLiveStreams()
     ];
     return allItems.filter(item => item.genre === genre);
   }

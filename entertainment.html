@@ -356,6 +356,16 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       box-shadow: 0 8px 24px rgba(25, 118, 210, 0.3);
     }
     
+    .content-modal-image.has-image::before {
+      display: none;
+    }
+    
+    .content-modal-image.has-image {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
     .content-modal-description {
       font-size: 1rem;
       color: #555555;
@@ -370,6 +380,36 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     .content-modal.show .content-modal-description {
       opacity: 1;
       transform: translateY(0);
+    }
+
+    /* ライブ配信バッジのアニメーション */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    /* ライブ配信アイテムのスタイル */
+    .live-stream-item {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .live-stream-item:hover {
+      transform: scale(1.05);
+    }
+
+    .live-stream-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #ff0000;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      z-index: 10;
     }
     
     /* 言語選択モーダル */
@@ -479,6 +519,22 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     .language-option.selected {
       background: #e3f2fd;
       border-color: #1976d2;
+    }
+    
+    .language-option.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      background: #f5f5f5;
+    }
+    
+    .language-option.disabled:hover {
+      background: #f5f5f5;
+      border-color: #e0e0e0;
+    }
+    
+    .language-option.disabled .language-name,
+    .language-option.disabled .language-native {
+      color: #999;
     }
     
     .language-flag {
@@ -809,12 +865,22 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
         <div id="ent-popular-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
         <div id="popular-content-container"></div>
+        </div>
+
+      <!-- ライブ配信セクション -->
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+        <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;display:flex;align-items:center;gap:12px;">
+          <span>ライブ配信</span>
+          <span style="background:#ff0000;color:#fff;padding:4px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;animation:pulse 2s infinite;">LIVE</span>
       </div>
+        <div id="live-stream-container"></div>
+      </div>
+
       <!-- おすすめTV番組セクション（追加） -->
       <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
         <div id="ent-recommended-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
         <div id="recommended-content-container"></div>
-      </div>
+        </div>
 
       <!-- 最新映画セクション -->
       <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
@@ -931,6 +997,9 @@ body[lang="zh"], html[lang="zh"] .home-modern {
           if (recMain) recMain.textContent = i18n.ent_recommended_main || 'ドラマシリーズ';
           const recEp = document.getElementById('ent-recommended-ep');
           if (recEp) recEp.textContent = i18n.ent_recommended_ep || '第1話';
+          // ライブ配信セクション
+          const liveTitle = document.querySelector('#live-stream-container').previousElementSibling.querySelector('span:first-child');
+          if (liveTitle) liveTitle.textContent = i18n.ent_live_streams || 'ライブ配信';
           // フッター
           const depLabel = document.getElementById('hm-dep-label');
           const arrLabel = document.getElementById('hm-arr-label');
@@ -1055,10 +1124,10 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         document.body.style.filter = `brightness(${brightness}%)`;
       }
       var brightnessSlider = document.getElementById('brightness-slider');
-      if (brightnessSlider) {
+    if (brightnessSlider) {
         brightnessSlider.value = brightness || brightnessSlider.value;
-        brightnessSlider.oninput = function() {
-          document.body.style.filter = `brightness(${this.value}%)`;
+      brightnessSlider.oninput = function() {
+        document.body.style.filter = `brightness(${this.value}%)`;
           localStorage.setItem('brightnessPercent', this.value);
         };
       }
@@ -1257,6 +1326,61 @@ body[lang="zh"], html[lang="zh"] .home-modern {
           }
         });
       }
+
+      // ライブ配信セクション
+      const liveStreamContainer = document.getElementById('live-stream-container');
+      if (liveStreamContainer && contentData.liveStreams && contentData.liveStreams.items.length > 0) {
+        liveStreamContainer.innerHTML = `
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">
+            ${contentData.liveStreams.items.map(item => {
+              const coverStyle = item.coverImage ? 
+                `background-image: url('${item.coverImage}'); background-size: cover; background-position: center;` : 
+                `background: ${item.backgroundColor || '#ff0000'};`;
+              
+              return `
+                <div class="live-stream-item clickable-content-item" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/"/g, '&quot;')}" data-live-id="${item.id}">
+                  <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;">
+                    ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
+                    <div class="live-stream-badge">LIVE</div>
+                  </div>
+                  <div style="font-size:1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.genre || 'ライブ配信'}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+        
+        // クリックイベントを追加
+        const liveStreamItems = liveStreamContainer.querySelectorAll('.live-stream-item');
+        liveStreamItems.forEach(item => {
+          item.addEventListener('click', function() {
+            const title = this.getAttribute('data-title');
+            const category = this.getAttribute('data-category');
+            const description = this.getAttribute('data-description');
+            const liveId = this.getAttribute('data-live-id');
+            
+            // ライブ配信の場合は特別なモーダルを開く
+            if (liveId) {
+              openLiveStreamModal(title, category, description, liveId);
+            } else {
+              openContentModal(title, category, description);
+            }
+          });
+        });
+        
+        // カバー画像がある作品にタイトルオーバーレイを追加
+        contentData.liveStreams.items.forEach((item, index) => {
+          if (item.coverImage) {
+            const coverDivs = liveStreamContainer.querySelectorAll('div[style*="background-image"]');
+            if (coverDivs[index]) {
+              const overlayDiv = document.createElement('div');
+              overlayDiv.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:6px;font-size:1rem;text-align:center;border-radius:0 0 8px 8px;';
+              overlayDiv.textContent = item.title;
+              coverDivs[index].appendChild(overlayDiv);
+            }
+          }
+        });
+      }
     }
 
     // コンテンツ詳細モーダル制御
@@ -1266,6 +1390,47 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       document.getElementById('modal-title').textContent = title;
       document.getElementById('modal-category').textContent = category;
       document.getElementById('modal-description').innerHTML = description.replace(/\n/g, '<br>');
+      
+      // コンテンツデータから画像を検索・設定
+      const allItems = [
+        ...getContentData.getAllPopular(),
+        ...getContentData.getAllRecommended(),
+        ...getContentData.getAllLatestMovies(),
+        ...getContentData.getAllAnime(),
+        ...getContentData.getAllLiveStreams()
+      ];
+      
+      const content = allItems.find(item => 
+        item.title === title && item.category === category
+      );
+      
+      const modalImage = document.querySelector('.content-modal-image');
+      if (modalImage) {
+        if (content && content.coverImage) {
+          // 画像の読み込みをテスト
+          const testImage = new Image();
+          testImage.crossOrigin = 'anonymous'; // CORS対応
+          
+          testImage.onload = function() {
+            modalImage.style.backgroundImage = `url(${content.coverImage})`;
+            modalImage.classList.add('has-image');
+            console.log('画像を設定:', content.coverImage);
+          };
+          
+          testImage.onerror = function() {
+            console.log('画像の読み込みに失敗:', content.coverImage);
+            // デフォルト画像を設定
+            modalImage.style.backgroundImage = 'url(image/default-cover.jpg)';
+            modalImage.classList.add('has-image');
+          };
+          
+          testImage.src = content.coverImage;
+        } else {
+          modalImage.style.backgroundImage = 'none';
+          modalImage.classList.remove('has-image');
+          console.log('画像が見つかりません');
+        }
+      }
       
       const overlay = document.getElementById('content-modal-overlay');
       const modal = document.getElementById('content-modal');
@@ -1282,10 +1447,89 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         console.log('Modal should be visible now');
       }, 50);
     }
+
+    // ライブ配信専用モーダル制御
+    function openLiveStreamModal(title, category, description, liveId) {
+      console.log('openLiveStreamModal called:', title, category, liveId);
+      
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-category').textContent = category + ' (ライブ配信)';
+      document.getElementById('modal-description').innerHTML = description.replace(/\n/g, '<br>');
+      
+      // ライブ配信データから画像を検索・設定
+      const liveStreams = getContentData.getAllLiveStreams();
+      const liveContent = liveStreams.find(item => item.id === liveId);
+      
+      const modalImage = document.querySelector('.content-modal-image');
+      if (modalImage) {
+        if (liveContent && liveContent.coverImage) {
+          // 画像の読み込みをテスト
+          const testImage = new Image();
+          testImage.crossOrigin = 'anonymous'; // CORS対応
+          
+          testImage.onload = function() {
+            modalImage.style.backgroundImage = `url(${liveContent.coverImage})`;
+            modalImage.classList.add('has-image');
+            console.log('ライブ配信画像を設定:', liveContent.coverImage);
+          };
+          
+          testImage.onerror = function() {
+            console.log('ライブ配信画像の読み込みに失敗:', liveContent.coverImage);
+            // ライブ配信用のデフォルト画像を設定
+            modalImage.style.backgroundImage = 'url(image/live-stream-default.jpg)';
+            modalImage.classList.add('has-image');
+          };
+          
+          testImage.src = liveContent.coverImage;
+        } else {
+          // ライブ配信用のデフォルト画像を設定
+          modalImage.style.backgroundImage = 'url(image/live-stream-default.jpg)';
+          modalImage.classList.add('has-image');
+          console.log('ライブ配信デフォルト画像を設定');
+        }
+      }
+      
+      // ライブ配信用のボタンテキストを変更
+      const playBtn = document.getElementById('modal-play-btn');
+      if (playBtn) {
+        playBtn.innerHTML = '<span class="material-icons">live_tv</span><span id="modal-play-text">ライブ配信を見る</span>';
+      }
+      
+      const overlay = document.getElementById('content-modal-overlay');
+      const modal = document.getElementById('content-modal');
+      
+      // まずオーバーレイを表示
+      overlay.classList.add('show');
+      
+      // 少し遅延してからモーダルを表示
+      setTimeout(() => {
+        modal.classList.add('show');
+        console.log('Live stream modal should be visible now');
+      }, 50);
+      
+      // ライブ配信IDを保存
+      modal.setAttribute('data-live-id', liveId);
+    }
     
     function closeContentModal() {
       const overlay = document.getElementById('content-modal-overlay');
       const modal = document.getElementById('content-modal');
+      
+      // 画像をリセット
+      const modalImage = document.querySelector('.content-modal-image');
+      if (modalImage) {
+        modalImage.style.backgroundImage = 'none';
+        modalImage.classList.remove('has-image');
+      }
+      
+      // ライブ配信IDをクリア
+      modal.removeAttribute('data-live-id');
+      
+      // ボタンテキストをリセット
+      const playBtn = document.getElementById('modal-play-btn');
+      if (playBtn) {
+        playBtn.innerHTML = '<span class="material-icons">play_arrow</span><span id="modal-play-text">再生する</span>';
+      }
       
       // モーダルとオーバーレイを同時に非表示
       modal.classList.remove('show');
@@ -1306,29 +1550,38 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       
       // 再生ボタン
       document.getElementById('modal-play-btn').addEventListener('click', function() {
-        // 現在表示されているモーダルのコンテンツIDを取得
-        const modalTitle = document.getElementById('modal-title').textContent;
-        const modalCategory = document.getElementById('modal-category').textContent;
+        // ライブ配信IDが設定されているかチェック
+        const modal = document.getElementById('content-modal');
+        const liveId = modal.getAttribute('data-live-id');
         
-        // コンテンツIDを検索
-        let contentId = null;
-        const allItems = [
-          ...getContentData.getAllPopular(),
-          ...getContentData.getAllRecommended(),
-          ...getContentData.getAllLatestMovies(),
-          ...getContentData.getAllAnime()
-        ];
-        
-        const content = allItems.find(item => 
-          item.title === modalTitle && item.category === modalCategory
-        );
-        
-        if (content) {
-          contentId = content.id;
-          // player/et-movie.htmlに遷移
-          window.location.href = `player/et-movie.html?id=${contentId}`;
+        if (liveId) {
+          // ライブ配信の場合はetl-movie.htmlに遷移
+          window.location.href = `player/etl-movie.html?id=${liveId}`;
         } else {
-          alert('コンテンツ情報が見つかりません。');
+          // 通常の動画の場合はet-movie.htmlに遷移
+          const modalTitle = document.getElementById('modal-title').textContent;
+          const modalCategory = document.getElementById('modal-category').textContent;
+          
+          // コンテンツIDを検索
+          let contentId = null;
+          const allItems = [
+            ...getContentData.getAllPopular(),
+            ...getContentData.getAllRecommended(),
+            ...getContentData.getAllLatestMovies(),
+            ...getContentData.getAllAnime()
+          ];
+          
+          const content = allItems.find(item => 
+            item.title === modalTitle && item.category === modalCategory
+          );
+          
+          if (content) {
+            contentId = content.id;
+            // player/et-movie.htmlに遷移
+            window.location.href = `player/et-movie.html?id=${contentId}`;
+          } else {
+            alert('コンテンツ情報が見つかりません。');
+          }
         }
         
         closeContentModal();
@@ -1352,24 +1605,48 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       });
       
       // Escapeキーでモーダルを閉じる
-      document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
           closeContentModal();
           closeLanguageModal();
         }
         
         // Sキーでセーフティビデオページへ遷移
-        if (e.key === 's' || e.key === 'S') {
-          window.location.href = 'sb-movie.html';
-        }
-      });
+      if (e.key === 's' || e.key === 'S') {
+        window.location.href = 'sb-movie.html';
+      }
+    });
     });
     
     // 言語選択モーダル制御
     let selectedAudioLanguage = 'ja';
     let selectedSubtitleLanguage = 'ja';
+    let currentContentForLanguage = null;
     
     function openLanguageModal() {
+      // 現在表示されているモーダルのコンテンツ情報を取得
+      const modalTitle = document.getElementById('modal-title').textContent;
+      const modalCategory = document.getElementById('modal-category').textContent;
+      
+      // コンテンツIDを検索
+      const allItems = [
+        ...getContentData.getAllPopular(),
+        ...getContentData.getAllRecommended(),
+        ...getContentData.getAllLatestMovies(),
+        ...getContentData.getAllAnime(),
+        ...getContentData.getAllLiveStreams()
+      ];
+      
+      currentContentForLanguage = allItems.find(item => 
+        item.title === modalTitle && item.category === modalCategory
+      );
+      
+      // ライブ配信の場合は言語選択を無効にする
+      if (currentContentForLanguage && currentContentForLanguage.isLiveStream) {
+        alert('ライブ配信では言語選択はできません。');
+        return;
+      }
+      
       document.getElementById('language-modal-overlay').classList.add('show');
       document.getElementById('language-modal').classList.add('show');
       updateLanguageSelection();
@@ -1381,6 +1658,25 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     }
     
     function selectAudioLanguage(langCode) {
+      // ライブ配信の場合は言語選択を無効にする
+      if (currentContentForLanguage && currentContentForLanguage.isLiveStream) {
+        alert('ライブ配信では言語選択はできません。');
+        return;
+      }
+      
+      // 利用可能言語をチェック
+      if (currentContentForLanguage && currentContentForLanguage.availableLanguages && 
+          currentContentForLanguage.availableLanguages.length > 0) {
+        if (!currentContentForLanguage.availableLanguages.includes(langCode)) {
+          const availableLangNames = currentContentForLanguage.availableLanguages.map(lang => {
+            const langNames = { 'ja': '日本語', 'en': 'English', 'ko': '한국어', 'zh': '中文' };
+            return langNames[lang] || lang;
+          }).join('、');
+          alert(`この作品では以下の言語のみ選択可能です：${availableLangNames}`);
+          return;
+        }
+      }
+      
       // 音声言語の選択をクリア
       document.querySelectorAll('[id^="audio-"]').forEach(check => {
         check.textContent = '';
@@ -1392,6 +1688,25 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     }
     
     function selectSubtitleLanguage(langCode) {
+      // ライブ配信の場合は言語選択を無効にする
+      if (currentContentForLanguage && currentContentForLanguage.isLiveStream) {
+        alert('ライブ配信では言語選択はできません。');
+        return;
+      }
+      
+      // 利用可能言語をチェック
+      if (currentContentForLanguage && currentContentForLanguage.availableLanguages && 
+          currentContentForLanguage.availableLanguages.length > 0) {
+        if (!currentContentForLanguage.availableLanguages.includes(langCode)) {
+          const availableLangNames = currentContentForLanguage.availableLanguages.map(lang => {
+            const langNames = { 'ja': '日本語', 'en': 'English', 'ko': '한국어', 'zh': '中文' };
+            return langNames[lang] || lang;
+          }).join('、');
+          alert(`この作品では以下の言語のみ選択可能です：${availableLangNames}`);
+          return;
+        }
+      }
+      
       // 字幕言語の選択をクリア
       document.querySelectorAll('[id^="subtitle-"]').forEach(check => {
         check.textContent = '';
@@ -1417,9 +1732,36 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         check.textContent = '';
       });
       
+      // 利用可能言語をチェックして選択を調整
+      if (currentContentForLanguage && currentContentForLanguage.availableLanguages && 
+          currentContentForLanguage.availableLanguages.length > 0) {
+        
+        console.log('利用可能言語チェック:', currentContentForLanguage.availableLanguages);
+        console.log('現在の選択:', { audio: selectedAudioLanguage, subtitle: selectedSubtitleLanguage });
+        
+        // 音声言語が利用可能でない場合は最初の利用可能言語に変更
+        if (!currentContentForLanguage.availableLanguages.includes(selectedAudioLanguage)) {
+          selectedAudioLanguage = currentContentForLanguage.availableLanguages[0];
+          console.log('音声言語を変更:', selectedAudioLanguage);
+        }
+        
+        // 字幕言語が利用可能でない場合は最初の利用可能言語に変更
+        if (!currentContentForLanguage.availableLanguages.includes(selectedSubtitleLanguage)) {
+          selectedSubtitleLanguage = currentContentForLanguage.availableLanguages[0];
+          console.log('字幕言語を変更:', selectedSubtitleLanguage);
+        }
+      } else if (currentContentForLanguage && currentContentForLanguage.isLiveStream) {
+        // ライブ配信の場合は言語選択を無効にする
+        console.log('ライブ配信のため言語選択を無効化');
+        return;
+      }
+      
       // 現在の選択をマーク
       document.getElementById(`audio-${selectedAudioLanguage}`).textContent = '✓';
       document.getElementById(`subtitle-${selectedSubtitleLanguage}`).textContent = '✓';
+      
+      // 利用可能言語のみを有効にする
+      updateAvailableLanguageOptions();
     }
     
     function confirmLanguageSelection() {
@@ -1445,6 +1787,67 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         'off': '字幕なし'
       };
       return langNames[langCode] || langCode;
+    }
+    
+    // 利用可能言語のみを有効にする関数
+    function updateAvailableLanguageOptions() {
+      const allLanguages = ['ja', 'en', 'ko', 'zh'];
+      const availableLanguages = currentContentForLanguage && currentContentForLanguage.availableLanguages ? 
+        currentContentForLanguage.availableLanguages : allLanguages;
+      
+      console.log('利用可能言語:', availableLanguages);
+      console.log('現在のコンテンツ:', currentContentForLanguage);
+      
+      // 音声言語のオプションを更新
+      allLanguages.forEach(lang => {
+        const audioElement = document.getElementById(`audio-${lang}`);
+        const subtitleElement = document.getElementById(`subtitle-${lang}`);
+        const audioOption = audioElement ? audioElement.closest('.language-option') : null;
+        const subtitleOption = subtitleElement ? subtitleElement.closest('.language-option') : null;
+        
+        if (audioElement && audioOption) {
+          if (availableLanguages.includes(lang)) {
+            audioElement.style.opacity = '1';
+            audioElement.style.cursor = 'pointer';
+            audioElement.style.color = '#1976d2';
+            audioElement.title = '';
+            audioOption.classList.remove('disabled');
+          } else {
+            audioElement.style.opacity = '0.3';
+            audioElement.style.cursor = 'not-allowed';
+            audioElement.style.color = '#999';
+            audioElement.title = 'この言語は利用できません';
+            audioOption.classList.add('disabled');
+          }
+        }
+        
+        if (subtitleElement && subtitleOption) {
+          if (availableLanguages.includes(lang)) {
+            subtitleElement.style.opacity = '1';
+            subtitleElement.style.cursor = 'pointer';
+            subtitleElement.style.color = '#1976d2';
+            subtitleElement.title = '';
+            subtitleOption.classList.remove('disabled');
+          } else {
+            subtitleElement.style.opacity = '0.3';
+            subtitleElement.style.cursor = 'not-allowed';
+            subtitleElement.style.color = '#999';
+            subtitleElement.title = 'この言語は利用できません';
+            subtitleOption.classList.add('disabled');
+          }
+        }
+      });
+      
+      // 字幕なしオプションは常に有効
+      const subtitleOffElement = document.getElementById('subtitle-off');
+      const subtitleOffOption = subtitleOffElement ? subtitleOffElement.closest('.language-option') : null;
+      if (subtitleOffElement && subtitleOffOption) {
+        subtitleOffElement.style.opacity = '1';
+        subtitleOffElement.style.cursor = 'pointer';
+        subtitleOffElement.style.color = '#1976d2';
+        subtitleOffElement.title = '';
+        subtitleOffOption.classList.remove('disabled');
+      }
     }
     
 

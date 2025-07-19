@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>エンターテイメント動画プレイヤー</title>
+  <title>ライブ配信プレイヤー</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Open+Sans:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
   <script src="../js/i18n.js"></script>
@@ -35,6 +35,43 @@
       width: 100%;
       height: 100%;
       border: none;
+    }
+
+    /* ライブ配信バッジ */
+    .live-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #ff0000;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: pulse 2s infinite;
+    }
+
+    .live-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
     }
 
     /* バナー */
@@ -142,22 +179,6 @@
       transition: opacity 0.3s ease;
     }
 
-    .banner {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      padding: 16px 20px;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: opacity 0.3s ease;
-    }
-
     .video-container:hover .video-controls {
       opacity: 1;
     }
@@ -202,6 +223,33 @@
       width: 64px;
       height: 64px;
       font-size: 1.5rem;
+    }
+
+    /* ライブ配信専用コントロール */
+    .live-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .live-quality-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s ease;
+    }
+
+    .live-quality-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .live-quality-btn.active {
+      background: #ff0000;
     }
 
     /* ローディング */
@@ -272,6 +320,13 @@
         left: 10px;
         right: 10px;
         padding: 12px 16px;
+      }
+
+      .live-badge {
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
       }
 
       .banner-thumbnail {
@@ -487,22 +542,27 @@
 </head>
 <body>
   <div class="video-container">
+    <!-- ライブ配信バッジ -->
+    <div class="live-badge">
+      LIVE
+    </div>
+
     <!-- ローディング表示 -->
     <div class="loading" id="loading">
       <div class="loading-spinner"></div>
-      <p>動画を読み込み中...</p>
+      <p>ライブ配信を読み込み中...</p>
     </div>
 
     <!-- エラーメッセージ -->
     <div class="error-message" id="error-message" style="display: none;">
-      <h2 id="error-title">動画の読み込みに失敗しました</h2>
-      <p id="error-description">動画IDが無効か、ネットワークエラーが発生しました。</p>
+      <h2 id="error-title">ライブ配信の読み込みに失敗しました</h2>
+      <p id="error-description">配信IDが無効か、ネットワークエラーが発生しました。</p>
       <button class="back-btn" onclick="goBack()" id="error-back-btn">戻る</button>
     </div>
 
-    <!-- YouTube埋め込みプレイヤー -->
+    <!-- ライブ配信プレイヤー -->
     <iframe 
-      id="youtube-player"
+      id="live-player"
       class="video-player"
       src=""
       frameborder="0"
@@ -515,11 +575,11 @@
     <div class="banner" id="banner">
       <div class="banner-content">
         <div class="banner-thumbnail" id="banner-thumbnail">
-          <span class="material-icons">movie</span>
+          <span class="material-icons">live_tv</span>
         </div>
         <div class="banner-info">
-          <div class="banner-title" id="banner-title">動画タイトル</div>
-          <div class="banner-category" id="banner-category">カテゴリー</div>
+          <div class="banner-title" id="banner-title">ライブ配信タイトル</div>
+          <div class="banner-category" id="banner-category">ライブ配信</div>
         </div>
       </div>
       <div class="banner-controls">
@@ -536,18 +596,20 @@
     <!-- ビデオコントロール -->
     <div class="video-controls">
       <div class="control-buttons">
-        <button class="control-btn" onclick="skipBackward()">
-          <span class="material-icons">replay_10</span>
-        </button>
-        <button class="control-btn play-pause" onclick="togglePlayPause()" id="play-pause-btn">
-          <span class="material-icons">play_arrow</span>
-        </button>
-        <button class="control-btn" onclick="skipForward()">
-          <span class="material-icons">forward_10</span>
+        <button class="control-btn" onclick="toggleMute()">
+          <span class="material-icons">volume_up</span>
         </button>
         <button class="control-btn" onclick="toggleFullscreen()">
           <span class="material-icons">fullscreen</span>
         </button>
+      </div>
+      
+      <!-- ライブ配信専用コントロール -->
+      <div class="live-controls">
+        <button class="live-quality-btn active" onclick="changeQuality('auto')">自動</button>
+        <button class="live-quality-btn" onclick="changeQuality('1080p')">1080p</button>
+        <button class="live-quality-btn" onclick="changeQuality('720p')">720p</button>
+        <button class="live-quality-btn" onclick="changeQuality('480p')">480p</button>
       </div>
     </div>
   </div>
@@ -607,14 +669,18 @@
   <div id="screen-off-overlay" style="display:none;position:fixed;inset:0;z-index:2147483647;background:#000;opacity:0.98;transition:opacity 0.3s;width:100vw;height:100vh;"></div>
 
   <script>
-    // URLパラメータから動画情報を取得
+    // URLパラメータからライブ配信情報を取得
     const urlParams = new URLSearchParams(window.location.search);
     const contentId = urlParams.get('id');
     
+    console.log('etl-movie.html 読み込み開始');
+    console.log('URLパラメータ:', window.location.search);
+    console.log('コンテンツID:', contentId);
+    
     let currentContent = null;
-    let player = null;
-    let isPlaying = false;
-    let bannerVisible = true;
+    let isMuted = false;
+    let currentQuality = 'auto';
+    let bannerVisible = false;
 
     // ページ読み込み時の初期化
     document.addEventListener('DOMContentLoaded', function() {
@@ -627,22 +693,29 @@
       bannerVisible = false;
       
       if (!contentId) {
-        showError(getLocalizedText('error_no_video_id'));
+        showError(getLocalizedText('error_no_live_id'));
         return;
       }
 
       // コンテンツ情報を取得
       currentContent = getContentData.getById(contentId);
+      console.log('取得したコンテンツ情報:', currentContent);
+      
       if (!currentContent) {
-        showError(getLocalizedText('error_video_not_found'));
+        console.error('コンテンツが見つかりません:', contentId);
+        showError(getLocalizedText('error_live_not_found'));
         return;
       }
 
+      // 利用可能なライブ配信を確認
+      const allLiveStreams = getContentData.getAllLiveStreams();
+      console.log('利用可能なライブ配信:', allLiveStreams);
+      
       // バナー情報を設定
       setupBanner();
       
-      // YouTube動画を読み込み
-      loadYouTubeVideo();
+      // ライブ配信を読み込み
+      loadLiveStream();
     });
 
     // 多言語対応のテキスト取得
@@ -653,11 +726,11 @@
       }
       // フォールバック用のデフォルトテキスト
       const fallbackTexts = {
-        'error_no_video_id': '動画IDが指定されていません。',
-        'error_video_not_found': '指定された動画が見つかりません。',
-        'error_no_youtube_id': 'この動画のYouTube動画IDが設定されていません。',
-        'error_loading_failed': '動画の読み込みに失敗しました。',
-        'loading_video': '動画を読み込み中...',
+        'error_no_live_id': 'ライブ配信IDが指定されていません。',
+        'error_live_not_found': '指定されたライブ配信が見つかりません。',
+        'error_no_stream_url': 'このライブ配信のストリームURLが設定されていません。',
+        'error_loading_failed': 'ライブ配信の読み込みに失敗しました。',
+        'loading_live': 'ライブ配信を読み込み中...',
         'settings': '設定',
         'volume': '音量',
         'brightness': '画面の明るさ',
@@ -726,29 +799,16 @@
 
       // バナーのボタンテキスト
       const bannerBtns = document.querySelectorAll('.banner-btn');
-      if (bannerBtns && bannerBtns.length >= 3) {
-        // 非表示/表示ボタン
-        const visibilityBtn = bannerBtns[0];
-        updateBannerVisibilityButton(visibilityBtn);
-        
+      if (bannerBtns && bannerBtns.length >= 2) {
         // 設定ボタン
-        bannerBtns[1].innerHTML = `<span class="material-icons">settings</span>${getLocalizedText('settings')}`;
+        bannerBtns[0].innerHTML = `<span class="material-icons">settings</span>${getLocalizedText('settings')}`;
       }
-    }
 
-    // バナーの表示/非表示ボタンを更新
-    function updateBannerVisibilityButton(button) {
-      if (bannerVisible) {
-        button.innerHTML = `<span class="material-icons">visibility_off</span>${getLocalizedText('hide')}`;
-      } else {
-        button.innerHTML = `<span class="material-icons">visibility</span>${getLocalizedText('show')}`;
+      // ローディングテキスト
+      const loadingText = document.querySelector('.loading p');
+      if (loadingText) {
+        loadingText.textContent = getLocalizedText('loading_live');
       }
-    }
-
-    // ローディングテキスト
-    const loadingText = document.querySelector('.loading p');
-    if (loadingText) {
-      loadingText.textContent = getLocalizedText('loading_video');
     }
 
     // バナー情報を設定
@@ -763,121 +823,28 @@
       }
     }
 
-    // YouTube Player APIを読み込み
-    function loadYouTubeAPI() {
-      if (window.YT) {
-        initYouTubePlayer();
+    // ライブ配信を読み込み
+    function loadLiveStream() {
+      const streamUrl = getLiveStreamUrl(currentContent.id);
+      
+      if (!streamUrl) {
+        showError(getLocalizedText('error_no_stream_url'));
         return;
       }
 
-      // YouTube Player APIを動的に読み込み
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      // API読み込み完了時のコールバック
-      window.onYouTubeIframeAPIReady = function() {
-        initYouTubePlayer();
-      };
-    }
-
-    // YouTube Playerを初期化
-    function initYouTubePlayer() {
-      const videoId = getYouTubeVideoId(currentContent.id);
+      console.log('ライブ配信読み込み開始:', streamUrl);
       
-      if (!videoId) {
-        showError(getLocalizedText('error_no_youtube_id'));
-        return;
-      }
-
-      console.log('YouTube Player初期化開始:', videoId);
-
-      // YouTube Playerを作成
-      const player = new window.YT.Player('youtube-player', {
-        height: '100%',
-        width: '100%',
-        videoId: videoId,
-        playerVars: {
-          autoplay: 1,
-          rel: 0,
-          modestbranding: 1,
-          showinfo: 0,
-          controls: 0,
-          enablejsapi: 1,
-          origin: window.location.origin,
-          disablekb: 1,
-          fs: 0,
-          iv_load_policy: 3,
-          cc_load_policy: 0
-        },
-        events: {
-          onReady: function(event) {
-            console.log('YouTube Player準備完了');
-            document.getElementById('loading').style.display = 'none';
-            const iframe = document.getElementById('youtube-player');
-            iframe.style.display = 'block';
-            iframe.style.pointerEvents = 'none'; // YouTubeコントローラーを無効化
-            isPlaying = true;
-            updatePlayPauseButton();
-            
-            // 動画読み込み完了時にバナーを非表示にする
-            setTimeout(function() {
-              const banner = document.getElementById('banner');
-              banner.classList.add('hidden');
-              bannerVisible = false;
-            }, 1000); // 1秒後に非表示
-          },
-          onStateChange: function(event) {
-            console.log('YouTube Player状態変更:', event.data);
-            // 再生状態の変更を監視
-            if (event.data === window.YT.PlayerState.PLAYING) {
-              isPlaying = true;
-            } else if (event.data === window.YT.PlayerState.PAUSED) {
-              isPlaying = false;
-            }
-            updatePlayPauseButton();
-          },
-          onError: function(event) {
-            console.error('YouTube Playerエラー:', event.data);
-            showError(getLocalizedText('error_loading_failed'));
-          }
-        }
-      });
-
-      // プレイヤーをグローバルに保存
-      window.youtubePlayer = player;
-    }
-
-    // YouTube動画を読み込み（従来の方法、フォールバック用）
-    function loadYouTubeVideo() {
-      const videoId = getYouTubeVideoId(currentContent.id);
+      const iframe = document.getElementById('live-player');
       
-      if (!videoId) {
-        showError(getLocalizedText('error_no_youtube_id'));
-        return;
-      }
-
-      console.log('動画読み込み開始:', videoId);
+      // iframeのsrcを設定
+      iframe.src = streamUrl;
       
-      // まず従来のiframe方式で読み込み（確実に動作）
-      loadYouTubeVideoFallback(videoId);
-      
-      // 並行してYouTube Player APIも試行
-      loadYouTubeAPI();
-    }
-
-    // フォールバック用の従来のiframe方式
-    function loadYouTubeVideoFallback(videoId) {
-      const iframe = document.getElementById('youtube-player');
-      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&showinfo=0&controls=0&enablejsapi=1&origin=${window.location.origin}&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0`;
-      
+      // 読み込み成功時の処理
       iframe.onload = function() {
+        console.log('ライブ配信読み込み完了');
         document.getElementById('loading').style.display = 'none';
         iframe.style.display = 'block';
         iframe.style.pointerEvents = 'none'; // YouTubeコントローラーを無効化
-        isPlaying = true;
-        updatePlayPauseButton();
         
         // 動画読み込み完了時にバナーを非表示にする
         setTimeout(function() {
@@ -887,17 +854,61 @@
         }, 1000); // 1秒後に非表示
       };
 
+      // エラー時の処理
       iframe.onerror = function() {
+        console.error('ライブ配信読み込みエラー');
         showError(getLocalizedText('error_loading_failed'));
       };
+      
+      // タイムアウト処理（10秒後にエラー表示）
+      setTimeout(function() {
+        if (document.getElementById('loading').style.display !== 'none') {
+          console.log('ライブ配信読み込みタイムアウト');
+          document.getElementById('loading').style.display = 'none';
+          iframe.style.display = 'block';
+          
+          // タイムアウト時もバナーを非表示にする
+          setTimeout(function() {
+            const banner = document.getElementById('banner');
+            banner.classList.add('hidden');
+            bannerVisible = false;
+          }, 1000);
+        }
+      }, 10000);
     }
 
-    // コンテンツIDからYouTube動画IDを取得
-    function getYouTubeVideoId(contentId) {
-      // content-data.jsからYouTube動画IDを取得
+    // コンテンツIDからライブ配信URLを取得
+    function getLiveStreamUrl(contentId) {
+      // content-data.jsからライブ配信URLを取得
       const content = getContentData.getById(contentId);
-      console.log('コンテンツ検索:', contentId, content);
-      return content ? content.youtubeId : null;
+      console.log('ライブ配信検索:', contentId, content);
+      
+      if (!content || !content.liveStreamUrl) {
+        return null;
+      }
+      
+      // YouTubeの通常URLを埋め込みURLに変換
+      let streamUrl = content.liveStreamUrl;
+      
+      // https://www.youtube.com/watch?v=VIDEO_ID 形式を埋め込み形式に変換
+      if (streamUrl.includes('youtube.com/watch?v=')) {
+        const videoId = streamUrl.split('v=')[1];
+        if (videoId) {
+          // パラメータを除去してビデオIDのみを取得
+          const cleanVideoId = videoId.split('&')[0];
+          streamUrl = `https://www.youtube.com/embed/${cleanVideoId}?autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0`;
+        }
+      }
+      
+      // 既に埋め込み形式の場合はそのまま使用
+      if (streamUrl.includes('youtube.com/embed/')) {
+        // 必要なパラメータを追加
+        const separator = streamUrl.includes('?') ? '&' : '?';
+        streamUrl = `${streamUrl}${separator}autoplay=1&controls=0&rel=0&showinfo=0&modestbranding=1&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0`;
+      }
+      
+      console.log('変換後のライブ配信URL:', streamUrl);
+      return streamUrl;
     }
 
     // エラー表示
@@ -907,62 +918,43 @@
       document.getElementById('error-title').textContent = message;
     }
 
-
-
-    // 再生/一時停止切り替え
-    function togglePlayPause() {
-      if (window.youtubePlayer) {
-        // YouTube Player APIが利用可能な場合
-        if (isPlaying) {
-          window.youtubePlayer.pauseVideo();
-        } else {
-          window.youtubePlayer.playVideo();
-        }
-      } else {
-        // フォールバック: iframeのsrcを変更
-        const iframe = document.getElementById('youtube-player');
-        if (iframe.src) {
-          if (isPlaying) {
-            // 一時停止（URLにパラメータ追加）
-            if (!iframe.src.includes('&pause=1')) {
-              iframe.src = iframe.src + '&pause=1';
-            }
-          } else {
-            // 再生（パラメータ削除）
-            iframe.src = iframe.src.replace('&pause=1', '');
-          }
-          isPlaying = !isPlaying;
-          updatePlayPauseButton();
-        }
-      }
-    }
-
-    // 再生/一時停止ボタンの更新
-    function updatePlayPauseButton() {
-      const btn = document.getElementById('play-pause-btn');
-      const icon = btn.querySelector('.material-icons');
+    // ミュート切り替え
+    function toggleMute() {
+      const iframe = document.getElementById('live-player');
+      const muteBtn = document.querySelector('.control-btn');
+      const icon = muteBtn.querySelector('.material-icons');
       
-      if (isPlaying) {
-        icon.textContent = 'pause';
+      isMuted = !isMuted;
+      
+      if (isMuted) {
+        icon.textContent = 'volume_off';
+        // ライブ配信のミュート処理
+        if (iframe.src) {
+          iframe.src = iframe.src + (iframe.src.includes('?') ? '&' : '?') + 'mute=1';
+        }
       } else {
-        icon.textContent = 'play_arrow';
+        icon.textContent = 'volume_up';
+        // ライブ配信のミュート解除処理
+        if (iframe.src) {
+          iframe.src = iframe.src.replace(/[?&]mute=1/, '');
+        }
       }
     }
 
-    // 10秒戻る
-    function skipBackward() {
-      if (window.youtubePlayer) {
-        const currentTime = window.youtubePlayer.getCurrentTime();
-        window.youtubePlayer.seekTo(Math.max(0, currentTime - 10), true);
-      }
-    }
-
-    // 10秒進む
-    function skipForward() {
-      if (window.youtubePlayer) {
-        const currentTime = window.youtubePlayer.getCurrentTime();
-        const duration = window.youtubePlayer.getDuration();
-        window.youtubePlayer.seekTo(Math.min(duration, currentTime + 10), true);
+    // 画質変更
+    function changeQuality(quality) {
+      currentQuality = quality;
+      
+      // 画質ボタンのアクティブ状態を更新
+      const qualityBtns = document.querySelectorAll('.live-quality-btn');
+      qualityBtns.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // ライブ配信の画質変更処理
+      const iframe = document.getElementById('live-player');
+      if (iframe.src) {
+        const baseUrl = iframe.src.split('?')[0];
+        iframe.src = baseUrl + '?quality=' + quality;
       }
     }
 
@@ -1046,12 +1038,12 @@
         
         volumeSlider.oninput = function() {
           localStorage.setItem('volumePercent', this.value);
-          // YouTube Player APIを使用して音量を制御
+          // ライブ配信の音量制御
           console.log('音量設定:', this.value);
         };
       }
 
-      // 言語切り替え
+      // 言語切り替え（ライブ配信では無効）
       const langValue = document.querySelector('.settings-value');
       if (langValue) {
         const lang = localStorage.getItem('language') || 'ja';
@@ -1063,13 +1055,20 @@
         };
         langValue.textContent = langNames[lang] || lang;
         
-        langValue.onclick = function() {
-          const langs = ['ja', 'en', 'ko', 'zh'];
-          let idx = langs.indexOf(lang);
-          idx = (idx + 1) % langs.length;
-          localStorage.setItem('language', langs[idx]);
-          location.reload();
-        };
+        // ライブ配信の場合は言語切り替えを無効にする
+        if (currentContent && currentContent.isLiveStream) {
+          langValue.style.opacity = '0.5';
+          langValue.style.cursor = 'not-allowed';
+          langValue.title = 'ライブ配信では言語選択はできません';
+        } else {
+          langValue.onclick = function() {
+            const langs = ['ja', 'en', 'ko', 'zh'];
+            let idx = langs.indexOf(lang);
+            idx = (idx + 1) % langs.length;
+            localStorage.setItem('language', langs[idx]);
+            location.reload();
+          };
+        }
       }
 
       // 画面オフボタン
@@ -1084,41 +1083,6 @@
           screenOffOverlay.style.opacity = '0';
           setTimeout(() => { screenOffOverlay.style.display = 'none'; }, 300);
         };
-      }
-    });
-
-    // キーボードショートカット
-    document.addEventListener('keydown', function(e) {
-      switch(e.key) {
-        case ' ':
-        case 'k':
-          e.preventDefault();
-          togglePlayPause();
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          skipBackward();
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          skipForward();
-          break;
-        case 'f':
-          e.preventDefault();
-          toggleFullscreen();
-          break;
-
-        case 's':
-          e.preventDefault();
-          openSettings();
-          break;
-        case 'Escape':
-          if (document.fullscreenElement) {
-            document.exitFullscreen();
-          } else {
-            goBack();
-          }
-          break;
       }
     });
 
@@ -1145,12 +1109,10 @@
 
     // バナーとコントロールを非表示にする関数
     function hideControls() {
-      if (isPlaying) {
-        banner.classList.add('hidden');
-        banner.style.opacity = '1';
-        videoControls.style.opacity = '0';
-        bannerVisible = false;
-      }
+      banner.classList.add('hidden');
+      banner.style.opacity = '1';
+      videoControls.style.opacity = '0';
+      bannerVisible = false;
     }
 
     // プレイヤーコントロールの表示状態を監視
@@ -1232,6 +1194,34 @@
       hideControls();
       // コントロールのopacityを直接設定して確実に非表示にする
       videoControls.style.opacity = '0';
+    });
+
+    // キーボードショートカット
+    document.addEventListener('keydown', function(e) {
+      switch(e.key) {
+        case 'm':
+        case 'M':
+          e.preventDefault();
+          toggleMute();
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          openSettings();
+          break;
+        case 'Escape':
+          if (document.fullscreenElement) {
+            document.exitFullscreen();
+          } else {
+            goBack();
+          }
+          break;
+      }
     });
   </script>
 </body>
