@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="css/home.css" />
   <link rel="stylesheet" href="css/entertainment.css" />
   <script src="js/i18n.js"></script>
+  <script src="js/content-data.js"></script>
   <style>
 body[lang="ja"], html[lang="ja"] .home-modern {
   font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
@@ -88,41 +89,44 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       height: 100vh;
       background: rgba(0, 0, 0, 0.7);
       z-index: 2000;
-      display: none;
+      display: block;
       opacity: 0;
+      visibility: hidden;
       backdrop-filter: blur(0px);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), backdrop-filter 0.7s cubic-bezier(.4,0,.2,1), visibility 0s 0.7s;
     }
     
     .content-modal-overlay.show {
-      display: block;
       opacity: 1;
+      visibility: visible;
       backdrop-filter: blur(4px);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), backdrop-filter 0.7s cubic-bezier(.4,0,.2,1), visibility 0s;
     }
     
     .content-modal {
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.7) rotateX(10deg);
+      transform: translate(-50%, 80px);
       width: 98%;
       max-width: 1400px;
       max-height: 90vh;
       background: #ffffff;
       border-radius: 16px;
       z-index: 2001;
-      display: none;
+      display: block;
       opacity: 0;
-      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      visibility: hidden;
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1), visibility 0s 0.7s;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       overflow: hidden;
-      perspective: 1000px;
     }
     
     .content-modal.show {
-      display: block;
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1) rotateX(0deg);
+      visibility: visible;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1), visibility 0s;
     }
     
 
@@ -147,16 +151,16 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s ease;
       z-index: 3002;
       opacity: 0;
-      transform: scale(0.8) rotate(90deg);
+      transform: translateY(-20px);
     }
     
     .content-modal.show .content-modal-close {
       opacity: 1;
-      transform: scale(1) rotate(0deg);
-      transition-delay: 0.3s;
+      transform: translateY(0);
+      transition-delay: 0.5s;
     }
     
     .content-modal-close:hover {
@@ -198,14 +202,14 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       margin: 0 0 8px 0;
       text-align: left;
       opacity: 0;
-      transform: translateY(30px) scale(0.9);
-      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      transition-delay: 0.2s;
+      transform: translateY(80px);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
+      transition-delay: 0.4s;
     }
     
     .content-modal.show .content-modal-title {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
     
     .content-modal-category {
@@ -214,14 +218,14 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       text-align: left;
       margin-bottom: 16px;
       opacity: 0;
-      transform: translateY(25px) scale(0.95);
-      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      transition-delay: 0.3s;
+      transform: translateY(80px);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
+      transition-delay: 0.5s;
     }
     
     .content-modal.show .content-modal-category {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
     
     .content-modal-buttons {
@@ -230,14 +234,14 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       gap: 16px;
       margin-bottom: 24px;
       opacity: 0;
-      transform: translateY(30px) scale(0.9);
-      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      transition-delay: 0.4s;
+      transform: translateY(80px);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
+      transition-delay: 0.6s;
     }
     
     .content-modal.show .content-modal-buttons {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
     
     .content-modal-btn {
@@ -329,13 +333,14 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       position: relative;
       overflow: hidden;
       opacity: 0;
-      transform: translateY(30px) scale(0.95);
-      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform: translateY(80px);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
+      transition-delay: 0.3s;
     }
     
     .content-modal.show .content-modal-image {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
     
     .content-modal-image::before {
@@ -357,14 +362,14 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       line-height: 1.6;
       text-align: left;
       opacity: 0;
-      transform: translateY(25px) scale(0.95);
-      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      transition-delay: 0.5s;
+      transform: translateY(80px);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
+      transition-delay: 0.7s;
     }
     
     .content-modal.show .content-modal-description {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
     
     /* 言語選択モーダル */
@@ -641,58 +646,87 @@ body[lang="zh"], html[lang="zh"] .home-modern {
   <!-- コンテンツ詳細モーダル -->
   <div id="content-modal-overlay" class="content-modal-overlay"></div>
   <div id="content-modal" class="content-modal">
-  
+    <div class="content-modal-header">
+      <button class="content-modal-close" onclick="closeContentModal()">×</button>
+    </div>
+    <div class="content-modal-body">
+      <div class="content-modal-image"></div>
+      <h2 id="modal-title" class="content-modal-title">Flight TV ep.1</h2>
+      <div id="modal-category" class="content-modal-category">2025 ALL カテゴリー</div>
+      <div class="content-modal-buttons">
+        <button id="modal-play-btn" class="content-modal-btn content-modal-btn-primary"><span class="material-icons">play_arrow</span><span id="modal-play-text">再生する</span></button>
+        <div class="content-modal-btn-row">
+          <button id="modal-language-btn" class="content-modal-btn content-modal-btn-secondary"><span class="material-icons">language</span><span id="modal-language-text">言語選択をする</span></button>
+          <button id="modal-playlist-btn" class="content-modal-btn content-modal-btn-outline"><span class="material-icons">add</span><span id="modal-playlist-text">プレイリストに追加する</span></button>
+        </div>
+      </div>
+      <div id="modal-description" class="content-modal-description">
+        ここにエンターテイメントの紹介文章を入力する。ここにエンターテイメントの紹介文章を入力する。ここにエンターテイメントの紹介文章を入力する。<br><br>
+        
+        Flight TV ep.1は、機内で楽しめる特別なエンターテイメントコンテンツです。このエピソードでは、航空機の歴史や技術について詳しく紹介します。<br><br>
+        
+        視聴時間：約45分<br>
+        言語：日本語、英語、韓国語、中国語対応<br>
+        字幕：日本語、英語、韓国語、中国語対応<br><br>
+        
+        このコンテンツは、機内での快適な時間をお過ごしいただくために特別に制作されました。航空機の安全や快適性について学びながら、楽しい時間をお過ごしください。<br><br>
+        
+        ご視聴の際は、お好みの言語と字幕を選択してからご覧ください。また、プレイリストに追加することで、後で簡単にアクセスすることができます。
+      </div>
+    </div>
+  </div>
+
   <!-- 言語選択モーダル -->
   <div id="language-modal-overlay" class="language-modal-overlay"></div>
   <div id="language-modal" class="language-modal">
     <div class="language-modal-header">
-      <h3 class="language-modal-title">言語・字幕選択</h3>
+      <h3 class="language-modal-title" id="language-modal-title">言語・字幕選択</h3>
       <button class="language-modal-close" onclick="closeLanguageModal()">×</button>
     </div>
     <div class="language-modal-body">
       <div class="language-sections-container">
         <!-- 音声言語選択 -->
         <div class="language-section">
-          <h4 class="language-section-title">音声言語</h4>
+          <h4 class="language-section-title" id="audio-language-title">音声言語</h4>
           <div class="language-options">
-                      <div class="language-option" onclick="selectAudioLanguage('ja')">
-            <div class="language-flag"><span class="material-icons">flag</span></div>
-            <div class="language-info">
-              <div class="language-name">日本語</div>
-              <div class="language-native">Japanese</div>
+            <div class="language-option" onclick="selectAudioLanguage('ja')">
+              <div class="language-flag"><span class="material-icons">flag</span></div>
+              <div class="language-info">
+                <div class="language-name">日本語</div>
+                <div class="language-native">Japanese</div>
+              </div>
+              <div class="language-check" id="audio-ja">✓</div>
             </div>
-            <div class="language-check" id="audio-ja">✓</div>
-          </div>
-          <div class="language-option" onclick="selectAudioLanguage('en')">
-            <div class="language-flag"><span class="material-icons">flag</span></div>
-            <div class="language-info">
-              <div class="language-name">English</div>
-              <div class="language-native">英語</div>
+            <div class="language-option" onclick="selectAudioLanguage('en')">
+              <div class="language-flag"><span class="material-icons">flag</span></div>
+              <div class="language-info">
+                <div class="language-name">English</div>
+                <div class="language-native">英語</div>
+              </div>
+              <div class="language-check" id="audio-en"></div>
             </div>
-            <div class="language-check" id="audio-en"></div>
-          </div>
-          <div class="language-option" onclick="selectAudioLanguage('ko')">
-            <div class="language-flag"><span class="material-icons">flag</span></div>
-            <div class="language-info">
-              <div class="language-name">한국어</div>
-              <div class="language-native">Korean</div>
+            <div class="language-option" onclick="selectAudioLanguage('ko')">
+              <div class="language-flag"><span class="material-icons">flag</span></div>
+              <div class="language-info">
+                <div class="language-name">한국어</div>
+                <div class="language-native">Korean</div>
+              </div>
+              <div class="language-check" id="audio-ko"></div>
             </div>
-            <div class="language-check" id="audio-ko"></div>
-          </div>
-          <div class="language-option" onclick="selectAudioLanguage('zh')">
-            <div class="language-flag"><span class="material-icons">flag</span></div>
-            <div class="language-info">
-              <div class="language-name">中文</div>
-              <div class="language-native">Chinese</div>
+            <div class="language-option" onclick="selectAudioLanguage('zh')">
+              <div class="language-flag"><span class="material-icons">flag</span></div>
+              <div class="language-info">
+                <div class="language-name">中文</div>
+                <div class="language-native">Chinese</div>
+              </div>
+              <div class="language-check" id="audio-zh"></div>
             </div>
-            <div class="language-check" id="audio-zh"></div>
-          </div>
           </div>
         </div>
         
         <!-- 字幕言語選択 -->
         <div class="language-section">
-          <h4 class="language-section-title">字幕言語</h4>
+          <h4 class="language-section-title" id="subtitle-language-title">字幕言語</h4>
           <div class="language-options">
             <div class="language-option" onclick="selectSubtitleLanguage('ja')">
               <div class="language-flag"><span class="material-icons">flag</span></div>
@@ -729,8 +763,8 @@ body[lang="zh"], html[lang="zh"] .home-modern {
             <div class="language-option" onclick="selectSubtitleLanguage('off')">
               <div class="language-flag"><span class="material-icons">block</span></div>
               <div class="language-info">
-                <div class="language-name">字幕なし</div>
-                <div class="language-native">Off</div>
+                <div class="language-name" id="subtitle-off-name">字幕なし</div>
+                <div class="language-native" id="subtitle-off-native">Off</div>
               </div>
               <div class="language-check" id="subtitle-off"></div>
             </div>
@@ -740,36 +774,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       
       <!-- 確定ボタン -->
       <div class="language-modal-actions">
-        <button class="language-confirm-btn" onclick="confirmLanguageSelection()">確定</button>
-      </div>
-    </div>
-  </div>
-    <div class="content-modal-header">
-      <button class="content-modal-close" onclick="closeContentModal()">×</button>
-    </div>
-    <div class="content-modal-body">
-      <div class="content-modal-image"></div>
-      <h2 id="modal-title" class="content-modal-title">Flight TV ep.1</h2>
-      <div id="modal-category" class="content-modal-category">2025 ALL カテゴリー</div>
-      <div class="content-modal-buttons">
-        <button id="modal-play-btn" class="content-modal-btn content-modal-btn-primary"><span class="material-icons">play_arrow</span>再生する</button>
-        <div class="content-modal-btn-row">
-          <button id="modal-language-btn" class="content-modal-btn content-modal-btn-secondary"><span class="material-icons">language</span>言語選択をする</button>
-          <button id="modal-playlist-btn" class="content-modal-btn content-modal-btn-outline"><span class="material-icons">add</span>プレイリストに追加する</button>
-        </div>
-      </div>
-      <div id="modal-description" class="content-modal-description">
-        ここにエンターテイメントの紹介文章を入力する。ここにエンターテイメントの紹介文章を入力する。ここにエンターテイメントの紹介文章を入力する。<br><br>
-        
-        Flight TV ep.1は、機内で楽しめる特別なエンターテイメントコンテンツです。このエピソードでは、航空機の歴史や技術について詳しく紹介します。<br><br>
-        
-        視聴時間：約45分<br>
-        言語：日本語、英語、韓国語、中国語対応<br>
-        字幕：日本語、英語、韓国語、中国語対応<br><br>
-        
-        このコンテンツは、機内での快適な時間をお過ごしいただくために特別に制作されました。航空機の安全や快適性について学びながら、楽しい時間をお過ごしください。<br><br>
-        
-        ご視聴の際は、お好みの言語と字幕を選択してからご覧ください。また、プレイリストに追加することで、後で簡単にアクセスすることができます。
+        <button class="language-confirm-btn" id="language-confirm-btn" onclick="confirmLanguageSelection()">確定</button>
       </div>
     </div>
   </div>
@@ -803,18 +808,24 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       <!-- 人気作品セクション -->
       <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
         <div id="ent-popular-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
-        <div class="clickable-content-item" onclick="openContentModal('Flight TV ep.1', '2025 ALL カテゴリー', 'Flight TV ep.1の詳細な紹介文をここに表示します。機内で楽しめる特別なエンターテイメントコンテンツです。\n\nFlight TV ep.1は、機内で楽しめる特別なエンターテイメントコンテンツです。このエピソードでは、航空機の歴史や技術について詳しく紹介します。\n\n視聴時間：約45分\n言語：日本語、英語、韓国語、中国語対応\n字幕：日本語、英語、韓国語、中国語対応\n\nこのコンテンツは、機内での快適な時間をお過ごしいただくために特別に制作されました。航空機の安全や快適性について学びながら、楽しい時間をお過ごしください。\n\nご視聴の際は、お好みの言語と字幕を選択してからご覧ください。また、プレイリストに追加することで、後で簡単にアクセスすることができます。')">
-          <div id="ent-popular-main" style="background:#4b9cf5;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;"></div>
-          <div id="ent-popular-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
-        </div>
+        <div id="popular-content-container"></div>
       </div>
       <!-- おすすめTV番組セクション（追加） -->
-      <div style="background:#fff;padding:32px; border-radius: 16px;">
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
         <div id="ent-recommended-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
-        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;" onclick="openContentModal('ドラマシリーズ 第1話', '2025 ALL カテゴリー', '人気ドラマシリーズの第1話です。感動的なストーリーと素晴らしい演技をお楽しみください。\n\nこのドラマシリーズは、現代社会における人間関係や家族の絆をテーマにした感動的なストーリーです。第1話では、主人公の日常と彼を取り巻く人々との関係が描かれます。\n\n視聴時間：約60分\n言語：日本語、英語、韓国語、中国語対応\n字幕：日本語、英語、韓国語、中国語対応\n\n出演者：\n・主演：田中太郎\n・共演：佐藤花子、鈴木一郎\n・監督：山田次郎\n\nこの作品は、機内での快適な時間をお過ごしいただくために特別に制作されました。感動的なストーリーと素晴らしい演技をお楽しみください。\n\nご視聴の際は、お好みの言語と字幕を選択してからご覧ください。また、プレイリストに追加することで、後で簡単にアクセスすることができます。')">
-          <div id="ent-recommended-main" style="background:#33ab9f;color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;"></div>
-          <div id="ent-recommended-ep" style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;"></div>
-        </div>
+        <div id="recommended-content-container"></div>
+      </div>
+
+      <!-- 最新映画セクション -->
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+        <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;">最新映画</div>
+        <div id="latest-movies-container"></div>
+      </div>
+
+      <!-- アニメセクション -->
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+        <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;">アニメ</div>
+        <div id="anime-container"></div>
       </div>
     </div>
   </div>
@@ -873,6 +884,29 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         // i18n.jsの形式に合わせてwindow.i18n[langValue]またはwindow.i18n["ja"]を参照
         const i18n = window.i18n && (window.i18n[langValue] || window.i18n['ja']);
         if (i18n) {
+          // 言語選択モーダルの多言語化
+          const languageModalTitle = document.getElementById('language-modal-title');
+          const audioLanguageTitle = document.getElementById('audio-language-title');
+          const subtitleLanguageTitle = document.getElementById('subtitle-language-title');
+          const subtitleOffName = document.getElementById('subtitle-off-name');
+          const subtitleOffNative = document.getElementById('subtitle-off-native');
+          const languageConfirmBtn = document.getElementById('language-confirm-btn');
+
+          if (languageModalTitle) languageModalTitle.textContent = i18n.language_modal_title || '言語・字幕選択';
+          if (audioLanguageTitle) audioLanguageTitle.textContent = i18n.audio_language_title || '音声言語';
+          if (subtitleLanguageTitle) subtitleLanguageTitle.textContent = i18n.subtitle_language_title || '字幕言語';
+          if (subtitleOffName) subtitleOffName.textContent = i18n.subtitle_off || '字幕なし';
+          if (subtitleOffNative) subtitleOffNative.textContent = i18n.subtitle_off || 'Off';
+          if (languageConfirmBtn) languageConfirmBtn.textContent = i18n.confirm || '確定';
+
+          // コンテンツモーダルの多言語化
+          const modalPlayText = document.getElementById('modal-play-text');
+          const modalLanguageText = document.getElementById('modal-language-text');
+          const modalPlaylistText = document.getElementById('modal-playlist-text');
+
+          if (modalPlayText) modalPlayText.textContent = i18n.play || '再生する';
+          if (modalLanguageText) modalLanguageText.textContent = i18n.select_language || '言語選択をする';
+          if (modalPlaylistText) modalPlaylistText.textContent = i18n.add_to_playlist || 'プレイリストに追加する';
           // メイン
           const h1 = document.getElementById('ent-title');
           if (h1) h1.textContent = i18n.ent_new_this_month || i18n.latest_this_month || '今月の最新作';
@@ -1054,30 +1088,215 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     }
     // 多言語UI反映（home.htmlのロジックを流用する場合はここに追加）
 
-    // Sキーでセーフティビデオページへ遷移
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 's' || e.key === 'S') {
-        window.location.href = 'sb-movie.html';
+    // コンテンツを動的に生成する関数
+    function renderContent() {
+      // 人気作品セクション
+      const popularContainer = document.getElementById('popular-content-container');
+      if (popularContainer && contentData.popular.items.length > 0) {
+        const item = contentData.popular.items[0];
+        const coverStyle = item.coverImage ? 
+          `background-image: url('${item.coverImage}'); background-size: cover; background-position: center;` : 
+          `background: ${item.backgroundColor};`;
+        
+        popularContainer.innerHTML = `
+          <div class="clickable-content-item" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/"/g, '&quot;')}">
+            <div style="${coverStyle}color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;position:relative;cursor:pointer;">
+              ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
+            </div>
+            <div style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.episode}</div>
+          </div>
+        `;
+        
+        // クリックイベントを追加
+        const clickableItem = popularContainer.querySelector('.clickable-content-item');
+        clickableItem.addEventListener('click', function() {
+          console.log('Popular item clicked!');
+          const title = this.getAttribute('data-title');
+          const category = this.getAttribute('data-category');
+          const description = this.getAttribute('data-description');
+          console.log('Data:', { title, category, description: description.substring(0, 50) + '...' });
+          openContentModal(title, category, description);
+        });
+        
+        // カバー画像がある場合はタイトルをオーバーレイとして表示
+        if (item.coverImage) {
+          const coverDiv = popularContainer.querySelector('div[style*="background-image"]');
+          const overlayDiv = document.createElement('div');
+          overlayDiv.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:8px;font-size:1.2rem;text-align:center;border-radius:0 0 8px 8px;';
+          overlayDiv.textContent = item.title;
+          coverDiv.appendChild(overlayDiv);
+        }
       }
-    });
-    
+
+      // おすすめ作品セクション
+      const recommendedContainer = document.getElementById('recommended-content-container');
+      if (recommendedContainer && contentData.recommended.items.length > 0) {
+        const item = contentData.recommended.items[0];
+        const coverStyle = item.coverImage ? 
+          `background-image: url('${item.coverImage}'); background-size: cover; background-position: center;` : 
+          `background: ${item.backgroundColor};`;
+        
+        recommendedContainer.innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/"/g, '&quot;')}">
+            <div style="${coverStyle}color:#fff;font-size:2rem;text-align:center;width:320px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;">
+              ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
+            </div>
+            <div style="font-size:1.1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.episode}</div>
+          </div>
+        `;
+        
+        // クリックイベントを追加
+        const clickableItem = recommendedContainer.querySelector('div[data-title]');
+        clickableItem.addEventListener('click', function() {
+          const title = this.getAttribute('data-title');
+          const category = this.getAttribute('data-category');
+          const description = this.getAttribute('data-description');
+          openContentModal(title, category, description);
+        });
+        
+        // カバー画像がある場合はタイトルをオーバーレイとして表示
+        if (item.coverImage) {
+          const coverDiv = recommendedContainer.querySelector('div[style*="background-image"]');
+          const overlayDiv = document.createElement('div');
+          overlayDiv.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:8px;font-size:1.2rem;text-align:center;border-radius:0 0 8px 8px;';
+          overlayDiv.textContent = item.title;
+          coverDiv.appendChild(overlayDiv);
+        }
+      }
+
+      // 最新映画セクション
+      const latestMoviesContainer = document.getElementById('latest-movies-container');
+      if (latestMoviesContainer && contentData.latestMovies.items.length > 0) {
+        latestMoviesContainer.innerHTML = `
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">
+            ${contentData.latestMovies.items.map(item => {
+              const coverStyle = item.coverImage ? 
+                `background-image: url('${item.coverImage}'); background-size: cover; background-position: center;` : 
+                `background: ${item.backgroundColor};`;
+              
+              return `
+                <div class="clickable-content-item" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/"/g, '&quot;')}">
+                  <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;">
+                    ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
+                  </div>
+                  <div style="font-size:1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.genre}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+        
+        // クリックイベントを追加
+        const clickableItems = latestMoviesContainer.querySelectorAll('.clickable-content-item');
+        clickableItems.forEach(item => {
+          item.addEventListener('click', function() {
+            const title = this.getAttribute('data-title');
+            const category = this.getAttribute('data-category');
+            const description = this.getAttribute('data-description');
+            openContentModal(title, category, description);
+          });
+        });
+        
+        // カバー画像がある作品にタイトルオーバーレイを追加
+        contentData.latestMovies.items.forEach((item, index) => {
+          if (item.coverImage) {
+            const coverDivs = latestMoviesContainer.querySelectorAll('div[style*="background-image"]');
+            if (coverDivs[index]) {
+              const overlayDiv = document.createElement('div');
+              overlayDiv.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:6px;font-size:1rem;text-align:center;border-radius:0 0 8px 8px;';
+              overlayDiv.textContent = item.title;
+              coverDivs[index].appendChild(overlayDiv);
+            }
+          }
+        });
+      }
+
+      // アニメセクション
+      const animeContainer = document.getElementById('anime-container');
+      if (animeContainer && contentData.anime.items.length > 0) {
+        animeContainer.innerHTML = `
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">
+            ${contentData.anime.items.map(item => {
+              const coverStyle = item.coverImage ? 
+                `background-image: url('${item.coverImage}'); background-size: cover; background-position: center;` : 
+                `background: ${item.backgroundColor};`;
+              
+              return `
+                <div class="clickable-content-item" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/"/g, '&quot;')}">
+                  <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;">
+                    ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
+                  </div>
+                  <div style="font-size:1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.genre}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+        
+        // クリックイベントを追加
+        const clickableItems = animeContainer.querySelectorAll('.clickable-content-item');
+        clickableItems.forEach(item => {
+          item.addEventListener('click', function() {
+            const title = this.getAttribute('data-title');
+            const category = this.getAttribute('data-category');
+            const description = this.getAttribute('data-description');
+            openContentModal(title, category, description);
+          });
+        });
+        
+        // カバー画像がある作品にタイトルオーバーレイを追加
+        contentData.anime.items.forEach((item, index) => {
+          if (item.coverImage) {
+            const coverDivs = animeContainer.querySelectorAll('div[style*="background-image"]');
+            if (coverDivs[index]) {
+              const overlayDiv = document.createElement('div');
+              overlayDiv.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#fff;padding:6px;font-size:1rem;text-align:center;border-radius:0 0 8px 8px;';
+              overlayDiv.textContent = item.title;
+              coverDivs[index].appendChild(overlayDiv);
+            }
+          }
+        });
+      }
+    }
+
     // コンテンツ詳細モーダル制御
     function openContentModal(title, category, description) {
+      console.log('openContentModal called:', title, category);
+      
       document.getElementById('modal-title').textContent = title;
       document.getElementById('modal-category').textContent = category;
       document.getElementById('modal-description').innerHTML = description.replace(/\n/g, '<br>');
       
-      document.getElementById('content-modal-overlay').classList.add('show');
-      document.getElementById('content-modal').classList.add('show');
+      const overlay = document.getElementById('content-modal-overlay');
+      const modal = document.getElementById('content-modal');
+      
+      console.log('Overlay element:', overlay);
+      console.log('Modal element:', modal);
+      
+      // まずオーバーレイを表示
+      overlay.classList.add('show');
+      
+      // 少し遅延してからモーダルを表示（アニメーション効果のため）
+      setTimeout(() => {
+        modal.classList.add('show');
+        console.log('Modal should be visible now');
+      }, 50);
     }
     
     function closeContentModal() {
-      document.getElementById('content-modal-overlay').classList.remove('show');
-      document.getElementById('content-modal').classList.remove('show');
+      const overlay = document.getElementById('content-modal-overlay');
+      const modal = document.getElementById('content-modal');
+      
+      // モーダルとオーバーレイを同時に非表示
+      modal.classList.remove('show');
+      overlay.classList.remove('show');
     }
     
-    // モーダルボタンのイベント
+    // ページ読み込み時の初期化
     document.addEventListener('DOMContentLoaded', function() {
+      // コンテンツをレンダリング
+      renderContent();
+      
       // オーバーレイクリックでモーダルを閉じる
       document.getElementById('content-modal-overlay').addEventListener('click', function(e) {
         if (e.target === this) {
@@ -1087,7 +1306,31 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       
       // 再生ボタン
       document.getElementById('modal-play-btn').addEventListener('click', function() {
-        alert('コンテンツを再生します。');
+        // 現在表示されているモーダルのコンテンツIDを取得
+        const modalTitle = document.getElementById('modal-title').textContent;
+        const modalCategory = document.getElementById('modal-category').textContent;
+        
+        // コンテンツIDを検索
+        let contentId = null;
+        const allItems = [
+          ...getContentData.getAllPopular(),
+          ...getContentData.getAllRecommended(),
+          ...getContentData.getAllLatestMovies(),
+          ...getContentData.getAllAnime()
+        ];
+        
+        const content = allItems.find(item => 
+          item.title === modalTitle && item.category === modalCategory
+        );
+        
+        if (content) {
+          contentId = content.id;
+          // player/et-movie.htmlに遷移
+          window.location.href = `player/et-movie.html?id=${contentId}`;
+        } else {
+          alert('コンテンツ情報が見つかりません。');
+        }
+        
         closeContentModal();
       });
       
@@ -1101,11 +1344,23 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         alert('プレイリストに追加しました。');
       });
       
+      // 言語選択モーダルのオーバーレイクリックで閉じる
+      document.getElementById('language-modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeLanguageModal();
+        }
+      });
+      
       // Escapeキーでモーダルを閉じる
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
           closeContentModal();
           closeLanguageModal();
+        }
+        
+        // Sキーでセーフティビデオページへ遷移
+        if (e.key === 's' || e.key === 'S') {
+          window.location.href = 'sb-movie.html';
         }
       });
     });
@@ -1192,12 +1447,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       return langNames[langCode] || langCode;
     }
     
-    // 言語選択モーダルのオーバーレイクリックで閉じる
-    document.getElementById('language-modal-overlay').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeLanguageModal();
-      }
-    });
+
   </script>
 </body>
 </html>

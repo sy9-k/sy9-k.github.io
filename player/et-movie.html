@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>エンターテイメント動画プレイヤー</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Open+Sans:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+  <script src="../js/i18n.js"></script>
+  <script src="../js/content-data.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', 'Open Sans', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* メインビデオプレイヤー */
+    .video-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+    }
+
+    .video-player {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* バナー */
+    .banner {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px 20px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: opacity 0.3s ease;
+    }
+
+    .banner.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .banner-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .banner-thumbnail {
+      width: 80px;
+      height: 45px;
+      border-radius: 8px;
+      background: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .banner-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .banner-info {
+      flex: 1;
+    }
+
+    .banner-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .banner-category {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .banner-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .banner-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .banner-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .banner-btn.close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px;
+      border-radius: 50%;
+    }
+
+    /* コントロールオーバーレイ */
+    .video-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+      padding: 40px 20px 20px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .banner {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px 20px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-container:hover .video-controls {
+      opacity: 1;
+    }
+
+    .video-container:hover .banner {
+      opacity: 1;
+    }
+
+    .video-container:hover .banner.hidden {
+      opacity: 0;
+    }
+
+    .control-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .control-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      padding: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .control-btn.play-pause {
+      background: rgba(255, 255, 255, 0.2);
+      width: 64px;
+      height: 64px;
+      font-size: 1.5rem;
+    }
+
+    /* ローディング */
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 999;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* エラー表示 */
+    .error-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 999;
+    }
+
+    .error-message h2 {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      color: #ff6b6b;
+    }
+
+    .error-message p {
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: #1565c0;
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .banner {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 12px 16px;
+      }
+
+      .banner-thumbnail {
+        width: 60px;
+        height: 34px;
+      }
+
+      .banner-title {
+        font-size: 1rem;
+      }
+
+      .banner-category {
+        font-size: 0.8rem;
+      }
+
+      .control-buttons {
+        gap: 16px;
+      }
+
+      .control-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+
+      .control-btn.play-pause {
+        width: 56px;
+        height: 56px;
+        font-size: 1.3rem;
+      }
+    }
+
+    /* 設定パネル - プレイヤーデザインにマッチ */
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 100;
+      display: none;
+      transition: opacity 0.3s ease;
+    }
+    .settings-overlay.open {
+      display: block;
+    }
+    .settings-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 400px;
+      max-width: 95vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
+      color: #fff;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 120;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .settings-panel.open {
+      transform: translateX(0);
+    }
+    .settings-panel-inner {
+      padding: 40px 30px 30px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .settings-title {
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    .settings-row {
+      margin-bottom: 16px;
+    }
+    .settings-row-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .settings-label {
+      font-size: 1.1rem;
+      color: #fff;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    .settings-value {
+      font-size: 1rem;
+      color: #ccc;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: background 0.2s ease;
+    }
+    .settings-value:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .settings-slider-row {
+      display: flex;
+      align-items: center;
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+    .slider-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-family: inherit;
+      margin: 0 8px;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slider-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .settings-slider-row input[type="range"] {
+      flex: 1;
+      margin: 0 16px;
+      accent-color: #fff;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      outline: none;
+    }
+    .settings-slider-row input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .settings-row-note {
+      margin-bottom: 0;
+    }
+    .settings-note {
+      font-size: 0.9rem;
+      color: #aaa;
+      opacity: 0.8;
+      line-height: 1.4;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+      margin-left: 18px;
+    }
+    .switch input { display: none; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 26px;
+      transition: .3s ease;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 2px;
+      bottom: 2px;
+      background-color: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: .3s ease;
+    }
+    .switch input:checked + .slider {
+      background-color: #fff;
+    }
+    .switch input:checked + .slider:before {
+      transform: translateX(22px);
+      background-color: #000;
+    }
+    .screen-off-btn {
+      display: block;
+      margin: 40px auto 0 auto;
+      width: 100%;
+      padding: 16px 0;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .screen-off-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="video-container">
+    <!-- ローディング表示 -->
+    <div class="loading" id="loading">
+      <div class="loading-spinner"></div>
+      <p>動画を読み込み中...</p>
+    </div>
+
+    <!-- エラーメッセージ -->
+    <div class="error-message" id="error-message" style="display: none;">
+      <h2 id="error-title">動画の読み込みに失敗しました</h2>
+      <p id="error-description">動画IDが無効か、ネットワークエラーが発生しました。</p>
+      <button class="back-btn" onclick="goBack()" id="error-back-btn">戻る</button>
+    </div>
+
+    <!-- YouTube埋め込みプレイヤー -->
+    <iframe 
+      id="youtube-player"
+      class="video-player"
+      src=""
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      style="display: none;">
+    </iframe>
+
+    <!-- バナー -->
+    <div class="banner" id="banner">
+      <div class="banner-content">
+        <div class="banner-thumbnail" id="banner-thumbnail">
+          <span class="material-icons">movie</span>
+        </div>
+        <div class="banner-info">
+          <div class="banner-title" id="banner-title">動画タイトル</div>
+          <div class="banner-category" id="banner-category">カテゴリー</div>
+        </div>
+      </div>
+      <div class="banner-controls">
+        <button class="banner-btn" onclick="openSettings()">
+          <span class="material-icons">settings</span>
+          設定
+        </button>
+        <button class="banner-btn close-btn" onclick="goBack()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ビデオコントロール -->
+    <div class="video-controls">
+      <div class="control-buttons">
+        <button class="control-btn" onclick="skipBackward()">
+          <span class="material-icons">replay_10</span>
+        </button>
+        <button class="control-btn play-pause" onclick="togglePlayPause()" id="play-pause-btn">
+          <span class="material-icons">play_arrow</span>
+        </button>
+        <button class="control-btn" onclick="skipForward()">
+          <span class="material-icons">forward_10</span>
+        </button>
+        <button class="control-btn" onclick="toggleFullscreen()">
+          <span class="material-icons">fullscreen</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 設定パネル -->
+  <div id="settings-overlay" class="settings-overlay"></div>
+  <aside id="settings-panel" class="settings-panel">
+    <div class="settings-panel-inner">
+      <h2 class="settings-title">設定</h2>
+      <!-- 音量 -->
+      <div class="settings-row">
+        <label class="settings-label">音量</label>
+        <div class="settings-slider-row">
+          <button class="slider-btn" id="volume-down">-</button>
+          <input type="range" id="volume-slider" min="0" max="100" value="60">
+          <button class="slider-btn" id="volume-up">+</button>
+        </div>
+      </div>
+      <!-- 明るさ -->
+      <div class="settings-row">
+        <label class="settings-label">画面の明るさ</label>
+        <div class="settings-slider-row">
+          <button class="slider-btn" id="brightness-down">-</button>
+          <input type="range" id="brightness-slider" min="0" max="100" value="75">
+          <button class="slider-btn" id="brightness-up">+</button>
+        </div>
+      </div>
+      <!-- 言語 -->
+      <div class="settings-row settings-row-flex">
+        <label class="settings-label">言語</label>
+        <span class="settings-value">日本語</span>
+      </div>
+      <!-- お知らせ -->
+      <div class="settings-row settings-row-flex">
+        <label class="settings-label">お知らせ</label>
+        <label class="switch">
+          <input type="checkbox" id="notice-toggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="settings-row settings-row-note">
+        <span class="settings-note">お知らせ機能のオン/オフ（重要かつ安全に関わるメッセージは表示されます）。</span>
+      </div>
+      <!-- 保護者制限 -->
+      <div class="settings-row settings-row-flex">
+        <label class="settings-label">保護者制限</label>
+        <span class="settings-value">オフ</span>
+      </div>
+      <div class="settings-row settings-row-note">
+        <span class="settings-note">映画・テレビ番組・ミュージック・オーディオ...</span>
+      </div>
+      <button class="screen-off-btn">画面オフ</button>
+    </div>
+  </aside>
+
+  <!-- 画面オフ用オーバーレイ -->
+  <div id="screen-off-overlay" style="display:none;position:fixed;inset:0;z-index:2147483647;background:#000;opacity:0.98;transition:opacity 0.3s;width:100vw;height:100vh;"></div>
+
+  <script>
+    // URLパラメータから動画情報を取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const contentId = urlParams.get('id');
+    
+    let currentContent = null;
+    let player = null;
+    let isPlaying = false;
+    let bannerVisible = true;
+
+    // ページ読み込み時の初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      // 言語設定を適用
+      applyLanguageSettings();
+      
+      // 初期状態でバナーを非表示にする
+      const banner = document.getElementById('banner');
+      banner.classList.add('hidden');
+      bannerVisible = false;
+      
+      if (!contentId) {
+        showError(getLocalizedText('error_no_video_id'));
+        return;
+      }
+
+      // コンテンツ情報を取得
+      currentContent = getContentData.getById(contentId);
+      if (!currentContent) {
+        showError(getLocalizedText('error_video_not_found'));
+        return;
+      }
+
+      // バナー情報を設定
+      setupBanner();
+      
+      // YouTube動画を読み込み
+      loadYouTubeVideo();
+    });
+
+    // 多言語対応のテキスト取得
+    function getLocalizedText(key) {
+      const lang = localStorage.getItem('language') || 'ja';
+      if (window.i18n && window.i18n[lang] && window.i18n[lang][key]) {
+        return window.i18n[lang][key];
+      }
+      // フォールバック用のデフォルトテキスト
+      const fallbackTexts = {
+        'error_no_video_id': '動画IDが指定されていません。',
+        'error_video_not_found': '指定された動画が見つかりません。',
+        'error_no_youtube_id': 'この動画のYouTube動画IDが設定されていません。',
+        'error_loading_failed': '動画の読み込みに失敗しました。',
+        'loading_video': '動画を読み込み中...',
+        'settings': '設定',
+        'volume': '音量',
+        'brightness': '画面の明るさ',
+        'language': '言語',
+        'notice': 'お知らせ',
+        'notice_note': 'お知らせ機能のオン/オフ（重要かつ安全に関わるメッセージは表示されます）。',
+        'parental': '保護者制限',
+        'parental_note': '映画・テレビ番組・ミュージック・オーディオ...',
+        'parental_off': 'オフ',
+        'screen_off': '画面オフ',
+        'hide': '非表示',
+        'show': '表示',
+        'close': '閉じる'
+      };
+      return fallbackTexts[key] || key;
+    }
+
+    // 言語設定を適用
+    function applyLanguageSettings() {
+      const lang = localStorage.getItem('language') || 'ja';
+      document.body.setAttribute('lang', lang);
+      document.documentElement.setAttribute('lang', lang);
+      
+      // 設定パネルのテキストを更新
+      updateSettingsTexts();
+    }
+
+    // 設定パネルのテキストを更新
+    function updateSettingsTexts() {
+      const lang = localStorage.getItem('language') || 'ja';
+      
+      // 設定タイトル
+      const settingsTitle = document.querySelector('.settings-title');
+      if (settingsTitle) {
+        settingsTitle.textContent = getLocalizedText('settings');
+      }
+
+      // 設定ラベル
+      const labels = document.querySelectorAll('.settings-label');
+      if (labels && labels.length >= 5) {
+        labels[0].textContent = getLocalizedText('volume');
+        labels[1].textContent = getLocalizedText('brightness');
+        labels[2].textContent = getLocalizedText('language');
+        labels[3].textContent = getLocalizedText('notice');
+        labels[4].textContent = getLocalizedText('parental');
+      }
+
+      // 説明テキスト
+      const notes = document.querySelectorAll('.settings-note');
+      if (notes && notes.length >= 2) {
+        notes[0].textContent = getLocalizedText('notice_note');
+        notes[1].textContent = getLocalizedText('parental_note');
+      }
+
+      // 保護者制限の値
+      const parentalValue = document.querySelectorAll('.settings-value');
+      if (parentalValue && parentalValue.length >= 2) {
+        parentalValue[1].textContent = getLocalizedText('parental_off');
+      }
+
+      // 画面オフボタン
+      const screenOffBtn = document.querySelector('.screen-off-btn');
+      if (screenOffBtn) {
+        screenOffBtn.textContent = getLocalizedText('screen_off');
+      }
+
+      // バナーのボタンテキスト
+      const bannerBtns = document.querySelectorAll('.banner-btn');
+      if (bannerBtns && bannerBtns.length >= 3) {
+        // 非表示/表示ボタン
+        const visibilityBtn = bannerBtns[0];
+        updateBannerVisibilityButton(visibilityBtn);
+        
+        // 設定ボタン
+        bannerBtns[1].innerHTML = `<span class="material-icons">settings</span>${getLocalizedText('settings')}`;
+      }
+    }
+
+    // バナーの表示/非表示ボタンを更新
+    function updateBannerVisibilityButton(button) {
+      if (bannerVisible) {
+        button.innerHTML = `<span class="material-icons">visibility_off</span>${getLocalizedText('hide')}`;
+      } else {
+        button.innerHTML = `<span class="material-icons">visibility</span>${getLocalizedText('show')}`;
+      }
+    }
+
+    // ローディングテキスト
+    const loadingText = document.querySelector('.loading p');
+    if (loadingText) {
+      loadingText.textContent = getLocalizedText('loading_video');
+    }
+
+    // バナー情報を設定
+    function setupBanner() {
+      document.getElementById('banner-title').textContent = currentContent.title;
+      document.getElementById('banner-category').textContent = currentContent.category;
+      
+      // サムネイル画像がある場合は設定
+      if (currentContent.coverImage) {
+        const thumbnail = document.getElementById('banner-thumbnail');
+        thumbnail.innerHTML = `<img src="../${currentContent.coverImage}" alt="${currentContent.title}">`;
+      }
+    }
+
+    // YouTube Player APIを読み込み
+    function loadYouTubeAPI() {
+      if (window.YT) {
+        initYouTubePlayer();
+        return;
+      }
+
+      // YouTube Player APIを動的に読み込み
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // API読み込み完了時のコールバック
+      window.onYouTubeIframeAPIReady = function() {
+        initYouTubePlayer();
+      };
+    }
+
+    // YouTube Playerを初期化
+    function initYouTubePlayer() {
+      const videoId = getYouTubeVideoId(currentContent.id);
+      
+      if (!videoId) {
+        showError(getLocalizedText('error_no_youtube_id'));
+        return;
+      }
+
+      console.log('YouTube Player初期化開始:', videoId);
+
+      // YouTube Playerを作成
+      const player = new window.YT.Player('youtube-player', {
+        height: '100%',
+        width: '100%',
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          rel: 0,
+          modestbranding: 1,
+          showinfo: 0,
+          controls: 0,
+          enablejsapi: 1,
+          origin: window.location.origin
+        },
+        events: {
+          onReady: function(event) {
+            console.log('YouTube Player準備完了');
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('youtube-player').style.display = 'block';
+            isPlaying = true;
+            updatePlayPauseButton();
+            
+            // 動画読み込み完了時にバナーを非表示にする
+            setTimeout(function() {
+              const banner = document.getElementById('banner');
+              banner.classList.add('hidden');
+              bannerVisible = false;
+            }, 1000); // 1秒後に非表示
+          },
+          onStateChange: function(event) {
+            console.log('YouTube Player状態変更:', event.data);
+            // 再生状態の変更を監視
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              isPlaying = true;
+            } else if (event.data === window.YT.PlayerState.PAUSED) {
+              isPlaying = false;
+            }
+            updatePlayPauseButton();
+          },
+          onError: function(event) {
+            console.error('YouTube Playerエラー:', event.data);
+            showError(getLocalizedText('error_loading_failed'));
+          }
+        }
+      });
+
+      // プレイヤーをグローバルに保存
+      window.youtubePlayer = player;
+    }
+
+    // YouTube動画を読み込み（従来の方法、フォールバック用）
+    function loadYouTubeVideo() {
+      const videoId = getYouTubeVideoId(currentContent.id);
+      
+      if (!videoId) {
+        showError(getLocalizedText('error_no_youtube_id'));
+        return;
+      }
+
+      console.log('動画読み込み開始:', videoId);
+      
+      // まず従来のiframe方式で読み込み（確実に動作）
+      loadYouTubeVideoFallback(videoId);
+      
+      // 並行してYouTube Player APIも試行
+      loadYouTubeAPI();
+    }
+
+    // フォールバック用の従来のiframe方式
+    function loadYouTubeVideoFallback(videoId) {
+      const iframe = document.getElementById('youtube-player');
+      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&showinfo=0&controls=0&enablejsapi=1&origin=${window.location.origin}`;
+      
+      iframe.onload = function() {
+        document.getElementById('loading').style.display = 'none';
+        iframe.style.display = 'block';
+        isPlaying = true;
+        updatePlayPauseButton();
+        
+        // 動画読み込み完了時にバナーを非表示にする
+        setTimeout(function() {
+          const banner = document.getElementById('banner');
+          banner.classList.add('hidden');
+          bannerVisible = false;
+        }, 1000); // 1秒後に非表示
+      };
+
+      iframe.onerror = function() {
+        showError(getLocalizedText('error_loading_failed'));
+      };
+    }
+
+    // コンテンツIDからYouTube動画IDを取得
+    function getYouTubeVideoId(contentId) {
+      // content-data.jsからYouTube動画IDを取得
+      const content = getContentData.getById(contentId);
+      console.log('コンテンツ検索:', contentId, content);
+      return content ? content.youtubeId : null;
+    }
+
+    // エラー表示
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error-message').style.display = 'block';
+      document.getElementById('error-title').textContent = message;
+    }
+
+
+
+    // 再生/一時停止切り替え
+    function togglePlayPause() {
+      if (window.youtubePlayer) {
+        // YouTube Player APIが利用可能な場合
+        if (isPlaying) {
+          window.youtubePlayer.pauseVideo();
+        } else {
+          window.youtubePlayer.playVideo();
+        }
+      } else {
+        // フォールバック: iframeのsrcを変更
+        const iframe = document.getElementById('youtube-player');
+        if (iframe.src) {
+          if (isPlaying) {
+            // 一時停止（URLにパラメータ追加）
+            if (!iframe.src.includes('&pause=1')) {
+              iframe.src = iframe.src + '&pause=1';
+            }
+          } else {
+            // 再生（パラメータ削除）
+            iframe.src = iframe.src.replace('&pause=1', '');
+          }
+          isPlaying = !isPlaying;
+          updatePlayPauseButton();
+        }
+      }
+    }
+
+    // 再生/一時停止ボタンの更新
+    function updatePlayPauseButton() {
+      const btn = document.getElementById('play-pause-btn');
+      const icon = btn.querySelector('.material-icons');
+      
+      if (isPlaying) {
+        icon.textContent = 'pause';
+      } else {
+        icon.textContent = 'play_arrow';
+      }
+    }
+
+    // 10秒戻る
+    function skipBackward() {
+      if (window.youtubePlayer) {
+        const currentTime = window.youtubePlayer.getCurrentTime();
+        window.youtubePlayer.seekTo(Math.max(0, currentTime - 10), true);
+      }
+    }
+
+    // 10秒進む
+    function skipForward() {
+      if (window.youtubePlayer) {
+        const currentTime = window.youtubePlayer.getCurrentTime();
+        const duration = window.youtubePlayer.getDuration();
+        window.youtubePlayer.seekTo(Math.min(duration, currentTime + 10), true);
+      }
+    }
+
+    // 全画面切り替え
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // 前のページに戻る
+    function goBack() {
+      window.history.back();
+    }
+
+    // 設定パネルを開く
+    function openSettings() {
+      const settingsPanel = document.getElementById('settings-panel');
+      const settingsOverlay = document.getElementById('settings-overlay');
+      settingsPanel.classList.add('open');
+      settingsOverlay.classList.add('open');
+    }
+
+    // 設定パネル制御
+    document.addEventListener('DOMContentLoaded', function() {
+      const settingsPanel = document.getElementById('settings-panel');
+      const settingsOverlay = document.getElementById('settings-overlay');
+      
+      // オーバーレイクリックで閉じる
+      settingsOverlay.onclick = () => {
+        settingsPanel.classList.remove('open');
+        settingsOverlay.classList.remove('open');
+      };
+
+      // ESCキーで閉じる
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          settingsPanel.classList.remove('open');
+          settingsOverlay.classList.remove('open');
+        }
+      });
+
+      // スライダーの+-ボタン
+      function stepSlider(sliderId, diff) {
+        const slider = document.getElementById(sliderId);
+        slider.value = Math.max(Number(slider.min), Math.min(Number(slider.max), Number(slider.value) + diff));
+        slider.dispatchEvent(new Event('input'));
+      }
+      
+      document.getElementById('volume-down').onclick = () => stepSlider('volume-slider', -5);
+      document.getElementById('volume-up').onclick = () => stepSlider('volume-slider', 5);
+      document.getElementById('brightness-down').onclick = () => stepSlider('brightness-slider', -5);
+      document.getElementById('brightness-up').onclick = () => stepSlider('brightness-slider', 5);
+
+      // 明るさスライダー
+      const brightnessSlider = document.getElementById('brightness-slider');
+      if (brightnessSlider) {
+        // localStorageから明るさを読み込み
+        const brightness = localStorage.getItem('brightnessPercent');
+        if (brightness) {
+          brightnessSlider.value = brightness;
+          document.body.style.filter = `brightness(${brightness}%)`;
+        }
+        
+        brightnessSlider.oninput = function() {
+          document.body.style.filter = `brightness(${this.value}%)`;
+          localStorage.setItem('brightnessPercent', this.value);
+        };
+      }
+
+      // 音量スライダー
+      const volumeSlider = document.getElementById('volume-slider');
+      if (volumeSlider) {
+        // localStorageから音量を読み込み
+        const volume = localStorage.getItem('volumePercent');
+        if (volume) {
+          volumeSlider.value = volume;
+        }
+        
+        volumeSlider.oninput = function() {
+          localStorage.setItem('volumePercent', this.value);
+          // YouTube Player APIを使用して音量を制御
+          console.log('音量設定:', this.value);
+        };
+      }
+
+      // 言語切り替え
+      const langValue = document.querySelector('.settings-value');
+      if (langValue) {
+        const lang = localStorage.getItem('language') || 'ja';
+        const langNames = { 
+          ja: getLocalizedText('lang_ja') || '日本語', 
+          en: getLocalizedText('lang_en') || 'English', 
+          ko: getLocalizedText('lang_ko') || '한국어', 
+          zh: getLocalizedText('lang_zh') || '中文' 
+        };
+        langValue.textContent = langNames[lang] || lang;
+        
+        langValue.onclick = function() {
+          const langs = ['ja', 'en', 'ko', 'zh'];
+          let idx = langs.indexOf(lang);
+          idx = (idx + 1) % langs.length;
+          localStorage.setItem('language', langs[idx]);
+          location.reload();
+        };
+      }
+
+      // 画面オフボタン
+      const screenOffBtn = document.querySelector('.screen-off-btn');
+      const screenOffOverlay = document.getElementById('screen-off-overlay');
+      if (screenOffBtn && screenOffOverlay) {
+        screenOffBtn.onclick = () => {
+          screenOffOverlay.style.display = 'block';
+          setTimeout(() => { screenOffOverlay.style.opacity = '0.98'; }, 10);
+        };
+        screenOffOverlay.onclick = () => {
+          screenOffOverlay.style.opacity = '0';
+          setTimeout(() => { screenOffOverlay.style.display = 'none'; }, 300);
+        };
+      }
+    });
+
+    // キーボードショートカット
+    document.addEventListener('keydown', function(e) {
+      switch(e.key) {
+        case ' ':
+        case 'k':
+          e.preventDefault();
+          togglePlayPause();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          skipBackward();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          skipForward();
+          break;
+        case 'f':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+
+        case 's':
+          e.preventDefault();
+          openSettings();
+          break;
+        case 'Escape':
+          if (document.fullscreenElement) {
+            document.exitFullscreen();
+          } else {
+            goBack();
+          }
+          break;
+      }
+    });
+
+    // 画面タップでバナーとコントロール表示/非表示
+    let controlTimeout;
+    const videoContainer = document.querySelector('.video-container');
+    const videoControls = document.querySelector('.video-controls');
+    const banner = document.getElementById('banner');
+
+    // 初期状態でバナーを非表示にする
+    banner.classList.add('hidden');
+    bannerVisible = false;
+
+    // コントロールの表示状態を監視開始
+    observeControlVisibility();
+
+    // バナーとコントロールを表示する関数
+    function showControls() {
+      banner.classList.remove('hidden');
+      banner.style.opacity = '1';
+      videoControls.style.opacity = '1';
+      bannerVisible = true;
+    }
+
+    // バナーとコントロールを非表示にする関数
+    function hideControls() {
+      if (isPlaying) {
+        banner.classList.add('hidden');
+        banner.style.opacity = '1';
+        videoControls.style.opacity = '0';
+        bannerVisible = false;
+      }
+    }
+
+    // プレイヤーコントロールの表示状態を監視
+    function observeControlVisibility() {
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+            const controlsOpacity = videoControls.style.opacity;
+            if (controlsOpacity === '0' && bannerVisible) {
+              // コントロールが非表示になったらバナーも非表示にする
+              banner.classList.add('hidden');
+              bannerVisible = false;
+            }
+          }
+        });
+      });
+
+      observer.observe(videoControls, {
+        attributes: true,
+        attributeFilter: ['style']
+      });
+    }
+
+    // 画面タップイベント
+    videoContainer.addEventListener('click', function(e) {
+      // バナーやコントロールボタンがクリックされた場合は無視
+      if (e.target.closest('.banner') || e.target.closest('.video-controls')) {
+        return;
+      }
+
+      // バナーとコントロールを表示
+      showControls();
+      
+      clearTimeout(controlTimeout);
+      
+      // 3秒後に自動的に非表示
+      controlTimeout = setTimeout(function() {
+        hideControls();
+        // コントロールのopacityを直接設定して確実に非表示にする
+        videoControls.style.opacity = '0';
+      }, 3000);
+    });
+
+    // マウス移動でも表示（タッチデバイス対応）
+    videoContainer.addEventListener('mousemove', function() {
+      if (!bannerVisible) {
+        showControls();
+      }
+      
+      clearTimeout(controlTimeout);
+      controlTimeout = setTimeout(function() {
+        hideControls();
+        // コントロールのopacityを直接設定して確実に非表示にする
+        videoControls.style.opacity = '0';
+      }, 3000);
+    });
+
+    videoContainer.addEventListener('mouseleave', function() {
+      hideControls();
+      // コントロールのopacityを直接設定して確実に非表示にする
+      videoControls.style.opacity = '0';
+    });
+  </script>
+</body>
+</html> 

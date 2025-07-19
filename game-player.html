@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ゲームプレイヤー</title>
+  <script src="js/i18n.js"></script>
   <style>
     html, body {
       height: 100%;
@@ -121,7 +122,7 @@
   <iframe id="game-frame" class="game-player-iframe" src="/キャッチゲーム.html" allowfullscreen></iframe>
   <div class="md-dialog-backdrop" id="dialog-backdrop">
     <div class="md-dialog">
-      <div class="md-dialog-title">ゲームを終了してもよろしいでしょうか？</div>
+      <div class="md-dialog-title" id="dialog-title">ゲームを終了してもよろしいでしょうか？</div>
       <div class="md-dialog-actions">
         <button class="md-btn md-btn-primary" id="dialog-yes">はい</button>
         <button class="md-btn" id="dialog-no">いいえ</button>
@@ -141,10 +142,21 @@
     }
     document.getElementById('game-frame').src = games[idx].file;
 
-    const exitBtn = document.querySelector('.exit-btn');
-    const dialog = document.getElementById('dialog-backdrop');
+    // 言語設定の取得
+    const langValue = localStorage.getItem('language') || 'ja';
+    const i18n = window.i18n && (window.i18n[langValue] || window.i18n['ja']);
+
+    // ダイアログテキストの多言語化
+    const dialogTitle = document.getElementById('dialog-title');
     const dialogYes = document.getElementById('dialog-yes');
     const dialogNo = document.getElementById('dialog-no');
+
+    if (dialogTitle) dialogTitle.textContent = i18n.game_exit_confirm || 'ゲームを終了してもよろしいでしょうか？';
+    if (dialogYes) dialogYes.textContent = i18n.yes || 'はい';
+    if (dialogNo) dialogNo.textContent = i18n.no || 'いいえ';
+
+    const exitBtn = document.querySelector('.exit-btn');
+    const dialog = document.getElementById('dialog-backdrop');
 
     if (exitBtn && dialog && dialogYes && dialogNo) {
       exitBtn.onclick = (e) => {
