@@ -1,0 +1,864 @@
+/* リモートコントロール用CSS */
+:root {
+  --rc-primary: #6750a4;
+  --rc-primary-container: #eaddff;
+  --rc-on-primary: #ffffff;
+  --rc-on-primary-container: #21005d;
+  --rc-secondary: #625b71;
+  --rc-secondary-container: #e8def8;
+  --rc-on-secondary: #ffffff;
+  --rc-on-secondary-container: #1d192b;
+  --rc-surface: #fef7ff;
+  --rc-surface-container: #f3edf7;
+  --rc-surface-container-high: #ece6f0;
+  --rc-on-surface: #1c1b1f;
+  --rc-on-surface-variant: #49454f;
+  --rc-outline: #79747e;
+  --rc-outline-variant: #cac4d0;
+  --rc-error: #ba1a1a;
+  --rc-error-container: #ffdad6;
+  --rc-on-error: #ffffff;
+  --rc-on-error-container: #410002;
+  --rc-warning: #ff6b35;
+  --rc-warning-container: #ffdad6;
+  --rc-on-warning: #ffffff;
+  --rc-on-warning-container: #410002;
+  --rc-success: #4caf50;
+  --rc-success-container: #e8f5e8;
+  --rc-on-success: #ffffff;
+  --rc-on-success-container: #1b5e20;
+  --rc-info: #2196f3;
+  --rc-info-container: #e3f2fd;
+  --rc-on-info: #ffffff;
+  --rc-on-info-container: #0d47a1;
+  
+  --rc-shadow-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --rc-shadow-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  --rc-shadow-3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  --rc-shadow-4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  
+  --rc-radius-sm: 8px;
+  --rc-radius-md: 12px;
+  --rc-radius-lg: 16px;
+  --rc-radius-xl: 24px;
+  
+  --rc-spacing-xs: 4px;
+  --rc-spacing-sm: 8px;
+  --rc-spacing-md: 16px;
+  --rc-spacing-lg: 24px;
+  --rc-spacing-xl: 32px;
+  --rc-spacing-xxl: 48px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
+  background: var(--rc-surface);
+  color: var(--rc-on-surface);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* コンテナ */
+.rc-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--rc-surface);
+}
+
+/* ヘッダー */
+.rc-header {
+  background: var(--rc-surface-container-high);
+  padding: var(--rc-spacing-md) var(--rc-spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--rc-shadow-1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.rc-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--rc-spacing-md);
+}
+
+.rc-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--rc-on-surface);
+}
+
+.rc-status {
+  display: flex;
+  align-items: center;
+  gap: var(--rc-spacing-xs);
+  font-size: 0.9rem;
+  color: var(--rc-on-surface-variant);
+}
+
+.rc-status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--rc-success);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.rc-header-right {
+  display: flex;
+  gap: var(--rc-spacing-sm);
+}
+
+/* メインコンテンツ */
+.rc-main {
+  flex: 1;
+  padding: var(--rc-spacing-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--rc-spacing-lg);
+  align-content: start;
+}
+
+/* セクション */
+.rc-section {
+  background: var(--rc-surface-container);
+  border-radius: var(--rc-radius-lg);
+  padding: var(--rc-spacing-lg);
+  box-shadow: var(--rc-shadow-1);
+  transition: box-shadow 0.3s ease;
+}
+
+.rc-section:hover {
+  box-shadow: var(--rc-shadow-2);
+}
+
+.rc-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--rc-spacing-sm);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: var(--rc-spacing-lg);
+  color: var(--rc-on-surface);
+}
+
+.rc-section-title .material-icons {
+  color: var(--rc-primary);
+}
+
+/* ナビゲーショングリッド */
+.rc-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--rc-spacing-md);
+}
+
+.rc-nav-btn {
+  background: var(--rc-surface-container-high);
+  border: 1px solid var(--rc-outline-variant);
+  border-radius: var(--rc-radius-md);
+  padding: var(--rc-spacing-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--rc-spacing-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: var(--rc-on-surface);
+}
+
+.rc-nav-btn:hover {
+  background: var(--rc-primary-container);
+  border-color: var(--rc-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--rc-shadow-2);
+}
+
+.rc-nav-btn .material-icons {
+  font-size: 2rem;
+  color: var(--rc-primary);
+}
+
+.rc-nav-btn span:last-child {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* メディア制御 */
+.rc-media-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-md);
+}
+
+.rc-media-row {
+  display: flex;
+  justify-content: center;
+  gap: var(--rc-spacing-sm);
+}
+
+.rc-btn-media {
+  background: var(--rc-surface-container-high);
+  border: 1px solid var(--rc-outline-variant);
+  border-radius: var(--rc-radius-md);
+  padding: var(--rc-spacing-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  min-height: 60px;
+}
+
+.rc-btn-media:hover {
+  background: var(--rc-primary-container);
+  border-color: var(--rc-primary);
+  transform: scale(1.05);
+}
+
+.rc-btn-media .material-icons {
+  font-size: 1.5rem;
+  color: var(--rc-primary);
+}
+
+/* 制御行 */
+.rc-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-lg);
+}
+
+.rc-control-row {
+  display: flex;
+  align-items: center;
+  gap: var(--rc-spacing-md);
+  flex-wrap: wrap;
+}
+
+.rc-control-label {
+  display: flex;
+  align-items: center;
+  gap: var(--rc-spacing-sm);
+  min-width: 80px;
+  font-weight: 500;
+}
+
+.rc-control-label .material-icons {
+  color: var(--rc-primary);
+}
+
+.rc-control-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--rc-spacing-sm);
+  flex: 1;
+  min-width: 200px;
+}
+
+.rc-control-slider input[type="range"] {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--rc-outline-variant);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.rc-control-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--rc-primary);
+  cursor: pointer;
+  box-shadow: var(--rc-shadow-1);
+}
+
+.rc-control-slider input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--rc-primary);
+  cursor: pointer;
+  border: none;
+  box-shadow: var(--rc-shadow-1);
+}
+
+.rc-control-value {
+  min-width: 50px;
+  text-align: right;
+  font-weight: 500;
+  color: var(--rc-primary);
+}
+
+/* セレクト */
+.rc-select {
+  background: var(--rc-surface-container-high);
+  border: 1px solid var(--rc-outline-variant);
+  border-radius: var(--rc-radius-sm);
+  padding: var(--rc-spacing-sm) var(--rc-spacing-md);
+  font-size: 1rem;
+  color: var(--rc-on-surface);
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.rc-select:focus {
+  outline: none;
+  border-color: var(--rc-primary);
+  box-shadow: 0 0 0 2px var(--rc-primary-container);
+}
+
+/* アナウンス制御 */
+.rc-announce-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-md);
+}
+
+.rc-textarea {
+  width: 100%;
+  background: var(--rc-surface-container-high);
+  border: 1px solid var(--rc-outline-variant);
+  border-radius: var(--rc-radius-sm);
+  padding: var(--rc-spacing-md);
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.rc-textarea:focus {
+  outline: none;
+  border-color: var(--rc-primary);
+  box-shadow: 0 0 0 2px var(--rc-primary-container);
+}
+
+.rc-announce-buttons {
+  display: flex;
+  gap: var(--rc-spacing-md);
+  flex-wrap: wrap;
+}
+
+.rc-announce-status {
+  padding: var(--rc-spacing-sm);
+  border-radius: var(--rc-radius-sm);
+  font-size: 0.9rem;
+  min-height: 20px;
+}
+
+.rc-announce-status.success {
+  background: var(--rc-success-container);
+  color: var(--rc-on-success-container);
+}
+
+.rc-announce-status.error {
+  background: var(--rc-error-container);
+  color: var(--rc-on-error-container);
+}
+
+.rc-announce-status.info {
+  background: var(--rc-info-container);
+  color: var(--rc-on-info-container);
+}
+
+/* 通知送信制御 */
+.rc-notification-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-md);
+}
+
+.rc-notification-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-sm);
+}
+
+.rc-notification-buttons {
+  display: flex;
+  gap: var(--rc-spacing-md);
+  flex-wrap: wrap;
+}
+
+.rc-notification-status {
+  padding: var(--rc-spacing-sm);
+  border-radius: var(--rc-radius-sm);
+  font-size: 0.9rem;
+  min-height: 20px;
+}
+
+.rc-notification-status.success {
+  background: var(--rc-success-container);
+  color: var(--rc-on-success-container);
+}
+
+.rc-notification-status.error {
+  background: var(--rc-error-container);
+  color: var(--rc-on-error-container);
+}
+
+.rc-notification-status.info {
+  background: var(--rc-info-container);
+  color: var(--rc-on-info-container);
+}
+
+/* フライト設定 */
+.rc-flight-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-md);
+}
+
+.rc-flight-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-sm);
+}
+
+.rc-flight-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--rc-on-surface);
+}
+
+.rc-flight-buttons {
+  display: flex;
+  gap: var(--rc-spacing-md);
+  margin-top: var(--rc-spacing-sm);
+}
+
+.rc-input {
+  width: 100%;
+  background: var(--rc-surface-container-high);
+  border: 1px solid var(--rc-outline-variant);
+  border-radius: var(--rc-radius-sm);
+  padding: var(--rc-spacing-md);
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--rc-on-surface);
+  transition: border-color 0.2s;
+}
+
+.rc-input:focus {
+  outline: none;
+  border-color: var(--rc-primary);
+  box-shadow: 0 0 0 2px var(--rc-primary-container);
+}
+
+/* 緊急制御 */
+.rc-emergency-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-md);
+}
+
+/* ボタン */
+.rc-btn {
+  background: var(--rc-surface-container-high);
+  border: 1px solid var(--rc-outline-variant);
+  border-radius: var(--rc-radius-sm);
+  padding: var(--rc-spacing-sm) var(--rc-spacing-md);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rc-spacing-xs);
+  text-decoration: none;
+  color: var(--rc-on-surface);
+}
+
+.rc-btn:hover {
+  background: var(--rc-primary-container);
+  border-color: var(--rc-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--rc-shadow-1);
+}
+
+.rc-btn:active {
+  transform: translateY(0);
+}
+
+.rc-btn-primary {
+  background: var(--rc-primary);
+  color: var(--rc-on-primary);
+  border-color: var(--rc-primary);
+}
+
+.rc-btn-primary:hover {
+  background: var(--rc-on-primary-container);
+  color: var(--rc-primary);
+}
+
+.rc-btn-secondary {
+  background: var(--rc-secondary-container);
+  color: var(--rc-on-secondary-container);
+  border-color: var(--rc-secondary);
+}
+
+.rc-btn-secondary:hover {
+  background: var(--rc-secondary);
+  color: var(--rc-on-secondary);
+}
+
+.rc-btn-emergency {
+  background: var(--rc-error);
+  color: var(--rc-on-error);
+  border-color: var(--rc-error);
+}
+
+.rc-btn-emergency:hover {
+  background: var(--rc-error-container);
+  color: var(--rc-on-error-container);
+}
+
+.rc-btn-warning {
+  background: var(--rc-warning);
+  color: var(--rc-on-warning);
+  border-color: var(--rc-warning);
+}
+
+.rc-btn-warning:hover {
+  background: var(--rc-warning-container);
+  color: var(--rc-on-warning-container);
+}
+
+.rc-btn-info {
+  background: var(--rc-info);
+  color: var(--rc-on-info);
+  border-color: var(--rc-info);
+}
+
+.rc-btn-info:hover {
+  background: var(--rc-info-container);
+  color: var(--rc-on-info-container);
+}
+
+.rc-btn-small {
+  padding: var(--rc-spacing-xs) var(--rc-spacing-sm);
+  font-size: 0.9rem;
+}
+
+.rc-btn-icon {
+  padding: var(--rc-spacing-sm);
+  border-radius: 50%;
+  min-width: 40px;
+  min-height: 40px;
+  justify-content: center;
+}
+
+/* フッター */
+.rc-footer {
+  background: var(--rc-surface-container-high);
+  padding: var(--rc-spacing-md) var(--rc-spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--rc-shadow-1);
+  margin-top: auto;
+}
+
+.rc-footer-info {
+  display: flex;
+  align-items: center;
+  gap: var(--rc-spacing-md);
+  font-size: 0.9rem;
+  color: var(--rc-on-surface-variant);
+}
+
+.rc-footer-actions {
+  display: flex;
+  gap: var(--rc-spacing-sm);
+}
+
+/* モーダル */
+.rc-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.rc-modal-overlay.show {
+  display: flex;
+}
+
+.rc-modal {
+  background: var(--rc-surface-container);
+  border-radius: var(--rc-radius-lg);
+  box-shadow: var(--rc-shadow-4);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.rc-modal-header {
+  background: var(--rc-surface-container-high);
+  padding: var(--rc-spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--rc-outline-variant);
+}
+
+.rc-modal-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--rc-on-surface);
+}
+
+.rc-modal-close {
+  background: none;
+  border: none;
+  color: var(--rc-on-surface-variant);
+  cursor: pointer;
+  padding: var(--rc-spacing-xs);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.rc-modal-close:hover {
+  background: var(--rc-outline-variant);
+  color: var(--rc-on-surface);
+}
+
+.rc-modal-body {
+  padding: var(--rc-spacing-lg);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .rc-main {
+    grid-template-columns: 1fr;
+    padding: var(--rc-spacing-md);
+  }
+  
+  .rc-header {
+    padding: var(--rc-spacing-sm) var(--rc-spacing-md);
+  }
+  
+  .rc-title {
+    font-size: 1.2rem;
+  }
+  
+  .rc-nav-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .rc-control-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--rc-spacing-sm);
+  }
+  
+  .rc-control-slider {
+    min-width: auto;
+  }
+  
+  .rc-footer {
+    flex-direction: column;
+    gap: var(--rc-spacing-sm);
+    text-align: center;
+  }
+  
+  .rc-footer-info {
+    flex-direction: column;
+    gap: var(--rc-spacing-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .rc-nav-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .rc-media-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .rc-announce-buttons {
+    flex-direction: column;
+  }
+  
+  .rc-emergency-controls {
+    flex-direction: column;
+  }
+}
+
+/* ログ表示 */
+.log-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.log-entry {
+  display: flex;
+  gap: var(--rc-spacing-sm);
+  padding: var(--rc-spacing-sm);
+  border-radius: var(--rc-radius-sm);
+  margin-bottom: var(--rc-spacing-xs);
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.log-time {
+  color: var(--rc-on-surface-variant);
+  min-width: 80px;
+}
+
+.log-level {
+  font-weight: 600;
+  min-width: 50px;
+}
+
+.log-level.info {
+  color: var(--rc-info);
+}
+
+.log-level.warn {
+  color: var(--rc-warning);
+}
+
+.log-level.error {
+  color: var(--rc-error);
+}
+
+.log-message {
+  flex: 1;
+}
+
+/* 情報テーブル */
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.info-table td {
+  padding: var(--rc-spacing-sm);
+  border-bottom: 1px solid var(--rc-outline-variant);
+}
+
+.info-table td:first-child {
+  font-weight: 600;
+  color: var(--rc-on-surface);
+}
+
+.info-table td:last-child {
+  color: var(--rc-on-surface-variant);
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rc-surface: #1c1b1f;
+    --rc-surface-container: #2b2930;
+    --rc-surface-container-high: #322f35;
+    --rc-on-surface: #e6e1e5;
+    --rc-on-surface-variant: #cac4d0;
+    --rc-outline: #938f99;
+    --rc-outline-variant: #49454f;
+  }
+} 
+
+/* プレイリスト管理 */
+.rc-playlist-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-md);
+}
+
+.rc-playlist-add {
+  display: flex;
+  gap: var(--rc-spacing-sm);
+  align-items: center;
+}
+
+.rc-playlist-add .rc-input {
+  flex: 1;
+}
+
+.rc-playlist-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-spacing-xs);
+}
+
+.rc-playlist-item {
+  display: flex;
+  align-items: center;
+  gap: var(--rc-spacing-sm);
+  background: var(--rc-surface-container-high);
+  border: 1px solid var(--rc-outline-variant);
+  border-radius: var(--rc-radius-sm);
+  padding: var(--rc-spacing-xs) var(--rc-spacing-sm);
+}
+
+.rc-playlist-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--rc-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rc-playlist-url {
+  flex: 2;
+  font-size: 0.9rem;
+  color: var(--rc-on-surface-variant);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rc-playlist-actions {
+  display: flex;
+  gap: 4px;
+} 

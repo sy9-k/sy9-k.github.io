@@ -23,6 +23,17 @@ window.contentData = {
         episode: "Myk LIVE KPOP",
         youtubeId: "D6EaJTkVsFQ", // YouTube動画ID
         availableLanguages: ["ko", "en"] // 利用可能言語（韓国語、英語のみ）
+      },
+      {
+        id: "test",
+        title: "AAA",
+        category: "2025 ALL KPOP",
+        description: "ILLIT, 빌려온 고양이 (Do the Dance) | MyK FESTA | MyK LIVE KPOP",
+        backgroundColor: "#4b9cf5",
+        coverImage: "http://img.youtube.com/vi/D6EaJTkVsFQ/hqdefault.jpg", // カバー画像パス
+        episode: "Myk LIVE KPOP",
+        youtubeId: "D6EaJTkVsFQ", // YouTube動画ID
+        availableLanguages: ["ko", "en"] // 利用可能言語（韓国語、英語のみ）
       }
     ]
   },

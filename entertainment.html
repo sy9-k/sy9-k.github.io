@@ -882,16 +882,10 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         <div id="recommended-content-container"></div>
         </div>
 
-      <!-- 最新映画セクション -->
-      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
-        <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;">最新映画</div>
-        <div id="latest-movies-container"></div>
-      </div>
-
-      <!-- アニメセクション -->
-      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
-        <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;">アニメ</div>
-        <div id="anime-container"></div>
+      <!-- 後で見るセクション -->
+      <div id="watch-later-section" style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;display:none;">
+        <div id="watch-later-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;">後で見る</div>
+        <div id="watch-later-container"></div>
       </div>
     </div>
   </div>
@@ -1596,7 +1590,23 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       
       // プレイリスト追加ボタン
       document.getElementById('modal-playlist-btn').addEventListener('click', function() {
-        alert('プレイリストに追加しました。');
+        // 現在のモーダルのコンテンツ情報を取得
+        const modalTitle = document.getElementById('modal-title').textContent;
+        const modalCategory = document.getElementById('modal-category').textContent;
+        const allItems = [
+          ...getContentData.getAllPopular(),
+          ...getContentData.getAllRecommended(),
+          ...getContentData.getAllLatestMovies(),
+          ...getContentData.getAllAnime(),
+          ...getContentData.getAllLiveStreams()
+        ];
+        const content = allItems.find(item => item.title === modalTitle && (item.category === modalCategory || item.category + ' (ライブ配信)' === modalCategory));
+        if (content) {
+          addToWatchLater(content);
+          alert('後で見るリストに追加しました。');
+        } else {
+          alert('コンテンツ情報が見つかりません。');
+        }
       });
       
       // 言語選択モーダルのオーバーレイクリックで閉じる
@@ -1851,8 +1861,293 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         subtitleOffOption.classList.remove('disabled');
       }
     }
-    
 
+    // コントローラーボタン制御
+    const controllerBtn = document.querySelector('.hm-btn-controller');
+    if (controllerBtn) {
+      controllerBtn.onclick = () => {
+        openController();
+      };
+    }
+
+    // コントローラーを開く
+    function openController() {
+      const controllerWindow = window.open('/remote-control/index.html', 'controller', 
+        'width=800,height=600,resizable=yes,scrollbars=yes,status=yes');
+      
+      if (controllerWindow) {
+        // コントローラーウィンドウとの通信設定
+        window.addEventListener('message', function(event) {
+          handleControllerMessage(event.data);
+        });
+      }
+    }
+
+    // コントローラーからのメッセージ処理
+    function handleControllerMessage(data) {
+      switch(data.type) {
+        case 'media_control':
+          handleMediaControl(data.action);
+          break;
+        case 'volume_set':
+          setVolume(data.volume);
+          break;
+        case 'brightness_set':
+          setBrightness(data.brightness);
+          break;
+        case 'language_set':
+          setLanguage(data.language);
+          break;
+        case 'announce_start':
+          startAnnouncement(data.text);
+          break;
+        case 'announce_stop':
+          stopAnnouncement();
+          break;
+        case 'emergency_stop':
+          emergencyStop();
+          break;
+        case 'system_restart':
+          restartSystem();
+          break;
+        case 'controller_closed':
+          console.log('コントローラーが閉じられました');
+          break;
+        case 'send_notification':
+          addNotification(data.title, data.message);
+          break;
+        case 'clear_notifications':
+          clearAllNotifications();
+          break;
+      }
+    }
+
+    // メディア制御処理（エンターテイメントページ用）
+    function handleMediaControl(action) {
+      console.log('エンターテイメントメディア制御:', action);
+      
+      // 現在再生中のコンテンツがある場合は制御
+      const videoPlayer = document.querySelector('video');
+      const audioPlayer = document.querySelector('audio');
+      
+      switch(action) {
+        case 'play':
+          if (videoPlayer) {
+            videoPlayer.play();
+          } else if (audioPlayer) {
+            audioPlayer.play();
+          } else {
+            // 動画プレイヤーがない場合は、コンテンツモーダルを開く
+            const watchBtn = document.getElementById('ent-watch-btn');
+            if (watchBtn) {
+              watchBtn.click();
+            }
+          }
+          break;
+        case 'pause':
+          if (videoPlayer) {
+            videoPlayer.pause();
+          } else if (audioPlayer) {
+            audioPlayer.pause();
+          }
+          break;
+        case 'stop':
+          if (videoPlayer) {
+            videoPlayer.pause();
+            videoPlayer.currentTime = 0;
+          } else if (audioPlayer) {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+          }
+          break;
+        case 'next':
+          // 次のコンテンツに移動
+          console.log('次のコンテンツに移動');
+          break;
+        case 'prev':
+          // 前のコンテンツに移動
+          console.log('前のコンテンツに移動');
+          break;
+        case 'volume_up':
+          const currentVolume = localStorage.getItem('volumePercent') || 60;
+          const newVolumeUp = Math.min(100, parseInt(currentVolume) + 10);
+          setVolume(newVolumeUp);
+          break;
+        case 'volume_down':
+          const currentVol = localStorage.getItem('volumePercent') || 60;
+          const newVolumeDown = Math.max(0, parseInt(currentVol) - 10);
+          setVolume(newVolumeDown);
+          break;
+      }
+    }
+
+    // 音量設定
+    function setVolume(volume) {
+      // エンターテイメントページでは動画・音声の音量を制御
+      console.log('音量設定:', volume);
+      localStorage.setItem('volumePercent', volume);
+    }
+
+    // 明るさ設定
+    function setBrightness(brightness) {
+      // 画面の明るさを制御
+      document.body.style.filter = `brightness(${brightness}%)`;
+      localStorage.setItem('brightnessPercent', brightness);
+    }
+
+    // 言語設定
+    function setLanguage(language) {
+      localStorage.setItem('language', language);
+      location.reload();
+    }
+
+    // PAアナウンス制御
+    function startAnnouncement(text) {
+      console.log('アナウンス開始:', text);
+      // 実際の実装では、PAアナウンスシステムを制御
+    }
+
+    function stopAnnouncement() {
+      console.log('アナウンス停止');
+      // 実際の実装では、PAアナウンスシステムを停止
+    }
+
+    // 緊急制御
+    function emergencyStop() {
+      console.log('緊急停止実行');
+      // 実際の実装では、システム全体を停止
+    }
+
+    function restartSystem() {
+      console.log('システム再起動');
+      // 実際の実装では、システムを再起動
+      if (confirm('システムを再起動しますか？')) {
+        location.reload();
+      }
+    }
+
+    // 通知管理機能
+    function addNotification(title, message) {
+      const noticeList = document.getElementById('notice-list');
+      if (noticeList) {
+        // 既存の空メッセージを削除
+        const emptyNote = noticeList.querySelector('.settings-note');
+        if (emptyNote && emptyNote.textContent.includes('現在お知らせはありません')) {
+          emptyNote.remove();
+        }
+        
+        // 新しい通知を作成
+        const notification = document.createElement('div');
+        notification.className = 'notification-item';
+        notification.style.cssText = `
+          background: #f5f5f5;
+          border-left: 4px solid #1976d2;
+          padding: 12px;
+          margin-bottom: 8px;
+          border-radius: 4px;
+        `;
+        
+        const titleEl = document.createElement('div');
+        titleEl.style.cssText = 'font-weight: bold; color: #1976d2; margin-bottom: 4px;';
+        titleEl.textContent = title;
+        
+        const messageEl = document.createElement('div');
+        messageEl.style.cssText = 'color: #333; font-size: 0.9rem;';
+        messageEl.textContent = message;
+        
+        const timeEl = document.createElement('div');
+        timeEl.style.cssText = 'color: #666; font-size: 0.8rem; margin-top: 4px;';
+        timeEl.textContent = new Date().toLocaleString('ja-JP');
+        
+        notification.appendChild(titleEl);
+        notification.appendChild(messageEl);
+        notification.appendChild(timeEl);
+        
+        noticeList.appendChild(notification);
+        
+        console.log('通知を追加しました:', title, message);
+      }
+    }
+
+    function clearAllNotifications() {
+      const noticeList = document.getElementById('notice-list');
+      if (noticeList) {
+        noticeList.innerHTML = '<div class="settings-note">現在お知らせはありません。</div>';
+        console.log('全通知を削除しました');
+      }
+    }
+
+    // プレイリスト（後で見るリスト）をlocalStorageで管理
+    function getWatchLaterList() {
+      return JSON.parse(localStorage.getItem('watchLaterList') || '[]');
+    }
+    function setWatchLaterList(list) {
+      localStorage.setItem('watchLaterList', JSON.stringify(list));
+    }
+    function addToWatchLater(content) {
+      let list = getWatchLaterList();
+      // 重複追加防止（idで判定）
+      if (!list.some(item => item.id === content.id)) {
+        list.push(content);
+        setWatchLaterList(list);
+        renderWatchLaterList();
+      }
+    }
+    function removeFromWatchLater(id) {
+      let list = getWatchLaterList();
+      list = list.filter(item => item.id !== id);
+      setWatchLaterList(list);
+      renderWatchLaterList();
+    }
+    function renderWatchLaterList() {
+      const section = document.getElementById('watch-later-section');
+      const container = document.getElementById('watch-later-container');
+      const list = getWatchLaterList();
+      if (!container || !section) return;
+      if (list.length === 0) {
+        section.style.display = 'none';
+        container.innerHTML = '';
+        return;
+      }
+      section.style.display = '';
+      container.innerHTML = `<div style="display:flex;gap:24px;flex-wrap:wrap;">${list.map(item => {
+        const coverStyle = item.coverImage ?
+          `background-image: url('${item.coverImage}'); background-size: cover; background-position: center;` :
+          `background: ${item.backgroundColor || '#1976d2'};`;
+        return `
+          <div class="watch-later-item" style="width:200px;">
+            <div style="${coverStyle}color:#fff;font-size:1.1rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;position:relative;">
+              ${!item.coverImage ? `<span style=\"z-index:1;\">${item.title}</span>` : ''}
+            </div>
+            <div style="font-size:1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.title}</div>
+            <div style="display:flex;gap:8px;margin-top:6px;">
+              <button onclick="playWatchLaterContent('${item.id}')" style="background:#1976d2;color:#fff;border:none;border-radius:4px;padding:4px 12px;cursor:pointer;">再生</button>
+              <button onclick="removeFromWatchLater('${item.id}')" style="background:#eee;color:#1976d2;border:none;border-radius:4px;padding:4px 12px;cursor:pointer;">削除</button>
+            </div>
+          </div>
+        `;
+      }).join('')}</div>`;
+    }
+    function playWatchLaterContent(id) {
+      // idからコンテンツを検索
+      const allItems = [
+        ...getContentData.getAllPopular(),
+        ...getContentData.getAllRecommended(),
+        ...getContentData.getAllLatestMovies(),
+        ...getContentData.getAllAnime(),
+        ...getContentData.getAllLiveStreams()
+      ];
+      const content = allItems.find(item => item.id === id);
+      if (content) {
+        if (content.isLiveStream) {
+          window.location.href = `player/etl-movie.html?id=${content.id}`;
+        } else {
+          window.location.href = `player/et-movie.html?id=${content.id}`;
+        }
+      } else {
+        alert('コンテンツ情報が見つかりません。');
+      }
+    }
   </script>
 </body>
 </html>

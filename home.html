@@ -134,7 +134,7 @@
           <div class="hm-card-content">
             <h2>観光地紹介</h2>
             <div class="hm-card-desc">行き先のおすすめ観光地を写真付きでご案内します。</div>
-            <button class="hm-card-btn" onclick="location.href='about.html'; event.stopPropagation();">観光地を見る</button>
+            <button class="hm-card-btn" onclick="location.href='ss-maps.html'; event.stopPropagation();">観光地を見る</button>
           </div>
         </div>
       </div>
@@ -494,6 +494,230 @@
       }
     });
 
+    // コントローラーボタン制御
+    const controllerBtn = document.querySelector('.hm-btn-controller');
+    if (controllerBtn) {
+      controllerBtn.onclick = () => {
+        openController();
+      };
+    }
+
+    // コントローラーを開く
+    function openController() {
+      const controllerWindow = window.open('/remote-control/index.html', 'controller', 
+        'width=800,height=600,resizable=yes,scrollbars=yes,status=yes');
+      
+      if (controllerWindow) {
+        // コントローラーウィンドウとの通信設定
+        window.addEventListener('message', function(event) {
+          handleControllerMessage(event.data);
+        });
+      }
+    }
+
+    // コントローラーからのメッセージ処理
+    function handleControllerMessage(data) {
+      switch(data.type) {
+        case 'media_control':
+          handleMediaControl(data.action);
+          break;
+        case 'volume_set':
+          setVolume(data.volume);
+          break;
+        case 'brightness_set':
+          setBrightness(data.brightness);
+          break;
+        case 'language_set':
+          setLanguage(data.language);
+          break;
+        case 'announce_start':
+          startAnnouncement(data.text);
+          break;
+        case 'announce_stop':
+          stopAnnouncement();
+          break;
+        case 'emergency_stop':
+          emergencyStop();
+          break;
+        case 'system_restart':
+          restartSystem();
+          break;
+        case 'controller_closed':
+          console.log('コントローラーが閉じられました');
+          break;
+        case 'send_notification':
+          addNotification(data.title, data.message);
+          break;
+        case 'clear_notifications':
+          clearAllNotifications();
+          break;
+      }
+    }
+
+    // メディア制御処理
+    function handleMediaControl(action) {
+      console.log('メディア制御:', action);
+      
+      // 現在再生中のコンテンツがある場合は制御
+      const videoPlayer = document.querySelector('video');
+      const audioPlayer = document.querySelector('audio');
+      
+      switch(action) {
+        case 'play':
+          if (videoPlayer) {
+            videoPlayer.play();
+          } else if (audioPlayer) {
+            audioPlayer.play();
+          }
+          break;
+        case 'pause':
+          if (videoPlayer) {
+            videoPlayer.pause();
+          } else if (audioPlayer) {
+            audioPlayer.pause();
+          }
+          break;
+        case 'stop':
+          if (videoPlayer) {
+            videoPlayer.pause();
+            videoPlayer.currentTime = 0;
+          } else if (audioPlayer) {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+          }
+          break;
+        case 'next':
+          // 次のコンテンツに移動
+          console.log('次のコンテンツに移動');
+          break;
+        case 'prev':
+          // 前のコンテンツに移動
+          console.log('前のコンテンツに移動');
+          break;
+        case 'volume_up':
+          const currentVolume = localStorage.getItem('volumePercent') || 60;
+          const newVolumeUp = Math.min(100, parseInt(currentVolume) + 10);
+          setVolume(newVolumeUp);
+          break;
+        case 'volume_down':
+          const currentVol = localStorage.getItem('volumePercent') || 60;
+          const newVolumeDown = Math.max(0, parseInt(currentVol) - 10);
+          setVolume(newVolumeDown);
+          break;
+      }
+    }
+
+    // 音量設定
+    function setVolume(volume) {
+      const volumeSlider = document.getElementById('volume-slider');
+      if (volumeSlider) {
+        volumeSlider.value = volume;
+        volumeSlider.dispatchEvent(new Event('input'));
+      }
+      localStorage.setItem('volumePercent', volume);
+    }
+
+    // 明るさ設定
+    function setBrightness(brightness) {
+      const brightnessSlider = document.getElementById('brightness-slider');
+      if (brightnessSlider) {
+        brightnessSlider.value = brightness;
+        brightnessSlider.dispatchEvent(new Event('input'));
+      }
+      localStorage.setItem('brightnessPercent', brightness);
+    }
+
+    // 言語設定
+    function setLanguage(language) {
+      localStorage.setItem('language', language);
+      location.reload();
+    }
+
+    // PAアナウンス制御
+    function startAnnouncement(text) {
+      console.log('アナウンス開始:', text);
+      // 実際の実装では、PAアナウンスシステムを制御
+      if (paDialog && paMessage) {
+        paMessage.textContent = text;
+        paKeyDown = true;
+        updatePADialog();
+      }
+    }
+
+    function stopAnnouncement() {
+      console.log('アナウンス停止');
+      // 実際の実装では、PAアナウンスシステムを停止
+      if (paDialog) {
+        paKeyDown = false;
+        updatePADialog();
+      }
+    }
+
+    // 緊急制御
+    function emergencyStop() {
+      console.log('緊急停止実行');
+      // 実際の実装では、システム全体を停止
+    }
+
+    function restartSystem() {
+      console.log('システム再起動');
+      // 実際の実装では、システムを再起動
+      if (confirm('システムを再起動しますか？')) {
+        location.reload();
+      }
+    }
+
+    // 通知管理機能
+    function addNotification(title, message) {
+      const noticeList = document.getElementById('notice-list');
+      if (noticeList) {
+        // 既存の空メッセージを削除
+        const emptyNote = noticeList.querySelector('.settings-note');
+        if (emptyNote && emptyNote.textContent.includes('現在お知らせはありません')) {
+          emptyNote.remove();
+        }
+        
+        // 新しい通知を作成
+        const notification = document.createElement('div');
+        notification.className = 'notification-item';
+        notification.style.cssText = `
+          background: #f5f5f5;
+          border-left: 4px solid #1976d2;
+          padding: 12px;
+          margin-bottom: 8px;
+          border-radius: 4px;
+        `;
+        
+        const titleEl = document.createElement('div');
+        titleEl.style.cssText = 'font-weight: bold; color: #1976d2; margin-bottom: 4px;';
+        titleEl.textContent = title;
+        
+        const messageEl = document.createElement('div');
+        messageEl.style.cssText = 'color: #333; font-size: 0.9rem;';
+        messageEl.textContent = message;
+        
+        const timeEl = document.createElement('div');
+        timeEl.style.cssText = 'color: #666; font-size: 0.8rem; margin-top: 4px;';
+        timeEl.textContent = new Date().toLocaleString('ja-JP');
+        
+        notification.appendChild(titleEl);
+        notification.appendChild(messageEl);
+        notification.appendChild(timeEl);
+        
+        noticeList.appendChild(notification);
+        
+        console.log('通知を追加しました:', title, message);
+      }
+    }
+
+    function clearAllNotifications() {
+      const noticeList = document.getElementById('notice-list');
+      if (noticeList) {
+        noticeList.innerHTML = '<div class="settings-note">現在お知らせはありません。</div>';
+        console.log('全通知を削除しました');
+      }
+    }
+
     // スライダーの+-ボタン
     function stepSlider(sliderId, diff) {
       const slider = document.getElementById(sliderId);
@@ -505,18 +729,106 @@
     document.getElementById('brightness-down').onclick = () => stepSlider('brightness-slider', -5);
     document.getElementById('brightness-up').onclick = () => stepSlider('brightness-slider', 5);
 
-    // 画面オフボタン
+    // 画面オフボタン（5回タップでシステム設定ボタン表示）
+    let screenOffTapCount = 0;
+    let screenOffTapTimer = null;
     const screenOffBtn = document.querySelector('.screen-off-btn');
     const screenOffOverlay = document.getElementById('screen-off-overlay');
+    
     if (screenOffBtn && screenOffOverlay) {
       screenOffBtn.onclick = () => {
+        // タップカウントを増加
+        screenOffTapCount++;
+        
+        // タイマーをリセット
+        if (screenOffTapTimer) {
+          clearTimeout(screenOffTapTimer);
+        }
+        
+        // 5回タップでシステム設定ボタンを表示
+        if (screenOffTapCount >= 5) {
+          showSystemSettingsButton();
+          screenOffTapCount = 0;
+        } else {
+          // 3秒後にカウントをリセット
+          screenOffTapTimer = setTimeout(() => {
+            screenOffTapCount = 0;
+          }, 3000);
+        }
+        
+        // 通常の画面オフ機能
         screenOffOverlay.style.display = 'block';
         setTimeout(() => { screenOffOverlay.style.opacity = '0.98'; }, 10);
       };
+      
       screenOffOverlay.onclick = () => {
         screenOffOverlay.style.opacity = '0';
         setTimeout(() => { screenOffOverlay.style.display = 'none'; }, 300);
       };
+    }
+
+    // システム設定ボタンを表示
+    function showSystemSettingsButton() {
+      // 既存のシステム設定ボタンを削除
+      const existingBtn = document.querySelector('.system-settings-btn');
+      if (existingBtn) {
+        existingBtn.remove();
+      }
+      
+      // 新しいシステム設定ボタンを作成
+      const systemSettingsBtn = document.createElement('button');
+      systemSettingsBtn.className = 'system-settings-btn';
+      systemSettingsBtn.textContent = 'システム設定';
+      systemSettingsBtn.style.cssText = `
+        background: #1976d2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        margin-top: 8px;
+        width: 100%;
+        transition: background-color 0.3s;
+      `;
+      
+      // ホバー効果
+      systemSettingsBtn.onmouseenter = () => {
+        systemSettingsBtn.style.backgroundColor = '#1565c0';
+      };
+      systemSettingsBtn.onmouseleave = () => {
+        systemSettingsBtn.style.backgroundColor = '#1976d2';
+      };
+      
+      // クリックイベント
+      systemSettingsBtn.onclick = () => {
+        openRemoteControl();
+      };
+      
+      // 画面オフボタンの後に挿入
+      const screenOffBtn = document.querySelector('.screen-off-btn');
+      if (screenOffBtn && screenOffBtn.parentNode) {
+        screenOffBtn.parentNode.insertBefore(systemSettingsBtn, screenOffBtn.nextSibling);
+      }
+      
+      console.log('システム設定ボタンを表示しました');
+    }
+
+    // リモートコントロールを開く
+    function openRemoteControl() {
+      const controllerWindow = window.open('/remote-control/index.html', 'controller', 
+        'width=800,height=600,resizable=yes,scrollbars=yes,status=yes');
+      
+      if (controllerWindow) {
+        // コントローラーウィンドウとの通信設定
+        window.addEventListener('message', function(event) {
+          handleControllerMessage(event.data);
+        });
+        
+        console.log('リモートコントロールを開きました');
+      } else {
+        console.error('リモートコントロールの開設に失敗しました');
+      }
     }
   </script>
 </body>

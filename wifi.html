@@ -75,6 +75,50 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     button {
       font-family: inherit;
     }
+
+    /* PAアナウンスダイアログスタイル */
+    .pa-announcement {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2101;
+      display: none;
+      flex-direction: column;
+    }
+    
+    .pa-announcement-yellow {
+      background: #ffeb3b;
+      color: #000;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .pa-announcement-white {
+      background: #fff;
+      color: #000;
+      padding: 40px;
+      text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .pa-announcement-white #pa-message {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    
+    .pa-announcement-white #pa-en {
+      font-size: 1.2rem;
+      color: #666;
+    }
   </style>
 </head>
 <body class="home-modern">
@@ -418,10 +462,10 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         document.body.style.filter = `brightness(${brightness}%)`;
       }
       var brightnessSlider = document.getElementById('brightness-slider');
-      if (brightnessSlider) {
+    if (brightnessSlider) {
         brightnessSlider.value = brightness || brightnessSlider.value;
-        brightnessSlider.oninput = function() {
-          document.body.style.filter = `brightness(${this.value}%)`;
+      brightnessSlider.oninput = function() {
+        document.body.style.filter = `brightness(${this.value}%)`;
           localStorage.setItem('brightnessPercent', this.value);
         };
       }
@@ -448,6 +492,222 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         screenOffOverlay.style.opacity = '0';
         setTimeout(() => { screenOffOverlay.style.display = 'none'; }, 300);
       };
+    }
+
+    // コントローラーボタン制御
+    const controllerBtn = document.querySelector('.hm-btn-controller');
+    if (controllerBtn) {
+      controllerBtn.onclick = () => {
+        openController();
+      };
+    }
+
+    // コントローラーを開く
+    function openController() {
+      const controllerWindow = window.open('/remote-control/index.html', 'controller', 
+        'width=800,height=600,resizable=yes,scrollbars=yes,status=yes');
+      
+      if (controllerWindow) {
+        // コントローラーウィンドウとの通信設定
+        window.addEventListener('message', function(event) {
+          handleControllerMessage(event.data);
+        });
+      }
+    }
+
+    // コントローラーからのメッセージ処理
+    function handleControllerMessage(data) {
+      switch(data.type) {
+        case 'media_control':
+          handleMediaControl(data.action);
+          break;
+        case 'volume_set':
+          setVolume(data.volume);
+          break;
+        case 'brightness_set':
+          setBrightness(data.brightness);
+          break;
+        case 'language_set':
+          setLanguage(data.language);
+          break;
+        case 'announce_start':
+          startAnnouncement(data.text);
+          break;
+        case 'announce_stop':
+          stopAnnouncement();
+          break;
+        case 'emergency_stop':
+          emergencyStop();
+          break;
+        case 'system_restart':
+          restartSystem();
+          break;
+        case 'controller_closed':
+          console.log('コントローラーが閉じられました');
+          break;
+        case 'send_notification':
+          addNotification(data.title, data.message);
+          break;
+        case 'clear_notifications':
+          clearAllNotifications();
+          break;
+      }
+    }
+
+    // メディア制御処理（Wi-Fiページ用）
+    function handleMediaControl(action) {
+      console.log('Wi-Fiページメディア制御:', action);
+      // Wi-Fiページでは特別なメディア制御は不要
+    }
+
+    // 音量設定
+    function setVolume(volume) {
+      const volumeSlider = document.getElementById('volume-slider');
+      if (volumeSlider) {
+        volumeSlider.value = volume;
+        volumeSlider.dispatchEvent(new Event('input'));
+      }
+      localStorage.setItem('volumePercent', volume);
+    }
+
+    // 明るさ設定
+    function setBrightness(brightness) {
+      document.body.style.filter = `brightness(${brightness}%)`;
+      localStorage.setItem('brightnessPercent', brightness);
+    }
+
+    // 言語設定
+    function setLanguage(language) {
+      localStorage.setItem('language', language);
+      location.reload();
+    }
+
+    // PAアナウンス制御
+    function startAnnouncement(text) {
+      console.log('アナウンス開始:', text);
+      // PAアナウンスダイアログを表示
+      showPAAnnouncement(text);
+    }
+
+    function stopAnnouncement() {
+      console.log('アナウンス停止');
+      // PAアナウンスダイアログを非表示
+      hidePAAnnouncement();
+    }
+
+    // PAアナウンスダイアログ制御
+    function showPAAnnouncement(text) {
+      let paDialog = document.getElementById('pa-announcement');
+      let paBlocker = document.getElementById('pa-blocker');
+      
+      if (!paDialog) {
+        // PAアナウンスダイアログが存在しない場合は作成
+        paDialog = document.createElement('div');
+        paDialog.id = 'pa-announcement';
+        paDialog.className = 'pa-announcement';
+        paDialog.innerHTML = `
+          <div class="pa-announcement-yellow">
+            <span id="pa-title">PA 作動中</span>
+          </div>
+          <div class="pa-announcement-white">
+            <div id="pa-message">${text}</div>
+            <div id="pa-en">Passenger Announcement</div>
+          </div>
+        `;
+        document.body.appendChild(paDialog);
+      }
+      
+      if (!paBlocker) {
+        paBlocker = document.createElement('div');
+        paBlocker.id = 'pa-blocker';
+        paBlocker.style = 'display:block;position:fixed;inset:0;z-index:2100;';
+        document.body.appendChild(paBlocker);
+      }
+      
+      paDialog.style.display = 'flex';
+      paBlocker.style.display = 'block';
+      
+      const paMessage = document.getElementById('pa-message');
+      if (paMessage) {
+        paMessage.textContent = text;
+      }
+    }
+
+    function hidePAAnnouncement() {
+      const paDialog = document.getElementById('pa-announcement');
+      const paBlocker = document.getElementById('pa-blocker');
+      
+      if (paDialog) {
+        paDialog.style.display = 'none';
+      }
+      if (paBlocker) {
+        paBlocker.style.display = 'none';
+      }
+    }
+
+    // 緊急制御
+    function emergencyStop() {
+      console.log('緊急停止実行');
+      // 実際の実装では、システム全体を停止
+    }
+
+    function restartSystem() {
+      console.log('システム再起動');
+      // 実際の実装では、システムを再起動
+      if (confirm('システムを再起動しますか？')) {
+        location.reload();
+      }
+    }
+
+    // 通知管理機能
+    function addNotification(title, message) {
+      const noticeList = document.getElementById('notice-list');
+      if (noticeList) {
+        // 既存の空メッセージを削除
+        const emptyNote = noticeList.querySelector('.settings-note');
+        if (emptyNote && emptyNote.textContent.includes('現在お知らせはありません')) {
+          emptyNote.remove();
+        }
+        
+        // 新しい通知を作成
+        const notification = document.createElement('div');
+        notification.className = 'notification-item';
+        notification.style.cssText = `
+          background: #f5f5f5;
+          border-left: 4px solid #1976d2;
+          padding: 12px;
+          margin-bottom: 8px;
+          border-radius: 4px;
+        `;
+        
+        const titleEl = document.createElement('div');
+        titleEl.style.cssText = 'font-weight: bold; color: #1976d2; margin-bottom: 4px;';
+        titleEl.textContent = title;
+        
+        const messageEl = document.createElement('div');
+        messageEl.style.cssText = 'color: #333; font-size: 0.9rem;';
+        messageEl.textContent = message;
+        
+        const timeEl = document.createElement('div');
+        timeEl.style.cssText = 'color: #666; font-size: 0.8rem; margin-top: 4px;';
+        timeEl.textContent = new Date().toLocaleString('ja-JP');
+        
+        notification.appendChild(titleEl);
+        notification.appendChild(messageEl);
+        notification.appendChild(timeEl);
+        
+        noticeList.appendChild(notification);
+        
+        console.log('通知を追加しました:', title, message);
+      }
+    }
+
+    function clearAllNotifications() {
+      const noticeList = document.getElementById('notice-list');
+      if (noticeList) {
+        noticeList.innerHTML = '<div class="settings-note">現在お知らせはありません。</div>';
+        console.log('全通知を削除しました');
+      }
     }
   </script>
 </body>
