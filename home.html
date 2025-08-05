@@ -475,22 +475,47 @@
       document.querySelector('.hm-plane-icon').style.left = `calc(${percent}% - 32px)`;
     });
 
-    // 設定パネル制御
-    const settingsBtn = document.querySelector('.hm-btn-settings');
-    const settingsPanel = document.getElementById('settings-panel');
-    const settingsOverlay = document.getElementById('settings-overlay');
-    settingsBtn.onclick = () => {
-      settingsPanel.classList.add('open');
-      settingsOverlay.classList.add('open');
-    };
-    settingsOverlay.onclick = () => {
-      settingsPanel.classList.remove('open');
-      settingsOverlay.classList.remove('open');
-    };
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        settingsPanel.classList.remove('open');
-        settingsOverlay.classList.remove('open');
+    // --- パネル開閉の統一JS ---
+    document.addEventListener('DOMContentLoaded', function() {
+      // 設定パネル
+      const settingsBtn = document.querySelector('.hm-btn-settings');
+      const settingsPanel = document.getElementById('settings-panel');
+      const settingsOverlay = document.getElementById('settings-overlay');
+      if (settingsBtn && settingsPanel && settingsOverlay) {
+        settingsBtn.onclick = () => {
+          settingsPanel.classList.add('open');
+          settingsOverlay.classList.add('open');
+        };
+        settingsOverlay.onclick = () => {
+          settingsPanel.classList.remove('open');
+          settingsOverlay.classList.remove('open');
+        };
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape') {
+            settingsPanel.classList.remove('open');
+            settingsOverlay.classList.remove('open');
+          }
+        });
+      }
+      // お知らせパネル
+      const noticeBtn = document.querySelector('.hm-btn-notice');
+      const noticePanel = document.getElementById('notice-panel');
+      const noticeOverlay = document.getElementById('notice-overlay');
+      if (noticeBtn && noticePanel && noticeOverlay) {
+        noticeBtn.onclick = () => {
+          noticePanel.classList.add('open');
+          noticeOverlay.classList.add('open');
+        };
+        noticeOverlay.onclick = () => {
+          noticePanel.classList.remove('open');
+          noticeOverlay.classList.remove('open');
+        };
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape') {
+            noticePanel.classList.remove('open');
+            noticeOverlay.classList.remove('open');
+          }
+        });
       }
     });
 

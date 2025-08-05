@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ミュージックプレイヤー</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Open+Sans:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+  <script src="../js/i18n.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', 'Open Sans', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* メインコンテナ */
+    .music-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* バナー */
+    .banner {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px 20px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: opacity 0.3s ease;
+    }
+
+    .banner.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .banner-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .banner-thumbnail {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      background: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .banner-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .banner-info {
+      flex: 1;
+    }
+
+    .banner-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .banner-artist {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .banner-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .banner-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .banner-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .banner-btn.close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px;
+      border-radius: 50%;
+    }
+
+    /* メインコンテンツ */
+    .music-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      gap: 40px;
+    }
+
+    .album-art {
+      width: 300px;
+      height: 300px;
+      border-radius: 20px;
+      background: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .album-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 20px;
+    }
+
+    .track-info {
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .track-title {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .track-artist {
+      font-size: 1.5rem;
+      opacity: 0.8;
+      margin-bottom: 20px;
+    }
+
+    .track-album {
+      font-size: 1.2rem;
+      opacity: 0.6;
+    }
+
+    /* プログレスバー */
+    .progress-container {
+      width: 100%;
+      max-width: 500px;
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+
+    .time-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* コントロールボタン */
+    .control-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .control-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      padding: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .control-btn.play-pause {
+      background: rgba(255, 255, 255, 0.2);
+      width: 64px;
+      height: 64px;
+      font-size: 1.5rem;
+    }
+
+    /* 音量コントロール */
+    .volume-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .volume-slider {
+      width: 150px;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* プレイリスト */
+    .playlist {
+      background: rgba(0,0,0,0.2);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 30px;
+      max-width: 600px;
+      width: 100%;
+      backdrop-filter: blur(10px);
+    }
+
+    .playlist h3 {
+      margin: 0 0 20px 0;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .playlist-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-bottom: 10px;
+    }
+
+    .playlist-item:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .playlist-item.active {
+      background: linear-gradient(45deg, rgba(255,107,107,0.3), rgba(78,205,196,0.3));
+    }
+
+    .playlist-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      margin-right: 15px;
+      object-fit: cover;
+    }
+
+    .playlist-item-info {
+      flex: 1;
+    }
+
+    .playlist-item-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .playlist-item-artist {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .playlist-item-duration {
+      font-size: 0.8rem;
+      opacity: 0.6;
+    }
+
+    /* 戻るボタン */
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.3);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      z-index: 1001;
+    }
+
+    .back-btn:hover {
+      background: rgba(0,0,0,0.5);
+      transform: scale(1.1);
+    }
+
+    .back-btn .material-icons {
+      color: #fff;
+      font-size: 1.5rem;
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .banner {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        padding: 12px 16px;
+      }
+
+      .banner-thumbnail {
+        width: 60px;
+        height: 60px;
+      }
+
+      .banner-title {
+        font-size: 1rem;
+      }
+
+      .banner-artist {
+        font-size: 0.8rem;
+      }
+
+      .control-buttons {
+        gap: 16px;
+      }
+
+      .control-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+
+      .control-btn.play-pause {
+        width: 56px;
+        height: 56px;
+        font-size: 1.3rem;
+      }
+
+      .album-art {
+        width: 250px;
+        height: 250px;
+      }
+
+      .track-title {
+        font-size: 2rem;
+      }
+
+      .track-artist {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="history.back()">
+    <span class="material-icons">arrow_back</span>
+  </button>
+  
+  <div class="music-container">
+    <div class="banner">
+      <div class="banner-content">
+        <div class="banner-thumbnail">
+          <img src="https://via.placeholder.com/80x80/ff6b6b/ffffff?text=Album" alt="Album Art" id="banner-thumbnail">
+        </div>
+        <div class="banner-info">
+          <div class="banner-title" id="banner-title">楽しい音楽</div>
+          <div class="banner-artist" id="banner-artist">アーティスト名</div>
+        </div>
+      </div>
+      <div class="banner-controls">
+        <button class="banner-btn" id="banner-play-btn">
+          <span class="material-icons" id="banner-play-icon">play_arrow</span>
+          再生
+        </button>
+        <button class="banner-btn close-btn" onclick="history.back()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="music-main">
+      <div class="album-art">
+        <img src="https://via.placeholder.com/300x300/ff6b6b/ffffff?text=Album+Art" alt="Album Art" id="album-art">
+      </div>
+      
+      <div class="track-info">
+        <div class="track-title" id="track-title">楽しい音楽</div>
+        <div class="track-artist" id="track-artist">アーティスト名</div>
+        <div class="track-album" id="track-album">アルバム名</div>
+      </div>
+      
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="time-info">
+          <span id="current-time">0:00</span>
+          <span id="total-time">0:00</span>
+        </div>
+      </div>
+      
+      <div class="control-buttons">
+        <button class="control-btn" id="prev-btn">
+          <span class="material-icons">skip_previous</span>
+        </button>
+        <button class="control-btn play-pause" id="play-btn">
+          <span class="material-icons" id="play-icon">play_arrow</span>
+        </button>
+        <button class="control-btn" id="next-btn">
+          <span class="material-icons">skip_next</span>
+        </button>
+      </div>
+      
+      <div class="volume-container">
+        <span class="material-icons">volume_up</span>
+        <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="70">
+      </div>
+      
+      <div class="playlist">
+        <h3>プレイリスト</h3>
+        <div id="playlist-items">
+          <!-- プレイリストアイテムがここに動的に追加されます -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <audio id="audio-player" preload="metadata"></audio>
+  
+  <script>
+    // URLパラメータからプレイリストIDを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const playlistId = urlParams.get('playlist') || 'relaxing-music';
+    
+    let currentTrackIndex = 0;
+    let isPlaying = false;
+    let currentPlaylist = null;
+    
+    const audio = document.getElementById('audio-player');
+    const playBtn = document.getElementById('play-btn');
+    const playIcon = document.getElementById('play-icon');
+    const bannerPlayBtn = document.getElementById('banner-play-btn');
+    const bannerPlayIcon = document.getElementById('banner-play-icon');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressFill = document.getElementById('progress-fill');
+    const currentTimeSpan = document.getElementById('current-time');
+    const totalTimeSpan = document.getElementById('total-time');
+    const volumeSlider = document.getElementById('volume-slider');
+    const playlistItems = document.getElementById('playlist-items');
+    
+    // プレイリストを読み込み
+    function loadPlaylist() {
+      currentPlaylist = getContentData.getById(playlistId);
+      if (!currentPlaylist || !currentPlaylist.isMusicPlaylist) {
+        console.error('プレイリストが見つかりません:', playlistId);
+        return;
+      }
+      
+      renderPlaylist();
+      loadTrack(0);
+    }
+    
+    // プレイリストを表示
+    function renderPlaylist() {
+      playlistItems.innerHTML = '';
+      currentPlaylist.tracks.forEach((track, index) => {
+        const item = document.createElement('div');
+        item.className = `playlist-item ${index === currentTrackIndex ? 'active' : ''}`;
+        item.innerHTML = `
+          <img src="${track.art}" alt="${track.title}">
+          <div class="playlist-item-info">
+            <div class="playlist-item-title">${track.title}</div>
+            <div class="playlist-item-artist">${track.artist}</div>
+          </div>
+          <div class="playlist-item-duration">${track.duration}</div>
+        `;
+        item.onclick = () => loadTrack(index);
+        playlistItems.appendChild(item);
+      });
+    }
+    
+    // トラックを読み込み
+    function loadTrack(index) {
+      currentTrackIndex = index;
+      const track = currentPlaylist.tracks[index];
+      
+      document.getElementById('track-title').textContent = track.title;
+      document.getElementById('track-artist').textContent = track.artist;
+      document.getElementById('track-album').textContent = currentPlaylist.title;
+      document.getElementById('album-art').src = track.art;
+      document.getElementById('banner-title').textContent = track.title;
+      document.getElementById('banner-artist').textContent = track.artist;
+      document.getElementById('banner-thumbnail').src = track.art;
+      
+      audio.src = track.url;
+      audio.load();
+      
+      renderPlaylist();
+      
+      if (isPlaying) {
+        audio.play();
+      }
+    }
+    
+    // 再生/一時停止
+    function togglePlay() {
+      if (isPlaying) {
+        audio.pause();
+        playIcon.textContent = 'play_arrow';
+        bannerPlayIcon.textContent = 'play_arrow';
+        bannerPlayBtn.innerHTML = '<span class="material-icons">play_arrow</span>再生';
+        isPlaying = false;
+      } else {
+        audio.play();
+        playIcon.textContent = 'pause';
+        bannerPlayIcon.textContent = 'pause';
+        bannerPlayBtn.innerHTML = '<span class="material-icons">pause</span>一時停止';
+        isPlaying = true;
+      }
+    }
+    
+    // 前のトラック
+    function prevTrack() {
+      currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.tracks.length) % currentPlaylist.tracks.length;
+      loadTrack(currentTrackIndex);
+    }
+    
+    // 次のトラック
+    function nextTrack() {
+      currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.tracks.length;
+      loadTrack(currentTrackIndex);
+    }
+    
+    // プログレスバー更新
+    function updateProgress() {
+      const progress = (audio.currentTime / audio.duration) * 100;
+      progressFill.style.width = progress + '%';
+      currentTimeSpan.textContent = formatTime(audio.currentTime);
+    }
+    
+    // 時間フォーマット
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    // イベントリスナー
+    playBtn.onclick = togglePlay;
+    bannerPlayBtn.onclick = togglePlay;
+    prevBtn.onclick = prevTrack;
+    nextBtn.onclick = nextTrack;
+    
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('loadedmetadata', () => {
+      totalTimeSpan.textContent = formatTime(audio.duration);
+    });
+    
+    audio.addEventListener('ended', nextTrack);
+    
+    progressBar.onclick = (e) => {
+      const rect = progressBar.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = percent * audio.duration;
+    };
+    
+    volumeSlider.oninput = (e) => {
+      audio.volume = e.target.value / 100;
+    };
+    
+    // 初期化
+    loadPlaylist();
+  </script>
+</body>
+</html> 

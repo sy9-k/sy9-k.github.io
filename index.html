@@ -30,6 +30,7 @@
       画面のどこかをタッチしてスタート<br>
       <span class="en">TAP ANYWHERE TO START.</span>
     </p>
+    <button id="fullscreen-toggle-btn" style="margin-top:1em;font-size:1em;padding:0.5em 2em;">全画面切替</button>
   </div>
   <!-- クリック無効用オーバーレイ -->
   <div id="pa-blocker" style="display:none;position:fixed;inset:0;z-index:2100;"></div>
@@ -137,6 +138,36 @@ body[lang="zh"], html[lang="zh"] .start-screen {
       document.body.webkitRequestFullscreen();
     }
   });
+  // --- 全画面モードの永続化 ---
+  function enterFullscreen() {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.body.webkitRequestFullscreen) {
+      document.body.webkitRequestFullscreen();
+    }
+    localStorage.setItem('fullscreenMode', '1');
+  }
+  function exitFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+    localStorage.removeItem('fullscreenMode');
+  }
+  function isFullscreen() {
+    return document.fullscreenElement || window.innerHeight === screen.height;
+  }
+  // トグルボタン
+  const fullscreenToggleBtn = document.getElementById('fullscreen-toggle-btn');
+  fullscreenToggleBtn.addEventListener('click', () => {
+    if (!isFullscreen()) {
+      enterFullscreen();
+    } else {
+      exitFullscreen();
+    }
+  });
+  // ページ読み込み時にフルスクリーン維持
   window.addEventListener('DOMContentLoaded', () => {
     paDialog = document.getElementById('pa-announcement');
     paTitle = document.getElementById('pa-title');
@@ -149,6 +180,15 @@ body[lang="zh"], html[lang="zh"] .start-screen {
     document.querySelector('.seat').textContent = localStorage.getItem('seatNumber') || '31A';
     // 他の情報も同様に localStorage.getItem() で呼び出して使用できます
     checkFullscreen();
+    if (localStorage.getItem('fullscreenMode') === '1' && !isFullscreen()) {
+      setTimeout(enterFullscreen, 200); // ユーザー操作後でないと自動化できない場合もある
+    }
+  });
+  // フルスクリーン解除時はフラグを消す
+  document.addEventListener('fullscreenchange', () => {
+    if (!isFullscreen()) {
+      localStorage.removeItem('fullscreenMode');
+    }
   });
 </script>
 <link rel="stylesheet" href="css/common.css">

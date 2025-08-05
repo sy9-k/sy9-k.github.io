@@ -122,6 +122,175 @@ window.contentData = {
       
       }
     ]
+  },
+
+  // 音楽プレイリスト
+  musicPlaylists: {
+    title: "音楽プレイリスト",
+    items: [
+      {
+        id: "relaxing-music",
+        title: "リラックス音楽",
+        category: "2025 音楽・リラックス",
+        description: "癒しの音楽コレクションです。\n\n静寂の森の音、夕暮れの海の波音、星空の夜の静けさ、朝の光の温かさをテーマにした癒しの音楽をお楽しみください。\n\n再生時間：約17分\n言語：音楽（言語非依存）\n\nこのプレイリストは、機内でのリラックスタイムをお過ごしいただくために特別に制作されています。心を落ち着かせる音楽をお楽しみください。",
+        backgroundColor: "#667eea",
+        coverImage: "https://via.placeholder.com/300x300/667eea/ffffff?text=Relaxing+Music",
+        genre: "リラックス",
+        playlistType: "relaxing",
+        tracks: [
+          { title: "静寂の森", artist: "Nature Sounds", duration: "3:45", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/667eea/ffffff?text=Relaxing+1" },
+          { title: "夕暮れの海", artist: "Ocean Waves", duration: "4:20", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/764ba2/ffffff?text=Relaxing+2" },
+          { title: "星空の夜", artist: "Ambient Music", duration: "5:15", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/667eea/ffffff?text=Relaxing+3" },
+          { title: "朝の光", artist: "Sunrise", duration: "3:30", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/764ba2/ffffff?text=Relaxing+4" }
+        ],
+        availableLanguages: [], // 音楽は言語選択不可
+        isMusicPlaylist: true // 音楽プレイリストフラグ
+      },
+      {
+        id: "upbeat-music",
+        title: "アップテンポ",
+        category: "2025 音楽・アップテンポ",
+        description: "元気になる音楽コレクションです。\n\nHappy Day、Dance Tonight、Summer Vibes、Energy Boostなど、元気になれる音楽をお楽しみください。\n\n再生時間：約15分\n言語：音楽（言語非依存）\n\nこのプレイリストは、機内でのエネルギーチャージタイムをお過ごしいただくために特別に制作されています。元気になる音楽をお楽しみください。",
+        backgroundColor: "#ff6b6b",
+        coverImage: "https://via.placeholder.com/300x300/ff6b6b/ffffff?text=Upbeat+Music",
+        genre: "アップテンポ",
+        playlistType: "upbeat",
+        tracks: [
+          { title: "Happy Day", artist: "Pop Stars", duration: "3:20", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/ff6b6b/ffffff?text=Upbeat+1" },
+          { title: "Dance Tonight", artist: "DJ Mix", duration: "4:10", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/4ecdc4/ffffff?text=Upbeat+2" },
+          { title: "Summer Vibes", artist: "Beach Band", duration: "3:55", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/ff6b6b/ffffff?text=Upbeat+3" },
+          { title: "Energy Boost", artist: "Power Music", duration: "3:40", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/4ecdc4/ffffff?text=Upbeat+4" }
+        ],
+        availableLanguages: [],
+        isMusicPlaylist: true
+      },
+      {
+        id: "classical-music",
+        title: "クラシック",
+        category: "2025 音楽・クラシック",
+        description: "名曲コレクションです。\n\nMoonlight Sonata、Für Elise、Symphony No. 5、The Four Seasonsなど、クラシックの名曲をお楽しみください。\n\n再生時間：約26分\n言語：音楽（言語非依存）\n\nこのプレイリストは、機内での上質な音楽体験をお過ごしいただくために特別に制作されています。クラシックの名曲をお楽しみください。",
+        backgroundColor: "#45b7d1",
+        coverImage: "https://via.placeholder.com/300x300/45b7d1/ffffff?text=Classical+Music",
+        genre: "クラシック",
+        playlistType: "classical",
+        tracks: [
+          { title: "Moonlight Sonata", artist: "Beethoven", duration: "6:30", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/45b7d1/ffffff?text=Classical+1" },
+          { title: "Für Elise", artist: "Beethoven", duration: "3:45", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/96c93d/ffffff?text=Classical+2" },
+          { title: "Symphony No. 5", artist: "Beethoven", duration: "8:20", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/45b7d1/ffffff?text=Classical+3" },
+          { title: "The Four Seasons", artist: "Vivaldi", duration: "7:15", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/96c93d/ffffff?text=Classical+4" }
+        ],
+        availableLanguages: [],
+        isMusicPlaylist: true
+      },
+      {
+        id: "jazz-music",
+        title: "ジャズ",
+        category: "2025 音楽・ジャズ",
+        description: "スムーズなジャズコレクションです。\n\nSmooth Jazz、Midnight Blues、Saxophone Dreams、Piano Jazzなど、スムーズなジャズをお楽しみください。\n\n再生時間：約21分\n言語：音楽（言語非依存）\n\nこのプレイリストは、機内での上質な音楽体験をお過ごしいただくために特別に制作されています。スムーズなジャズをお楽しみください。",
+        backgroundColor: "#f093fb",
+        coverImage: "https://via.placeholder.com/300x300/f093fb/ffffff?text=Jazz+Music",
+        genre: "ジャズ",
+        playlistType: "jazz",
+        tracks: [
+          { title: "Smooth Jazz", artist: "Jazz Ensemble", duration: "4:30", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/f093fb/ffffff?text=Jazz+1" },
+          { title: "Midnight Blues", artist: "Blues Band", duration: "5:15", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/f5576c/ffffff?text=Jazz+2" },
+          { title: "Saxophone Dreams", artist: "Sax Player", duration: "4:45", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/f093fb/ffffff?text=Jazz+3" },
+          { title: "Piano Jazz", artist: "Jazz Pianist", duration: "6:20", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/f5576c/ffffff?text=Jazz+4" }
+        ],
+        availableLanguages: [],
+        isMusicPlaylist: true
+      },
+      {
+        id: "jpop-music",
+        title: "J-POP",
+        category: "2025 音楽・J-POP",
+        description: "日本のポップスコレクションです。\n\n最新のJ-POPから名曲まで、日本のポップスをお楽しみください。\n\n再生時間：約18分\n言語：日本語\n\nこのプレイリストは、機内での日本の音楽体験をお過ごしいただくために特別に制作されています。J-POPをお楽しみください。",
+        backgroundColor: "#ff9a9e",
+        coverImage: "https://via.placeholder.com/300x300/ff9a9e/ffffff?text=J-POP+Music",
+        genre: "J-POP",
+        playlistType: "jpop",
+        tracks: [
+          { title: "夜に駆ける", artist: "YOASOBI", duration: "4:15", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/ff9a9e/ffffff?text=J-POP+1" },
+          { title: "Pretender", artist: "Official HIGE DANdism", duration: "4:30", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fad0c4/ffffff?text=J-POP+2" },
+          { title: "Lemon", artist: "米津玄師", duration: "4:20", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/ff9a9e/ffffff?text=J-POP+3" },
+          { title: "ドライフラワー", artist: "優里", duration: "4:45", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fad0c4/ffffff?text=J-POP+4" }
+        ],
+        availableLanguages: ["ja"],
+        isMusicPlaylist: true
+      },
+      {
+        id: "kpop-music",
+        title: "K-POP",
+        category: "2025 音楽・K-POP",
+        description: "韓国のポップスコレクションです。\n\n最新のK-POPから名曲まで、韓国のポップスをお楽しみください。\n\n再生時間：約16分\n言語：韓国語\n\nこのプレイリストは、機内での韓国の音楽体験をお過ごしいただくために特別に制作されています。K-POPをお楽しみください。",
+        backgroundColor: "#a8edea",
+        coverImage: "https://via.placeholder.com/300x300/a8edea/ffffff?text=K-POP+Music",
+        genre: "K-POP",
+        playlistType: "kpop",
+        tracks: [
+          { title: "Dynamite", artist: "BTS", duration: "3:20", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/a8edea/ffffff?text=K-POP+1" },
+          { title: "How You Like That", artist: "BLACKPINK", duration: "3:45", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fed6e3/ffffff?text=K-POP+2" },
+          { title: "Butter", artist: "BTS", duration: "3:30", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/a8edea/ffffff?text=K-POP+3" },
+          { title: "Lovesick Girls", artist: "BLACKPINK", duration: "3:25", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fed6e3/ffffff?text=K-POP+4" }
+        ],
+        availableLanguages: ["ko"],
+        isMusicPlaylist: true
+      },
+      {
+        id: "rock-music",
+        title: "ロック",
+        category: "2025 音楽・ロック",
+        description: "ロックコレクションです。\n\nクラシックロックからモダンロックまで、様々なロックをお楽しみください。\n\n再生時間：約22分\n言語：英語\n\nこのプレイリストは、機内でのロック体験をお過ごしいただくために特別に制作されています。ロックをお楽しみください。",
+        backgroundColor: "#ffecd2",
+        coverImage: "https://via.placeholder.com/300x300/ffecd2/ffffff?text=Rock+Music",
+        genre: "ロック",
+        playlistType: "rock",
+        tracks: [
+          { title: "Sweet Child O' Mine", artist: "Guns N' Roses", duration: "5:55", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/ffecd2/ffffff?text=Rock+1" },
+          { title: "Bohemian Rhapsody", artist: "Queen", duration: "6:00", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fcbcdf/ffffff?text=Rock+2" },
+          { title: "Stairway to Heaven", artist: "Led Zeppelin", duration: "8:02", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/ffecd2/ffffff?text=Rock+3" },
+          { title: "Hotel California", artist: "Eagles", duration: "6:30", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fcbcdf/ffffff?text=Rock+4" }
+        ],
+        availableLanguages: ["en"],
+        isMusicPlaylist: true
+      },
+      {
+        id: "electronic-music",
+        title: "エレクトロニカ",
+        category: "2025 音楽・エレクトロニカ",
+        description: "エレクトロニカコレクションです。\n\nアンビエント、チルアウト、ダウンテンポなど、リラックスできるエレクトロニカをお楽しみください。\n\n再生時間：約24分\n言語：音楽（言語非依存）\n\nこのプレイリストは、機内でのエレクトロニカ体験をお過ごしいただくために特別に制作されています。エレクトロニカをお楽しみください。",
+        backgroundColor: "#d299c2",
+        coverImage: "https://via.placeholder.com/300x300/d299c2/ffffff?text=Electronic+Music",
+        genre: "エレクトロニカ",
+        playlistType: "electronic",
+        tracks: [
+          { title: "Teardrop", artist: "Massive Attack", duration: "5:30", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/d299c2/ffffff?text=Electronic+1" },
+          { title: "Porcelain", artist: "Moby", duration: "4:15", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fef9d7/ffffff?text=Electronic+2" },
+          { title: "Breathe", artist: "Télépopmusik", duration: "4:45", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/d299c2/ffffff?text=Electronic+3" },
+          { title: "All I Need", artist: "Air", duration: "4:30", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fef9d7/ffffff?text=Electronic+4" }
+        ],
+        availableLanguages: [],
+        isMusicPlaylist: true
+      },
+      {
+        id: "world-music",
+        title: "ワールドミュージック",
+        category: "2025 音楽・ワールド",
+        description: "世界の音楽コレクションです。\n\nアフリカ、ラテン、アジアなど、世界中の音楽をお楽しみください。\n\n再生時間：約20分\n言語：多言語\n\nこのプレイリストは、機内での世界の音楽体験をお過ごしいただくために特別に制作されています。ワールドミュージックをお楽しみください。",
+        backgroundColor: "#ffecd2",
+        coverImage: "https://via.placeholder.com/300x300/ffecd2/ffffff?text=World+Music",
+        genre: "ワールド",
+        playlistType: "world",
+        tracks: [
+          { title: "Waka Waka", artist: "Shakira", duration: "3:45", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/ffecd2/ffffff?text=World+1" },
+          { title: "Despacito", artist: "Luis Fonsi", duration: "4:20", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fcbcdf/ffffff?text=World+2" },
+          { title: "Ai Se Eu Te Pego", artist: "Michel Teló", duration: "3:15", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/ffecd2/ffffff?text=World+3" },
+          { title: "Gangnam Style", artist: "PSY", duration: "4:20", url: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav", art: "https://via.placeholder.com/300x300/fcbcdf/ffffff?text=World+4" }
+        ],
+        availableLanguages: ["es", "pt", "ko"],
+        isMusicPlaylist: true
+      }
+    ]
   }
 };
 
@@ -134,7 +303,8 @@ window.getContentData = {
       ...this.getAllRecommended(),
       ...this.getAllLatestMovies(),
       ...this.getAllAnime(),
-      ...this.getAllLiveStreams()
+      ...this.getAllLiveStreams(),
+      ...this.getAllMusicPlaylists()
     ];
     return allItems.find(item => item.id === id);
   },
@@ -164,6 +334,11 @@ window.getContentData = {
     return contentData.liveStreams.items;
   },
 
+  // 音楽プレイリストをすべて取得
+  getAllMusicPlaylists: function() {
+    return contentData.musicPlaylists.items;
+  },
+
   // カテゴリー別に作品を取得
   getByCategory: function(category) {
     const allItems = [
@@ -171,7 +346,8 @@ window.getContentData = {
       ...this.getAllRecommended(),
       ...this.getAllLatestMovies(),
       ...this.getAllAnime(),
-      ...this.getAllLiveStreams()
+      ...this.getAllLiveStreams(),
+      ...this.getAllMusicPlaylists()
     ];
     return allItems.filter(item => item.category === category);
   },
@@ -183,7 +359,8 @@ window.getContentData = {
       ...this.getAllRecommended(),
       ...this.getAllLatestMovies(),
       ...this.getAllAnime(),
-      ...this.getAllLiveStreams()
+      ...this.getAllLiveStreams(),
+      ...this.getAllMusicPlaylists()
     ];
     return allItems.filter(item => item.genre === genre);
   }
@@ -306,6 +483,22 @@ window.contentManager = {
         backgroundColor: "#f39c12",
         coverImage: "image/covers/default.jpg",
         genre: "ジャンル"
+      },
+      musicPlaylists: {
+        id: "new-music-playlist",
+        title: "新しい音楽プレイリスト",
+        category: "2025 音楽・ジャンル",
+        description: "プレイリストの詳細な説明をここに入力してください。",
+        backgroundColor: "#667eea",
+        coverImage: "image/covers/default.jpg",
+        genre: "音楽ジャンル",
+        playlistType: "custom",
+        tracks: [
+          { title: "新しい楽曲1", artist: "アーティスト1", duration: "3:30", url: "audio/sample1.mp3", art: "image/covers/default.jpg" },
+          { title: "新しい楽曲2", artist: "アーティスト2", duration: "4:15", url: "audio/sample2.mp3", art: "image/covers/default.jpg" }
+        ],
+        availableLanguages: [],
+        isMusicPlaylist: true
       }
     };
     

@@ -609,6 +609,233 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       transform: translateY(-1px);
     }
   </style>
+  <style>
+    /* 音楽プレイリストのアニメーション統一（動画ダイヤログと同じスタイル） */
+    .music-playlist-item {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(80px);
+      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
+    }
+
+    .music-playlist-item.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .music-playlist-item:hover {
+      transform: scale(1.03);
+    }
+
+    /* 音楽プレイリストのグラデーション背景 */
+    .music-playlist-cover {
+      width: 200px;
+      aspect-ratio: 16/9;
+      border-radius: 8px;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 500;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    }
+
+    .music-playlist-cover:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .music-playlist-cover::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: inherit;
+      z-index: 1;
+    }
+
+    .music-playlist-cover span {
+      position: relative;
+      z-index: 2;
+      font-size: 1.1rem;
+      text-align: center;
+      padding: 0 16px;
+    }
+
+    .music-playlist-track-count {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      z-index: 3;
+    }
+
+    .music-playlist-info {
+      margin-top: 8px;
+      margin-left: 4px;
+    }
+
+    .music-playlist-title {
+      font-size: 1rem;
+      color: #232323;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .music-playlist-genre {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .music-playlist-duration {
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    /* インライン音楽プレイヤー */
+    .inline-music-player {
+      position: fixed;
+      top: 60px; /* ヘッダーを避けるためのオフセット */
+      right: 0;
+      width: 400px;
+      max-width: 50vw;
+      bottom: 70px; /* フッターを避けるためのオフセット */
+      background: rgba(20, 20, 20, 0.9);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      z-index: 1500;
+      transform: translateX(100%);
+      transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+      box-shadow: -4px 0 20px rgba(0,0,0,0.3);
+      border-left: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .inline-music-player.show {
+      transform: translateX(0);
+    }
+    .player-content {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      padding: 40px 20px;
+      gap: 30px;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+    }
+    .player-album-art {
+      width: 80%;
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .player-track-info {
+      width: 100%;
+      text-align: center;
+    }
+    .player-track-title {
+      font-weight: 600;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+    .player-track-artist {
+      font-size: 1.1rem;
+      opacity: 0.7;
+    }
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      justify-content: center;
+      width: 100%;
+    }
+    .player-control-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .player-control-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .player-control-btn.play-pause .material-icons {
+      font-size: 40px;
+    }
+    .player-progress-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 90%;
+    }
+    .player-progress-bar {
+      flex-grow: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .player-progress-fill {
+      width: 0%;
+      height: 100%;
+      background: #fff;
+      border-radius: 2px;
+    }
+    .player-volume-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 180px;
+    }
+    #player-volume-slider {
+        flex-grow: 1;
+        accent-color: #fff;
+    }
+    .player-close-btn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .player-close-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+  </style>
 </head>
 <body class="home-modern">
   <script>
@@ -876,6 +1103,15 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         <div id="live-stream-container"></div>
       </div>
 
+      <!-- 音楽プレイリストセクション -->
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+        <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;display:flex;align-items:center;gap:12px;">
+          <span>音楽プレイリスト</span>
+          <span style="background:#4caf50;color:#fff;padding:4px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">MUSIC</span>
+        </div>
+        <div id="music-playlist-container" style="display:flex;gap:24px;flex-wrap:wrap;"></div>
+      </div>
+
       <!-- おすすめTV番組セクション（追加） -->
       <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
         <div id="ent-recommended-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
@@ -889,6 +1125,31 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       </div>
     </div>
   </div>
+
+  <!-- インライン音楽プレイヤー -->
+  <div id="inline-music-player" class="inline-music-player">
+    <div class="player-content">
+      <img id="player-album-art" src="" alt="Album Art" class="player-album-art">
+      <div class="player-track-info">
+        <div id="player-track-title" class="player-track-title">曲名</div>
+        <div id="player-track-artist" class="player-track-artist">アーティスト</div>
+      </div>
+      <div class="player-controls">
+        <button id="player-prev-btn" class="player-control-btn"><span class="material-icons">skip_previous</span></button>
+        <button id="player-play-btn" class="player-control-btn play-pause"><span id="player-play-icon" class="material-icons">play_arrow</span></button>
+        <button id="player-next-btn" class="player-control-btn"><span class="material-icons">skip_next</span></button>
+      </div>
+      <div class="player-progress-container">
+        <span id="player-current-time">0:00</span>
+        <div id="player-progress-bar" class="player-progress-bar">
+          <div id="player-progress-fill" class="player-progress-fill"></div>
+        </div>
+        <span id="player-total-time">0:00</span>
+      </div>
+    </div>
+    <button id="player-close-btn" class="player-close-btn">&times;</button>
+  </div>
+  <audio id="audio-player-main"></audio>
   <!-- フッター（home.htmlと統一） -->
   <div class="hm-footer">
     <div class="hm-footer-col">
@@ -1353,14 +1614,12 @@ body[lang="zh"], html[lang="zh"] .home-modern {
               const category = this.getAttribute('data-category');
               const description = this.getAttribute('data-description');
               const liveId = this.getAttribute('data-live-id');
-              console.log('ライブ配信クリック:', { title, category, description, liveId });
-              if (liveId) {
-                openLiveStreamModal(title, category, description, liveId);
-              } else {
-                openContentModal(title, category, description);
-              }
+              
+              // ライブ配信用のモーダルを開く
+              openLiveStreamModal(title, category, description, liveId);
             });
           });
+          
           // カバー画像がある作品にタイトルオーバーレイを追加
           contentData.liveStreams.items.forEach((item, index) => {
             if (item.coverImage) {
@@ -1373,8 +1632,69 @@ body[lang="zh"], html[lang="zh"] .home-modern {
               }
             }
           });
-        } else {
-          liveStreamContainer.innerHTML = '<div style="color:#888;font-size:1.1rem;">現在ライブ配信はありません。</div>';
+        }
+      }
+
+      // 音楽プレイリストセクション
+      const musicPlaylistContainer = document.getElementById('music-playlist-container');
+      console.log('musicPlaylistContainer:', musicPlaylistContainer);
+      console.log('contentData.musicPlaylists:', contentData.musicPlaylists);
+      if (musicPlaylistContainer) {
+        if (contentData.musicPlaylists && contentData.musicPlaylists.items && contentData.musicPlaylists.items.length > 0) {
+          // プレイリストの総再生時間を計算
+          function calculateTotalDuration(tracks) {
+            return tracks.reduce((total, track) => {
+              const [mins, secs] = track.duration.split(':').map(Number);
+              return total + (mins * 60 + secs);
+            }, 0);
+          }
+          
+          function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+          }
+          
+          musicPlaylistContainer.innerHTML = `
+            <div style="display:flex;gap:24px;flex-wrap:wrap;">
+                               ${contentData.musicPlaylists.items.map((playlist, index) => {
+                   const totalDuration = calculateTotalDuration(playlist.tracks);
+                   const trackCount = playlist.tracks.length;
+                   
+                   return `
+                     <div class="music-playlist-item" data-playlist-id="${playlist.id}" data-title="${playlist.title}" data-category="${playlist.category}" data-description="${playlist.description.replace(/\"/g, '&quot;')}">
+                       <div class="music-playlist-cover" style="background: ${playlist.backgroundColor};">
+                         <span>${playlist.title}</span>
+                         <div class="music-playlist-track-count">${trackCount}曲</div>
+                       </div>
+                       <div class="music-playlist-info">
+                         <div class="music-playlist-title">${playlist.title}</div>
+                         <div class="music-playlist-genre">${playlist.genre}</div>
+                         <div class="music-playlist-duration">${formatDuration(totalDuration)}</div>
+                       </div>
+                     </div>
+                   `;
+                 }).join('')}
+            </div>
+          `;
+          
+          // クリックイベントを追加とアニメーション開始
+          const musicPlaylistItems = musicPlaylistContainer.querySelectorAll('.music-playlist-item');
+          musicPlaylistItems.forEach((item, index) => {
+            // アニメーションを即時開始
+            item.classList.add('show');
+            
+            // モーダルで詳細表示
+            item.addEventListener('click', function() {
+              const playlistId = this.getAttribute('data-playlist-id');
+              const title = this.getAttribute('data-title');
+              const category = this.getAttribute('data-category');
+              const description = this.getAttribute('data-description');
+              
+              // 音楽プレイリスト用のモーダルを開く
+              openMusicPlaylistModal(title, category, description, playlistId);
+            });
+          });
         }
       }
     }
@@ -1576,7 +1896,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
             // player/et-movie.htmlに遷移
             window.location.href = `player/et-movie.html?id=${contentId}`;
           } else {
-            alert('コンテンツ情報が見つかりません。');
+            console.error('再生するコンテンツ情報が見つかりませんでした。');
           }
         }
         
@@ -1605,7 +1925,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
           addToWatchLater(content);
           alert('後で見るリストに追加しました。');
         } else {
-          alert('コンテンツ情報が見つかりません。');
+          console.error('「後で見る」に追加するコンテンツ情報が見つかりませんでした。');
         }
       });
       
@@ -1619,6 +1939,23 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       // Escapeキーでモーダルを閉じる
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
+          // インラインプレイヤーが表示されていれば閉じる
+          const playerContainer = document.getElementById('inline-music-player');
+          if (playerContainer && playerContainer.classList.contains('show')) {
+            const audioPlayer = document.getElementById('audio-player-main');
+            const playerCloseBtn = document.getElementById('player-close-btn');
+            if (audioPlayer) {
+                audioPlayer.pause();
+                isInlinePlayerPlaying = false;
+                updatePlayPauseIcon();
+            }
+            playerContainer.classList.remove('show');
+            // イベントの伝播を止める
+            e.stopPropagation();
+            return;
+          }
+
+          // 他のモーダルを閉じる
           closeContentModal();
           closeLanguageModal();
         }
@@ -2145,9 +2482,225 @@ body[lang="zh"], html[lang="zh"] .home-modern {
           window.location.href = `player/et-movie.html?id=${content.id}`;
         }
       } else {
-        alert('コンテンツ情報が見つかりません。');
+        console.error(`再生するコンテンツ(ID: ${id})が見つかりませんでした。`);
       }
     }
+
+    // 音楽プレイリスト機能
+    function openMusicPlaylist(playlistId) {
+      showMusicPlaylistDetails(playlistId);
+    }
+
+    // 音楽プレイリストを再生
+    function playMusicPlaylist(playlistId) {
+      // 音楽プレイヤーページに遷移
+      window.location.href = `player/mu-player.html?playlist=${playlistId}`;
+    }
+
+    // お気に入りに追加
+    function addMusicToFavorites(playlistId) {
+      alert('お気に入りに追加しました！');
+    }
+
+    // シェア機能
+    function shareMusicPlaylist(playlistId) {
+      alert('シェア機能は準備中です。');
+    }
+
+
+
+    // 音楽プレイリストの詳細情報を表示
+    function showMusicPlaylistDetails(playlistId) {
+      const playlist = getContentData.getById(playlistId);
+      if (!playlist || !playlist.isMusicPlaylist) return;
+
+      // モーダルを開く
+      const modal = document.getElementById('content-modal');
+      const overlay = document.getElementById('content-modal-overlay');
+      const title = document.getElementById('content-modal-title');
+      const category = document.getElementById('content-modal-category');
+      const buttons = document.getElementById('content-modal-buttons');
+
+      title.textContent = playlist.title;
+      category.textContent = playlist.description.split('\n')[0];
+
+      // トラックリストを生成
+      const trackList = playlist.tracks.map((track, index) => `
+        <div style="display:flex;align-items:center;padding:12px;border-bottom:1px solid #eee;background:${index % 2 === 0 ? '#f9f9f9' : '#fff'};">
+          <div style="width:30px;text-align:center;color:#666;font-size:0.9rem;">${index + 1}</div>
+          <div style="flex:1;margin-left:12px;">
+            <div style="font-weight:600;color:#232323;">${track.title}</div>
+            <div style="font-size:0.9rem;color:#666;">${track.artist}</div>
+          </div>
+          <div style="color:#999;font-size:0.9rem;">${track.duration}</div>
+        </div>
+      `).join('');
+
+      // ボタンを更新（トラックリストを含む）
+      buttons.innerHTML = `
+        <div style="margin-bottom:20px;max-height:300px;overflow-y:auto;border:1px solid #eee;border-radius:8px;">
+          ${trackList}
+        </div>
+        <button class="content-modal-btn content-modal-btn-primary" onclick="playMusicPlaylist('${playlist.id}')">
+          <span class="material-icons">play_arrow</span>
+          プレイリストを再生
+        </button>
+        <div class="content-modal-btn-row">
+          <button class="content-modal-btn content-modal-btn-secondary" onclick="addMusicToFavorites('${playlist.id}')">
+            <span class="material-icons">favorite_border</span>
+            お気に入りに追加
+          </button>
+          <button class="content-modal-btn content-modal-btn-secondary" onclick="shareMusicPlaylist('${playlist.id}')">
+            <span class="material-icons">share</span>
+            シェア
+          </button>
+        </div>
+      `;
+
+      modal.classList.add('show');
+      overlay.classList.add('show');
+    }
+
+    // 音楽プレイリストモーダルを開く
+    function openMusicPlaylistModal(title, category, description, playlistId) {
+      const playlist = getContentData.getById(playlistId);
+      if (!playlist || !playlist.isMusicPlaylist) return;
+
+      // モーダルを開く
+      const modal = document.getElementById('content-modal');
+      const overlay = document.getElementById('content-modal-overlay');
+      const modalTitle = document.getElementById('modal-title');
+      const modalCategory = document.getElementById('modal-category');
+      const modalDescription = document.getElementById('modal-description');
+
+      modalTitle.textContent = title;
+      modalCategory.textContent = category;
+      modalDescription.textContent = description;
+
+      // 音楽プレイリスト用のボタンを設定
+      const modalPlayBtn = document.getElementById('modal-play-btn');
+      const modalLanguageBtn = document.getElementById('modal-language-btn');
+      const modalPlaylistBtn = document.getElementById('modal-playlist-btn');
+
+      if (modalPlayBtn) {
+        modalPlayBtn.innerHTML = '<span class="material-icons">play_arrow</span><span id="modal-play-text">プレイリストを再生</span>';
+        modalPlayBtn.onclick = function() {
+          playPlaylistInline(playlistId); // インラインプレイヤーで再生
+          closeContentModal(); // モーダルを閉じる
+        };
+      }
+
+      if (modalLanguageBtn) {
+        modalLanguageBtn.style.display = 'none'; // 音楽プレイリストでは言語選択を非表示
+      }
+
+      if (modalPlaylistBtn) {
+        modalPlaylistBtn.innerHTML = '<span class="material-icons">favorite_border</span><span id="modal-playlist-text">お気に入りに追加</span>';
+        modalPlaylistBtn.onclick = function() {
+          addToWatchLater(playlist);
+          alert('お気に入りに追加しました！');
+        };
+      }
+
+      modal.classList.add('show');
+      overlay.classList.add('show');
+    }
+
+    // --- ここからインライン音楽プレイヤーの制御ロジック ---
+    const playerContainer = document.getElementById('inline-music-player');
+    const audioPlayer = document.getElementById('audio-player-main');
+    let currentInlinePlaylist = null;
+    let currentInlineTrackIndex = 0;
+    let isInlinePlayerPlaying = false;
+
+    function playPlaylistInline(playlistId) {
+      currentInlinePlaylist = getContentData.getById(playlistId);
+      if (!currentInlinePlaylist || !currentInlinePlaylist.isMusicPlaylist) {
+        console.error('指定されたプレイリストが見つかりません:', playlistId);
+        return;
+      }
+      currentInlineTrackIndex = 0;
+      loadAndPlayTrack(currentInlineTrackIndex);
+      playerContainer.classList.add('show');
+    }
+
+    function loadAndPlayTrack(trackIndex) {
+      if (!currentInlinePlaylist) return;
+      const track = currentInlinePlaylist.tracks[trackIndex];
+
+      // UI更新
+      document.getElementById('player-album-art').src = track.art;
+      document.getElementById('player-track-title').textContent = track.title;
+      document.getElementById('player-track-artist').textContent = track.artist;
+
+      // 音声読み込みと再生
+      audioPlayer.src = track.url;
+      audioPlayer.load();
+      audioPlayer.play().then(() => {
+        isInlinePlayerPlaying = true;
+        updatePlayPauseIcon();
+      }).catch(error => {
+        console.error("再生エラー:", error);
+        isInlinePlayerPlaying = false;
+        updatePlayPauseIcon();
+      });
+    }
+
+    function toggleInlinePlay() {
+      if (isInlinePlayerPlaying) {
+        audioPlayer.pause();
+      } else {
+        if (audioPlayer.src) {
+          audioPlayer.play();
+        } else if (currentInlinePlaylist) {
+          loadAndPlayTrack(currentInlineTrackIndex);
+        }
+      }
+      isInlinePlayerPlaying = !isInlinePlayerPlaying;
+      updatePlayPauseIcon();
+    }
+
+    function updatePlayPauseIcon() {
+      const icon = document.getElementById('player-play-icon');
+      icon.textContent = isInlinePlayerPlaying ? 'pause' : 'play_arrow';
+    }
+
+    function playNextTrack() {
+      currentInlineTrackIndex = (currentInlineTrackIndex + 1) % currentInlinePlaylist.tracks.length;
+      loadAndPlayTrack(currentInlineTrackIndex);
+    }
+
+    function playPrevTrack() {
+      currentInlineTrackIndex = (currentInlineTrackIndex - 1 + currentInlinePlaylist.tracks.length) % currentInlinePlaylist.tracks.length;
+      loadAndPlayTrack(currentInlineTrackIndex);
+    }
+
+    // プレイヤーのイベントリスナー設定
+    document.addEventListener('DOMContentLoaded', () => {
+        const playerPlayBtn = document.getElementById('player-play-btn');
+        const playerNextBtn = document.getElementById('player-next-btn');
+        const playerPrevBtn = document.getElementById('player-prev-btn');
+        const playerCloseBtn = document.getElementById('player-close-btn');
+        const playerProgressBar = document.getElementById('player-progress-bar');
+
+        if(playerPlayBtn) playerPlayBtn.addEventListener('click', toggleInlinePlay);
+        if(playerNextBtn) playerNextBtn.addEventListener('click', playNextTrack);
+        if(playerPrevBtn) playerPrevBtn.addEventListener('click', playPrevTrack);
+        if(playerCloseBtn) playerCloseBtn.addEventListener('click', () => {
+            audioPlayer.pause();
+            isInlinePlayerPlaying = false;
+            updatePlayPauseIcon();
+            playerContainer.classList.remove('show');
+        });
+
+        if(playerProgressBar) playerProgressBar.addEventListener('click', (e) => {
+            const rect = playerProgressBar.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            const duration = audioPlayer.duration;
+            if(duration) audioPlayer.currentTime = (clickX / width) * duration;
+        });
+    });
   </script>
 </body>
 </html>
