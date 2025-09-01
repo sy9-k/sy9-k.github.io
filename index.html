@@ -19,18 +19,14 @@
       <div id="pa-en">Passenger Announcement</div>
     </div>
   </div>
-  <div id="fullscreen-warning" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.85);color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:2em;">
-    <div>全画面表示でご利用ください</div>
-    <div style="font-size:1em;margin-top:1em;">F11キーやブラウザの全画面ボタンで全画面にしてください</div>
-    <button id="fullscreen-btn-warning" style="margin-top:2em;font-size:1em;padding:0.5em 2em;">全画面モード</button>
-  </div>
+
   <div class="top-left">
     <h1 class="seat">31A</h1>
     <p class="instruction">
       画面のどこかをタッチしてスタート<br>
       <span class="en">TAP ANYWHERE TO START.</span>
     </p>
-    <button id="fullscreen-toggle-btn" style="margin-top:1em;font-size:1em;padding:0.5em 2em;">全画面切替</button>
+
   </div>
   <!-- クリック無効用オーバーレイ -->
   <div id="pa-blocker" style="display:none;position:fixed;inset:0;z-index:2100;"></div>
@@ -97,99 +93,22 @@ body[lang="zh"], html[lang="zh"] .start-screen {
   // --- 画面クリックによる遷移制御 ---
   const mainBody = document.getElementById('main-body');
   function bodyClickHandler(e) {
-    // 全画面警告が表示されている場合は何もしない
-    const warning = document.getElementById('fullscreen-warning');
-    if (warning && warning.style.display === 'flex') return;
     location.href = 'language.html';
   }
   mainBody.addEventListener('click', bodyClickHandler);
-  // --- 全画面表示チェック ---
-  function checkFullscreen() {
-    const isFullscreen = document.fullscreenElement || window.innerHeight === screen.height;
-    const warning = document.getElementById('fullscreen-warning');
-    if (!isFullscreen) {
-      warning.style.display = 'flex';
-      document.body.style.pointerEvents = 'none';
-      warning.style.pointerEvents = 'auto';
-      // body内のすべての子要素も操作不可に
-      Array.from(document.body.children).forEach(el => {
-        if (el !== warning) el.style.pointerEvents = 'none';
-      });
-      // bodyクリックによる遷移も無効化
-      mainBody.style.pointerEvents = 'none';
-    } else {
-      warning.style.display = 'none';
-      document.body.style.pointerEvents = '';
-      Array.from(document.body.children).forEach(el => {
-        el.style.pointerEvents = '';
-      });
-      // bodyクリックによる遷移を有効化
-      mainBody.style.pointerEvents = '';
-    }
-  }
-  document.addEventListener('fullscreenchange', checkFullscreen);
-  window.addEventListener('resize', checkFullscreen);
-  // --- 警告内フルスクリーンボタン制御 ---
-  const fullscreenBtnWarning = document.getElementById('fullscreen-btn-warning');
-  fullscreenBtnWarning.addEventListener('click', () => {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen();
-    } else if (document.body.webkitRequestFullscreen) {
-      document.body.webkitRequestFullscreen();
-    }
-  });
-  // --- 全画面モードの永続化 ---
-  function enterFullscreen() {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen();
-    } else if (document.body.webkitRequestFullscreen) {
-      document.body.webkitRequestFullscreen();
-    }
-    localStorage.setItem('fullscreenMode', '1');
-  }
-  function exitFullscreen() {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    }
-    localStorage.removeItem('fullscreenMode');
-  }
-  function isFullscreen() {
-    return document.fullscreenElement || window.innerHeight === screen.height;
-  }
-  // トグルボタン
-  const fullscreenToggleBtn = document.getElementById('fullscreen-toggle-btn');
-  fullscreenToggleBtn.addEventListener('click', () => {
-    if (!isFullscreen()) {
-      enterFullscreen();
-    } else {
-      exitFullscreen();
-    }
-  });
-  // ページ読み込み時にフルスクリーン維持
-  window.addEventListener('DOMContentLoaded', () => {
-    paDialog = document.getElementById('pa-announcement');
-    paTitle = document.getElementById('pa-title');
-    paMessage = document.getElementById('pa-message');
-    paEn = document.getElementById('pa-en');
-    paBlocker = document.getElementById('pa-blocker');
-    paKeyDown = false;
-    updatePADialog();
-    if (window.i18n) setPADialogLang();
-    document.querySelector('.seat').textContent = localStorage.getItem('seatNumber') || '31A';
-    // 他の情報も同様に localStorage.getItem() で呼び出して使用できます
-    checkFullscreen();
-    if (localStorage.getItem('fullscreenMode') === '1' && !isFullscreen()) {
-      setTimeout(enterFullscreen, 200); // ユーザー操作後でないと自動化できない場合もある
-    }
-  });
-  // フルスクリーン解除時はフラグを消す
-  document.addEventListener('fullscreenchange', () => {
-    if (!isFullscreen()) {
-      localStorage.removeItem('fullscreenMode');
-    }
-  });
+      // ページ読み込み時の初期化
+    window.addEventListener('DOMContentLoaded', () => {
+      paDialog = document.getElementById('pa-announcement');
+      paTitle = document.getElementById('pa-title');
+      paMessage = document.getElementById('pa-message');
+      paEn = document.getElementById('pa-en');
+      paBlocker = document.getElementById('pa-blocker');
+      paKeyDown = false;
+      updatePADialog();
+      if (window.i18n) setPADialogLang();
+      document.querySelector('.seat').textContent = localStorage.getItem('seatNumber') || '31A';
+      // 他の情報も同様に localStorage.getItem() で呼び出して使用できます
+    });
 </script>
 <link rel="stylesheet" href="css/common.css">
 </html>

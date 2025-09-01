@@ -610,21 +610,13 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     }
   </style>
   <style>
-    /* 音楽プレイリストのアニメーション統一（動画ダイヤログと同じスタイル） */
+    /* 音楽プレイリストのスタイル */
     .music-playlist-item {
       display: inline-flex;
       flex-direction: column;
       align-items: flex-start;
       gap: 0;
       cursor: pointer;
-      opacity: 0;
-      transform: translateY(80px);
-      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-    }
-
-    .music-playlist-item.show {
-      opacity: 1;
-      transform: translateY(0);
     }
 
     .music-playlist-item:hover {
@@ -711,130 +703,255 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     /* インライン音楽プレイヤー */
     .inline-music-player {
       position: fixed;
-      top: 60px; /* ヘッダーを避けるためのオフセット */
+      left: 0;
       right: 0;
-      width: 400px;
-      max-width: 50vw;
-      bottom: 70px; /* フッターを避けるためのオフセット */
-      background: rgba(20, 20, 20, 0.9);
-      backdrop-filter: blur(10px);
+      bottom: 0;
+      height: 200px;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+      backdrop-filter: blur(20px);
       color: #fff;
       z-index: 1500;
-      transform: translateX(100%);
-      transition: transform 0.5s cubic-bezier(.4,0,.2,1);
-      box-shadow: -4px 0 20px rgba(0,0,0,0.3);
-      border-left: 1px solid rgba(255,255,255,0.1);
+      transform: translateY(100%);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.4);
+      border-radius: 20px 20px 0 0;
+      border: 1px solid rgba(255,255,255,0.1);
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
+    
+    .inline-music-player::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
+      pointer-events: none;
+    }
+    
+    .inline-music-player.fullscreen {
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      bottom: 0;
+      max-width: none;
+      border-radius: 0;
+      z-index: 2100;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    }
+    
+    .inline-music-player.fullscreen .player-content {
+      gap: 6vh;
+    }
+    
+    .inline-music-player.fullscreen .player-album-art {
+      width: auto;
+      height: 50vh;
+      max-width: 50vh;
+      border-radius: 20px;
+    }
+    
+    .inline-music-player.fullscreen .player-track-title {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+    
     .inline-music-player.show {
-      transform: translateX(0);
+      transform: translateY(0);
     }
+    
     .player-content {
       display: flex;
       align-items: center;
-      flex-direction: column;
-      padding: 40px 20px;
+      flex-direction: row;
+      padding: 20px 30px;
       gap: 30px;
       width: 100%;
       height: 100%;
       justify-content: center;
+      position: relative;
+      z-index: 2;
     }
+    
     .player-album-art {
-      width: 80%;
-      aspect-ratio: 1 / 1;
+      width: 120px;
+      height: 120px;
       border-radius: 12px;
       object-fit: cover;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+      border: 2px solid rgba(255,255,255,0.2);
     }
+    
+    .player-album-art:hover {
+      transform: scale(1.02);
+    }
+    
     .player-track-info {
-      width: 100%;
-      text-align: center;
+      width: 200px;
+      text-align: left;
+      padding: 0;
     }
+    
     .player-track-title {
-      font-weight: 600;
-      font-size: 1.5rem;
-      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      letter-spacing: 0.5px;
     }
+    
     .player-track-artist {
-      font-size: 1.1rem;
-      opacity: 0.7;
+      font-size: 1rem;
+      opacity: 0.9;
+      font-weight: 400;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
+    
     .player-controls {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 30px;
       justify-content: center;
       width: 100%;
+      padding: 0 20px;
     }
+    
     .player-control-btn {
-      background: none;
+      background: rgba(255, 255, 255, 0.15);
       border: none;
       color: #fff;
       cursor: pointer;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
+      width: 48px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
     }
+    
     .player-control-btn:hover {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
     }
+    
+    .player-control-btn.play-pause {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .player-control-btn.play-pause:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      transform: scale(1.05);
+    }
+    
     .player-control-btn.play-pause .material-icons {
-      font-size: 40px;
+      font-size: 28px;
     }
+    
+    .player-control-btn .material-icons {
+      font-size: 20px;
+    }
+    
     .player-progress-container {
       display: flex;
       align-items: center;
       gap: 12px;
-      width: 90%;
+      width: 300px;
+      padding: 0;
     }
+    
+    .player-progress-container span {
+      font-size: 0.8rem;
+      font-weight: 500;
+      opacity: 0.8;
+      min-width: 30px;
+    }
+    
     .player-progress-bar {
       flex-grow: 1;
       height: 4px;
       background: rgba(255,255,255,0.2);
       border-radius: 2px;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
+    
+    .player-progress-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.1) 100%);
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
     .player-progress-fill {
       width: 0%;
       height: 100%;
-      background: #fff;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
       border-radius: 2px;
+      transition: width 0.1s ease;
+      position: relative;
+      z-index: 1;
     }
-    .player-volume-container {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        width: 180px;
-    }
-    #player-volume-slider {
-        flex-grow: 1;
-        accent-color: #fff;
-    }
-    .player-close-btn {
+    
+    .player-header-actions {
       position: absolute;
-      top: 16px;
-      left: 16px;
-      background: rgba(255, 255, 255, 0.1);
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 8px;
+      z-index: 3;
+    }
+    
+    .player-header-btn {
+      background: rgba(255, 255, 255, 0.15);
       color: #fff;
       border: none;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 1.5rem;
+      width: 32px;
+      height: 32px;
       cursor: pointer;
-      box-shadow: none;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
     }
-    .player-close-btn:hover {
-      background: rgba(255,255,255,0.2);
+    
+    .player-header-btn .material-icons {
+      font-size: 16px;
     }
+    
+    .player-header-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+    }
+
+
+
   </style>
 </head>
 <body class="home-modern">
@@ -1079,7 +1196,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
     <!-- コンテンツエリア -->
     <div class="entertainment-content-scroll">
       <!-- 今月の最新作セクション -->
-      <div style="background:#18191c; border-radius: 16px; margin-bottom: 32px; padding: 32px;">
+      <div style="background:#18191c; border-radius: 16px; margin-bottom: 24px; padding: 32px;">
         <h1 id="ent-title" style="font-size:3.2rem;font-weight:500;margin-bottom:18px;color:#fff;"></h1>
         <div id="ent-desc" style="font-size:1.25rem;opacity:0.92;margin-bottom:32px;color:#e0e0e0;"></div>
         <div style="display:flex;gap:18px;margin-bottom:36px;">
@@ -1089,13 +1206,13 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         </div>
       </div>
       <!-- 人気作品セクション -->
-      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 24px;">
         <div id="ent-popular-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
         <div id="popular-content-container"></div>
         </div>
 
       <!-- ライブ配信セクション -->
-      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 24px;">
         <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;display:flex;align-items:center;gap:12px;">
           <span>ライブ配信</span>
           <span style="background:#ff0000;color:#fff;padding:4px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;animation:pulse 2s infinite;">LIVE</span>
@@ -1104,7 +1221,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       </div>
 
       <!-- 音楽プレイリストセクション -->
-      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 24px;">
         <div style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;display:flex;align-items:center;gap:12px;">
           <span>音楽プレイリスト</span>
           <span style="background:#4caf50;color:#fff;padding:4px 8px;border-radius:12px;font-size:0.8rem;font-weight:600;">MUSIC</span>
@@ -1113,13 +1230,13 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       </div>
 
       <!-- おすすめTV番組セクション（追加） -->
-      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;">
+      <div style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 24px;">
         <div id="ent-recommended-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;"></div>
         <div id="recommended-content-container"></div>
         </div>
 
       <!-- 後で見るセクション -->
-      <div id="watch-later-section" style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 32px;display:none;">
+      <div id="watch-later-section" style="background:#fff;padding:32px; border-radius: 16px; margin-bottom: 0;display:none;">
         <div id="watch-later-title" style="font-size:1.8rem;color:#232323;margin-bottom:18px;font-weight:500;">後で見る</div>
         <div id="watch-later-container"></div>
       </div>
@@ -1128,6 +1245,10 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 
   <!-- インライン音楽プレイヤー -->
   <div id="inline-music-player" class="inline-music-player">
+    <div class="player-header-actions">
+      <button id="player-close-btn" class="player-header-btn">&times;</button>
+      <button id="player-fullscreen-btn" class="player-header-btn"><span class="material-icons">fullscreen</span></button>
+    </div>
     <div class="player-content">
       <img id="player-album-art" src="" alt="Album Art" class="player-album-art">
       <div class="player-track-info">
@@ -1147,9 +1268,9 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         <span id="player-total-time">0:00</span>
       </div>
     </div>
-    <button id="player-close-btn" class="player-close-btn">&times;</button>
   </div>
   <audio id="audio-player-main"></audio>
+
   <!-- フッター（home.htmlと統一） -->
   <div class="hm-footer">
     <div class="hm-footer-col">
@@ -1678,12 +1799,9 @@ body[lang="zh"], html[lang="zh"] .home-modern {
             </div>
           `;
           
-          // クリックイベントを追加とアニメーション開始
+          // クリックイベントを追加
           const musicPlaylistItems = musicPlaylistContainer.querySelectorAll('.music-playlist-item');
           musicPlaylistItems.forEach((item, index) => {
-            // アニメーションを即時開始
-            item.classList.add('show');
-            
             // モーダルで詳細表示
             item.addEventListener('click', function() {
               const playlistId = this.getAttribute('data-playlist-id');
@@ -1948,6 +2066,12 @@ body[lang="zh"], html[lang="zh"] .home-modern {
                 audioPlayer.pause();
                 isInlinePlayerPlaying = false;
                 updatePlayPauseIcon();
+            }
+            if (playerContainer.classList.contains('fullscreen')) {
+                playerContainer.classList.remove('fullscreen');
+                const fullscreenBtn = document.getElementById('player-fullscreen-btn');
+                const fullscreenIcon = fullscreenBtn.querySelector('.material-icons');
+                if (fullscreenIcon) fullscreenIcon.textContent = 'fullscreen';
             }
             playerContainer.classList.remove('show');
             // イベントの伝播を止める
@@ -2606,7 +2730,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       overlay.classList.add('show');
     }
 
-    // --- ここからインライン音楽プレイヤーの制御ロジック ---
+    // --- インライン音楽プレイヤーの制御ロジック ---
     const playerContainer = document.getElementById('inline-music-player');
     const audioPlayer = document.getElementById('audio-player-main');
     let currentInlinePlaylist = null;
@@ -2629,7 +2753,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       const track = currentInlinePlaylist.tracks[trackIndex];
 
       // UI更新
-      document.getElementById('player-album-art').src = track.art;
+      document.getElementById('player-album-art').src = track.art || 'image/default-cover.jpg';
       document.getElementById('player-track-title').textContent = track.title;
       document.getElementById('player-track-artist').textContent = track.artist;
 
@@ -2662,15 +2786,19 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 
     function updatePlayPauseIcon() {
       const icon = document.getElementById('player-play-icon');
-      icon.textContent = isInlinePlayerPlaying ? 'pause' : 'play_arrow';
+      if (icon) {
+        icon.textContent = isInlinePlayerPlaying ? 'pause' : 'play_arrow';
+      }
     }
 
     function playNextTrack() {
+      if (!currentInlinePlaylist) return;
       currentInlineTrackIndex = (currentInlineTrackIndex + 1) % currentInlinePlaylist.tracks.length;
       loadAndPlayTrack(currentInlineTrackIndex);
     }
 
     function playPrevTrack() {
+      if (!currentInlinePlaylist) return;
       currentInlineTrackIndex = (currentInlineTrackIndex - 1 + currentInlinePlaylist.tracks.length) % currentInlinePlaylist.tracks.length;
       loadAndPlayTrack(currentInlineTrackIndex);
     }
@@ -2681,16 +2809,29 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         const playerNextBtn = document.getElementById('player-next-btn');
         const playerPrevBtn = document.getElementById('player-prev-btn');
         const playerCloseBtn = document.getElementById('player-close-btn');
+        const playerFullscreenBtn = document.getElementById('player-fullscreen-btn');
         const playerProgressBar = document.getElementById('player-progress-bar');
 
         if(playerPlayBtn) playerPlayBtn.addEventListener('click', toggleInlinePlay);
         if(playerNextBtn) playerNextBtn.addEventListener('click', playNextTrack);
         if(playerPrevBtn) playerPrevBtn.addEventListener('click', playPrevTrack);
+        
         if(playerCloseBtn) playerCloseBtn.addEventListener('click', () => {
             audioPlayer.pause();
             isInlinePlayerPlaying = false;
             updatePlayPauseIcon();
             playerContainer.classList.remove('show');
+        });
+
+        if(playerFullscreenBtn) playerFullscreenBtn.addEventListener('click', () => {
+            const fullscreenIcon = playerFullscreenBtn.querySelector('.material-icons');
+            if (playerContainer.classList.contains('fullscreen')) {
+                playerContainer.classList.remove('fullscreen');
+                if (fullscreenIcon) fullscreenIcon.textContent = 'fullscreen';
+            } else {
+                playerContainer.classList.add('fullscreen');
+                if (fullscreenIcon) fullscreenIcon.textContent = 'fullscreen_exit';
+            }
         });
 
         if(playerProgressBar) playerProgressBar.addEventListener('click', (e) => {
@@ -2700,7 +2841,41 @@ body[lang="zh"], html[lang="zh"] .home-modern {
             const duration = audioPlayer.duration;
             if(duration) audioPlayer.currentTime = (clickX / width) * duration;
         });
+
+        // 音声の時間更新イベント
+        if(audioPlayer) {
+            audioPlayer.addEventListener('timeupdate', () => {
+                const currentTime = audioPlayer.currentTime;
+                const duration = audioPlayer.duration;
+                const progressFill = document.getElementById('player-progress-fill');
+                const currentTimeSpan = document.getElementById('player-current-time');
+                const totalTimeSpan = document.getElementById('player-total-time');
+
+                if (progressFill && duration) {
+                    progressFill.style.width = (currentTime / duration) * 100 + '%';
+                }
+
+                if (currentTimeSpan) {
+                    currentTimeSpan.textContent = formatTime(currentTime);
+                }
+
+                if (totalTimeSpan && duration) {
+                    totalTimeSpan.textContent = formatTime(duration);
+                }
+            });
+
+            audioPlayer.addEventListener('ended', () => {
+                playNextTrack();
+            });
+        }
     });
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
   </script>
 </body>
 </html>
