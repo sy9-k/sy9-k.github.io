@@ -27,7 +27,7 @@
             justify-content: flex-end;
             align-items: flex-start;
             padding: 20px 40px;
-            position: fixed;
+            position: absolute;
             top: 0;
             right: 0;
             z-index: 100;
@@ -89,13 +89,60 @@
         /* スライド1: 地球儀 */
         .slide1 {
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding-top: 0;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Loading screen for globe */
+        .globe-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 20;
+            transition: opacity 1s ease-out;
+        }
+        
+        .globe-loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         #globeCanvas {
             width: 100%;
-            height: 100%;
+            height: 70%;
+            max-height: 70vh;
+            display: block;
+            margin: 0 auto;
         }
 
         /* スライド2: フライト情報 */
@@ -223,26 +270,6 @@
             border-top: 6px solid #64c8ff;
             z-index: 200;
             box-sizing: border-box;
-        }
-
-        .bar-set {
-            display: contents;
-            transition: opacity 0.8s ease-in-out;
-        }
-
-        .bar-set.hidden {
-            display: none;
-            opacity: 0;
-        }
-
-        .bar-set.fade-out {
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-        }
-
-        .bar-set.fade-in {
-            opacity: 1;
-            transition: opacity 0.8s ease-in-out;
         }
 
         .bar-item {
@@ -374,6 +401,10 @@
     <div class="slideshow-container">
         <!-- スライド1: 地球儀 -->
         <div class="slide slide1 active">
+            <div class="globe-loading" id="globe-loading">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">地球儀を読み込み中...</div>
+            </div>
             <canvas id="globeCanvas"></canvas>
         </div>
 
@@ -412,36 +443,17 @@
 
     <!-- 情報バー -->
     <div class="info-bar">
-        <!-- セット1: 出発地の現地時刻・到着までの所要時間・到着地の現在時刻 -->
-        <div class="bar-set" data-set="1">
-            <div class="bar-item">
-                <div class="bar-label">出発地の現在時刻</div>
-                <div class="bar-value" id="departTime">19:40</div>
-            </div>
-            <div class="bar-item">
-                <div class="bar-label">到着までの所要時間</div>
-                <div class="bar-value" id="flightTime">2:00</div>
-            </div>
-            <div class="bar-item">
-                <div class="bar-label">到着地の現在時刻</div>
-                <div class="bar-value" id="arrivalTime">19:40</div>
-            </div>
+        <div class="bar-item">
+            <div class="bar-label">出発地の現在時刻</div>
+            <div class="bar-value" id="departTime">19:40</div>
         </div>
-
-        <!-- セット2: 到着予定時刻・到着地までの距離・向かい風 -->
-        <div class="bar-set hidden" data-set="2">
-            <div class="bar-item">
-                <div class="bar-label">到着予定時刻</div>
-                <div class="bar-value" id="arrivalTimeETA">21:10</div>
-            </div>
-            <div class="bar-item">
-                <div class="bar-label">到着地までの距離</div>
-                <div class="bar-value" id="distance">2,247 km</div>
-            </div>
-            <div class="bar-item">
-                <div class="bar-label">向かい風</div>
-                <div class="bar-value" id="headwind">25 kt</div>
-            </div>
+        <div class="bar-item">
+            <div class="bar-label">到着までの所要時間</div>
+            <div class="bar-value" id="flightTime">2:00</div>
+        </div>
+        <div class="bar-item">
+            <div class="bar-label">到着地の現在時刻</div>
+            <div class="bar-value" id="arrivalTime">19:40</div>
         </div>
     </div>
 
@@ -469,97 +481,122 @@
         const slides = document.querySelectorAll('.slide');
         const slideInterval = 30000;
 
-        // Three.js による3D地球儀の実装
-        const canvas = document.getElementById('globeCanvas');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        // Enhanced 3D Earth implementation from flight-maps-old.html
+        let scene, camera, renderer, earth, stars;
         
-        // サイズはヘッダーと下部バーの高さを差し引いた領域に合わせる
-        function resizeRendererToLayout() {
-            const slideshowContainer = document.querySelector('.slideshow-container');
-            const availH = slideshowContainer ? slideshowContainer.offsetHeight : Math.max(200, window.innerHeight - 120);
-            renderer.setSize(window.innerWidth, availH);
-            renderer.domElement.style.height = availH + 'px';
-            camera.aspect = window.innerWidth / availH;
-            camera.updateProjectionMatrix();
+        // Initialize 3D Earth
+        function initEarth() {
+            // Hide loading screen after a delay to simulate loading
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('globe-loading');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                }
+            }, 2000);
+            
+            // Create scene
+            scene = new THREE.Scene();
+            
+            // Create camera (narrower field of view for enlarged display)
+            const targetHeight = window.innerHeight * 0.7;
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / targetHeight, 0.1, 1000);
+            camera.position.z = 2.5;
+            
+            // Create renderer (brighter display)
+            const canvas = document.getElementById('globeCanvas');
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            const targetHeight = window.innerHeight * 0.7;
+            renderer.setSize(window.innerWidth, targetHeight);
+            renderer.setClearColor(0x111111);
+            renderer.gammaOutput = true;
+            renderer.gammaFactor = 2.2;
+            
+            // Create Earth (higher resolution with detailed display around KIX airport)
+            const geometry = new THREE.SphereGeometry(1, 128, 128);
+            const textureLoader = new THREE.TextureLoader();
+            const earthTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg');
+            const material = new THREE.MeshPhongMaterial({ 
+                map: earthTexture,
+                shininess: 15,
+                emissive: 0x111111,
+                emissiveIntensity: 0.1
+            });
+            earth = new THREE.Mesh(geometry, material);
+            scene.add(earth);
+            
+            // Lighting (brighter settings)
+            const ambientLight = new THREE.AmbientLight(0x606060, 0.8);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            directionalLight.position.set(5, 3, 5);
+            scene.add(directionalLight);
+            
+            // Additional light to brighten the area around KIX airport
+            const kixLight = new THREE.PointLight(0xffffff, 0.6, 10);
+            kixLight.position.set(0, 0, 0);
+            scene.add(kixLight);
+            
+            // Starfield background
+            const starGeometry = new THREE.BufferGeometry();
+            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 });
+            const starVertices = [];
+            
+            for (let i = 0; i < 10000; i++) {
+                const x = (Math.random() - 0.5) * 2000;
+                const y = (Math.random() - 0.5) * 2000;
+                const z = (Math.random() - 0.5) * 2000;
+                starVertices.push(x, y, z);
+            }
+            
+            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+            stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+            
+            // Start animation
+            animate();
         }
-
-        resizeRendererToLayout();
-        renderer.setClearColor(0x1a1a2e, 1);
-        camera.position.z = 2.5;
-
-        // 地球儀の作成
-        const geometry = new THREE.SphereGeometry(1, 64, 64);
         
-        // 地球のテクスチャをキャンバスで生成
-        const canvas2d = document.createElement('canvas');
-        canvas2d.width = 2048;
-        canvas2d.height = 1024;
-        const ctx = canvas2d.getContext('2d');
-        
-        // 背景（海）
-        ctx.fillStyle = '#1e90ff';
-        ctx.fillRect(0, 0, canvas2d.width, canvas2d.height);
-        
-        // 大陸
-        ctx.fillStyle = '#2d8a3a';
-        
-        // 簡易的な大陸の描画
-        const continents = [
-            { x: 300, y: 300, w: 400, h: 300 }, // アジア
-            { x: 100, y: 400, h: 200, w: 150 },  // 北米
-            { x: 1200, y: 200, w: 300, h: 250 }, // ヨーロッパ
-            { x: 1600, y: 350, w: 200, h: 200 }  // アフリカ
-        ];
-        
-        continents.forEach(cont => {
-            ctx.beginPath();
-            ctx.ellipse(cont.x, cont.y, cont.w, cont.h, Math.random() * 0.5, 0, Math.PI * 2);
-            ctx.fill();
-        });
-        
-        // 雲のエフェクト
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        for (let i = 0; i < 50; i++) {
-            ctx.beginPath();
-            const x = Math.random() * canvas2d.width;
-            const y = Math.random() * canvas2d.height;
-            ctx.arc(x, y, Math.random() * 40 + 20, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        
-        const texture = new THREE.CanvasTexture(canvas2d);
-        const material = new THREE.MeshPhongMaterial({ 
-            map: texture,
-            shininess: 5,
-            emissive: 0x111111
-        });
-        
-        const globe = new THREE.Mesh(geometry, material);
-        scene.add(globe);
-
-        // ライティング
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(5, 3, 5);
-        scene.add(light);
-        
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
-
-        // アニメーションループ
-        function animateGlobe() {
-            requestAnimationFrame(animateGlobe);
-            globe.rotation.y += 0.001;
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Earth rotation
+            if (earth) {
+                earth.rotation.y += 0.005;
+            }
+            
+            // Starfield rotation
+            if (stars) {
+                stars.rotation.y += 0.0005;
+            }
+            
             renderer.render(scene, camera);
         }
+        
 
-        animateGlobe();
 
-        // ウィンドウリサイズ対応
+        // Initialize Earth when slide becomes active
+        function initializeGlobeIfNeeded() {
+            if (!scene) {
+                initEarth();
+            }
+        }
+
+        // Initialize the globe when the page loads if it's the first slide
+        if (currentSlide === 0) {
+            initializeGlobeIfNeeded();
+        }
+
+        // Window resize handling
         window.addEventListener('resize', () => {
             updateLayout();
-            resizeRendererToLayout();
+            if (camera && renderer) {
+                const targetHeight = window.innerHeight * 0.7;
+                camera.aspect = window.innerWidth / targetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, targetHeight);
+            }
         });
 
         function showSlide(n) {
@@ -574,6 +611,10 @@
                 setTimeout(() => {
                     current.classList.remove('active', 'fade-out');
                     next.classList.add('active', 'fade-in');
+                    // Initialize globe if switching to slide 1
+                    if (n === 0) {
+                        initializeGlobeIfNeeded();
+                    }
                     // remove fade-in after transition
                     setTimeout(() => {
                         next.classList.remove('fade-in');
@@ -581,6 +622,10 @@
                 }, 500);
             } else {
                 next.classList.add('active', 'fade-in');
+                // Initialize globe if starting on slide 1
+                if (n === 0) {
+                    initializeGlobeIfNeeded();
+                }
                 setTimeout(() => {
                     next.classList.remove('fade-in');
                 }, 900);
@@ -600,27 +645,10 @@
             const minutes = String(now.getMinutes()).padStart(2, '0');
             document.getElementById('departTime').textContent = `${hours}:${minutes}`;
             document.getElementById('arrivalTime').textContent = `${hours}:${minutes}`;
-            document.getElementById('arrivalTimeETA').textContent = `${String((now.getHours() + 2) % 24).padStart(2, '0')}:${minutes}`;
         }
 
         updateTime();
-        setInterval(updateTime, 60000);
-
-        // 下部バーの情報セットを定期的に切り替える
-        let currentBarSet = 1;
-        function switchBarSet() {
-            const barSets = document.querySelectorAll('.bar-set');
-            barSets.forEach(set => set.classList.add('hidden'));
-            
-            currentBarSet = currentBarSet === 1 ? 2 : 1;
-            const activeSet = document.querySelector(`.bar-set[data-set="${currentBarSet}"]`);
-            if (activeSet) {
-                activeSet.classList.remove('hidden');
-            }
-        }
-
-        // 5秒ごとに情報セットを切り替える
-        setInterval(switchBarSet, 15000);
+        setInterval(updateTime, 15000);
 
         document.querySelector('.close-btn').addEventListener('click', function() {
             window.location.href = '/map.html';
