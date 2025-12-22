@@ -209,7 +209,7 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
           <div id="slideshow-local-date" style="font-size:1.2rem;margin-top:8px;">----</div>
         </div>
       </div>
-      <button class="map-button" onclick="window.location.href='/flight-maps/index.html'">マップを表示する</button>
+      <button class="map-button" id="map-display-btn">マップを表示する</button>
     </div>
   </div>
   <!-- PAアナウンス中ダイアログ（ANA風：上部黄色帯＋下部白四角） -->
@@ -422,6 +422,34 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
         attendantBtn.onclick = function(e) {
           e.stopPropagation();
           alert('客室乗務員をお呼び出ししました。しばらくお待ちください。');
+        };
+      }
+      
+      // マップ表示ボタン制御（瞬間ブラックアウト＋2秒表示＋カット遷移効果付き）
+      const mapDisplayBtn = document.getElementById('map-display-btn');
+      if (mapDisplayBtn) {
+        mapDisplayBtn.onclick = function(e) {
+          e.stopPropagation();
+          
+          // 瞬間的にブラックアウトエフェクト用のオーバーレイを作成（即座に不透明）
+          const blackoutOverlay = document.createElement('div');
+          blackoutOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            opacity: 1;
+            z-index: 9999;
+          `;
+          document.body.appendChild(blackoutOverlay);
+          
+          // 2秒間ブラックアウト状態を維持
+          setTimeout(() => {
+            // 黒い画面から直接新しいページにカット遷移
+            window.location.href = '/flight-maps/index.html';
+          }, 2000); // 2秒間表示
         };
       }
     });
