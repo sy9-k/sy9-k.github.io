@@ -102,24 +102,25 @@
         .slide2 {
             /* 背景：中央にビネット（画像に近い灰色グラデーション） */
             background: radial-gradient(ellipse at center, #5a5a5a 0%, #444444 30%, #333333 70%, #2b2b2b 100%);
-            padding: 80px 0 120px 0;
+            padding: 40px 0 120px 0;
             justify-content: center;
+            overflow-y: auto;
         }
 
         .flight-info-title {
-            font-size: 96px; /* 大きめで画像に近いサイズ */
+            font-size: clamp(28px, 8vw, 96px); /* レスポンシブサイズ */
             color: #8fc6ff;
             text-align: center;
-            margin: 10px 0 50px 0;
-            letter-spacing: 4px;
+            margin: 10px 0 clamp(20px, 5vw, 50px) 0;
+            letter-spacing: 2px;
             font-weight: 300; /* 細め */
         }
 
         .flight-info-list {
             max-width: 1300px; /* 少し横に広げる */
-            width: calc(100% - 80px);
+            width: calc(100% - clamp(20px, 8vw, 80px));
             margin: 0 auto;
-            padding: 0 40px; /* コンテナの左右余白を調整 */
+            padding: 0 clamp(10px, 4vw, 40px); /* コンテナの左右余白を調整 */
             box-sizing: border-box;
         }
 
@@ -127,12 +128,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 22px 40px; /* 帯内の左右パディングを広めに */
-            margin: 14px 0; /* 帯間のスペース */
+            padding: clamp(12px, 3vw, 22px) clamp(15px, 5vw, 40px); /* 帯内の左右パディングを広めに */
+            margin: clamp(8px, 2vw, 14px) 0; /* 帯間のスペース */
             background: #bdbdbd; /* 明るめグレー */
             border-left: none;
             border-radius: 0;
             box-shadow: inset 0 -6px 0 rgba(0,0,0,0.12); /* 帯下に影で仕切り感 */
+            flex-wrap: wrap;
+            gap: clamp(10px, 3vw, 20px);
         }
 
         .info-row:last-child {
@@ -141,15 +144,18 @@
 
         .info-label {
             color: #ffffff;
-            font-size: 22px;
+            font-size: clamp(14px, 4vw, 22px);
             font-weight: 400;
             opacity: 0.95;
+            flex: 1;
+            min-width: 150px;
         }
 
         .info-value {
             color: #ffffff;
-            font-size: 28px;
+            font-size: clamp(18px, 5vw, 28px);
             font-weight: 400;
+            flex-shrink: 0;
         }
 
         /* スライド3: マップ */
@@ -205,10 +211,11 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0;
-            padding: 25px 80px;
+            padding: clamp(15px, 3vw, 25px) clamp(20px, 8vw, 80px);
             background: #444444;
             border-top: 6px solid #64c8ff;
             z-index: 200;
+            box-sizing: border-box;
         }
 
         .bar-item {
@@ -222,7 +229,7 @@
         }
 
         .bar-label {
-              font-size: 16px;
+              font-size: clamp(12px, 2.5vw, 16px);
               color: #64c8ff;
               letter-spacing: 1px;
               margin-bottom: 12px;
@@ -230,26 +237,43 @@
         }
 
         .bar-value {
-              font-size: 32px;
+              font-size: clamp(24px, 5vw, 32px);
               color: #ffffff;
               font-weight: 300;
         }
 
         /* レスポンシブ */
-        @media (max-width: 768px) {
-            .flight-info-title {
-                font-size: 32px;
-                margin-bottom: 30px;
+        @media (max-width: 1024px) {
+            .flight-info-list {
+                width: calc(100% - clamp(20px, 10vw, 60px));
             }
 
             .info-row {
-                padding: 20px 40px;
                 flex-direction: column;
-                text-align: left;
+                align-items: flex-start;
+                gap: clamp(8px, 2vw, 15px);
             }
 
             .info-value {
-                margin-top: 10px;
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide2 {
+                padding: 30px 0 120px 0;
+            }
+
+            .flight-info-list {
+                width: calc(100% - 20px);
+            }
+
+            .info-label {
+                font-size: clamp(12px, 3vw, 16px);
+            }
+
+            .info-value {
+                font-size: clamp(16px, 4vw, 22px);
             }
 
             .info-bar {
@@ -266,6 +290,52 @@
 
             .bar-item:last-child {
                 border-bottom: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide2 {
+                padding: 20px 0 120px 0;
+                overflow-y: auto;
+            }
+
+            .flight-info-title {
+                font-size: clamp(20px, 6vw, 32px);
+                margin: 5px 0 15px 0;
+                letter-spacing: 1px;
+            }
+
+            .flight-info-list {
+                width: calc(100% - 16px);
+                padding: 0 8px;
+            }
+
+            .info-row {
+                padding: clamp(10px, 2vw, 15px) clamp(12px, 3vw, 20px);
+                margin: clamp(6px, 1.5vw, 10px) 0;
+                gap: clamp(8px, 2vw, 12px);
+            }
+
+            .info-label {
+                font-size: clamp(11px, 2.5vw, 14px);
+                min-width: 100px;
+            }
+
+            .info-value {
+                font-size: clamp(14px, 3.5vw, 18px);
+            }
+
+            .info-bar {
+                padding: 12px 15px;
+                gap: 8px;
+            }
+
+            .bar-label {
+                font-size: 12px;
+            }
+
+            .bar-value {
+                font-size: 24px;
             }
         }
     </style>
