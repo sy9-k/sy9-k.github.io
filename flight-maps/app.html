@@ -69,7 +69,7 @@
             display: block;
             position: absolute;
             width: 100%;
-            height: calc(100% - 120px);
+            height: 100%;
             top: 0;
             left: 0;
             opacity: 0;
@@ -100,42 +100,49 @@
 
         /* スライド2: フライト情報 */
         .slide2 {
-            /* 背景：中央にビネット（画像に近い灰色グラデーション） */
-            background: radial-gradient(ellipse at center, #5a5a5a 0%, #444444 30%, #333333 70%, #2b2b2b 100%);
-            padding: 40px 0 120px 0;
+            /* 背景：単色灰色 */
+            background: #3d3d3d;
+            padding: clamp(20px, 3vw, 40px) 0 clamp(40px, 6vw, 80px) 0;
             justify-content: center;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
         }
 
         .flight-info-title {
-            font-size: clamp(28px, 8vw, 96px); /* レスポンシブサイズ */
+            font-size: clamp(24px, 6vw, 72px); /* レスポンシブサイズ */
             color: #8fc6ff;
             text-align: center;
-            margin: 10px 0 clamp(20px, 5vw, 50px) 0;
+            margin: clamp(20px, 4vw, 40px) 0 clamp(15px, 3vw, 30px) 0;
             letter-spacing: 2px;
             font-weight: 300; /* 細め */
         }
 
         .flight-info-list {
-            max-width: 1300px; /* 少し横に広げる */
-            width: calc(100% - clamp(20px, 8vw, 80px));
+            max-width: 1200px; /* 少し横に広げる */
+            width: calc(100% - clamp(20px, 6vw, 60px));
             margin: 0 auto;
-            padding: 0 clamp(10px, 4vw, 40px); /* コンテナの左右余白を調整 */
+            padding: 0 clamp(10px, 3vw, 30px); /* コンテナの左右余白を調整 */
             box-sizing: border-box;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: clamp(12px, 3vw, 22px) clamp(15px, 5vw, 40px); /* 帯内の左右パディングを広めに */
-            margin: clamp(8px, 2vw, 14px) 0; /* 帯間のスペース */
+            padding: clamp(10px, 2.5vw, 18px) clamp(12px, 4vw, 30px); /* 帯内の左右パディングを広めに */
+            margin: clamp(4px, 1vw, 8px) 0; /* 帯間のスペース */
             background: #bdbdbd; /* 明るめグレー */
             border-left: none;
             border-radius: 0;
             box-shadow: inset 0 -6px 0 rgba(0,0,0,0.12); /* 帯下に影で仕切り感 */
             flex-wrap: wrap;
-            gap: clamp(10px, 3vw, 20px);
+            gap: clamp(8px, 2.5vw, 15px);
         }
 
         .info-row:last-child {
@@ -144,16 +151,16 @@
 
         .info-label {
             color: #ffffff;
-            font-size: clamp(14px, 4vw, 22px);
+            font-size: clamp(12px, 3vw, 18px);
             font-weight: 400;
             opacity: 0.95;
             flex: 1;
-            min-width: 150px;
+            min-width: 120px;
         }
 
         .info-value {
             color: #ffffff;
-            font-size: clamp(18px, 5vw, 28px);
+            font-size: clamp(14px, 4vw, 22px);
             font-weight: 400;
             flex-shrink: 0;
         }
@@ -261,7 +268,7 @@
 
         @media (max-width: 768px) {
             .slide2 {
-                padding: 30px 0 120px 0;
+                padding: clamp(20px, 3vw, 40px) 0 clamp(40px, 6vw, 80px) 0;
             }
 
             .flight-info-list {
@@ -295,13 +302,12 @@
 
         @media (max-width: 480px) {
             .slide2 {
-                padding: 20px 0 120px 0;
-                overflow-y: auto;
+                padding: clamp(20px, 3vw, 40px) 0 clamp(40px, 6vw, 80px) 0;
             }
 
             .flight-info-title {
                 font-size: clamp(20px, 6vw, 32px);
-                margin: 5px 0 15px 0;
+                margin: 0 0 clamp(15px, 3vw, 30px) 0;
                 letter-spacing: 1px;
             }
 
@@ -401,6 +407,25 @@
     </div>
 
     <script>
+        // レイアウト調整関数：下部バーの高さを考慮し、コンテンツを画面全体に収める
+        function updateLayout() {
+            const infoBar = document.querySelector('.info-bar');
+            const infoBarHeight = infoBar ? infoBar.offsetHeight : 0;
+            
+            // bodyに下部バー分のパディングを設定
+            document.body.style.paddingBottom = infoBarHeight + 'px';
+        }
+        
+        // 初期化とリサイズ対応
+        window.addEventListener('load', updateLayout);
+        window.addEventListener('resize', updateLayout);
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateLayout);
+        } else {
+            // 少し遅延させて実行
+            setTimeout(updateLayout, 100);
+        }
+
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const slideInterval = 30000;
@@ -408,14 +433,13 @@
         // Three.js による3D地球儀の実装
         const canvas = document.getElementById('globeCanvas');
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight - 120), 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
         
         // サイズはヘッダーと下部バーの高さを差し引いた領域に合わせる
         function resizeRendererToLayout() {
-            const headerH = document.querySelector('.header') ? document.querySelector('.header').offsetHeight : 0;
-            const infoBarH = document.querySelector('.info-bar') ? document.querySelector('.info-bar').offsetHeight : 0;
-            const availH = Math.max(200, window.innerHeight - headerH - infoBarH);
+            const slideshowContainer = document.querySelector('.slideshow-container');
+            const availH = slideshowContainer ? slideshowContainer.offsetHeight : Math.max(200, window.innerHeight - 120);
             renderer.setSize(window.innerWidth, availH);
             renderer.domElement.style.height = availH + 'px';
             camera.aspect = window.innerWidth / availH;
@@ -495,6 +519,7 @@
 
         // ウィンドウリサイズ対応
         window.addEventListener('resize', () => {
+            updateLayout();
             resizeRendererToLayout();
         });
 
@@ -511,11 +536,15 @@
                     current.classList.remove('active', 'fade-out');
                     next.classList.add('active', 'fade-in');
                     // remove fade-in after transition
-                    setTimeout(() => next.classList.remove('fade-in'), 900);
+                    setTimeout(() => {
+                        next.classList.remove('fade-in');
+                    }, 900);
                 }, 500);
             } else {
                 next.classList.add('active', 'fade-in');
-                setTimeout(() => next.classList.remove('fade-in'), 900);
+                setTimeout(() => {
+                    next.classList.remove('fade-in');
+                }, 900);
             }
         }
 
