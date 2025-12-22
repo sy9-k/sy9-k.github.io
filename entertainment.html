@@ -1621,7 +1621,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
               
               return `
                 <div class="clickable-content-item" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/"/g, '&quot;')}">
-                  <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;">
+                  <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;">
                     ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
                   </div>
                   <div style="font-size:1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.genre}</div>
@@ -1630,6 +1630,9 @@ body[lang="zh"], html[lang="zh"] .home-modern {
             }).join('')}
           </div>
         `;
+        
+               
+ 
         
         // クリックイベントを追加
         const clickableItems = latestMoviesContainer.querySelectorAll('.clickable-content-item');
@@ -1668,7 +1671,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
               
               return `
                 <div class="clickable-content-item" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/"/g, '&quot;')}">
-                  <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;">
+                  <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;">
                     ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
                   </div>
                   <div style="font-size:1rem;color:#232323;margin-top:8px;margin-left:4px;">${item.genre}</div>
@@ -1717,7 +1720,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
                   `background: ${item.backgroundColor || '#ff0000'};`;
                 return `
                   <div class="live-stream-item clickable-content-item" data-title="${item.title}" data-category="${item.category}" data-description="${item.description.replace(/\"/g, '&quot;')}" data-live-id="${item.id}">
-                    <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;position:relative;">
+                    <div style="${coverStyle}color:#fff;font-size:1.5rem;text-align:center;width:200px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;">
                       ${!item.coverImage ? `<span style="z-index:1;">${item.title}</span>` : ''}
                       <div class="live-stream-badge">LIVE</div>
                     </div>
@@ -2665,7 +2668,8 @@ body[lang="zh"], html[lang="zh"] .home-modern {
         <div style="margin-bottom:20px;max-height:300px;overflow-y:auto;border:1px solid #eee;border-radius:8px;">
           ${trackList}
         </div>
-        <button class="content-modal-btn content-modal-btn-primary" onclick="playMusicPlaylist('${playlist.id}')">
+        <!-- インライン再生は削除されました。外部プレイヤーへ遷移します -->
+        <button class="content-modal-btn content-modal-btn-primary" onclick="window.location.href='player/mu-player.html?playlist=${playlist.id}'">
           <span class="material-icons">play_arrow</span>
           プレイリストを再生
         </button>
@@ -2709,8 +2713,9 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       if (modalPlayBtn) {
         modalPlayBtn.innerHTML = '<span class="material-icons">play_arrow</span><span id="modal-play-text">プレイリストを再生</span>';
         modalPlayBtn.onclick = function() {
-          playPlaylistInline(playlistId); // インラインプレイヤーで再生
-          closeContentModal(); // モーダルを閉じる
+          // インラインプレイヤーは削除したため外部プレイヤーへ遷移
+          window.location.href = `player/mu-player.html?playlist=${playlistId}`;
+          closeContentModal();
         };
       }
 
@@ -2729,153 +2734,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       modal.classList.add('show');
       overlay.classList.add('show');
     }
-
-    // --- インライン音楽プレイヤーの制御ロジック ---
-    const playerContainer = document.getElementById('inline-music-player');
-    const audioPlayer = document.getElementById('audio-player-main');
-    let currentInlinePlaylist = null;
-    let currentInlineTrackIndex = 0;
-    let isInlinePlayerPlaying = false;
-
-    function playPlaylistInline(playlistId) {
-      currentInlinePlaylist = getContentData.getById(playlistId);
-      if (!currentInlinePlaylist || !currentInlinePlaylist.isMusicPlaylist) {
-        console.error('指定されたプレイリストが見つかりません:', playlistId);
-        return;
-      }
-      currentInlineTrackIndex = 0;
-      loadAndPlayTrack(currentInlineTrackIndex);
-      playerContainer.classList.add('show');
-    }
-
-    function loadAndPlayTrack(trackIndex) {
-      if (!currentInlinePlaylist) return;
-      const track = currentInlinePlaylist.tracks[trackIndex];
-
-      // UI更新
-      document.getElementById('player-album-art').src = track.art || 'image/default-cover.jpg';
-      document.getElementById('player-track-title').textContent = track.title;
-      document.getElementById('player-track-artist').textContent = track.artist;
-
-      // 音声読み込みと再生
-      audioPlayer.src = track.url;
-      audioPlayer.load();
-      audioPlayer.play().then(() => {
-        isInlinePlayerPlaying = true;
-        updatePlayPauseIcon();
-      }).catch(error => {
-        console.error("再生エラー:", error);
-        isInlinePlayerPlaying = false;
-        updatePlayPauseIcon();
-      });
-    }
-
-    function toggleInlinePlay() {
-      if (isInlinePlayerPlaying) {
-        audioPlayer.pause();
-      } else {
-        if (audioPlayer.src) {
-          audioPlayer.play();
-        } else if (currentInlinePlaylist) {
-          loadAndPlayTrack(currentInlineTrackIndex);
-        }
-      }
-      isInlinePlayerPlaying = !isInlinePlayerPlaying;
-      updatePlayPauseIcon();
-    }
-
-    function updatePlayPauseIcon() {
-      const icon = document.getElementById('player-play-icon');
-      if (icon) {
-        icon.textContent = isInlinePlayerPlaying ? 'pause' : 'play_arrow';
-      }
-    }
-
-    function playNextTrack() {
-      if (!currentInlinePlaylist) return;
-      currentInlineTrackIndex = (currentInlineTrackIndex + 1) % currentInlinePlaylist.tracks.length;
-      loadAndPlayTrack(currentInlineTrackIndex);
-    }
-
-    function playPrevTrack() {
-      if (!currentInlinePlaylist) return;
-      currentInlineTrackIndex = (currentInlineTrackIndex - 1 + currentInlinePlaylist.tracks.length) % currentInlinePlaylist.tracks.length;
-      loadAndPlayTrack(currentInlineTrackIndex);
-    }
-
-    // プレイヤーのイベントリスナー設定
-    document.addEventListener('DOMContentLoaded', () => {
-        const playerPlayBtn = document.getElementById('player-play-btn');
-        const playerNextBtn = document.getElementById('player-next-btn');
-        const playerPrevBtn = document.getElementById('player-prev-btn');
-        const playerCloseBtn = document.getElementById('player-close-btn');
-        const playerFullscreenBtn = document.getElementById('player-fullscreen-btn');
-        const playerProgressBar = document.getElementById('player-progress-bar');
-
-        if(playerPlayBtn) playerPlayBtn.addEventListener('click', toggleInlinePlay);
-        if(playerNextBtn) playerNextBtn.addEventListener('click', playNextTrack);
-        if(playerPrevBtn) playerPrevBtn.addEventListener('click', playPrevTrack);
-        
-        if(playerCloseBtn) playerCloseBtn.addEventListener('click', () => {
-            audioPlayer.pause();
-            isInlinePlayerPlaying = false;
-            updatePlayPauseIcon();
-            playerContainer.classList.remove('show');
-        });
-
-        if(playerFullscreenBtn) playerFullscreenBtn.addEventListener('click', () => {
-            const fullscreenIcon = playerFullscreenBtn.querySelector('.material-icons');
-            if (playerContainer.classList.contains('fullscreen')) {
-                playerContainer.classList.remove('fullscreen');
-                if (fullscreenIcon) fullscreenIcon.textContent = 'fullscreen';
-            } else {
-                playerContainer.classList.add('fullscreen');
-                if (fullscreenIcon) fullscreenIcon.textContent = 'fullscreen_exit';
-            }
-        });
-
-        if(playerProgressBar) playerProgressBar.addEventListener('click', (e) => {
-            const rect = playerProgressBar.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const width = rect.width;
-            const duration = audioPlayer.duration;
-            if(duration) audioPlayer.currentTime = (clickX / width) * duration;
-        });
-
-        // 音声の時間更新イベント
-        if(audioPlayer) {
-            audioPlayer.addEventListener('timeupdate', () => {
-                const currentTime = audioPlayer.currentTime;
-                const duration = audioPlayer.duration;
-                const progressFill = document.getElementById('player-progress-fill');
-                const currentTimeSpan = document.getElementById('player-current-time');
-                const totalTimeSpan = document.getElementById('player-total-time');
-
-                if (progressFill && duration) {
-                    progressFill.style.width = (currentTime / duration) * 100 + '%';
-                }
-
-                if (currentTimeSpan) {
-                    currentTimeSpan.textContent = formatTime(currentTime);
-                }
-
-                if (totalTimeSpan && duration) {
-                    totalTimeSpan.textContent = formatTime(duration);
-                }
-            });
-
-            audioPlayer.addEventListener('ended', () => {
-                playNextTrack();
-            });
-        }
-    });
-
-    function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
-
   </script>
 </body>
 </html>

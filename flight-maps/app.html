@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPM Flight Maps - App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 20px 40px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            background: transparent;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 300;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .close-btn:active {
+            transform: scale(0.95);
+        }
+
+        .slideshow-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: calc(100% - 120px);
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* フェード用ユーティリティ */
+        .fade-in { opacity: 1; transition: opacity 0.8s ease-in-out; }
+        .fade-out { opacity: 0; transition: opacity 0.6s ease-in-out; }
+
+        /* スライド1: 地球儀 */
+        .slide1 {
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        #globeCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* スライド2: フライト情報 */
+        .slide2 {
+            /* 背景：中央にビネット（画像に近い灰色グラデーション） */
+            background: radial-gradient(ellipse at center, #5a5a5a 0%, #444444 30%, #333333 70%, #2b2b2b 100%);
+            padding: 80px 0 120px 0;
+            justify-content: center;
+        }
+
+        .flight-info-title {
+            font-size: 96px; /* 大きめで画像に近いサイズ */
+            color: #8fc6ff;
+            text-align: center;
+            margin: 10px 0 50px 0;
+            letter-spacing: 4px;
+            font-weight: 300; /* 細め */
+        }
+
+        .flight-info-list {
+            max-width: 1300px; /* 少し横に広げる */
+            width: calc(100% - 80px);
+            margin: 0 auto;
+            padding: 0 40px; /* コンテナの左右余白を調整 */
+            box-sizing: border-box;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 40px; /* 帯内の左右パディングを広めに */
+            margin: 14px 0; /* 帯間のスペース */
+            background: #bdbdbd; /* 明るめグレー */
+            border-left: none;
+            border-radius: 0;
+            box-shadow: inset 0 -6px 0 rgba(0,0,0,0.12); /* 帯下に影で仕切り感 */
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 400;
+            opacity: 0.95;
+        }
+
+        .info-value {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 400;
+        }
+
+        /* スライド3: マップ */
+        .slide3 {
+            background: linear-gradient(135deg, #1a3a3a 0%, #1a1a2e 100%);
+            padding: 40px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            max-width: 900px;
+            height: 400px;
+            background: linear-gradient(135deg, #0a4a5a 0%, #1a3a4a 100%);
+            border: 2px solid #64c8ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64c8ff;
+            font-size: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-placeholder::before {
+            content: '✈';
+            position: absolute;
+            font-size: 80px;
+            opacity: 0.3;
+            animation: planeMove 3s ease-in-out infinite;
+        }
+
+        @keyframes planeMove {
+            0% {
+                left: 10%;
+            }
+            50% {
+                transform: rotateZ(10deg);
+            }
+            100% {
+                left: 90%;
+            }
+        }
+
+        /* 下部バー */
+        .info-bar {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            padding: 25px 80px;
+            background: #444444;
+            border-top: 6px solid #64c8ff;
+            z-index: 200;
+        }
+
+        .bar-item {
+            text-align: center;
+            border-right: 1px solid #666666;
+            padding: 0;
+        }
+
+        .bar-item:last-child {
+            border-right: none;
+        }
+
+        .bar-label {
+              font-size: 16px;
+              color: #64c8ff;
+              letter-spacing: 1px;
+              margin-bottom: 12px;
+              font-weight: 400;
+        }
+
+        .bar-value {
+              font-size: 32px;
+              color: #ffffff;
+              font-weight: 300;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .flight-info-title {
+                font-size: 32px;
+                margin-bottom: 30px;
+            }
+
+            .info-row {
+                padding: 20px 40px;
+                flex-direction: column;
+                text-align: left;
+            }
+
+            .info-value {
+                margin-top: 10px;
+            }
+
+            .info-bar {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 15px 20px;
+            }
+
+            .bar-item {
+                border-right: none;
+                border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+                padding-bottom: 15px;
+            }
+
+            .bar-item:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="close-btn" title="閉じる">×</button>
+    </div>
+
+    <div class="slideshow-container">
+        <!-- スライド1: 地球儀 -->
+        <div class="slide slide1 active">
+            <canvas id="globeCanvas"></canvas>
+        </div>
+
+        <!-- スライド2: フライト情報 -->
+        <div class="slide slide2">
+            <div class="flight-info-title">FLIGHT INFORMATION</div>
+            <div class="flight-info-list">
+                <div class="info-row">
+                    <span class="info-label">目的地までの距離</span>
+                    <span class="info-value">2,247 km</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ソウル（仁川）までの所要時間</span>
+                    <span class="info-value">2:00</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ソウル（仁川）の現地時刻</span>
+                    <span class="info-value">19:40</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">大阪（関西）の現地時刻</span>
+                    <span class="info-value">19:40</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">到着予定時刻（韓国標準時間）</span>
+                    <span class="info-value">21:10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- スライド3: マップ -->
+        <div class="slide slide3">
+            <div class="map-placeholder">フライト経路マップ</div>
+        </div>
+    </div>
+
+    <!-- 情報バー -->
+    <div class="info-bar">
+        <div class="bar-item">
+            <div class="bar-label">出発地の現在時刻</div>
+            <div class="bar-value" id="departTime">19:40</div>
+        </div>
+        <div class="bar-item">
+            <div class="bar-label">到着までの所要時間</div>
+            <div class="bar-value" id="flightTime">2:00</div>
+        </div>
+        <div class="bar-item">
+            <div class="bar-label">到着地の現在時刻</div>
+            <div class="bar-value" id="arrivalTime">19:40</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const slideInterval = 30000;
+
+        // Three.js による3D地球儀の実装
+        const canvas = document.getElementById('globeCanvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight - 120), 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        
+        // サイズはヘッダーと下部バーの高さを差し引いた領域に合わせる
+        function resizeRendererToLayout() {
+            const headerH = document.querySelector('.header') ? document.querySelector('.header').offsetHeight : 0;
+            const infoBarH = document.querySelector('.info-bar') ? document.querySelector('.info-bar').offsetHeight : 0;
+            const availH = Math.max(200, window.innerHeight - headerH - infoBarH);
+            renderer.setSize(window.innerWidth, availH);
+            renderer.domElement.style.height = availH + 'px';
+            camera.aspect = window.innerWidth / availH;
+            camera.updateProjectionMatrix();
+        }
+
+        resizeRendererToLayout();
+        renderer.setClearColor(0x1a1a2e, 1);
+        camera.position.z = 2.5;
+
+        // 地球儀の作成
+        const geometry = new THREE.SphereGeometry(1, 64, 64);
+        
+        // 地球のテクスチャをキャンバスで生成
+        const canvas2d = document.createElement('canvas');
+        canvas2d.width = 2048;
+        canvas2d.height = 1024;
+        const ctx = canvas2d.getContext('2d');
+        
+        // 背景（海）
+        ctx.fillStyle = '#1e90ff';
+        ctx.fillRect(0, 0, canvas2d.width, canvas2d.height);
+        
+        // 大陸
+        ctx.fillStyle = '#2d8a3a';
+        
+        // 簡易的な大陸の描画
+        const continents = [
+            { x: 300, y: 300, w: 400, h: 300 }, // アジア
+            { x: 100, y: 400, h: 200, w: 150 },  // 北米
+            { x: 1200, y: 200, w: 300, h: 250 }, // ヨーロッパ
+            { x: 1600, y: 350, w: 200, h: 200 }  // アフリカ
+        ];
+        
+        continents.forEach(cont => {
+            ctx.beginPath();
+            ctx.ellipse(cont.x, cont.y, cont.w, cont.h, Math.random() * 0.5, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        
+        // 雲のエフェクト
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        for (let i = 0; i < 50; i++) {
+            ctx.beginPath();
+            const x = Math.random() * canvas2d.width;
+            const y = Math.random() * canvas2d.height;
+            ctx.arc(x, y, Math.random() * 40 + 20, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        const texture = new THREE.CanvasTexture(canvas2d);
+        const material = new THREE.MeshPhongMaterial({ 
+            map: texture,
+            shininess: 5,
+            emissive: 0x111111
+        });
+        
+        const globe = new THREE.Mesh(geometry, material);
+        scene.add(globe);
+
+        // ライティング
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 3, 5);
+        scene.add(light);
+        
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        // アニメーションループ
+        function animateGlobe() {
+            requestAnimationFrame(animateGlobe);
+            globe.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+
+        animateGlobe();
+
+        // ウィンドウリサイズ対応
+        window.addEventListener('resize', () => {
+            resizeRendererToLayout();
+        });
+
+        function showSlide(n) {
+            const current = document.querySelector('.slide.active');
+            const next = slides[n];
+            if (current === next) return;
+
+            if (current) {
+                current.classList.remove('fade-in');
+                current.classList.add('fade-out');
+                // wait for fade-out then switch
+                setTimeout(() => {
+                    current.classList.remove('active', 'fade-out');
+                    next.classList.add('active', 'fade-in');
+                    // remove fade-in after transition
+                    setTimeout(() => next.classList.remove('fade-in'), 900);
+                }, 500);
+            } else {
+                next.classList.add('active', 'fade-in');
+                setTimeout(() => next.classList.remove('fade-in'), 900);
+            }
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        setInterval(nextSlide, slideInterval);
+
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('departTime').textContent = `${hours}:${minutes}`;
+            document.getElementById('arrivalTime').textContent = `${hours}:${minutes}`;
+        }
+
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        document.querySelector('.close-btn').addEventListener('click', function() {
+            window.location.href = '/map.html';
+        });
+    </script>
+</body>
+</html>
