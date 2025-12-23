@@ -208,9 +208,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
  scrollbar-width: thin;
 }
 .hm-map-panel {
- min-width: 420px;
- width: 100%;
- max-width: 600px;
+ width: calc(100vw / 3);
  flex: 0 0 100%;
  height: 100%;
  display: flex;
