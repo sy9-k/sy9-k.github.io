@@ -8,6 +8,7 @@
   <title>フライトマップ</title>
   <link rel="stylesheet" href="css/common.css" />
   <link rel="stylesheet" href="css/home.css" />
+  <script src="js/i18n.js"></script>
   <style>
 body.map-fullscreen {
   background: #222;
@@ -152,35 +153,36 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
   <div class="map-header">
     <span id="header-seat"></span>　<span id="header-route"></span>
     <div class="hm-header-icons" style="position:absolute; right:36px; top:0; height:60px; display:flex; align-items:center; gap:16px; z-index:10;">
-      <button class="hm-dot hm-btn-home" title="ホーム" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">home</span></button>
-      <button class="hm-dot hm-btn-notice" title="お知らせ" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">chat</span></button>
-      <button class="hm-dot hm-btn-attendant" title="客室乗務員呼び出し" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">support_agent</span></button>
-      <button class="hm-dot hm-btn-settings" title="設定" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">settings</span></button>
+      <button class="hm-dot hm-btn-home" title="" data-i18n="home;title" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">home</span></button>
+      <button class="hm-dot hm-btn-notice" title="" data-i18n="notice;title" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">chat</span></button>
+      <button class="hm-dot hm-btn-attendant" title="" data-i18n="call_attendant;title" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">support_agent</span></button>
+      <button class="hm-dot hm-btn-settings" title="" data-i18n="settings;title" style="width:32px;height:32px;border-radius:50%;background:#bebebe;border:none;cursor:pointer;outline:none;margin-top:4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;"><span class="material-icons">settings</span></button>
     </div>
   </div>
   <div class="map-main">
     <div class="map-info-panel">
-      <h1>MOVING MAP</h1>
-      <div class="map-label" id="flight-number-label">便名</div>
+      <h1 data-i18n="moving_map">MOVING MAP</h1>
+      <div class="map-label" id="flight-number-label" data-i18n="flight_number">便名</div>
       <div class="map-value" id="flight-number-value">OZ117</div>
       <div class="map-divider"></div>
-      <div class="map-label">ルート</div>
+      <div class="map-label" data-i18n="route">ルート</div>
       <div class="map-value" id="route-value" style="display:none;">関西国際空港から仁川国際空港</div>
       <div class="map-value" id="route-value-xin">関西国際空港から仁川国際空港</div>
-      <div class="hm-footer-label" id="hm-dep-label"></div>
-      <div class="map-label">目的地までの飛行時間</div>
+
+      <div class="map-divider"></div>
+      <div class="map-label" data-i18n="flight_time_to_arrival">目的地までの飛行時間</div>
       <div class="map-value" id="flight-time-value">2時間00分</div>
       <div class="map-divider"></div>
-      <div class="map-label">目的地の気温</div>
+      <div class="map-label" data-i18n="destination_temperature">目的地の気温</div>
       <div class="map-value" id="temperature-value">取得中...</div>
       <div class="map-divider"></div>
-      <div class="map-label">目的地の現地時間</div>
+      <div class="map-label" data-i18n="destination_local_time">目的地の現地時間</div>
       <div class="map-value" id="arrival-time-value">19:40</div>
       <div class="map-divider"></div>
-      <div class="map-label">出発地の現地時間</div>
+      <div class="map-label" data-i18n="departure_local_time">出発地の現地時間</div>
       <div class="map-value" id="departure-time-value">19:40</div>
       <div class="map-divider"></div>
-      <div class="map-label">飛行進捗</div>
+      <div class="map-label" data-i18n="flight_progress">飛行進捗</div>
       <div class="map-value" id="progress-value">50%</div>
 
 
@@ -195,11 +197,11 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
             </div>
           </div>
           <div style="position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff;background:rgba(0,0,0,0.45);padding:8px 0;font-size:1.15rem;">
-            <span id="slideshow-progress-label">飛行進捗: 50%</span>
+            <span id="slideshow-progress-label" data-i18n="flight_progress_percent">飛行進捗: 50%</span>
           </div>
         </div>
         <div class="slide slide-weather" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:0;z-index:0;background:linear-gradient(135deg,#f7971e 0%,#ffd200 100%);">
-          <div style="font-size:2.1rem;font-weight:500;margin-bottom:12px;">現地の天気</div>
+          <div style="font-size:2.1rem;font-weight:500;margin-bottom:12px;" data-i18n="local_weather">現地の天気</div>
           <div style="display:flex;align-items:center;gap:18px;">
             <span id="slideshow-weather-icon" style="font-size:3.2rem;">☀️</span>
             <span id="slideshow-weather-temp" style="font-size:2.8rem;font-weight:700;">--℃</span>
@@ -207,12 +209,12 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
           <div id="slideshow-weather-desc" style="font-size:1.2rem;margin-top:8px;">取得中...</div>
         </div>
         <div class="slide slide-time" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:0;z-index:0;background:linear-gradient(135deg,#43cea2 0%,#185a9d 100%);">
-          <div style="font-size:2.1rem;font-weight:500;margin-bottom:12px;">現地の時刻</div>
+          <div style="font-size:2.1rem;font-weight:500;margin-bottom:12px;" data-i18n="local_time">現地の時刻</div>
           <div id="slideshow-local-time" style="font-size:2.8rem;font-weight:700;">--:--</div>
           <div id="slideshow-local-date" style="font-size:1.2rem;margin-top:8px;">----</div>
         </div>
       </div>
-      <button class="map-button" id="map-display-btn">マップを表示する</button>
+      <button class="map-button" id="map-display-btn" data-i18n="map_btn">マップを表示する</button>
     </div>
   </div>
   <!-- PAアナウンス中ダイアログ（ANA風：上部黄色帯＋下部白四角） -->
@@ -231,10 +233,10 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
   <div id="settings-overlay" class="settings-overlay"></div>
   <aside id="settings-panel" class="settings-panel">
     <div class="settings-panel-inner">
-      <h2 class="settings-title">設定</h2>
+      <h2 class="settings-title" data-i18n="settings">設定</h2>
       <!-- 音量 -->
       <div class="settings-row">
-        <label class="settings-label">音量</label>
+        <label class="settings-label" data-i18n="volume">音量</label>
         <div class="settings-slider-row">
           <button class="slider-btn" id="volume-down">-</button>
           <input type="range" id="volume-slider" min="0" max="100" value="60">
@@ -243,7 +245,7 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
       </div>
       <!-- 明るさ -->
       <div class="settings-row">
-        <label class="settings-label">画面の明るさ</label>
+        <label class="settings-label" data-i18n="brightness">画面の明るさ</label>
         <div class="settings-slider-row">
           <button class="slider-btn" id="brightness-down">-</button>
           <input type="range" id="brightness-slider" min="0" max="100" value="75">
@@ -252,29 +254,29 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
       </div>
       <!-- 言語 -->
       <div class="settings-row settings-row-flex">
-        <label class="settings-label">言語</label>
-        <span class="settings-value">日本語</span>
+        <label class="settings-label" data-i18n="language">言語</label>
+        <span class="settings-value" id="language-value">日本語</span>
       </div>
       <!-- お知らせ -->
       <div class="settings-row settings-row-flex">
-        <label class="settings-label">お知らせ</label>
+        <label class="settings-label" data-i18n="notice">お知らせ</label>
         <label class="switch">
           <input type="checkbox" id="notice-toggle" checked>
           <span class="slider"></span>
         </label>
       </div>
       <div class="settings-row settings-row-note">
-        <span class="settings-note">お知らせ機能のオン/オフ（重要かつ安全に関わるメッセージは表示されます）。</span>
+        <span class="settings-note" data-i18n="notice_note">お知らせ機能のオン/オフ（重要かつ安全に関わるメッセージは表示されます）。</span>
       </div>
       <!-- 保護者制限 -->
       <div class="settings-row settings-row-flex">
-        <label class="settings-label">保護者制限</label>
-        <span class="settings-value">オフ</span>
+        <label class="settings-label" data-i18n="parental">保護者制限</label>
+        <span class="settings-value" data-i18n="parental_off">オフ</span>
       </div>
       <div class="settings-row settings-row-note">
-        <span class="settings-note">映画・テレビ番組・ミュージック・オーディオ...</span>
+        <span class="settings-note" data-i18n="parental_note">映画・テレビ番組・ミュージック・オーディオ...</span>
       </div>
-      <button class="screen-off-btn">画面オフ</button>
+      <button class="screen-off-btn" data-i18n="screen_off">画面オフ</button>
     </div>
   </aside>
 
@@ -282,21 +284,65 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
   <div id="notice-overlay" class="settings-overlay"></div>
   <aside id="notice-panel" class="settings-panel">
     <div class="settings-panel-inner">
-      <h2 class="settings-title">お知らせ</h2>
+      <h2 class="settings-title" data-i18n="notice">お知らせ</h2>
       <div class="settings-row">
         <div id="notice-list">
-          <div class="settings-note">現在お知らせはありません。</div>
+          <div class="settings-note" data-i18n="notice_empty">現在お知らせはありません。</div>
         </div>
       </div>
     </div>
   </aside>
   <script>
     // フライト情報と気温取得の制御
+    // i18n翻訳適用関数
+    function applyTranslations() {
+      if (!window.i18n) return;
+      
+      const lang = localStorage.getItem('language') || 'ja';
+      const i18n = window.i18n[lang] || window.i18n['ja'];
+      
+      // data-i18n属性を持つすべての要素を処理
+      const elements = document.querySelectorAll('[data-i18n]');
+      elements.forEach(element => {
+        const keys = element.getAttribute('data-i18n').split(';');
+        
+        if (keys.length === 1) {
+          // 単一の翻訳キー（要素のテキストコンテンツを置換）
+          const key = keys[0].trim();
+          if (i18n[key]) {
+            element.textContent = i18n[key];
+          }
+        } else if (keys.length === 2) {
+          // 翻訳キーと属性名
+          const key = keys[0].trim();
+          const attr = keys[1].trim();
+          if (i18n[key]) {
+            element.setAttribute(attr, i18n[key]);
+          }
+        }
+      });
+      
+      // 言語設定パネルの言語名表示を更新
+      const languageValue = document.getElementById('language-value');
+      if (languageValue) {
+        const langNames = { ja: '日本語', en: 'English', ko: '한국어', zh: '中文' };
+        if (i18n.lang_ja) langNames.ja = i18n.lang_ja;
+        if (i18n.lang_en) langNames.en = i18n.lang_en;
+        if (i18n.lang_ko) langNames.ko = i18n.lang_ko;
+        if (i18n.lang_zh) langNames.zh = i18n.lang_zh;
+        
+        languageValue.textContent = langNames[lang] || langNames['ja'];
+      }
+    }
+    
     document.addEventListener('DOMContentLoaded', function() {
       // 言語に応じてbody/lang属性を切り替え（localStorage.language優先）
       var lang = localStorage.getItem('language') || 'ja';
       document.body.setAttribute('lang', lang);
       document.documentElement.setAttribute('lang', lang);
+      
+      // 翻訳を適用
+      applyTranslations();
 
       // --- 明るさ同期 ---
       var brightness = localStorage.getItem('brightnessPercent');
@@ -529,6 +575,36 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
       }
       setupPanel('.hm-btn-notice', '#notice-panel', '#notice-overlay');
       setupPanel('.hm-btn-settings', '#settings-panel', '#settings-overlay');
+      
+      // 言語切り替え機能
+      const languageValue = document.getElementById('language-value');
+      if (languageValue) {
+        languageValue.style.cursor = 'pointer';
+        languageValue.onclick = function() {
+          const currentLang = localStorage.getItem('language') || 'ja';
+          const langs = ['ja', 'en', 'ko', 'zh'];
+          let idx = langs.indexOf(currentLang);
+          idx = (idx + 1) % langs.length;
+          localStorage.setItem('language', langs[idx]);
+          
+          // 言語名を更新
+          const langNames = { ja: '日本語', en: 'English', ko: '한국어', zh: '中文' };
+          languageValue.textContent = langNames[langs[idx]];
+          
+          // 翻訳を適用
+          applyTranslations();
+          
+          // 言語属性を更新
+          document.body.setAttribute('lang', langs[idx]);
+          document.documentElement.setAttribute('lang', langs[idx]);
+        };
+        
+        // 初期表示時に言語名を設定
+        const currentLang = localStorage.getItem('language') || 'ja';
+        const langNames = { ja: '日本語', en: 'English', ko: '한국어', zh: '中文' };
+        languageValue.textContent = langNames[currentLang];
+      }
+      
       // Escapeキーで両パネル閉じる
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
