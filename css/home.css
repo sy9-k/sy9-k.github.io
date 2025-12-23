@@ -583,7 +583,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 }
 
 @media (max-width: 1200px) {
-  .hm-main { flex-direction: column; }
   .hm-card { min-height: 160px; }
   .hm-header { font-size: 1.2rem; }
   .hm-map-scroll { width: 100vw; min-width: 100vw; max-width: 100vw; }
