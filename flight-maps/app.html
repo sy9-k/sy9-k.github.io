@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FPM Flight Maps - App</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/js/i18n.js"></script>
     <style>
         * {
             margin: 0;
@@ -389,7 +390,7 @@
 </head>
 <body>
     <div class="header">
-        <button class="close-btn" title="閉じる">×</button>
+        <button class="close-btn" title="close" data-i18n-title="close">×</button>
     </div>
 
     <div class="slideshow-container">
@@ -397,7 +398,7 @@
         <div class="slide slide1 active">
             <div class="globe-loading" id="globe-loading">
                 <div class="loading-spinner"></div>
-                <div class="loading-text">地球儀を読み込み中...</div>
+                <div class="loading-text" data-i18n="loading">地球儀を読み込み中...</div>
             </div>
             <canvas id="globeCanvas"></canvas>
 
@@ -405,26 +406,26 @@
 
         <!-- スライド2: フライト情報 -->
         <div class="slide slide2">
-            <div class="flight-info-title">FLIGHT INFORMATION</div>
+            <div class="flight-info-title" data-i18n="flight_route_map">FLIGHT INFORMATION</div>
             <div class="flight-info-list">
                 <div class="info-row">
-                    <span class="info-label">目的地までの距離</span>
+                    <span class="info-label" data-i18n="arrival_distance">目的地までの距離</span>
                     <span class="info-value">2,247 km</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">ソウル（仁川）までの所要時間</span>
+                    <span class="info-label" data-i18n="flight_time_to_seoul">ソウル（仁川）までの所要時間</span>
                     <span class="info-value">2:00</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">ソウル（仁川）の現地時刻</span>
+                    <span class="info-label" data-i18n="seoul_local_time">ソウル（仁川）の現地時刻</span>
                     <span class="info-value">19:40</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">大阪（関西）の現地時刻</span>
+                    <span class="info-label" data-i18n="osaka_local_time">大阪（関西）の現地時刻</span>
                     <span class="info-value">19:40</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">到着予定時刻（韓国標準時間）</span>
+                    <span class="info-label" data-i18n="arrival_time_kst">到着予定時刻（韓国標準時間）</span>
                     <span class="info-value">21:10</span>
                 </div>
             </div>
@@ -432,22 +433,22 @@
 
         <!-- スライド3: マップ -->
         <div class="slide slide3">
-            <div class="map-placeholder">フライト経路マップ</div>
+            <div class="map-placeholder" data-i18n="flight_route_map">フライト経路マップ</div>
         </div>
     </div>
 
     <!-- 情報バー -->
     <div class="info-bar">
         <div class="bar-item">
-            <div class="bar-label">出発地の現在時刻</div>
+            <div class="bar-label" data-i18n="departure_current_time">出発地の現在時刻</div>
             <div class="bar-value" id="departTime">19:40</div>
         </div>
         <div class="bar-item">
-            <div class="bar-label">到着までの所要時間</div>
+            <div class="bar-label" data-i18n="flight_time_to_arrival">到着までの所要時間</div>
             <div class="bar-value" id="flightTime">2:00</div>
         </div>
         <div class="bar-item">
-            <div class="bar-label">到着地の現在時刻</div>
+            <div class="bar-label" data-i18n="arrival_current_time">到着地の現在時刻</div>
             <div class="bar-value" id="arrivalTime">19:40</div>
         </div>
     </div>
@@ -644,6 +645,43 @@
 
         document.querySelector('.close-btn').addEventListener('click', function() {
             window.location.href = '/map.html';
+        });
+        
+        // Language switching functionality
+        function updateLanguage() {
+            const lang = localStorage.getItem('language') || 'ja';
+            
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+            document.documentElement.setAttribute('lang', lang);
+            
+            // Update all elements with data-i18n attributes
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (window.i18n && window.i18n[lang] && window.i18n[lang][key]) {
+                    el.textContent = window.i18n[lang][key];
+                }
+            });
+            
+            // Update all elements with data-i18n-title attributes
+            const titleElements = document.querySelectorAll('[data-i18n-title]');
+            titleElements.forEach(el => {
+                const key = el.getAttribute('data-i18n-title');
+                if (window.i18n && window.i18n[lang] && window.i18n[lang][key]) {
+                    el.title = window.i18n[lang][key];
+                }
+            });
+        }
+        
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', updateLanguage);
+        
+        // Listen for language change events
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'language') {
+                updateLanguage();
+            }
         });
     </script>
 </body>
