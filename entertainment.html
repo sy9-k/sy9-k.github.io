@@ -6,6 +6,7 @@
     .hm-main {
       opacity: 0;
       transform: translateY(80px);
+      will-change: transform;
       transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
     }
     .hm-main.slideup-animate {
@@ -92,14 +93,12 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       display: block;
       opacity: 0;
       visibility: hidden;
-      backdrop-filter: blur(0px);
       transition: opacity 0.7s cubic-bezier(.4,0,.2,1), backdrop-filter 0.7s cubic-bezier(.4,0,.2,1), visibility 0s 0.7s;
     }
     
     .content-modal-overlay.show {
       opacity: 1;
       visibility: visible;
-      backdrop-filter: blur(4px);
       transition: opacity 0.7s cubic-bezier(.4,0,.2,1), backdrop-filter 0.7s cubic-bezier(.4,0,.2,1), visibility 0s;
     }
     
@@ -119,7 +118,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       visibility: hidden;
       transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1), visibility 0s 0.7s;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      overflow: hidden;
+      overflow: scroll;
     }
     
     .content-modal.show {
@@ -202,9 +201,10 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       margin: 0 0 8px 0;
       text-align: left;
       opacity: 0;
-      transform: translateY(80px);
+      transform: translateY(60px);
+      will-change: transform;
       transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-      transition-delay: 0.4s;
+      transition-delay: 0.2s;
     }
     
     .content-modal.show .content-modal-title {
@@ -218,9 +218,10 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       text-align: left;
       margin-bottom: 16px;
       opacity: 0;
-      transform: translateY(80px);
+      transform: translateY(60px);
+      will-change: transform;
       transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-      transition-delay: 0.5s;
+      transition-delay: 0.3s;
     }
     
     .content-modal.show .content-modal-category {
@@ -234,9 +235,10 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       gap: 16px;
       margin-bottom: 24px;
       opacity: 0;
-      transform: translateY(80px);
+      transform: translateY(60px);
+      will-change: transform;
       transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-      transition-delay: 0.6s;
+      transition-delay: 0.4s;
     }
     
     .content-modal.show .content-modal-buttons {
@@ -332,10 +334,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       font-weight: 500;
       position: relative;
       overflow: hidden;
-      opacity: 0;
-      transform: translateY(80px);
-      transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-      transition-delay: 0.3s;
     }
     
     .content-modal.show .content-modal-image {
@@ -372,9 +370,10 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       line-height: 1.6;
       text-align: left;
       opacity: 0;
-      transform: translateY(80px);
+      transform: translateY(60px);
+      will-change: transform;
       transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
-      transition-delay: 0.7s;
+      transition-delay: 0.6s;
     }
     
     .content-modal.show .content-modal-description {
@@ -2735,5 +2734,6 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       overlay.classList.add('show');
     }
   </script>
+<script type="module">import { setupSync } from '/js/sync-client.js';setupSync();</script>
 </body>
 </html>

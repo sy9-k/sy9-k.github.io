@@ -207,19 +207,6 @@ body[lang="zh"], html[lang="zh"] .language-screen { /* .home-modern を削除し
   scrollbar-color: #888 #232323;
   scrollbar-width: thin;
 }
-.hm-map-panel {
-  min-width: 420px;
-  width: 100%;
-  max-width: 600px;
-  flex: 0 0 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  scroll-snap-align: start;
-  position: relative;
-}
-
 /* 各パネルの背景色＆画像 */
 .hm-map-main {
   background: #17212a;
