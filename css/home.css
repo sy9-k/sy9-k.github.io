@@ -368,23 +368,18 @@ body[lang="zh"], html[lang="zh"] .home-modern {
 .hm-progress-bar-bg {
  position: relative;
  width: 100%;
- height: 22px;
- background: #c7c7c7;
- border-radius: 11px;
+ background: #32323294;
+ border-radius: 100px;
  overflow: visible;
  display: flex;
  align-items: center;
 }
 .hm-progress-bar {
- height: 12px;
- background: linear-gradient(to right, #0d74e2 60%, #5bcefa 100%);
- border-radius: 10px;
- margin-left: 8px;
- margin-right: 8px;
- transition: width 0.5s;
- position: absolute;
- top: 5px;
- left: 0;
+    height: 12px;
+    background: #3ea7ff;
+    border-radius: 10px;
+    margin: 8px;
+    transition: width 1s cubic-bezier(.34,.24,0,1);
 }
 .hm-plane-icon {
  position: absolute;

@@ -165,8 +165,9 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
       <div class="map-value" id="flight-number-value">OZ117</div>
       <div class="map-divider"></div>
       <div class="map-label">ルート</div>
-      <div class="map-value" id="route-value">関西国際空港から仁川国際空港</div>
-      <div class="map-divider"></div>
+      <div class="map-value" id="route-value" style="display:none;">関西国際空港から仁川国際空港</div>
+      <div class="map-value" id="route-value-xin">関西国際空港から仁川国際空港</div>
+      <div class="hm-footer-label" id="hm-dep-label"></div>
       <div class="map-label">目的地までの飛行時間</div>
       <div class="map-value" id="flight-time-value">2時間00分</div>
       <div class="map-divider"></div>
@@ -181,6 +182,8 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
       <div class="map-divider"></div>
       <div class="map-label">飛行進捗</div>
       <div class="map-value" id="progress-value">50%</div>
+
+
     </div>
     <div class="map-image-panel">
       <div class="map-slideshow" style="width:92%;max-width:900px;aspect-ratio:16/9;position:relative;border-radius:12px;box-shadow:0 8px 32px #0008;border:2px solid #333;overflow:hidden;">
@@ -327,7 +330,6 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
 
         // フライト情報更新
         document.getElementById('flight-number-value').textContent = flightNumber;
-        document.getElementById('route-value').textContent = `${departureCity}から${arrivalCity}`;
         document.getElementById('departure-time-value').textContent = depTime;
         document.getElementById('arrival-time-value').textContent = arrTime;
         document.getElementById('progress-value').textContent = `${progressPercent}%`;
@@ -738,6 +740,7 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
       }
     });
   </script>
+
   <!-- --- スライドショー制御 --- -->
   <script>
     (function(){
@@ -852,5 +855,52 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
     });
   </script>
 <script type="module">import { setupSync } from '/js/sync-client.js';setupSync();</script>
+<script type="module">
+  import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBjf9oJZ0d-YHwJe1fq9RhcPP_HgdINdzA",
+    authDomain: "fpms-902b6.firebaseapp.com",
+    databaseURL: "https://fpms-902b6-default-rtdb.firebaseio.com",
+    projectId: "fpms-902b6",
+    storageBucket: "fpms-902b6.firebasestorage.app",
+    messagingSenderId: "203930990498",
+    appId: "1:203930990498:web:0835e33509f3e594b924fb",
+    measurementId: "G-4PVK6LNPDE"
+  };
+
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  const db = getDatabase(app);
+  const systemRef = ref(db, 'system_control'); 
+
+  let latestRouteText = localStorage.getItem('last_known_route') || "読込中...";
+
+  onValue(systemRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      // 送信いただいたログを元に、存在するキー「departureID」と「arrivalID」を抽出
+      const dep = data.departureID; // 'PUS' など
+      const arr = data.arrivalID;   // 'KIX' など
+
+      if (dep && arr) {
+        latestRouteText = `${dep}から${arr}`;
+        localStorage.setItem('last_known_route', latestRouteText);
+      }
+    }
+  }, (error) => {
+    console.error("Firebase通信エラー:", error);
+  });
+
+  // 1秒ごとにHTMLを強制書き換え
+  setInterval(() => {
+    const routeEl = document.getElementById('route-value-xin');
+    if (routeEl) {
+      if (routeEl.textContent !== latestRouteText) {
+        routeEl.textContent = latestRouteText;
+      }
+    }
+  }, 1000);
+</script>
 </body>
 </html>

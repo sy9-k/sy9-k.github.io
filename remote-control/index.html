@@ -20,94 +20,7 @@
     document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
   </script>
 
-  <style>
-    :root {
-    --md-sys-color-primary: #09986a;
-    --md-sys-color-on-primary: #ffffff;
-    --md-sys-color-primary-container: #ddffe8;
-    --md-sys-color-on-primary-container: #005d02;
-    --md-sys-color-secondary-container: #def8e7;
-    --md-sys-color-on-secondary-container: #1d192b;
-    --md-sys-color-surface: #f5f8f5;
-    --md-sys-color-surface-container: #ffffff;
-    --md-sys-color-outline-variant: #c4d0cb;
-    --md-sys-color-error-container: #f9dedc;
-    --md-sys-color-on-error-container: #410e0b;
-    --md-ripple-hover-color: #0000;
-    --md-dialog-supporting-text-font: 'Google Sans', 'Roboto', sans-serif;
-    --md-dialog-headline-font: 'Google Sans', 'Roboto', sans-serif;
-    --md-dialog-container-color:var(--md-sys-color-surface);
-}
-
-    body {
-      font-family: 'Google Sans', 'Roboto', sans-serif;
-      background-color: var(--md-sys-color-surface);
-      color: #1c1b1f;
-      padding: 24px 16px;
-      max-width: 500px;
-      margin: auto;
-    }
-
-    h1 { font-size: 2rem; font-weight: 700; color: var(--md-sys-color-primary); margin-bottom: 24px; padding-left: 8px; }
-    h2 { font-size: 1rem; font-weight: 500; margin: 0 0 20px 0; display: flex; align-items: center; gap: 12px; color: var(--md-sys-color-on-secondary-container); }
-
-    .card {
-      background: var(--md-sys-color-surface-container);
-      padding: 28px;
-      border-radius: 32px;
-      margin-bottom: 20px;
-    }
-
-    .grid { display: flex;  gap: 12px;
-    justify-content: space-between;    flex-wrap: wrap; }
-
-    button {
-      border: none; outline: none; padding: 16px 8px; border-radius: 16px;
-      background: var(--md-sys-color-secondary-container);
-      color: var(--md-sys-color-on-secondary-container);
-      cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px;
-      transition: all 0.3s cubic-bezier(0.2, 0, 0, 1); font-weight: 500; font-family: inherit;
-      width:140px;
-      flex:1;
-    justify-content: center;
-    position:relative;
-    }
-    button:hover { flex:1.2;}
-    button:active { flex:2;}
-
-    .btn-primary {
-      background: var(--md-sys-color-primary);
-      color: var(--md-sys-color-on-primary);
-      flex-direction: row; gap: 8px; padding: 16px 24px; width: 100%; justify-content: center;
-      flex:2;
-    }
-
-
-    .btn-primary:hover { flex:2.2;}
-    .btn-primary:active { flex:3;}
-
-    .btn-reload {
-      background: transparent; color: var(--md-sys-color-error);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      width: 100%;flex-direction: row; justify-content: center; padding: 12px;
-    }
-
-    .control-group { margin-bottom: 20px; }
-    .label-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 500; font-size: 14px; }
-
-    input[type="range"] {
-      -webkit-appearance: none; width: 100%; height: 12px; border-radius: 6px;
-      background: var(--md-sys-color-outline-variant); accent-color: var(--md-sys-color-primary);
-    }
-
-    textarea {
-      width: 100%; box-sizing: border-box; padding: 16px; border: 2px solid var(--md-sys-color-outline-variant);
-      border-radius: 20px; background: white; margin-top: 8px; font-size: 16px; font-family: inherit;
-    }
-    textarea:focus { outline: none; border-color: var(--md-sys-color-primary); }
-
-    .announcement-actions { display: flex; gap: 12px; margin-top: 20px; }
-  </style>
+  <link href="style.css" rel="stylesheet">
 </head>
 <body>
 
@@ -143,9 +56,21 @@
         <textarea id="arr-input" rows="1" placeholder="ICN"></textarea>
       </div>
     </div>
+    <div class="control-group" style="display:flex;justify-content: space-between;gap:16px;">
+      <div>
+      <div class="label-row"><span>出発時刻</span></div>
+      <textarea id="dep-time-input" type="text" placeholder="19:10"></textarea>
+</div><div>
+      <div class="label-row"><span>到着時刻</span></div>
+      <textarea id="arr-time-input" type="text" placeholder="21:00"></textarea>
+</div><div>
+      <div class="label-row"><span>進捗 (%)</span></div>
+      <textarea id="progress-input" type="number" min="0" max="100" placeholder="50" style="width:80px;"></textarea>
+    </div>
+    </div>
     <div style="display:flex; gap:12px;">
       <button class="btn-primary" onclick="applySettings()">適用<md-ripple></md-ripple></button>
-      <button class="btn-reload" onclick="reloadAll()">再読込<md-ripple></md-ripple></button>
+      <button class="btn-reload" onclick="reloadAll()">ロード<md-ripple></md-ripple></button>
     </div>
   </div>
 
@@ -173,59 +98,74 @@
   </md-dialog>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBjf9oJZ0d-YHwJe1fq9RhcPP_HgdINdzA",
-      authDomain: "fpms-902b6.firebaseapp.com",
-      databaseURL: "https://fpms-902b6-default-rtdb.firebaseio.com",
-      projectId: "fpms-902b6",
-      appId: "1:203930990498:web:0835e33509f3e594b924fb"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const dbRef = ref(db, 'system_control');
-
-    const showDone = (text) => {
-      document.getElementById('done-message').innerText = text;
-      const d = document.getElementById('done-dialog');
-      d.show();
-      setTimeout(() => d.close(), 1500);
-    };
-
-    window.send = (data) => update(dbRef, { ...data, lastUpdate: Date.now() });
-
-    window.applySettings = () => {
-      const br = document.getElementById('br-slider').value;
-      const seat = document.getElementById('seat-input').value;
-      const dep = document.getElementById('dep-input').value;
-      const arr = document.getElementById('arr-input').value;
-      
-      const payload = { brightness: parseInt(br), lastUpdate: Date.now() };
-      if(seat) payload.seatNumber = seat;
-      if(dep) payload.departureID = dep;
-      if(arr) payload.arrivalID = arr;
-
-      update(dbRef, payload).then(() => showDone("設定を送信しました。"));
-    };
-
-    window.reloadAll = () => {
-      const diag = document.getElementById('confirm-dialog');
-      diag.show();
-      document.getElementById('confirm-ok-btn').onclick = () => {
-        diag.close();
-        update(dbRef, { reloadSignal: Date.now(), lastUpdate: Date.now() });
-      };
-    };
-
-    window.announce = (active) => {
-      update(dbRef, { 
-        announcement: { text: document.getElementById('msg').value, active: active },
+    import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+    getDatabase,
+    ref,
+    update
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const firebaseConfig = {
+    apiKey: "AIzaSyBjf9oJZ0d-YHwJe1fq9RhcPP_HgdINdzA",
+    authDomain: "fpms-902b6.firebaseapp.com",
+    databaseURL: "https://fpms-902b6-default-rtdb.firebaseio.com",
+    projectId: "fpms-902b6",
+    appId: "1:203930990498:web:0835e33509f3e594b924fb"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const dbRef = ref(db, 'system_control');
+const showDone = (text) => {
+    document.getElementById('done-message').innerText = text;
+    const d = document.getElementById('done-dialog');
+    d.show();
+    setTimeout(() => d.close(), 1500);
+};
+window.send = (data) => update(dbRef, {
+    ...data,
+    lastUpdate: Date.now()
+});
+window.applySettings = () => {
+    const br = document.getElementById('br-slider').value;
+    const seat = document.getElementById('seat-input').value;
+    const dep = document.getElementById('dep-input').value;
+    const arr = document.getElementById('arr-input').value;
+    const depTime = document.getElementById('dep-time-input')?.value;
+    const arrTime = document.getElementById('arr-time-input')?.value;
+    const progress = document.getElementById('progress-input')?.value;
+    const payload = {
+        brightness: parseInt(br),
         lastUpdate: Date.now()
-      }).then(() => showDone(active ? "放送開始" : "放送終了"));
     };
+    if (seat) payload.seatNumber = seat;
+    if (dep) payload.departureID = dep;
+    if (arr) payload.arrivalID = arr;
+    if (depTime) payload.depTime = depTime;
+    if (arrTime) payload.arrTime = arrTime;
+    if (progress) payload.progressPercent = parseInt(progress);
+    update(dbRef, payload).then(() => showDone("設定を送信しました。"));
+};
+window.reloadAll = () => {
+    const diag = document.getElementById('confirm-dialog');
+    diag.show();
+    document.getElementById('confirm-ok-btn').onclick = () => {
+        diag.close();
+        update(dbRef, {
+            reloadSignal: Date.now(),
+            lastUpdate: Date.now()
+        });
+    };
+};
+window.announce = (active) => {
+    update(dbRef, {
+        announcement: {
+            text: document.getElementById('msg').value,
+            active: active
+        },
+        lastUpdate: Date.now()
+    }).then(() => showDone(active ? "放送開始" : "放送終了"));
+};
   </script>
 </body>
 </html>
