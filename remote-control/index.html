@@ -3,337 +3,229 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>コントローラー</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Open+Sans:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="../js/i18n.js"></script>
+  <title>System Controller | Expressive Purple</title>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
+      }
+    }
+  </script>
+  <script type="module">
+    import '@material/web/all.js';
+    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+  </script>
+
+  <style>
+    :root {
+    --md-sys-color-primary: #09986a;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #ddffe8;
+    --md-sys-color-on-primary-container: #005d02;
+    --md-sys-color-secondary-container: #def8e7;
+    --md-sys-color-on-secondary-container: #1d192b;
+    --md-sys-color-surface: #f5f8f5;
+    --md-sys-color-surface-container: #ffffff;
+    --md-sys-color-outline-variant: #c4d0cb;
+    --md-sys-color-error-container: #f9dedc;
+    --md-sys-color-on-error-container: #410e0b;
+    --md-ripple-hover-color: #0000;
+    --md-dialog-supporting-text-font: 'Google Sans', 'Roboto', sans-serif;
+    --md-dialog-headline-font: 'Google Sans', 'Roboto', sans-serif;
+    --md-dialog-container-color:var(--md-sys-color-surface);
+}
+
+    body {
+      font-family: 'Google Sans', 'Roboto', sans-serif;
+      background-color: var(--md-sys-color-surface);
+      color: #1c1b1f;
+      padding: 24px 16px;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h1 { font-size: 2rem; font-weight: 700; color: var(--md-sys-color-primary); margin-bottom: 24px; padding-left: 8px; }
+    h2 { font-size: 1rem; font-weight: 500; margin: 0 0 20px 0; display: flex; align-items: center; gap: 12px; color: var(--md-sys-color-on-secondary-container); }
+
+    .card {
+      background: var(--md-sys-color-surface-container);
+      padding: 28px;
+      border-radius: 32px;
+      margin-bottom: 20px;
+    }
+
+    .grid { display: flex;  gap: 12px;
+    justify-content: space-between;    flex-wrap: wrap; }
+
+    button {
+      border: none; outline: none; padding: 16px 8px; border-radius: 16px;
+      background: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px;
+      transition: all 0.3s cubic-bezier(0.2, 0, 0, 1); font-weight: 500; font-family: inherit;
+      width:140px;
+      flex:1;
+    justify-content: center;
+    position:relative;
+    }
+    button:hover { flex:1.2;}
+    button:active { flex:2;}
+
+    .btn-primary {
+      background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      flex-direction: row; gap: 8px; padding: 16px 24px; width: 100%; justify-content: center;
+      flex:2;
+    }
+
+
+    .btn-primary:hover { flex:2.2;}
+    .btn-primary:active { flex:3;}
+
+    .btn-reload {
+      background: transparent; color: var(--md-sys-color-error);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      width: 100%;flex-direction: row; justify-content: center; padding: 12px;
+    }
+
+    .control-group { margin-bottom: 20px; }
+    .label-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 500; font-size: 14px; }
+
+    input[type="range"] {
+      -webkit-appearance: none; width: 100%; height: 12px; border-radius: 6px;
+      background: var(--md-sys-color-outline-variant); accent-color: var(--md-sys-color-primary);
+    }
+
+    textarea {
+      width: 100%; box-sizing: border-box; padding: 16px; border: 2px solid var(--md-sys-color-outline-variant);
+      border-radius: 20px; background: white; margin-top: 8px; font-size: 16px; font-family: inherit;
+    }
+    textarea:focus { outline: none; border-color: var(--md-sys-color-primary); }
+
+    .announcement-actions { display: flex; gap: 12px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-  <div class="rc-container">
-    <!-- ヘッダー -->
-    <header class="rc-header">
-      <div class="rc-header-left">
-        <h1 class="rc-title">コントローラー</h1>
-        <div class="rc-status">
-          <span class="rc-status-dot"></span>
-          <span class="rc-status-text">アクティブ</span>
-        </div>
-      </div>
-      <div class="rc-header-right">
-        <button class="rc-btn rc-btn-icon" onclick="toggleFullscreen()" title="全画面表示">
-          <span class="material-icons">fullscreen</span>
-        </button>
-        <button class="rc-btn rc-btn-icon" onclick="closeController()" title="閉じる">
-          <span class="material-icons">close</span>
-        </button>
-      </div>
-    </header>
 
-    <!-- メインコンテンツ -->
-    <main class="rc-main">
-      <!-- ナビゲーション制御 -->
-      <section class="rc-section">
-        <h2 class="rc-section-title">
-          <span class="material-icons">navigation</span>
-          ナビゲーション
-        </h2>
-        <div class="rc-nav-grid">
-          <button class="rc-nav-btn" onclick="navigateTo('home')">
-            <span class="material-icons">home</span>
-            <span>ホーム</span>
-          </button>
-          <button class="rc-nav-btn" onclick="navigateTo('entertainment')">
-            <span class="material-icons">movie</span>
-            <span>エンターテイメント</span>
-          </button>
-          <button class="rc-nav-btn" onclick="navigateTo('meal')">
-            <span class="material-icons">restaurant</span>
-            <span>食事</span>
-          </button>
-          <button class="rc-nav-btn" onclick="navigateTo('map')">
-            <span class="material-icons">map</span>
-            <span>フライトマップ</span>
-          </button>
-          <button class="rc-nav-btn" onclick="navigateTo('wifi')">
-            <span class="material-icons">wifi</span>
-            <span>Wi-Fi</span>
-          </button>
-          <button class="rc-nav-btn" onclick="navigateTo('game')">
-            <span class="material-icons">games</span>
-            <span>ゲーム</span>
-          </button>
-        </div>
-      </section>
+  <h1>Control</h1>
 
-      <!-- メディア制御 -->
-      <section class="rc-section">
-        <h2 class="rc-section-title">
-          <span class="material-icons">play_circle</span>
-          メディア制御
-        </h2>
-        <div class="rc-media-controls">
-          <div class="rc-media-row">
-            <button class="rc-btn rc-btn-media" onclick="mediaControl('play')">
-              <span class="material-icons">play_arrow</span>
-            </button>
-            <button class="rc-btn rc-btn-media" onclick="mediaControl('pause')">
-              <span class="material-icons">pause</span>
-            </button>
-            <button class="rc-btn rc-btn-media" onclick="mediaControl('stop')">
-              <span class="material-icons">stop</span>
-            </button>
-            <button class="rc-btn rc-btn-media" onclick="mediaControl('prev')">
-              <span class="material-icons">skip_previous</span>
-            </button>
-            <button class="rc-btn rc-btn-media" onclick="mediaControl('next')">
-              <span class="material-icons">skip_next</span>
-            </button>
-          </div>
-          <div class="rc-media-row">
-            <button class="rc-btn rc-btn-media" onclick="mediaControl('rewind')">
-              <span class="material-icons">replay_10</span>
-            </button>
-            <button class="rc-btn rc-btn-media" onclick="mediaControl('forward')">
-              <span class="material-icons">forward_10</span>
-            </button>
-            <button class="rc-btn rc-btn-media" onclick="mediaControl('mute')">
-              <span class="material-icons">volume_off</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- プレイリスト管理 -->
-      <section class="rc-section">
-        <h2 class="rc-section-title">
-          <span class="material-icons">queue_music</span>
-          プレイリスト管理
-        </h2>
-        <div class="rc-playlist-controls">
-          <div class="rc-playlist-add">
-            <input type="text" id="playlist-title" class="rc-input" placeholder="タイトル" />
-            <input type="text" id="playlist-url" class="rc-input" placeholder="メディアURL" />
-            <button class="rc-btn rc-btn-primary" onclick="addPlaylistItem()">
-              <span class="material-icons">add</span>
-              追加
-            </button>
-          </div>
-          <ul id="playlist-list" class="rc-playlist-list"></ul>
-        </div>
-      </section>
-
-      <!-- 音量・明るさ制御 -->
-      <section class="rc-section">
-        <h2 class="rc-section-title">
-          <span class="material-icons">settings</span>
-          設定
-        </h2>
-        <div class="rc-controls">
-          <!-- 音量制御 -->
-          <div class="rc-control-row">
-            <div class="rc-control-label">
-              <span class="material-icons">volume_up</span>
-              <span>音量</span>
-            </div>
-            <div class="rc-control-slider">
-              <button class="rc-btn rc-btn-small" onclick="adjustVolume(-10)">-</button>
-              <input type="range" id="volume-slider" min="0" max="100" value="60" oninput="setVolume(this.value)">
-              <button class="rc-btn rc-btn-small" onclick="adjustVolume(10)">+</button>
-            </div>
-            <span class="rc-control-value" id="volume-value">60%</span>
-          </div>
-
-          <!-- 明るさ制御 -->
-          <div class="rc-control-row">
-            <div class="rc-control-label">
-              <span class="material-icons">brightness_6</span>
-              <span>明るさ</span>
-            </div>
-            <div class="rc-control-slider">
-              <button class="rc-btn rc-btn-small" onclick="adjustBrightness(-10)">-</button>
-              <input type="range" id="brightness-slider" min="0" max="100" value="75" oninput="setBrightness(this.value)">
-              <button class="rc-btn rc-btn-small" onclick="adjustBrightness(10)">+</button>
-            </div>
-            <span class="rc-control-value" id="brightness-value">75%</span>
-          </div>
-
-          <!-- 言語切り替え -->
-          <div class="rc-control-row">
-            <div class="rc-control-label">
-              <span class="material-icons">language</span>
-              <span>言語</span>
-            </div>
-            <select id="language-select" class="rc-select" onchange="setLanguage(this.value)">
-              <option value="ja">日本語</option>
-              <option value="en">English</option>
-              <option value="ko">한국어</option>
-              <option value="zh">中文</option>
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAアナウンス制御 -->
-      <section class="rc-section">
-        <h2 class="rc-section-title">
-          <span class="material-icons">campaign</span>
-          PAアナウンス
-        </h2>
-        <div class="rc-announce-controls">
-          <div class="rc-announce-input">
-            <textarea id="announce-text" class="rc-textarea" placeholder="アナウンス内容を入力..." rows="3"></textarea>
-          </div>
-          <div class="rc-announce-buttons">
-            <button class="rc-btn rc-btn-primary" onclick="startAnnounce()">
-              <span class="material-icons">volume_up</span>
-              アナウンス開始
-            </button>
-            <button class="rc-btn rc-btn-secondary" onclick="stopAnnounce()">
-              <span class="material-icons">stop</span>
-              アナウンス停止
-            </button>
-          </div>
-          <div class="rc-announce-status" id="announce-status"></div>
-        </div>
-      </section>
-
-      <!-- 通知送信 -->
-      <section class="rc-section">
-        <h2 class="rc-section-title">
-          <span class="material-icons">notifications</span>
-          通知送信
-        </h2>
-        <div class="rc-notification-controls">
-          <div class="rc-notification-input">
-            <input type="text" id="notification-title" class="rc-input" placeholder="通知タイトル..." />
-            <textarea id="notification-message" class="rc-textarea" placeholder="通知メッセージを入力..." rows="3"></textarea>
-          </div>
-          <div class="rc-notification-buttons">
-            <button class="rc-btn rc-btn-primary" onclick="sendNotification()">
-              <span class="material-icons">send</span>
-              通知送信
-            </button>
-            <button class="rc-btn rc-btn-secondary" onclick="clearNotifications()">
-              <span class="material-icons">clear_all</span>
-              全通知削除
-            </button>
-          </div>
-          <div class="rc-notification-status" id="notification-status"></div>
-        </div>
-      </section>
-
-      <!-- フライト設定 -->
-      <section class="rc-section">
-        <h2 class="rc-section-title">
-          <span class="material-icons">flight</span>
-          フライト設定
-        </h2>
-        <div class="rc-flight-controls">
-          <div class="rc-flight-row">
-            <div class="rc-flight-label">便名</div>
-            <input type="text" id="flightNumber" class="rc-input" placeholder="例: OZ117" />
-          </div>
-          <div class="rc-flight-row">
-            <div class="rc-flight-label">座席番号</div>
-            <input type="text" id="seatNumber" class="rc-input" placeholder="例: 31A" />
-          </div>
-          <div class="rc-flight-row">
-            <div class="rc-flight-label">出発地</div>
-            <select id="departureCity" class="rc-select">
-              <option value="大阪（関西）">大阪（関西）</option>
-              <option value="東京（成田）">東京（成田）</option>
-              <option value="東京（羽田）">東京（羽田）</option>
-              <option value="名古屋（中部）">名古屋（中部）</option>
-              <option value="福岡">福岡</option>
-              <option value="札幌">札幌</option>
-            </select>
-          </div>
-          <div class="rc-flight-row">
-            <div class="rc-flight-label">到着地</div>
-            <select id="arrivalCity" class="rc-select">
-              <option value="ソウル（仁川）">ソウル（仁川）</option>
-              <option value="釜山">釜山</option>
-              <option value="台北">台北</option>
-            </select>
-          </div>
-          <div class="rc-flight-row">
-            <div class="rc-flight-label">出発時刻</div>
-            <input type="text" id="depTime" class="rc-input" placeholder="例: 19:10" />
-          </div>
-          <div class="rc-flight-row">
-            <div class="rc-flight-label">到着時刻</div>
-            <input type="text" id="arrTime" class="rc-input" placeholder="例: 21:00" />
-          </div>
-          <div class="rc-flight-row">
-            <div class="rc-flight-label">飛行進捗率 (%)</div>
-            <input type="number" id="progressPercent" class="rc-input" placeholder="例: 50" min="0" max="100" />
-          </div>
-          <div class="rc-flight-buttons">
-            <button class="rc-btn rc-btn-primary" onclick="saveFlightSettings()">
-              <span class="material-icons">save</span>
-              設定保存
-            </button>
-            <button class="rc-btn rc-btn-secondary" onclick="loadFlightSettings()">
-              <span class="material-icons">refresh</span>
-              設定読み込み
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- 緊急制御 -->
-      <section class="rc-section">
-        <h2 class="rc-section-title">
-          <span class="material-icons">emergency</span>
-          緊急制御
-        </h2>
-        <div class="rc-emergency-controls">
-          <button class="rc-btn rc-btn-emergency" onclick="emergencyStop()">
-            <span class="material-icons">stop_circle</span>
-            全停止
-          </button>
-          <button class="rc-btn rc-btn-warning" onclick="restartSystem()">
-            <span class="material-icons">restart_alt</span>
-            システム再起動
-          </button>
-          <button class="rc-btn rc-btn-info" onclick="showSystemInfo()">
-            <span class="material-icons">info</span>
-            システム情報
-          </button>
-        </div>
-      </section>
-    </main>
-
-    <!-- フッター -->
-    <footer class="rc-footer">
-      <div class="rc-footer-info">
-        <span>現在のページ: <span id="current-page">ホーム</span></span>
-        <span>|</span>
-        <span>最終更新: <span id="last-update">--:--</span></span>
-      </div>
-      <div class="rc-footer-actions">
-        <button class="rc-btn rc-btn-small" onclick="showLogs()">ログ</button>
-        <button class="rc-btn rc-btn-small" onclick="showHelp()">ヘルプ</button>
-      </div>
-    </footer>
-  </div>
-
-  <!-- モーダル -->
-  <div id="modal-overlay" class="rc-modal-overlay">
-    <div id="modal-content" class="rc-modal">
-      <div class="rc-modal-header">
-        <h3 id="modal-title">モーダル</h3>
-        <button class="rc-modal-close" onclick="closeModal()">
-          <span class="material-icons">close</span>
-        </button>
-      </div>
-      <div class="rc-modal-body" id="modal-body">
-        モーダル内容
-      </div>
+  <div class="card">
+    <h2><span class="material-icons-outlined">navigation</span>ページ遷移</h2>
+    <div class="grid">
+      <button onclick="send({currentPage:'home'})"><span class="material-icons-outlined">home</span>ホーム<md-ripple></md-ripple></button>
+      <button onclick="send({currentPage:'entertainment'})"><span class="material-icons-outlined">movie</span>映画<md-ripple></md-ripple></button>
+      <button onclick="send({currentPage:'meal'})"><span class="material-icons-outlined">restaurant</span>食事<md-ripple></md-ripple></button>
+      <button onclick="send({currentPage:'map'})"><span class="material-icons-outlined">map</span>マップ<md-ripple></md-ripple></button>
+      <button onclick="send({currentPage:'wifi'})"><span class="material-icons-outlined">wifi</span>Wi-Fi<md-ripple></md-ripple></button>
+      <button onclick="send({currentPage:'game'})"><span class="material-icons-outlined">sports_esports</span>ゲーム<md-ripple></md-ripple></button>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <div class="card">
+    <h2><span class="material-icons-outlined">settings</span>システム設定 & フライト情報</h2>
+    <div class="control-group">
+      <div class="label-row"><span>明るさ</span><span id="br-val">100</span></div>
+      <input type="range" id="br-slider" value="100" oninput="document.getElementById('br-val').innerText=this.value">
+    </div>
+    <div class="control-group">
+      <div class="label-row"><span>座席番号</span></div>
+      <textarea id="seat-input" rows="1" placeholder="31A"></textarea>
+    </div>
+    <div class="control-group">
+      <div class="label-row"><span>区間 (出発 – 到着)</span></div>
+      <div style="display:flex; gap:8px;">
+        <textarea id="dep-input" rows="1" placeholder="KIX"></textarea>
+        <span style="align-self:center;">–</span>
+        <textarea id="arr-input" rows="1" placeholder="ICN"></textarea>
+      </div>
+    </div>
+    <div style="display:flex; gap:12px;">
+      <button class="btn-primary" onclick="applySettings()">適用<md-ripple></md-ripple></button>
+      <button class="btn-reload" onclick="reloadAll()">再読込<md-ripple></md-ripple></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="material-icons-outlined">campaign</span>アナウンス</h2>
+    <textarea id="msg" rows="2" placeholder="メッセージを入力..."></textarea>
+    <div style="display:flex; gap:12px; margin-top:12px;">
+      <button class="btn-primary" onclick="announce(true)">開始<md-ripple></md-ripple></button>
+      <button onclick="announce(false)" style="width:100%; flex-direction:row;">停止<md-ripple></md-ripple></button>
+    </div>
+  </div>
+
+  <md-dialog id="confirm-dialog">
+    <div slot="headline">再読み込み</div>
+    <div slot="content">全デバイスをリロードしますか？</div>
+    <div slot="actions">
+      <md-text-button onclick="document.getElementById('confirm-dialog').close()">キャンセル</md-text-button>
+      <md-text-button id="confirm-ok-btn">実行</md-text-button>
+    </div>
+  </md-dialog>
+
+  <md-dialog id="done-dialog">
+    <div slot="headline">完了</div>
+    <div slot="content" id="done-message">反映されました。</div>
+  </md-dialog>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBjf9oJZ0d-YHwJe1fq9RhcPP_HgdINdzA",
+      authDomain: "fpms-902b6.firebaseapp.com",
+      databaseURL: "https://fpms-902b6-default-rtdb.firebaseio.com",
+      projectId: "fpms-902b6",
+      appId: "1:203930990498:web:0835e33509f3e594b924fb"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, 'system_control');
+
+    const showDone = (text) => {
+      document.getElementById('done-message').innerText = text;
+      const d = document.getElementById('done-dialog');
+      d.show();
+      setTimeout(() => d.close(), 1500);
+    };
+
+    window.send = (data) => update(dbRef, { ...data, lastUpdate: Date.now() });
+
+    window.applySettings = () => {
+      const br = document.getElementById('br-slider').value;
+      const seat = document.getElementById('seat-input').value;
+      const dep = document.getElementById('dep-input').value;
+      const arr = document.getElementById('arr-input').value;
+      
+      const payload = { brightness: parseInt(br), lastUpdate: Date.now() };
+      if(seat) payload.seatNumber = seat;
+      if(dep) payload.departureID = dep;
+      if(arr) payload.arrivalID = arr;
+
+      update(dbRef, payload).then(() => showDone("設定を送信しました。"));
+    };
+
+    window.reloadAll = () => {
+      const diag = document.getElementById('confirm-dialog');
+      diag.show();
+      document.getElementById('confirm-ok-btn').onclick = () => {
+        diag.close();
+        update(dbRef, { reloadSignal: Date.now(), lastUpdate: Date.now() });
+      };
+    };
+
+    window.announce = (active) => {
+      update(dbRef, { 
+        announcement: { text: document.getElementById('msg').value, active: active },
+        lastUpdate: Date.now()
+      }).then(() => showDone(active ? "放送開始" : "放送終了"));
+    };
+  </script>
 </body>
 </html>
