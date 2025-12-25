@@ -116,7 +116,13 @@ window.i18n = {
     error_no_stream_url: "このライブ配信のストリームURLが設定されていません。",
     error_loading_failed_live: "ライブ配信の読み込みに失敗しました。",
     loading_live: "ライブ配信を読み込み中...",
-    watch_live: "ライブ配信を見る"
+    watch_live: "ライブ配信を見る",
+    weather_forecast: "天気予報",
+    seoul_weather: "ソウルの天気",
+    seoul_temperature: "ソウルの気温",
+    osaka_weather: "大阪の天気",
+    osaka_temperature: "大阪の気温",
+    flight_altitude_temperature: "飛行高度の気温"
   },
   en: {
     entertainment: "Entertainment",
@@ -236,7 +242,13 @@ window.i18n = {
     error_no_stream_url: "Stream URL is not set for this live stream.",
     error_loading_failed_live: "Failed to load live stream.",
     loading_live: "Loading live stream...",
-    watch_live: "Watch Live Stream"
+    watch_live: "Watch Live Stream",
+    weather_forecast: "Weather Forecast",
+    seoul_weather: "Seoul Weather",
+    seoul_temperature: "Seoul Temperature",
+    osaka_weather: "Osaka Weather",
+    osaka_temperature: "Osaka Temperature",
+    flight_altitude_temperature: "Flight Altitude Temperature"
   },
   ko: {
     entertainment: "엔터테인먼트",
@@ -356,7 +368,13 @@ window.i18n = {
     error_no_stream_url: "이 라이브 스트림의 스트림 URL이 설정되지 않았습니다.",
     error_loading_failed_live: "라이브 스트림 로딩에 실패했습니다.",
     loading_live: "라이브 스트림 로딩 중...",
-    watch_live: "라이브 스트림 보기"
+    watch_live: "라이브 스트림 보기",
+    weather_forecast: "날씨 예보",
+    seoul_weather: "서울 날씨",
+    seoul_temperature: "서울 기온",
+    osaka_weather: "오사카 날씨",
+    osaka_temperature: "오사카 기온",
+    flight_altitude_temperature: "비행 고도 온도"
   },
   zh: {
     entertainment: "娱乐",
@@ -476,6 +494,12 @@ window.i18n = {
     error_no_stream_url: "此直播的流媒体URL未设置。",
     error_loading_failed_live: "直播加载失败。",
     loading_live: "正在加载直播...",
-    watch_live: "观看直播"
+    watch_live: "观看直播",
+    weather_forecast: "天气预报",
+    seoul_weather: "首尔天气",
+    seoul_temperature: "首尔气温",
+    osaka_weather: "大阪天气",
+    osaka_temperature: "大阪气温",
+    flight_altitude_temperature: "飞行高度气温"
   }
 };

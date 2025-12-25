@@ -1,0 +1,17 @@
+"id","title","category","description","backgroundColor","coverImage","genre","playlistType","tracks","availableLanguages","isMusicPlaylist"
+"relaxing-music","リラックス音楽","2025 音楽・リラックス","癒しの音楽コレクションです。
+
+静寂の森の音、夕暮れの海の波音、星空の夜の静けさ、朝の光の温かさをテーマにした癒しの音楽をお楽しみください。
+
+再生時間：約17分
+言語：音楽（言語非依存）
+
+このプレイリストは、機内でのリラックスタイムをお過ごしいただくために特別に制作されています。心を落ち着かせる音楽をお楽しみください。","#667eea","https://via.placeholder.com/300x300/667eea/ffffff?text=Relaxing+Music","リラックス","relaxing","[{""title"": ""静寂の森"", ""artist"": ""Nature Sounds"", ""duration"": ""3:45"", ""url"": ""https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"", ""art"": ""https://via.placeholder.com/300x300/667eea/ffffff?text=Relaxing+1""},{""title"": ""夕暮れの海"", ""artist"": ""Ocean Waves"", ""duration"": ""4:20"", ""url"": ""https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"", ""art"": ""https://via.placeholder.com/300x300/764ba2/ffffff?text=Relaxing+2""}]","[]","true"
+"upbeat-music","アップテンポ","2025 音楽・アップテンポ","元気になる音楽コレクションです。
+
+Happy Day、Dance Tonight、Summer Vibes、Energy Boostなど、元気になれる音楽をお楽しみください。
+
+再生時間：約15分
+言語：音楽（言語非依存）
+
+このプレイリストは、機内でのエネルギーチャージタイムをお過ごしいただくために特別に制作されています。元気になる音楽をお楽しみください。","#ff6b6b","https://via.placeholder.com/300x300/ff6b6b/ffffff?text=Upbeat+Music","アップテンポ","upbeat","[{""title"": ""Happy Day"", ""artist"": ""Pop Stars"", ""duration"": ""3:20"", ""url"": ""https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"", ""art"": ""https://via.placeholder.com/300x300/ff6b6b/ffffff?text=Upbeat+1""},{""title"": ""Dance Tonight"", ""artist"": ""DJ Mix"", ""duration"": ""4:10"", ""url"": ""https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"", ""art"": ""https://via.placeholder.com/300x300/4ecdc4/ffffff?text=Upbeat+2""}]","[]","true"

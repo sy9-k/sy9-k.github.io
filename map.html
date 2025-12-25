@@ -188,32 +188,7 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
 
     </div>
     <div class="map-image-panel">
-      <div class="map-slideshow" style="width:92%;max-width:900px;aspect-ratio:16/9;position:relative;border-radius:12px;box-shadow:0 8px 32px #0008;border:2px solid #333;overflow:hidden;">
-        <div class="slide slide-map" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:1;z-index:1;background:linear-gradient(135deg,#2193b0 0%,#6dd5ed 100%);">
-          <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
-            <img src="https://user-images.githubusercontent.com/1308249/326885857-2e2e2e2e-2e2e-2e2e-2e2e-2e2e2e2e2e2e.png" alt="moving map" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.95);" />
-            <div id="slideshow-plane-marker" style="position:absolute;top:50%;left:10%;transform:translate(-50%,-50%);z-index:2;width:36px;height:36px;pointer-events:none;">
-              <svg width="36" height="36" viewBox="0 0 36 36"><polygon points="18,2 22,28 18,24 14,28" fill="#1976d2" stroke="#fff" stroke-width="2"/></svg>
-            </div>
-          </div>
-          <div style="position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff;background:rgba(0,0,0,0.45);padding:8px 0;font-size:1.15rem;">
-            <span id="slideshow-progress-label" data-i18n="flight_progress_percent">飛行進捗: 50%</span>
-          </div>
-        </div>
-        <div class="slide slide-weather" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:0;z-index:0;background:linear-gradient(135deg,#f7971e 0%,#ffd200 100%);">
-          <div style="font-size:2.1rem;font-weight:500;margin-bottom:12px;" data-i18n="local_weather">現地の天気</div>
-          <div style="display:flex;align-items:center;gap:18px;">
-            <span id="slideshow-weather-icon" style="font-size:3.2rem;">☀️</span>
-            <span id="slideshow-weather-temp" style="font-size:2.8rem;font-weight:700;">--℃</span>
-          </div>
-          <div id="slideshow-weather-desc" style="font-size:1.2rem;margin-top:8px;">取得中...</div>
-        </div>
-        <div class="slide slide-time" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:0;z-index:0;background:linear-gradient(135deg,#43cea2 0%,#185a9d 100%);">
-          <div style="font-size:2.1rem;font-weight:500;margin-bottom:12px;" data-i18n="local_time">現地の時刻</div>
-          <div id="slideshow-local-time" style="font-size:2.8rem;font-weight:700;">--:--</div>
-          <div id="slideshow-local-date" style="font-size:1.2rem;margin-top:8px;">----</div>
-        </div>
-      </div>
+      <iframe src="/flight-maps/widget.html" style="width:92%;max-width:900px;aspect-ratio:16/9;position:relative;border-radius:12px;box-shadow:0 8px 32px #0008;border:2px solid #333;overflow:hidden;" frameborder="0" allowfullscreen></iframe>
       <button class="map-button" id="map-display-btn" data-i18n="map_btn">マップを表示する</button>
     </div>
   </div>
@@ -817,74 +792,7 @@ body[lang="zh"], html[lang="zh"] .map-fullscreen {
     });
   </script>
 
-  <!-- --- スライドショー制御 --- -->
-  <script>
-    (function(){
-      let current = 0;
-      const slides = [];
-      document.addEventListener('DOMContentLoaded', function() {
-        slides.push(
-          document.querySelector('.slide-map'),
-          document.querySelector('.slide-weather'),
-          document.querySelector('.slide-time')
-        );
-        function showSlide(idx) {
-          slides.forEach((el,i)=>{
-            el.style.opacity = (i===idx)?'1':'0';
-            el.style.zIndex = (i===idx)?'1':'0';
-          });
-        }
-        setInterval(()=>{
-          current = (current+1)%slides.length;
-          showSlide(current);
-        },4000);
-        showSlide(0);
-        // --- マップ進捗・マーカー ---
-        function updateMapSlide() {
-          const percent = parseFloat(localStorage.getItem('progressPercent')||'50');
-          document.getElementById('slideshow-progress-label').textContent = `飛行進捗: ${percent}%`;
-          // マーカー位置
-          const marker = document.getElementById('slideshow-plane-marker');
-          const left = 10 + 80 * (percent/100);
-          const top = 50 - 30 * (percent/100);
-          marker.style.left = `${left}%`;
-          marker.style.top = `${top}%`;
-        }
-        // --- 天気 ---
-        function updateWeatherSlide() {
-          // モック: 天気データ
-          let temp = '--℃', desc = '取得中...', icon = '☀️';
-          const tempRaw = document.getElementById('temperature-value').textContent||'--℃';
-          temp = tempRaw.split('\n')[0];
-          // 簡易: 天気説明とアイコン（本来はAPIのweather.desc等を使う）
-          // 例: "18℃\n64℉ 晴れ" のような場合
-          const weatherText = tempRaw.split(' ').slice(1).join(' ');
-          if(weatherText.includes('晴')) { desc = '晴れ'; icon = '☀️'; }
-          else if(weatherText.includes('曇')) { desc = 'くもり'; icon = '☁️'; }
-          else if(weatherText.includes('雨')) { desc = '雨'; icon = '🌧️'; }
-          else { desc = '目的地の天気'; icon = '☀️'; }
-          document.getElementById('slideshow-weather-temp').textContent = temp;
-          document.getElementById('slideshow-weather-desc').textContent = desc;
-          document.getElementById('slideshow-weather-icon').textContent = icon;
-        }
-        // --- 時刻 ---
-        function updateTimeSlide() {
-          // 目的地の現地時間を表示
-          const arrTime = document.getElementById('arrival-time-value').textContent||'--:--';
-          document.getElementById('slideshow-local-time').textContent = arrTime;
-          const now = new Date();
-          document.getElementById('slideshow-local-date').textContent = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
-        }
-        function updateAllSlides() {
-          updateMapSlide();
-          updateWeatherSlide();
-          updateTimeSlide();
-        }
-        setInterval(updateAllSlides, 2000);
-        updateAllSlides();
-      });
-    })();
-  </script>
+
   <!-- --- パネル開閉の統一JS --- -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
