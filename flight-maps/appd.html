@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ja" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPM Flight Maps - App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+    <script src="/js/i18n.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 20px 40px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            background: transparent;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 300;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .close-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .tab-btn {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 300;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+        
+        .tab-btn:hover {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+        }
+        
+        .tab-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .slideshow-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* フェード用ユーティリティ */
+        .fade-in { opacity: 1; transition: opacity 0.8s ease-in-out; }
+        .fade-out { opacity: 0; transition: opacity 0.6s ease-in-out; }
+
+        /* スライド1: 地球儀 */
+        .slide1 {
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        /* Loading screen for globe */
+        .globe-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 20;
+            transition: opacity 1s ease-out;
+        }
+        
+        .globe-loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #globeCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* スライド2: フライト情報 */
+        .slide2 {
+            /* 背景：単色灰色 */
+            background: #3d3d3d;
+            padding: clamp(20px, 3vw, 40px) 0 clamp(40px, 6vw, 80px) 0;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .flight-info-title {
+            font-size: clamp(24px, 6vw, 72px); /* レスポンシブサイズ */
+            color: #8fc6ff;
+            text-align: center;
+            margin: clamp(20px, 4vw, 40px) 0 clamp(15px, 3vw, 30px) 0;
+            letter-spacing: 2px;
+            font-weight: 300; /* 細め */
+        }
+
+        .flight-info-list {
+            max-width: 1200px; /* 少し横に広げる */
+            width: calc(100% - clamp(20px, 6vw, 60px));
+            margin: 0 auto;
+            padding: 0 clamp(10px, 3vw, 30px); /* コンテナの左右余白を調整 */
+            box-sizing: border-box;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: clamp(10px, 2.5vw, 18px) clamp(12px, 4vw, 30px); /* 帯内の左右パディングを広めに */
+            margin: clamp(4px, 1vw, 8px) 0; /* 帯間のスペース */
+            background: #bdbdbd; /* 明るめグレー */
+            border-left: none;
+            border-radius: 0;
+            box-shadow: inset 0 -6px 0 rgba(0,0,0,0.12); /* 帯下に影で仕切り感 */
+            flex-wrap: wrap;
+            gap: clamp(8px, 2.5vw, 15px);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #ffffff;
+            font-size: clamp(12px, 3vw, 18px);
+            font-weight: 400;
+            opacity: 0.95;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .info-value {
+            color: #ffffff;
+            font-size: clamp(14px, 4vw, 22px);
+            font-weight: 400;
+            flex-shrink: 0;
+        }
+
+        /* スライド3: マップ */
+        .slide3 {
+            background: linear-gradient(135deg, #1a3a3a 0%, #1a1a2e 100%);
+            padding: 40px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            max-width: 900px;
+            height: 400px;
+            background: linear-gradient(135deg, #0a4a5a 0%, #1a3a4a 100%);
+            border: 2px solid #64c8ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64c8ff;
+            font-size: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-placeholder::before {
+            content: '✈';
+            position: absolute;
+            font-size: 80px;
+            opacity: 0.3;
+            animation: planeMove 3s ease-in-out infinite;
+        }
+
+        @keyframes planeMove {
+            0% {
+                left: 10%;
+            }
+            50% {
+                transform: rotateZ(10deg);
+            }
+            100% {
+                left: 90%;
+            }
+        }
+
+        /* 下部バー */
+        .info-bar {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            padding: clamp(15px, 3vw, 25px) clamp(20px, 8vw, 80px);
+            background: #444444;
+            border-top: 6px solid #64c8ff;
+            z-index: 200;
+            box-sizing: border-box;
+        }
+
+        .bar-item {
+            text-align: center;
+            border-right: 1px solid #666666;
+            padding: 0;
+        }
+
+        .bar-item:last-child {
+            border-right: none;
+        }
+
+        .bar-label {
+              font-size: clamp(12px, 2.5vw, 16px);
+              color: #64c8ff;
+              letter-spacing: 1px;
+              margin-bottom: 12px;
+              font-weight: 400;
+        }
+
+        .bar-value {
+              font-size: clamp(24px, 5vw, 32px);
+              color: #ffffff;
+              font-weight: 300;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 1024px) {
+            .flight-info-list {
+                width: calc(100% - clamp(20px, 10vw, 60px));
+            }
+
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: clamp(8px, 2vw, 15px);
+            }
+
+            .info-value {
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide2 {
+                padding: clamp(20px, 3vw, 40px) 0 clamp(40px, 6vw, 80px) 0;
+            }
+
+            .flight-info-list {
+                width: calc(100% - 20px);
+            }
+
+            .info-label {
+                font-size: clamp(12px, 3vw, 16px);
+            }
+
+            .info-value {
+                font-size: clamp(16px, 4vw, 22px);
+            }
+
+            .info-bar {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 15px 20px;
+            }
+
+            .bar-item {
+                border-right: none;
+                border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+                padding-bottom: 15px;
+            }
+
+            .bar-item:last-child {
+                border-bottom: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide2 {
+                padding: clamp(20px, 3vw, 40px) 0 clamp(40px, 6vw, 80px) 0;
+            }
+
+            .flight-info-title {
+                font-size: clamp(20px, 6vw, 32px);
+                margin: 0 0 clamp(15px, 3vw, 30px) 0;
+                letter-spacing: 1px;
+            }
+
+            .flight-info-list {
+                width: calc(100% - 16px);
+                padding: 0 8px;
+            }
+
+            .info-row {
+                padding: clamp(10px, 2vw, 15px) clamp(12px, 3vw, 20px);
+                margin: clamp(6px, 1.5vw, 10px) 0;
+                gap: clamp(8px, 2vw, 12px);
+            }
+
+            .info-label {
+                font-size: clamp(11px, 2.5vw, 14px);
+                min-width: 100px;
+            }
+
+            .info-value {
+                font-size: clamp(14px, 3.5vw, 18px);
+            }
+
+            .info-bar {
+                padding: 12px 15px;
+                gap: 8px;
+            }
+
+            .bar-label {
+                font-size: 12px;
+            }
+
+            .bar-value {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="close-btn" title="close" data-i18n-title="close">×</button>
+    </div>
+
+    <button class="tab-btn" title="Open Info Panel" onclick="toggleTab()">☰</button>
+    
+    <div class="slideshow-container">
+        <!-- スライド1: 地球儀 -->
+        <div class="slide slide1 active">
+            <div class="globe-loading" id="globe-loading">
+                <div class="loading-spinner"></div>
+                <div class="loading-text" data-i18n="loading">地球儀を読み込み中...</div>
+            </div>
+            <canvas id="globeCanvas"></canvas>
+
+        </div>
+
+        <!-- スライド2: フライト情報 -->
+        <div class="slide slide2">
+            <div class="flight-info-title" data-i18n="flight_route_map">FLIGHT INFORMATION</div>
+            <div class="flight-info-list">
+                <div class="info-row">
+                    <span class="info-label" data-i18n="arrival_distance">目的地までの距離</span>
+                    <span class="info-value">2,247 km</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label" data-i18n="flight_time_to_seoul">ソウル（仁川）までの所要時間</span>
+                    <span class="info-value">2:00</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label" data-i18n="seoul_local_time">ソウル（仁川）の現地時刻</span>
+                    <span class="info-value">19:40</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label" data-i18n="osaka_local_time">大阪（関西）の現地時刻</span>
+                    <span class="info-value">19:40</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label" data-i18n="arrival_time_kst">到着予定時刻（韓国標準時間）</span>
+                    <span class="info-value">21:10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- スライド3: マップ -->
+        <div class="slide slide3">
+            <div class="map-placeholder" data-i18n="flight_route_map">フライト経路マップ</div>
+        </div>
+            
+        <!-- Info Tab Panel -->
+        <div class="info-tab-panel" id="infoTabPanel">
+            <div class="info-tab-header">
+                <h3>Flight Information</h3>
+                <button class="close-tab-btn" onclick="toggleTab()">×</button>
+            </div>
+            <div class="info-tab-content">
+                <div class="info-item">
+                    <span class="info-label" data-i18n="flight_number">Flight No.</span>
+                    <span class="info-value">OZ117</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label" data-i18n="route">Route</span>
+                    <span class="info-value">KIX - ICN</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label" data-i18n="flight_time_to_arrival">Flight Time to Arrival</span>
+                    <span class="info-value">2:00</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label" data-i18n="destination_temperature">Destination Temperature</span>
+                    <span class="info-value">18℃</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label" data-i18n="destination_local_time">Destination Local Time</span>
+                    <span class="info-value">19:40</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label" data-i18n="departure_local_time">Departure Local Time</span>
+                    <span class="info-value">19:40</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label" data-i18n="flight_progress">Flight Progress</span>
+                    <span class="info-value">50%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 情報バー -->
+    <div class="info-bar">
+        <div class="bar-item">
+            <div class="bar-label" data-i18n="departure_current_time">出発地の現在時刻</div>
+            <div class="bar-value" id="departTime">19:40</div>
+        </div>
+        <div class="bar-item">
+            <div class="bar-label" data-i18n="flight_time_to_arrival">到着までの所要時間</div>
+            <div class="bar-value" id="flightTime">2:00</div>
+        </div>
+        <div class="bar-item">
+            <div class="bar-label" data-i18n="arrival_current_time">到着地の現在時刻</div>
+            <div class="bar-value" id="arrivalTime">19:40</div>
+        </div>
+            
+        <style>
+            .info-tab-panel {
+                position: fixed;
+                top: 0;
+                right: -350px; /* Hidden by default */
+                width: 320px;
+                height: 100vh;
+                background: #2c3e50;
+                color: white;
+                box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+                z-index: 1000;
+                transition: right 0.4s ease;
+                display: flex;
+                flex-direction: column;
+            }
+                
+            .info-tab-panel.open {
+                right: 0; /* Visible when open */
+            }
+                
+            .info-tab-header {
+                padding: 20px;
+                background: #1a2332;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #34495e;
+            }
+                
+            .info-tab-header h3 {
+                margin: 0;
+                font-size: 1.2rem;
+            }
+                
+            .close-tab-btn {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+            }
+                
+            .close-tab-btn:hover {
+                background: rgba(255,255,255,0.1);
+            }
+                
+            .info-tab-content {
+                padding: 20px;
+                flex: 1;
+                overflow-y: auto;
+            }
+                
+            .info-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px 0;
+                border-bottom: 1px solid #34495e;
+            }
+                
+            .info-label {
+                font-size: 0.9rem;
+                opacity: 0.8;
+            }
+                
+            .info-value {
+                font-weight: bold;
+                color: #3498db;
+            }
+        </style>
+    </div>
+
+    <script>
+        // レイアウト調整関数：下部バーの高さを考慮し、コンテンツを画面全体に収める
+        function updateLayout() {
+            const infoBar = document.querySelector('.info-bar');
+            const infoBarHeight = infoBar ? infoBar.offsetHeight : 0;
+            
+            // bodyに下部バー分のパディングを設定
+            document.body.style.paddingBottom = infoBarHeight + 'px';
+        }
+        
+        // 初期化とリサイズ対応
+        window.addEventListener('load', updateLayout);
+        window.addEventListener('resize', updateLayout);
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateLayout);
+        } else {
+            // 少し遅延させて実行
+            setTimeout(updateLayout, 100);
+        }
+
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const slideInterval = 30000;
+
+        // Enhanced 3D Earth implementation from flight-maps-old.html
+        let scene, camera, renderer, earth, stars, controls;
+        
+        // Initialize 3D Earth
+        function initEarth() {
+            // Hide loading screen after a delay to simulate loading
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('globe-loading');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                }
+            }, 2000);
+            
+            // Create scene
+            scene = new THREE.Scene();
+            
+            // Create camera (narrower field of view for enlarged display)
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 10;
+            
+            // Create renderer (brighter display)
+            const canvas = document.getElementById('globeCanvas');
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x111111);
+            renderer.gammaOutput = true;
+            renderer.gammaFactor = 2.2;
+            
+            // Create Earth (higher resolution with detailed display around KIX airport)
+            const geometry = new THREE.SphereGeometry(2, 128, 128);
+            const textureLoader = new THREE.TextureLoader();
+            const earthTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg');
+            const material = new THREE.MeshPhongMaterial({ 
+                map: earthTexture,
+                shininess: 15,
+                emissive: 0x111111,
+                emissiveIntensity: 0.1
+            });
+            earth = new THREE.Mesh(geometry, material);
+            scene.add(earth);
+            
+            // Lighting (brighter settings)
+            const ambientLight = new THREE.AmbientLight(0x606060, 0.8);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            directionalLight.position.set(5, 3, 5);
+            scene.add(directionalLight);
+            
+            // Additional light to brighten the area around KIX airport
+            const kixLight = new THREE.PointLight(0xffffff, 0.6, 10);
+            kixLight.position.set(0, 0, 0);
+            scene.add(kixLight);
+            
+            // Add orbit controls for user interaction
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; // Smooth camera movement
+            controls.dampingFactor = 0.05;
+            controls.rotateSpeed = 0.5;
+            controls.zoomSpeed = 1.2;
+            controls.panSpeed = 0.8;
+            controls.enableZoom = true;
+            controls.enablePan = true;
+            controls.enableRotate = true;
+            controls.minDistance = 3; // Minimum zoom distance
+            controls.maxDistance = 15; // Maximum zoom distance
+            
+            // Add event listeners to detect user interaction with the globe
+            const globeCanvas = document.getElementById('globeCanvas');
+            
+            // Use OrbitControls events instead of manual event listeners
+            if (controls) {
+                controls.addEventListener('start', function() {
+                    isGlobeActive = true;
+                    hasUserInteracted = true; // Mark that user has interacted
+                    stopSlideTimer(); // Pause slideshow when user starts interacting with globe
+                });
+                
+                controls.addEventListener('end', function() {
+                    isGlobeActive = false;
+                    // User has finished interacting, but we don't resume automatically
+                    // The slideshow remains paused and will not resume automatically
+                });
+            }
+            
+            // Starfield background
+            const starGeometry = new THREE.BufferGeometry();
+            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 });
+            const starVertices = [];
+            
+            for (let i = 0; i < 10000; i++) {
+                const x = (Math.random() - 0.5) * 2000;
+                const y = (Math.random() - 0.5) * 2000;
+                const z = (Math.random() - 0.5) * 2000;
+                starVertices.push(x, y, z);
+            }
+            
+            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+            stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+            
+            // Start animation
+            animate();
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update controls if they exist
+            if (controls) {
+                controls.update(); // Required for damping effect
+            }
+            
+            // Earth rotation
+            if (earth) {
+                // Only rotate automatically if user has never interacted with globe
+                if (!hasUserInteracted && !isGlobeActive) {
+                    earth.rotation.y += 0.005;
+                }
+            }
+            
+            // Starfield rotation
+            if (stars) {
+                stars.rotation.y += 0.0005;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+
+
+        // Initialize Earth when slide becomes active
+        function initializeGlobeIfNeeded() {
+            if (!scene) {
+                initEarth();
+            }
+        }
+
+        // Initialize the globe when the page loads if it's the first slide
+        if (currentSlide === 0) {
+            initializeGlobeIfNeeded();
+        }
+
+        // Window resize handling
+        window.addEventListener('resize', () => {
+            updateLayout();
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+
+        function showSlide(n) {
+            const current = document.querySelector('.slide.active');
+            const next = slides[n];
+            if (current === next) return;
+
+            if (current) {
+                current.classList.remove('fade-in');
+                current.classList.add('fade-out');
+                // wait for fade-out then switch
+                setTimeout(() => {
+                    current.classList.remove('active', 'fade-out');
+                    next.classList.add('active', 'fade-in');
+                    // Initialize globe if switching to slide 1
+                    if (n === 0) {
+                        initializeGlobeIfNeeded();
+                    }
+                    // remove fade-in after transition
+                    setTimeout(() => {
+                        next.classList.remove('fade-in');
+                    }, 900);
+                }, 500);
+            } else {
+                next.classList.add('active', 'fade-in');
+                // Initialize globe if starting on slide 1
+                if (n === 0) {
+                    initializeGlobeIfNeeded();
+                }
+                setTimeout(() => {
+                    next.classList.remove('fade-in');
+                }, 900);
+            }
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function startSlideTimer() {
+            if (slideTimer) {
+                clearInterval(slideTimer);
+            }
+            // Only start timer if user has never interacted with the globe
+            if (!hasUserInteracted) {
+                slideTimer = setInterval(nextSlide, slideInterval);
+            }
+        }
+        
+        function stopSlideTimer() {
+            if (slideTimer) {
+                clearInterval(slideTimer);
+                slideTimer = null;
+            }
+        }
+        
+        // Start the automatic slideshow only if user hasn't interacted yet
+        startSlideTimer();
+
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('departTime').textContent = `${hours}:${minutes}`;
+            document.getElementById('arrivalTime').textContent = `${hours}:${minutes}`;
+        }
+
+        updateTime();
+        setInterval(updateTime, 15000);
+
+        document.querySelector('.close-btn').addEventListener('click', function() {
+            window.location.href = '/map.html';
+        });
+        
+        // Language switching functionality
+        function updateLanguage() {
+            const lang = localStorage.getItem('language') || 'ja';
+            
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+            document.documentElement.setAttribute('lang', lang);
+            
+            // Update all elements with data-i18n attributes
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (window.i18n && window.i18n[lang] && window.i18n[lang][key]) {
+                    el.textContent = window.i18n[lang][key];
+                }
+            });
+            
+            // Update all elements with data-i18n-title attributes
+            const titleElements = document.querySelectorAll('[data-i18n-title]');
+            titleElements.forEach(el => {
+                const key = el.getAttribute('data-i18n-title');
+                if (window.i18n && window.i18n[lang] && window.i18n[lang][key]) {
+                    el.title = window.i18n[lang][key];
+                }
+            });
+        }
+        
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', updateLanguage);
+        
+        // Listen for language change events
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'language') {
+                updateLanguage();
+            }
+        });
+        
+        function toggleTab() {
+            const tabPanel = document.getElementById('infoTabPanel');
+            tabPanel.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

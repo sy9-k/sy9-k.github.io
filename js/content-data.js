@@ -1,5 +1,16 @@
 // 作品情報管理ファイル
+// This file is maintained for backward compatibility
+// Content is now loaded from CSV files via csv-content-loader.js
+
+// Initialize with empty data; will be populated by CSV loader
 window.contentData = {
+  featured: {
+    title: "今月の最新作",
+    description: "機内で最新の映画・番組を楽しもう！ハリウッドの話題作から外国作品まで見どころを一挙紹介",
+    watchButton: "今すぐ見る",
+    detailButton: "詳細",
+    plusButton: "＋"
+  },
   // 今月の最新作
   featured: {
     title: "今月の最新作",
