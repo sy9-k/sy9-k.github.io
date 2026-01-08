@@ -7,23 +7,11 @@
   <title>ムービー</title>
   <link rel="stylesheet" href="/css/home.css" />
   <link rel="stylesheet" href="/css/sb-movie.css" />
+  <link rel="stylesheet" href="css/hm-panel.css" />
   <script src="i18n.js"></script>
   <style>
 body.home-modern {
   background-color: #000;
-}
-
-body[lang="ja"], html[lang="ja"] .home-modern {
-  font-family: 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
-}
-body[lang="en"], html[lang="en"] .home-modern {
-  font-family: 'Open Sans', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans TC', sans-serif;
-}
-body[lang="ko"], html[lang="ko"] .home-modern {
-  font-family: 'Noto Sans KR', 'Noto Sans JP', 'Open Sans', 'Noto Sans TC', sans-serif;
-}
-body[lang="zh"], html[lang="zh"] .home-modern {
-  font-family: 'Noto Sans TC', 'Noto Sans JP', 'Open Sans', 'Noto Sans KR', sans-serif;
 }
 
     /* フルスクリーンビデオ用スタイル */
@@ -111,43 +99,7 @@ body[lang="zh"], html[lang="zh"] .home-modern {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
-    /* 通知・設定パネルのスタイル（home.htmlと同等） */
-    .hm-panel {
-      position: fixed;
-      top: 0; left: 0;
-      width: 340px;
-      height: 100vh;
-      background: #232323;
-      color: #fff;
-      z-index: 1002;
-      box-shadow: 2px 0 16px #0008;
-      transform: translateX(-100%);
-      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
-      display: flex;
-      flex-direction: column;
-    }
-    .hm-panel.open { transform: translateX(0); }
-    .hm-panel-header {
-      font-size: 1.3rem;
-      font-weight: 500;
-      padding: 22px 24px 12px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .hm-panel-close {
-      background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer;
-    }
-    .hm-panel-content { flex: 1; padding: 0 24px 24px 24px; overflow-y: auto; }
-    .hm-panel-divider { border-bottom: 1px solid #444; margin: 12px 0; }
-    .hm-panel label { display: flex; align-items: center; gap: 10px; margin: 18px 0 0 0; }
-    .hm-panel input[type=range] { width: 120px; }
-    .hm-panel select { background: #232323; color: #fff; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; }
-    .hm-panel .hm-notice-list { margin: 0; padding: 0; list-style: none; }
-    .hm-panel .hm-notice-list li { margin-bottom: 12px; font-size: 1.05rem; }
-    .hm-panel .hm-notice-empty { color: #aaa; font-size: 1.1rem; margin-top: 18px; }
-  </style>
+ </style>
 </head>
 <body class="home-modern">
   <script>
