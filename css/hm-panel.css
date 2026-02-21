@@ -1,0 +1,36 @@
+
+    /* 通知・設定パネルのスタイル（home.htmlと同等） */
+    .hm-panel {
+      position: fixed;
+      top: 0; right: 0;
+      width: 340px;
+      height: 100vh;
+      background: #232323;
+      color: #fff;
+      z-index: 1002;
+      box-shadow: -2px 0 16px #0008;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+    }
+    .hm-panel.open { transform: translateX(0); }
+    .hm-panel-header {
+      font-size: 1.3rem;
+      font-weight: 500;
+      padding: 22px 24px 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hm-panel-close {
+      background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer;
+    }
+    .hm-panel-content { flex: 1; padding: 0 24px 24px 24px; overflow-y: auto; }
+    .hm-panel-divider { border-bottom: 1px solid #444; margin: 12px 0; }
+    .hm-panel label { display: flex; align-items: center; gap: 10px; margin: 18px 0 0 0; }
+    .hm-panel input[type=range] { width: 120px; }
+    .hm-panel select { background: #232323; color: #fff; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; }
+    .hm-panel .hm-notice-list { margin: 0; padding: 0; list-style: none; }
+    .hm-panel .hm-notice-list li { margin-bottom: 12px; font-size: 1.05rem; }
+    .hm-panel .hm-notice-empty { color: #aaa; font-size: 1.1rem; margin-top: 18px; }
