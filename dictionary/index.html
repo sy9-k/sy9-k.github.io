@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="複数の言語辞書に対応した検索アプリケーション" />
-<meta name="theme-color" content="#2563eb" />
+<meta name="theme-color" content="#1b4b8d" />
 <title>MALU</title>
 <link rel="stylesheet" href="styles.css" />
 <link rel="manifest" href="manifest.json" />
@@ -76,6 +76,7 @@
             <a href="#settings-general" class="settings-nav__item active" data-settings-target="settings-general">基本設定</a>
             <a href="#settings-data" class="settings-nav__item" data-settings-target="settings-data">データ</a>
             <a href="#settings-status" class="settings-nav__item" data-settings-target="settings-status">状態</a>
+            <a href="#settings-pwa" class="settings-nav__item" data-settings-target="settings-pwa">PWA</a>
             <a href="#settings-about" class="settings-nav__item" data-settings-target="settings-about">このアプリについて</a>
           </nav>
         </aside>
@@ -98,6 +99,17 @@
               <div class="settings-mode">
                 <label><input type="radio" name="open-mode" value="new" /> 新しいタブ</label>
                 <label><input type="radio" name="open-mode" value="same" /> 同じタブ</label>
+              </div>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">テーマ</p>
+                <p class="settings-item__description">画面の明るさを切り替えます。</p>
+              </div>
+              <div class="settings-mode">
+                <label><input type="radio" name="theme-mode" value="auto" /> 自動</label>
+                <label><input type="radio" name="theme-mode" value="light" /> ライト</label>
+                <label><input type="radio" name="theme-mode" value="dark" /> ダーク</label>
               </div>
             </div>
           </section>
@@ -127,6 +139,31 @@
                 <p class="settings-item__title">ネットワーク状態</p>
                 <p id="network-status" class="settings-item__description">現在: オンライン</p>
               </div>
+            </div>
+          </section>
+
+          <section id="settings-pwa" class="settings-section" aria-labelledby="settings-pwa-title">
+            <h3 id="settings-pwa-title">PWA</h3>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">インストール</p>
+                <p id="pwa-install-status" class="settings-item__description">インストール状態を確認しています。</p>
+              </div>
+              <button id="pwa-install-button" type="button" class="settings-action">インストール</button>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">更新</p>
+                <p id="pwa-update-status" class="settings-item__description">Service Worker の更新を確認します。</p>
+              </div>
+              <button id="pwa-check-update" type="button" class="settings-action">更新を確認</button>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">キャッシュ</p>
+                <p class="settings-item__description">保存済みのPWAキャッシュを削除して再読み込みします。</p>
+              </div>
+              <button id="pwa-reset-cache" type="button" class="settings-action">再読み込み</button>
             </div>
           </section>
 

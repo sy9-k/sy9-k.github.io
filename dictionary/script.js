@@ -1,4 +1,5 @@
 const form = document.getElementById('dictionary-form');
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 const queryInput = document.getElementById('query-input');
 const searchButton = document.querySelector('.btn-search');
 const categoryButtons = document.querySelectorAll('.category-tab');
@@ -14,10 +15,16 @@ const settingsNavItems = document.querySelectorAll('.settings-nav__item');
 const settingsSections = document.querySelectorAll('.settings-section');
 const defaultDictionarySelect = document.getElementById('default-dictionary');
 const openModeInputs = document.querySelectorAll('input[name="open-mode"]');
+const themeModeInputs = document.querySelectorAll('input[name="theme-mode"]');
 const clearHistoryButton = document.getElementById('clear-history');
 const resetCacheButton = document.getElementById('reset-cache');
 const networkStatus = document.getElementById('network-status');
 const checkUpdateButton = document.getElementById('check-update');
+const pwaInstallButton = document.getElementById('pwa-install-button');
+const pwaInstallStatus = document.getElementById('pwa-install-status');
+const pwaUpdateStatus = document.getElementById('pwa-update-status');
+const pwaCheckUpdateButton = document.getElementById('pwa-check-update');
+const pwaResetCacheButton = document.getElementById('pwa-reset-cache');
 const aboutUpdateStatus = document.getElementById('about-update-status');
 const appVersion = document.getElementById('app-version');
 const installBanner = document.getElementById('install-banner');
@@ -26,7 +33,33 @@ const installDismiss = document.getElementById('install-dismiss');
 const currentTime = document.getElementById('current-time');
 const CACHE_NAME = 'dictionary-v1';
 const APP_VERSION = '1.0.0';
-const DEFAULT_SETTINGS = { defaultDictionary: 'weblio', openMode: 'new' };
+const DEFAULT_SETTINGS = { defaultDictionary: 'weblio', openMode: 'new', theme: 'auto' };
+const DICTIONARY_THEME_COLORS = {
+  weblio: '#1b4b8d',
+  goo: '#2563a9',
+  kotobank: '#334d8f',
+  daijirin: '#123a6d',
+  oxford: '#1a73e8',
+  cambridge: '#2563eb',
+  longman: '#0f5fc9',
+  macmillan: '#0b4da2',
+  naver_kr: '#d93025',
+  daum_kr: '#c5221f',
+  papago_ko: '#e5483f',
+  google_ko: '#b91c1c',
+  naver_zh: '#ff6f00',
+  baidu_zh: '#f4511e',
+  google_zh: '#e85d04',
+  papago_zh: '#c2410c',
+  jisho: '#0f9d58',
+  alc: '#16a34a',
+  weblio_ej: '#15803d',
+  deepl_ej: '#047857',
+  naver_ja_ko: '#fbbc05',
+  daum_ja_ko: '#eab308',
+  papago_jk: '#d97706',
+  google_jk: '#ca8a04'
+};
 let selectedCategory = 'kokugo';
 let selectedDictionary = 'weblio';
 let searchHistory = loadSearchHistory();
@@ -58,6 +91,22 @@ function loadSettings() {
 
 function saveSettings() {
   localStorage.setItem('dictionarySettings', JSON.stringify(settings));
+}
+
+function isStandaloneApp() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function getResolvedTheme() {
+  if (settings.theme === 'dark') return 'dark';
+  if (settings.theme === 'light') return 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme() {
+  const resolvedTheme = getResolvedTheme();
+  document.documentElement.dataset.theme = resolvedTheme;
+  document.documentElement.style.colorScheme = resolvedTheme;
 }
 
 function findCategoryForDictionary(dictionaryKey) {
@@ -107,6 +156,50 @@ function updateOpenModeInputs() {
   });
 }
 
+function updateThemeModeInputs() {
+  if (!themeModeInputs) return;
+  themeModeInputs.forEach((input) => {
+    input.checked = input.value === settings.theme;
+  });
+}
+
+function updatePwaInstallState() {
+  if (!pwaInstallButton && !pwaInstallStatus) return;
+
+  const installed = isStandaloneApp();
+  if (pwaInstallStatus) {
+    if (installed) {
+      pwaInstallStatus.textContent = 'このアプリはインストール済みです。';
+    } else if (deferredInstallPrompt) {
+      pwaInstallStatus.textContent = 'この端末にアプリとしてインストールできます。';
+    } else {
+      pwaInstallStatus.textContent = 'ブラウザの条件がそろうとインストールできます。';
+    }
+  }
+
+  if (pwaInstallButton) {
+    pwaInstallButton.disabled = installed || !deferredInstallPrompt;
+    pwaInstallButton.textContent = installed ? 'インストール済み' : 'インストール';
+  }
+}
+
+async function handleInstallPrompt() {
+  if (!deferredInstallPrompt) {
+    updatePwaInstallState();
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  const choiceResult = await deferredInstallPrompt.userChoice;
+  if (choiceResult.outcome === 'accepted') {
+    console.log('PWA install accepted');
+  } else {
+    console.log('PWA install dismissed');
+  }
+  deferredInstallPrompt = null;
+  hideInstallBanner();
+  updatePwaInstallState();
+}
+
 function bindSettingsEvents() {
   if (defaultDictionarySelect) {
     defaultDictionarySelect.addEventListener('change', (event) => {
@@ -122,6 +215,16 @@ function bindSettingsEvents() {
       input.addEventListener('change', (event) => {
         settings.openMode = event.target.value;
         saveSettings();
+      });
+    });
+  }
+
+  if (themeModeInputs) {
+    themeModeInputs.forEach((input) => {
+      input.addEventListener('change', (event) => {
+        settings.theme = event.target.value;
+        saveSettings();
+        applyTheme();
       });
     });
   }
@@ -210,6 +313,7 @@ function renderSearchHistory() {
         button.addEventListener('click', () => {
           queryInput.value = item.term;
           selectedDictionary = item.dictionaryKey;
+          setAccent(getSelectedAccentColor());
           renderDictionaryButtons();
           queryInput.focus();
         });
@@ -325,8 +429,38 @@ const dictionaryUrls = {
   papago_zh: (term) => `https://papago.naver.com/?sk=ja&tk=zh-CN&st=${encodeURIComponent(term)}`
 };
 
+function getSelectedAccentColor() {
+  return DICTIONARY_THEME_COLORS[selectedDictionary] || categories[selectedCategory].color;
+}
+
 function setAccent(color) {
   document.documentElement.style.setProperty('--accent-color', color);
+  if (themeColorMeta) {
+    themeColorMeta.setAttribute('content', color);
+  }
+}
+
+function animateElement(element, className, duration = 320) {
+  if (!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+  window.setTimeout(() => {
+    element.classList.remove(className);
+  }, duration);
+}
+
+function updateDictionaryButtonSelection() {
+  const buttons = dictionarySelectRow.querySelectorAll('.dict-pill');
+  buttons.forEach((button) => {
+    const isActive = button.dataset.dictionary === selectedDictionary;
+    const wasActive = button.classList.contains('active');
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+    if (isActive && !wasActive) {
+      animateElement(button, 'dict-pill--selected');
+    }
+  });
 }
 
 function renderDictionaryButtons() {
@@ -339,6 +473,7 @@ function renderDictionaryButtons() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = `dict-pill ${dictionary.key}${dictionary.key === selectedDictionary ? ' active' : ''}`;
+    button.setAttribute('aria-pressed', String(dictionary.key === selectedDictionary));
     if (isOffline) {
       button.classList.add('disabled');
       button.disabled = true;
@@ -362,6 +497,7 @@ function renderDictionaryButtons() {
     });
     dictionarySelectRow.appendChild(button);
   });
+  animateElement(dictionarySelectRow, 'dictionary-select--enter', 360);
 }
 
 function showInstallBanner() {
@@ -377,27 +513,55 @@ function hideInstallBanner() {
 }
 
 function openSettings() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (mainView) mainView.classList.add('hide');
+    if (settingsOverlay) settingsOverlay.classList.remove('hide');
+    if (settingsClose) settingsClose.focus();
+    return;
+  }
+
   if (mainView) {
-    mainView.classList.add('hide');
+    mainView.classList.add('view-exit');
   }
-  if (settingsOverlay) {
-    settingsOverlay.classList.remove('hide');
-  }
-  if (settingsClose) {
-    settingsClose.focus();
-  }
+  window.setTimeout(() => {
+    if (mainView) {
+      mainView.classList.add('hide');
+      mainView.classList.remove('view-exit');
+    }
+    if (settingsOverlay) {
+      settingsOverlay.classList.remove('hide');
+      animateElement(settingsOverlay, 'settings-view--enter', 360);
+    }
+    if (settingsClose) {
+      settingsClose.focus();
+    }
+  }, 180);
 }
 
 function closeSettings() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (settingsOverlay) settingsOverlay.classList.add('hide');
+    if (mainView) mainView.classList.remove('hide');
+    if (settingsButton) settingsButton.focus();
+    return;
+  }
+
   if (settingsOverlay) {
-    settingsOverlay.classList.add('hide');
+    settingsOverlay.classList.add('settings-view--leave');
   }
-  if (mainView) {
-    mainView.classList.remove('hide');
-  }
-  if (settingsButton) {
-    settingsButton.focus();
-  }
+  window.setTimeout(() => {
+    if (settingsOverlay) {
+      settingsOverlay.classList.add('hide');
+      settingsOverlay.classList.remove('settings-view--leave');
+    }
+    if (mainView) {
+      mainView.classList.remove('hide');
+      animateElement(mainView, 'view-enter', 320);
+    }
+    if (settingsButton) {
+      settingsButton.focus();
+    }
+  }, 220);
 }
 
 function showSettingsSection(sectionId) {
@@ -434,11 +598,20 @@ function updateNetworkStatusLabel() {
 }
 
 function checkForUpdates() {
-  if (!aboutUpdateStatus) return;
-  aboutUpdateStatus.textContent = '更新を確認しています...';
+  if (aboutUpdateStatus) {
+    aboutUpdateStatus.textContent = '更新を確認しています...';
+  }
+  if (pwaUpdateStatus) {
+    pwaUpdateStatus.textContent = '更新を確認しています...';
+  }
 
   window.setTimeout(() => {
-    aboutUpdateStatus.textContent = 'MALU は最新です';
+    if (aboutUpdateStatus) {
+      aboutUpdateStatus.textContent = 'MALU は最新です';
+    }
+    if (pwaUpdateStatus) {
+      pwaUpdateStatus.textContent = 'MALU は最新です。';
+    }
   }, 600);
 }
 
@@ -450,15 +623,16 @@ function updateCategorySelection() {
   if (!category.dictionaries.some((dict) => dict.key === selectedDictionary)) {
     selectedDictionary = category.dictionaries[0].key;
   }
-  setAccent(category.color);
+  setAccent(getSelectedAccentColor());
   renderDictionaryButtons();
   renderSearchHistory();
 }
 
 function handleDictionarySelection(dictionaryKey) {
+  if (selectedDictionary === dictionaryKey) return;
   selectedDictionary = dictionaryKey;
-  setAccent(categories[selectedCategory].color);
-  renderDictionaryButtons();
+  setAccent(getSelectedAccentColor());
+  updateDictionaryButtonSelection();
 }
 
 function setOfflineMode(value) {
@@ -485,6 +659,17 @@ function updateOnlineStatus() {
 
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
+const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+const handleColorSchemeChange = () => {
+  if (settings.theme === 'auto') {
+    applyTheme();
+  }
+};
+if (colorSchemeQuery.addEventListener) {
+  colorSchemeQuery.addEventListener('change', handleColorSchemeChange);
+} else if (colorSchemeQuery.addListener) {
+  colorSchemeQuery.addListener(handleColorSchemeChange);
+}
 
 
 function updateTime() {
@@ -538,6 +723,18 @@ if (checkUpdateButton) {
   checkUpdateButton.addEventListener('click', checkForUpdates);
 }
 
+if (pwaInstallButton) {
+  pwaInstallButton.addEventListener('click', handleInstallPrompt);
+}
+
+if (pwaCheckUpdateButton) {
+  pwaCheckUpdateButton.addEventListener('click', checkForUpdates);
+}
+
+if (pwaResetCacheButton) {
+  pwaResetCacheButton.addEventListener('click', resetCacheAndReload);
+}
+
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && settingsOverlay && !settingsOverlay.classList.contains('hide')) {
     closeSettings();
@@ -545,18 +742,7 @@ window.addEventListener('keydown', (event) => {
 });
 
 if (installButton) {
-  installButton.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    const choiceResult = await deferredInstallPrompt.userChoice;
-    if (choiceResult.outcome === 'accepted') {
-      console.log('PWA install accepted');
-    } else {
-      console.log('PWA install dismissed');
-    }
-    deferredInstallPrompt = null;
-    hideInstallBanner();
-  });
+  installButton.addEventListener('click', handleInstallPrompt);
 }
 
 if (installDismiss) {
@@ -567,11 +753,13 @@ window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();
   deferredInstallPrompt = event;
   showInstallBanner();
+  updatePwaInstallState();
 });
 
 window.addEventListener('appinstalled', () => {
   deferredInstallPrompt = null;
   hideInstallBanner();
+  updatePwaInstallState();
 });
 
 form.addEventListener('submit', (event) => {
@@ -597,13 +785,16 @@ form.addEventListener('submit', (event) => {
 
 window.addEventListener('DOMContentLoaded', () => {
   applySettings();
+  applyTheme();
   populateDefaultDictionarySelect();
   updateOpenModeInputs();
+  updateThemeModeInputs();
   bindSettingsEvents();
   if (appVersion) {
     appVersion.textContent = APP_VERSION;
   }
   updateCategorySelection();
+  updatePwaInstallState();
   updateTime();
   setInterval(updateTime, 60_000);
   updateOnlineStatus();
