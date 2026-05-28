@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>辞書検索</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <nav class="nav-global-wrap">
+        <ul class="nav-global">
+          <li class="item"><p class="nav-text"><button class="nav-link category-tab active" type="button" data-category="kokugo">国語辞書</button></p></li>
+          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="eigo">英語辞書</button></p></li>
+          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="kankoku">韓国語辞書</button></p></li>
+          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="chinese">中国語辞典</button></p></li>
+          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="eij">英和・和英辞典</button></p></li>
+          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="nikankoku">日韓・韓日辞典</button></p></li>
+        </ul>
+      </nav>
+
+      <div class="time-banner">
+        <p class="time-label" id="current-date">--年--月--日 --曜日</p>
+        <p class="time-value" id="current-time">--:--</p>
+      </div>
+    </header>
+
+    <section class="search-area">
+      <div class="search-area-inner">
+        <p class="search-area-title">調べたいことばを検索しよう</p>
+        <form id="dictionary-form" action="#" method="get">
+          <div class="dictionary-panel">
+            <div class="form-group">
+              <div class="input-group">
+                <input id="query-input" type="text" maxlength="2048" name="query" class="form-control form-search" placeholder="言葉を入力して検索する" autocomplete="off" autofocus>
+                <div class="input-group-append">
+                  <button class="btn-search" type="submit" aria-label="検索"><span class="ico-search">🔍</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="dictionary-select" id="dictionary-select-row" role="group" aria-label="辞書選択"></div>
+        <div class="search-history" id="search-history" aria-live="polite"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="intelligence-box">
+    <div class="intelligence-icon">Enterキーでアクセス</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
