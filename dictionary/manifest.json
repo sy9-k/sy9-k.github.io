@@ -1,6 +1,6 @@
 {
-  "name": "辞書検索アプリ",
-  "short_name": "辞書検索",
+  "name": "Online Dictionary",
+  "short_name": "OnlineDict",
   "description": "複数の言語辞書に対応した検索アプリケーション",
   "start_url": "/dictionary/",
   "scope": "/dictionary/",
