@@ -438,7 +438,7 @@ function checkForUpdates() {
   aboutUpdateStatus.textContent = '更新を確認しています...';
 
   window.setTimeout(() => {
-    aboutUpdateStatus.textContent = 'Online Dictionary は最新です';
+    aboutUpdateStatus.textContent = 'MALU は最新です';
   }, 600);
 }
 

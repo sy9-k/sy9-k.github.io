@@ -1,6 +1,6 @@
 {
-  "name": "Online Dictionary",
-  "short_name": "OnlineDict",
+  "name": "MALU",
+  "short_name": "MALU",
   "description": "このアプリで世界中のオンライン辞書にアクセスしましょう。",
   "start_url": "/dictionary/",
   "scope": "/dictionary/",
