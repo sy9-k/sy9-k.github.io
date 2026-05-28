@@ -1,13 +1,31 @@
 const form = document.getElementById('dictionary-form');
 const queryInput = document.getElementById('query-input');
+const searchButton = document.querySelector('.btn-search');
 const categoryButtons = document.querySelectorAll('.category-tab');
 const dictionaryPanel = document.querySelector('.dictionary-panel');
 const dictionarySelectRow = document.getElementById('dictionary-select-row');
 const historyContainer = document.getElementById('search-history');
+const offlineOverlay = document.getElementById('offline-overlay');
+const settingsButton = document.getElementById('settings-button');
+const settingsOverlay = document.getElementById('settings-overlay');
+const settingsClose = document.getElementById('settings-close');
+const defaultDictionarySelect = document.getElementById('default-dictionary');
+const openModeInputs = document.querySelectorAll('input[name="open-mode"]');
+const clearHistoryButton = document.getElementById('clear-history');
+const resetCacheButton = document.getElementById('reset-cache');
+const networkStatus = document.getElementById('network-status');
+const installBanner = document.getElementById('install-banner');
+const installButton = document.getElementById('install-button');
+const installDismiss = document.getElementById('install-dismiss');
 const currentTime = document.getElementById('current-time');
+const CACHE_NAME = 'dictionary-v1';
+const DEFAULT_SETTINGS = { defaultDictionary: 'weblio', openMode: 'new' };
 let selectedCategory = 'kokugo';
 let selectedDictionary = 'weblio';
 let searchHistory = loadSearchHistory();
+let settings = loadSettings();
+let isOffline = false;
+let deferredInstallPrompt = null;
 
 function loadSearchHistory() {
   try {
@@ -20,6 +38,90 @@ function loadSearchHistory() {
 
 function saveSearchHistory() {
   localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+}
+
+function loadSettings() {
+  try {
+    const stored = localStorage.getItem('dictionarySettings');
+    return stored ? { ...DEFAULT_SETTINGS, ...JSON.parse(stored) } : { ...DEFAULT_SETTINGS };
+  } catch (error) {
+    return { ...DEFAULT_SETTINGS };
+  }
+}
+
+function saveSettings() {
+  localStorage.setItem('dictionarySettings', JSON.stringify(settings));
+}
+
+function findCategoryForDictionary(dictionaryKey) {
+  return Object.entries(categories).find(([, category]) =>
+    category.dictionaries.some((dict) => dict.key === dictionaryKey)
+  )?.[0];
+}
+
+function applySettings() {
+  const category = findCategoryForDictionary(settings.defaultDictionary);
+  if (category) {
+    selectedCategory = category;
+    selectedDictionary = settings.defaultDictionary;
+  } else {
+    selectedCategory = 'kokugo';
+    selectedDictionary = DEFAULT_SETTINGS.defaultDictionary;
+    settings.defaultDictionary = DEFAULT_SETTINGS.defaultDictionary;
+    saveSettings();
+  }
+}
+
+function populateDefaultDictionarySelect() {
+  if (!defaultDictionarySelect) return;
+  defaultDictionarySelect.innerHTML = '';
+
+  Object.entries(categories).forEach(([categoryKey, category]) => {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = category.label;
+
+    category.dictionaries.forEach((dictionary) => {
+      const option = document.createElement('option');
+      option.value = dictionary.key;
+      option.textContent = dictionary.label;
+      optgroup.appendChild(option);
+    });
+
+    defaultDictionarySelect.appendChild(optgroup);
+  });
+
+  defaultDictionarySelect.value = settings.defaultDictionary || DEFAULT_SETTINGS.defaultDictionary;
+}
+
+function updateOpenModeInputs() {
+  if (!openModeInputs) return;
+  openModeInputs.forEach((input) => {
+    input.checked = input.value === settings.openMode;
+  });
+}
+
+function bindSettingsEvents() {
+  if (defaultDictionarySelect) {
+    defaultDictionarySelect.addEventListener('change', (event) => {
+      settings.defaultDictionary = event.target.value;
+      saveSettings();
+      applySettings();
+      updateCategorySelection();
+    });
+  }
+
+  if (openModeInputs) {
+    openModeInputs.forEach((input) => {
+      input.addEventListener('change', (event) => {
+        settings.openMode = event.target.value;
+        saveSettings();
+      });
+    });
+  }
+}
+
+function getResultTarget() {
+  return settings.openMode === 'same' ? '_self' : '_blank';
 }
 
 function getDictionaryLabel(dictionaryKey) {
@@ -230,9 +332,18 @@ function renderDictionaryButtons() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = `dict-pill${dictionary.key === selectedDictionary ? ' active' : ''}`;
-    button.textContent = dictionary.label;
+    if (isOffline) {
+      button.classList.add('disabled');
+      button.disabled = true;
+    }
     button.dataset.dictionary = dictionary.key;
+
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = dictionary.label;
+    button.appendChild(labelSpan);
+
     button.addEventListener('click', () => {
+      if (isOffline) return;
       handleDictionarySelection(dictionary.key);
       queryInput.focus();
     });
@@ -240,12 +351,61 @@ function renderDictionaryButtons() {
   });
 }
 
+function showInstallBanner() {
+  if (installBanner) {
+    installBanner.classList.remove('hide');
+  }
+}
+
+function hideInstallBanner() {
+  if (installBanner) {
+    installBanner.classList.add('hide');
+  }
+}
+
+function openSettings() {
+  if (settingsOverlay) {
+    settingsOverlay.classList.remove('hide');
+  }
+}
+
+function closeSettings() {
+  if (settingsOverlay) {
+    settingsOverlay.classList.add('hide');
+  }
+}
+
+function clearSearchHistory() {
+  searchHistory = [];
+  saveSearchHistory();
+  renderSearchHistory();
+  alert('検索履歴を削除しました。');
+}
+
+function resetCacheAndReload() {
+  if ('caches' in window) {
+    caches.delete(CACHE_NAME).finally(() => {
+      window.location.reload();
+    });
+  } else {
+    window.location.reload();
+  }
+}
+
+function updateNetworkStatusLabel() {
+  if (networkStatus) {
+    networkStatus.textContent = `現在: ${navigator.onLine ? 'オンライン' : 'オフライン'}`;
+  }
+}
+
 function updateCategorySelection() {
   categoryButtons.forEach((button) => {
     button.classList.toggle('active', button.dataset.category === selectedCategory);
   });
   const category = categories[selectedCategory];
-  selectedDictionary = category.dictionaries[0].key;
+  if (!category.dictionaries.some((dict) => dict.key === selectedDictionary)) {
+    selectedDictionary = category.dictionaries[0].key;
+  }
   setAccent(category.color);
   renderDictionaryButtons();
   renderSearchHistory();
@@ -256,6 +416,32 @@ function handleDictionarySelection(dictionaryKey) {
   setAccent(categories[selectedCategory].color);
   renderDictionaryButtons();
 }
+
+function setOfflineMode(value) {
+  isOffline = value;
+  if (offlineOverlay) {
+    offlineOverlay.classList.toggle('hide', !value);
+  }
+  if (queryInput) {
+    queryInput.disabled = value;
+  }
+  if (searchButton) {
+    searchButton.disabled = value;
+  }
+  categoryButtons.forEach((button) => {
+    button.disabled = value;
+  });
+  renderDictionaryButtons();
+}
+
+function updateOnlineStatus() {
+  setOfflineMode(!navigator.onLine);
+  updateNetworkStatusLabel();
+}
+
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
 
 function updateTime() {
   const now = new Date();
@@ -281,8 +467,71 @@ categoryButtons.forEach((button) => {
   });
 });
 
+if (settingsButton) {
+  settingsButton.addEventListener('click', openSettings);
+}
+
+if (settingsClose) {
+  settingsClose.addEventListener('click', closeSettings);
+}
+
+if (settingsOverlay) {
+  settingsOverlay.addEventListener('click', (event) => {
+    if (event.target === settingsOverlay) {
+      closeSettings();
+    }
+  });
+}
+
+if (clearHistoryButton) {
+  clearHistoryButton.addEventListener('click', clearSearchHistory);
+}
+
+if (resetCacheButton) {
+  resetCacheButton.addEventListener('click', resetCacheAndReload);
+}
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && settingsOverlay && !settingsOverlay.classList.contains('hide')) {
+    closeSettings();
+  }
+});
+
+if (installButton) {
+  installButton.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const choiceResult = await deferredInstallPrompt.userChoice;
+    if (choiceResult.outcome === 'accepted') {
+      console.log('PWA install accepted');
+    } else {
+      console.log('PWA install dismissed');
+    }
+    deferredInstallPrompt = null;
+    hideInstallBanner();
+  });
+}
+
+if (installDismiss) {
+  installDismiss.addEventListener('click', hideInstallBanner);
+}
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  showInstallBanner();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  hideInstallBanner();
+});
+
 form.addEventListener('submit', (event) => {
   event.preventDefault();
+  if (isOffline) {
+    return;
+  }
   const text = queryInput.value.trim();
   if (!text) {
     queryInput.focus();
@@ -296,13 +545,14 @@ form.addEventListener('submit', (event) => {
     return;
   }
   const url = urlBuilder(text);
-  window.open(url, '_blank');
+  window.open(url, getResultTarget());
 });
 
 window.addEventListener('DOMContentLoaded', () => {
   updateCategorySelection();
   updateTime();
   setInterval(updateTime, 60_000);
+  updateOnlineStatus();
   queryInput.focus();
   
   // Service Worker の登録

@@ -12,6 +12,16 @@
 <link rel="apple-touch-icon" href="ico/icon-192.png" />
 </head>
 <body>
+  <div id="install-banner" class="install-banner hide" role="dialog" aria-live="polite">
+    <div class="install-banner__inner">
+      <p class="install-banner__text">ホーム画面に追加できます。</p>
+      <div class="install-banner__actions">
+        <button id="install-button" type="button" class="install-banner__button">追加</button>
+        <button id="install-dismiss" type="button" class="install-banner__dismiss">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <div class="wrapper">
     <header class="header">
       <nav class="nav-global-wrap">
@@ -28,6 +38,9 @@
       <div class="time-banner">
         <p class="time-label" id="current-date">--年--月--日 --曜日</p>
         <p class="time-value" id="current-time">--:--</p>
+      </div>
+      <div class="header-actions">
+        <button id="settings-button" type="button" class="settings-button">⚙ 設定</button>
       </div>
     </header>
 
@@ -52,8 +65,59 @@
     </section>
   </div>
 
-  <div class="intelligence-box">
-    <div class="intelligence-icon">Enterキーでアクセス</div>
+  <div id="settings-overlay" class="settings-overlay hide" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="settings-panel">
+      <div class="settings-panel__header">
+        <h2 id="settings-title">設定</h2>
+        <button id="settings-close" type="button" class="settings-close" aria-label="閉じる">×</button>
+      </div>
+      <div class="settings-panel__body">
+        <div class="settings-item">
+          <div>
+            <p class="settings-item__title">デフォルト辞書</p>
+            <p class="settings-item__description">検索開始時に最初に選択される辞書を設定します。</p>
+          </div>
+          <select id="default-dictionary" class="settings-select"></select>
+        </div>
+        <div class="settings-item">
+          <div>
+            <p class="settings-item__title">結果表示</p>
+            <p class="settings-item__description">検索結果を開く方法を選択します。</p>
+          </div>
+          <div class="settings-mode">
+            <label><input type="radio" name="open-mode" value="new" /> 新しいタブ</label>
+            <label><input type="radio" name="open-mode" value="same" /> 同じタブ</label>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div>
+            <p class="settings-item__title">検索履歴</p>
+            <p class="settings-item__description">保存している検索履歴を削除します。</p>
+          </div>
+          <button id="clear-history" type="button" class="settings-action">履歴を消去</button>
+        </div>
+        <div class="settings-item">
+          <div>
+            <p class="settings-item__title">キャッシュ</p>
+            <p class="settings-item__description">Service Worker キャッシュをクリアして再読み込みします。</p>
+          </div>
+          <button id="reset-cache" type="button" class="settings-action">再読み込み</button>
+        </div>
+        <div class="settings-item settings-item--status">
+          <div>
+            <p class="settings-item__title">ネットワーク状態</p>
+            <p id="network-status" class="settings-item__description">現在: オンライン</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="offline-overlay" class="offline-overlay hide" role="status" aria-live="polite">
+    <div class="offline-overlay__content">
+      <p class="offline-overlay__title">オフライン中です</p>
+      <p class="offline-overlay__description">辞書は使えません。ネットワークに接続してから再度お試しください。</p>
+    </div>
   </div>
 
   <script src="script.js"></script>
