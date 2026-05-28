@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <div class="wrapper">
+  <div id="main-view" class="wrapper">
     <header class="header">
       <nav class="nav-global-wrap">
         <ul class="nav-global">
@@ -36,11 +36,9 @@
       </nav>
 
       <div class="time-banner">
+        <button id="settings-button" type="button" class="settings-button" aria-label="設定">⚙ 設定</button>
         <p class="time-label" id="current-date">--年--月--日 --曜日</p>
         <p class="time-value" id="current-time">--:--</p>
-      </div>
-      <div class="header-actions">
-        <button id="settings-button" type="button" class="settings-button">⚙ 設定</button>
       </div>
     </header>
 
@@ -65,53 +63,107 @@
     </section>
   </div>
 
-  <div id="settings-overlay" class="settings-overlay hide" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+  <section id="settings-overlay" class="settings-view hide" aria-labelledby="settings-title">
     <div class="settings-panel">
       <div class="settings-panel__header">
         <h2 id="settings-title">設定</h2>
-        <button id="settings-close" type="button" class="settings-close" aria-label="閉じる">×</button>
+        <button id="settings-close" type="button" class="settings-close" aria-label="戻る">戻る</button>
       </div>
-      <div class="settings-panel__body">
-        <div class="settings-item">
-          <div>
-            <p class="settings-item__title">デフォルト辞書</p>
-            <p class="settings-item__description">検索開始時に最初に選択される辞書を設定します。</p>
+      <div class="settings-layout">
+        <aside class="settings-sidebar" aria-label="設定カテゴリ">
+          <p class="settings-sidebar__title">Online Dictionary</p>
+          <nav class="settings-nav">
+            <a href="#settings-general" class="settings-nav__item active" data-settings-target="settings-general">基本設定</a>
+            <a href="#settings-data" class="settings-nav__item" data-settings-target="settings-data">データ</a>
+            <a href="#settings-status" class="settings-nav__item" data-settings-target="settings-status">状態</a>
+            <a href="#settings-about" class="settings-nav__item" data-settings-target="settings-about">このアプリについて</a>
+          </nav>
+        </aside>
+
+        <div class="settings-panel__body">
+          <section id="settings-general" class="settings-section settings-section--active" aria-labelledby="settings-general-title">
+            <h3 id="settings-general-title">基本設定</h3>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">デフォルト辞書</p>
+                <p class="settings-item__description">検索開始時に最初に選択される辞書を設定します。</p>
+              </div>
+              <select id="default-dictionary" class="settings-select"></select>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">結果表示</p>
+                <p class="settings-item__description">検索結果を開く方法を選択します。</p>
+              </div>
+              <div class="settings-mode">
+                <label><input type="radio" name="open-mode" value="new" /> 新しいタブ</label>
+                <label><input type="radio" name="open-mode" value="same" /> 同じタブ</label>
+              </div>
+            </div>
+          </section>
+
+          <section id="settings-data" class="settings-section" aria-labelledby="settings-data-title">
+            <h3 id="settings-data-title">データ</h3>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">検索履歴</p>
+                <p class="settings-item__description">保存している検索履歴を削除します。</p>
+              </div>
+              <button id="clear-history" type="button" class="settings-action">履歴を消去</button>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">キャッシュ</p>
+                <p class="settings-item__description">Service Worker キャッシュをクリアして再読み込みします。</p>
+              </div>
+              <button id="reset-cache" type="button" class="settings-action">再読み込み</button>
+            </div>
+          </section>
+
+          <section id="settings-status" class="settings-section" aria-labelledby="settings-status-title">
+            <h3 id="settings-status-title">状態</h3>
+            <div class="settings-item settings-item--status">
+              <div>
+                <p class="settings-item__title">ネットワーク状態</p>
+                <p id="network-status" class="settings-item__description">現在: オンライン</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="settings-about" class="settings-section settings-about" aria-labelledby="settings-about-title">
+            <h3 id="settings-about-title">このアプリについて</h3>
+            <div class="about-header">
+              <img class="about-icon" src="ico/icon-192.png" alt="" width="72" height="72">
+              <div>
+                <p class="about-name">Online Dictionary</p>
+                <p class="about-description">複数のオンライン辞書をすばやく開ける検索アプリです。</p>
+              </div>
+            </div>
+            <div class="about-status">
+              <div class="about-status__mark" aria-hidden="true">✓</div>
+              <div>
+                <p id="about-update-status" class="settings-item__title">Online Dictionary は最新です</p>
+                <p class="settings-item__description">更新は Service Worker とブラウザのキャッシュによって自動的に反映されます。</p>
+              </div>
+              <button id="check-update" type="button" class="settings-action">更新を確認</button>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">バージョン</p>
+                <p id="app-version" class="settings-item__description">1.0.0</p>
+              </div>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">アプリの種類</p>
+                <p class="settings-item__description">Progressive Web App</p>
+              </div>
+            </div>
+          </section>
           </div>
-          <select id="default-dictionary" class="settings-select"></select>
-        </div>
-        <div class="settings-item">
-          <div>
-            <p class="settings-item__title">結果表示</p>
-            <p class="settings-item__description">検索結果を開く方法を選択します。</p>
-          </div>
-          <div class="settings-mode">
-            <label><input type="radio" name="open-mode" value="new" /> 新しいタブ</label>
-            <label><input type="radio" name="open-mode" value="same" /> 同じタブ</label>
-          </div>
-        </div>
-        <div class="settings-item">
-          <div>
-            <p class="settings-item__title">検索履歴</p>
-            <p class="settings-item__description">保存している検索履歴を削除します。</p>
-          </div>
-          <button id="clear-history" type="button" class="settings-action">履歴を消去</button>
-        </div>
-        <div class="settings-item">
-          <div>
-            <p class="settings-item__title">キャッシュ</p>
-            <p class="settings-item__description">Service Worker キャッシュをクリアして再読み込みします。</p>
-          </div>
-          <button id="reset-cache" type="button" class="settings-action">再読み込み</button>
-        </div>
-        <div class="settings-item settings-item--status">
-          <div>
-            <p class="settings-item__title">ネットワーク状態</p>
-            <p id="network-status" class="settings-item__description">現在: オンライン</p>
-          </div>
-        </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <div id="offline-overlay" class="offline-overlay hide" role="status" aria-live="polite">
     <div class="offline-overlay__content">

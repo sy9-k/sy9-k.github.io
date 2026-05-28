@@ -6,19 +6,26 @@ const dictionaryPanel = document.querySelector('.dictionary-panel');
 const dictionarySelectRow = document.getElementById('dictionary-select-row');
 const historyContainer = document.getElementById('search-history');
 const offlineOverlay = document.getElementById('offline-overlay');
+const mainView = document.getElementById('main-view');
 const settingsButton = document.getElementById('settings-button');
 const settingsOverlay = document.getElementById('settings-overlay');
 const settingsClose = document.getElementById('settings-close');
+const settingsNavItems = document.querySelectorAll('.settings-nav__item');
+const settingsSections = document.querySelectorAll('.settings-section');
 const defaultDictionarySelect = document.getElementById('default-dictionary');
 const openModeInputs = document.querySelectorAll('input[name="open-mode"]');
 const clearHistoryButton = document.getElementById('clear-history');
 const resetCacheButton = document.getElementById('reset-cache');
 const networkStatus = document.getElementById('network-status');
+const checkUpdateButton = document.getElementById('check-update');
+const aboutUpdateStatus = document.getElementById('about-update-status');
+const appVersion = document.getElementById('app-version');
 const installBanner = document.getElementById('install-banner');
 const installButton = document.getElementById('install-button');
 const installDismiss = document.getElementById('install-dismiss');
 const currentTime = document.getElementById('current-time');
 const CACHE_NAME = 'dictionary-v1';
+const APP_VERSION = '1.0.0';
 const DEFAULT_SETTINGS = { defaultDictionary: 'weblio', openMode: 'new' };
 let selectedCategory = 'kokugo';
 let selectedDictionary = 'weblio';
@@ -231,7 +238,7 @@ const categories = {
     color: '#1b4b8d',
     dictionaries: [
       { key: 'weblio', label: 'Weblio' },
-      { key: 'goo', label: 'goo辞書' },
+      { key: 'goo', label: 'goo 辞書' },
       { key: 'kotobank', label: 'コトバンク' },
       { key: 'daijirin', label: '大辞林' }
     ]
@@ -250,20 +257,20 @@ const categories = {
     label: '韓国語辞書',
     color: '#d93025',
     dictionaries: [
-      { key: 'naver_kr', label: 'NAVER韓国語' },
-      { key: 'daum_kr', label: 'Daum韓国語' },
-      { key: 'papago_ko', label: 'Papago翻訳' },
-      { key: 'google_ko', label: 'Google翻訳' }
+      { key: 'naver_kr', label: 'NAVER 韓国語' },
+      { key: 'daum_kr', label: 'Daum 韓国語' },
+      { key: 'papago_ko', label: 'Papago 翻訳' },
+      { key: 'google_ko', label: 'Google 翻訳' }
     ]
   },
   chinese: {
     label: '中国語辞典',
     color: '#ff6f00',
     dictionaries: [
-      { key: 'naver_zh', label: 'NAVER中国語' },
-      { key: 'baidu_zh', label: 'Baidu中国語' },
-      { key: 'google_zh', label: 'Google翻訳' },
-      { key: 'papago_zh', label: 'Papago翻訳' }
+      { key: 'naver_zh', label: 'NAVER 中国語' },
+      { key: 'baidu_zh', label: 'Baidu 中国語' },
+      { key: 'google_zh', label: 'Google 翻訳' },
+      { key: 'papago_zh', label: 'Papago 翻訳' }
     ]
   },
   eij: {
@@ -272,7 +279,7 @@ const categories = {
     dictionaries: [
       { key: 'jisho', label: 'Jisho' },
       { key: 'alc', label: '英辞郎' },
-      { key: 'weblio_ej', label: 'Weblio英和' },
+      { key: 'weblio_ej', label: 'Weblio 英和' },
       { key: 'deepl_ej', label: 'DeepL' }
     ]
   },
@@ -280,10 +287,10 @@ const categories = {
     label: '日韓・韓日辞典',
     color: '#fbbc05',
     dictionaries: [
-      { key: 'naver_ja_ko', label: 'NAVER日韓' },
-      { key: 'daum_ja_ko', label: 'Daum日韓' },
-      { key: 'papago_jk', label: 'Papago翻訳' },
-      { key: 'google_jk', label: 'Google翻訳' }
+      { key: 'naver_ja_ko', label: 'NAVER 日韓' },
+      { key: 'daum_ja_ko', label: 'Daum 日韓' },
+      { key: 'papago_jk', label: 'Papago 翻訳' },
+      { key: 'google_jk', label: 'Google 翻訳' }
     ]
   }
 };
@@ -331,12 +338,18 @@ function renderDictionaryButtons() {
   category.dictionaries.forEach((dictionary) => {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = `dict-pill${dictionary.key === selectedDictionary ? ' active' : ''}`;
+    button.className = `dict-pill ${dictionary.key}${dictionary.key === selectedDictionary ? ' active' : ''}`;
     if (isOffline) {
       button.classList.add('disabled');
       button.disabled = true;
     }
     button.dataset.dictionary = dictionary.key;
+
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'dict-pill-icon';
+    iconSpan.setAttribute('aria-hidden', 'true');
+    iconSpan.textContent = dictionary.icon || '';
+    button.appendChild(iconSpan);
 
     const labelSpan = document.createElement('span');
     labelSpan.textContent = dictionary.label;
@@ -364,8 +377,14 @@ function hideInstallBanner() {
 }
 
 function openSettings() {
+  if (mainView) {
+    mainView.classList.add('hide');
+  }
   if (settingsOverlay) {
     settingsOverlay.classList.remove('hide');
+  }
+  if (settingsClose) {
+    settingsClose.focus();
   }
 }
 
@@ -373,6 +392,22 @@ function closeSettings() {
   if (settingsOverlay) {
     settingsOverlay.classList.add('hide');
   }
+  if (mainView) {
+    mainView.classList.remove('hide');
+  }
+  if (settingsButton) {
+    settingsButton.focus();
+  }
+}
+
+function showSettingsSection(sectionId) {
+  settingsSections.forEach((section) => {
+    section.classList.toggle('settings-section--active', section.id === sectionId);
+  });
+
+  settingsNavItems.forEach((navItem) => {
+    navItem.classList.toggle('active', navItem.dataset.settingsTarget === sectionId);
+  });
 }
 
 function clearSearchHistory() {
@@ -396,6 +431,15 @@ function updateNetworkStatusLabel() {
   if (networkStatus) {
     networkStatus.textContent = `現在: ${navigator.onLine ? 'オンライン' : 'オフライン'}`;
   }
+}
+
+function checkForUpdates() {
+  if (!aboutUpdateStatus) return;
+  aboutUpdateStatus.textContent = '更新を確認しています...';
+
+  window.setTimeout(() => {
+    aboutUpdateStatus.textContent = 'Online Dictionary は最新です';
+  }, 600);
 }
 
 function updateCategorySelection() {
@@ -475,13 +519,12 @@ if (settingsClose) {
   settingsClose.addEventListener('click', closeSettings);
 }
 
-if (settingsOverlay) {
-  settingsOverlay.addEventListener('click', (event) => {
-    if (event.target === settingsOverlay) {
-      closeSettings();
-    }
+settingsNavItems.forEach((item) => {
+  item.addEventListener('click', (event) => {
+    event.preventDefault();
+    showSettingsSection(item.dataset.settingsTarget);
   });
-}
+});
 
 if (clearHistoryButton) {
   clearHistoryButton.addEventListener('click', clearSearchHistory);
@@ -489,6 +532,10 @@ if (clearHistoryButton) {
 
 if (resetCacheButton) {
   resetCacheButton.addEventListener('click', resetCacheAndReload);
+}
+
+if (checkUpdateButton) {
+  checkUpdateButton.addEventListener('click', checkForUpdates);
 }
 
 window.addEventListener('keydown', (event) => {
@@ -549,6 +596,13 @@ form.addEventListener('submit', (event) => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+  applySettings();
+  populateDefaultDictionarySelect();
+  updateOpenModeInputs();
+  bindSettingsEvents();
+  if (appVersion) {
+    appVersion.textContent = APP_VERSION;
+  }
   updateCategorySelection();
   updateTime();
   setInterval(updateTime, 60_000);

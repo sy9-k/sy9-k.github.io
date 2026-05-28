@@ -1,12 +1,12 @@
 {
   "name": "Online Dictionary",
   "short_name": "OnlineDict",
-  "description": "複数の言語辞書に対応した検索アプリケーション",
+  "description": "このアプリで世界中のオンライン辞書にアクセスしましょう。",
   "start_url": "/dictionary/",
   "scope": "/dictionary/",
   "display": "standalone",
-  "background_color": "#f8fbff",
-  "theme_color": "#2563eb",
+  "background_color": "#F5F7FC",
+  "theme_color": "#F5F7FC",
   "orientation": "portrait-primary",
   "icons": [
     {
