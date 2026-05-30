@@ -124,7 +124,7 @@ a{text-decoration:none;color:inherit}
 .btn-search:hover{transform:translateY(-1px) scale(1.02)}
 .nav-link.active,.dict-pill.active{box-shadow:0 8px 22px color-mix(in srgb,var(--accent-color) 28%,transparent)}
 .dict-pill.active{transform:translateY(0)}
-.dict-pill--selected{animation:none}
+.dict-pill--selected{animation:softPop 0.28s var(--ease) both}
 .dictionary-select--enter{animation:dictListIn 0.2s var(--ease) both}
 .history-item{transition:background-color 0.2s var(--ease),border-color 0.2s var(--ease),transform 0.2s var(--ease)}
 .history-item:hover{transform:translateX(2px);border-color:color-mix(in srgb,var(--accent-color) 28%,rgba(15,23,42,0.08))}

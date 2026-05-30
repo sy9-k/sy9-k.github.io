@@ -31,9 +31,10 @@ const installBanner = document.getElementById('install-banner');
 const installButton = document.getElementById('install-button');
 const installDismiss = document.getElementById('install-dismiss');
 const currentTime = document.getElementById('current-time');
-const CACHE_NAME = 'dictionary-v1';
+const CACHE_NAME = 'dictionary-v2';
 const APP_VERSION = '1.0.0';
 const DEFAULT_SETTINGS = { defaultDictionary: 'weblio', openMode: 'new', theme: 'auto' };
+const DARK_THEME_COLOR = '#0b1120';
 const DICTIONARY_THEME_COLORS = {
   weblio: '#1b4b8d',
   goo: '#2563a9',
@@ -66,6 +67,7 @@ let searchHistory = loadSearchHistory();
 let settings = loadSettings();
 let isOffline = false;
 let deferredInstallPrompt = null;
+let serviceWorkerRegistration = null;
 
 function loadSearchHistory() {
   try {
@@ -107,6 +109,7 @@ function applyTheme() {
   const resolvedTheme = getResolvedTheme();
   document.documentElement.dataset.theme = resolvedTheme;
   document.documentElement.style.colorScheme = resolvedTheme;
+  updateThemeColor();
 }
 
 function findCategoryForDictionary(dictionaryKey) {
@@ -435,8 +438,13 @@ function getSelectedAccentColor() {
 
 function setAccent(color) {
   document.documentElement.style.setProperty('--accent-color', color);
+  updateThemeColor(color);
+}
+
+function updateThemeColor(accentColor = getSelectedAccentColor()) {
   if (themeColorMeta) {
-    themeColorMeta.setAttribute('content', color);
+    const resolvedTheme = getResolvedTheme();
+    themeColorMeta.setAttribute('content', resolvedTheme === 'dark' ? DARK_THEME_COLOR : accentColor);
   }
 }
 
@@ -583,9 +591,15 @@ function clearSearchHistory() {
 
 function resetCacheAndReload() {
   if ('caches' in window) {
-    caches.delete(CACHE_NAME).finally(() => {
-      window.location.reload();
-    });
+    caches.keys()
+      .then((cacheNames) => Promise.all(
+        cacheNames
+          .filter((cacheName) => cacheName.startsWith('dictionary-'))
+          .map((cacheName) => caches.delete(cacheName))
+      ))
+      .finally(() => {
+        window.location.reload();
+      });
   } else {
     window.location.reload();
   }
@@ -613,6 +627,55 @@ function checkForUpdates() {
       pwaUpdateStatus.textContent = 'MALU は最新です。';
     }
   }, 600);
+}
+
+async function checkForServiceWorkerUpdates() {
+  if (aboutUpdateStatus) {
+    aboutUpdateStatus.textContent = '更新を確認しています...';
+  }
+  if (pwaUpdateStatus) {
+    pwaUpdateStatus.textContent = '更新を確認しています...';
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    if (aboutUpdateStatus) {
+      aboutUpdateStatus.textContent = 'Service Worker は使用できません。';
+    }
+    if (pwaUpdateStatus) {
+      pwaUpdateStatus.textContent = 'Service Worker は使用できません。';
+    }
+    return;
+  }
+
+  try {
+    const registration = serviceWorkerRegistration || await navigator.serviceWorker.getRegistration();
+    if (!registration) {
+      throw new Error('Service Worker registration not found');
+    }
+
+    serviceWorkerRegistration = registration;
+    await registration.update();
+
+    const hasUpdate = Boolean(registration.waiting || registration.installing);
+    const message = hasUpdate
+      ? '更新を見つけました。再読み込みで反映します。'
+      : 'MALU は最新です。';
+
+    if (aboutUpdateStatus) {
+      aboutUpdateStatus.textContent = message;
+    }
+    if (pwaUpdateStatus) {
+      pwaUpdateStatus.textContent = message;
+    }
+  } catch (error) {
+    if (aboutUpdateStatus) {
+      aboutUpdateStatus.textContent = '更新の確認に失敗しました。';
+    }
+    if (pwaUpdateStatus) {
+      pwaUpdateStatus.textContent = '更新の確認に失敗しました。';
+    }
+    console.log('Service Worker update check failed:', error);
+  }
 }
 
 function updateCategorySelection() {
@@ -720,7 +783,7 @@ if (resetCacheButton) {
 }
 
 if (checkUpdateButton) {
-  checkUpdateButton.addEventListener('click', checkForUpdates);
+  checkUpdateButton.addEventListener('click', checkForServiceWorkerUpdates);
 }
 
 if (pwaInstallButton) {
@@ -728,7 +791,7 @@ if (pwaInstallButton) {
 }
 
 if (pwaCheckUpdateButton) {
-  pwaCheckUpdateButton.addEventListener('click', checkForUpdates);
+  pwaCheckUpdateButton.addEventListener('click', checkForServiceWorkerUpdates);
 }
 
 if (pwaResetCacheButton) {
@@ -803,6 +866,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Service Worker の登録
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').then((registration) => {
+      serviceWorkerRegistration = registration;
       console.log('Service Worker registered:', registration);
     }).catch((error) => {
       console.log('Service Worker registration failed:', error);
