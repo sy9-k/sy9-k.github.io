@@ -261,8 +261,13 @@
       background: #ffffff; border-radius: 16px; padding: 10px;
       transition: transform 0.2s var(--md-easing-standard);
     }
+
+    /* ドットの視認性を高めるCSS定義を追加 */
     .qr-box img, .qr-box canvas {
       max-width: 100%; max-height: 100%;
+      image-rendering: pixelated; /* ドットの境界を強調 */
+      display: block;
+      margin: auto;
     }
 
     video { width: 100%; height: 100%; object-fit: cover; }
@@ -716,7 +721,7 @@
             <div class="m3-field-container">
               <span class="m3-field-label">誤り訂正レベル</span>
               <select id="eccLevel" class="m3-field-select">
-                <option value="L" selected>L (低 - 送信量優先)</option>
+                <option value="L" selected>L (低 - ドット最大化・容量優先)</option>
                 <option value="M">M (中 - 標準)</option>
                 <option value="Q">Q (高 - 読み取り補正)</option>
                 <option value="H">H (最高 - 耐性強化)</option>
@@ -728,8 +733,8 @@
               <span class="m3-field-label">QRコード表示サイズ</span>
               <select id="qrSize" class="m3-field-select">
                 <option value="200">小 (200px)</option>
-                <option value="240" selected>中 (240px - 標準)</option>
-                <option value="280">大 (280px)</option>
+                <option value="240">中 (240px)</option>
+                <option value="280" selected>大 (280px - 高解像度)</option>
               </select>
               <span class="material-symbols-outlined m3-field-arrow">arrow_drop_down</span>
             </div>
@@ -1068,7 +1073,6 @@
     let chunks = [];
     let timer = null;
     let currentIndex = 0;
-    let qrcode = null;
 
     const fileInput = document.getElementById('fileInput');
     const fileSelectBtn = document.getElementById('fileSelectBtn');
@@ -1139,16 +1143,19 @@
       }
     }
 
+    /* QRコードのセル（ドット）を太く大きくなるよう描画処理を強化 */
     function renderQRCode(text, container = qrContainer) {
       container.innerHTML = '';
       const eccMap = { 'L': QRCode.CorrectLevel.L, 'M': QRCode.CorrectLevel.M, 'Q': QRCode.CorrectLevel.Q, 'H': QRCode.CorrectLevel.H };
       const eccSelect = document.getElementById('eccLevel').value || 'L';
-      const sizeSelect = parseInt(document.getElementById('qrSize').value, 10) || 240;
+      const sizeSelect = parseInt(document.getElementById('qrSize').value, 10) || 280;
 
       new QRCode(container, {
         text: text,
         width: sizeSelect,
         height: sizeSelect,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
         correctLevel: eccMap[eccSelect]
       });
     }
@@ -1336,7 +1343,7 @@
 
       peerConnection.onicecandidate = (e) => {
         if (!e.candidate) {
-          // 全ICE候補を含んだSDPをQR化
+          // 全ICE候補を含んだSDPをQR化（renderQRCode経由で大型表示）
           const offerSdp = JSON.stringify(peerConnection.localDescription);
           webVideo.style.display = 'none';
           renderQRCode(offerSdp, webQrDisplay);
