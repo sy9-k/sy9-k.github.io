@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>QR Drop</title>
+  
+  <!-- PWA & Apple Touch Settings -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#121212">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="QR Drop">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <!-- M PLUS 1p & Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
+  <!-- ライブラリ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #121212;
+      --surface-color: #1e1e1e;
+      --surface-variant: #2d2f31;
+      --surface-card: #28292a;
+      --primary-pill: #a8c7fa;
+      --on-primary-pill: #042e6f;
+      --outline-pill: #8e918f;
+      --text-color: #e3e2e6;
+      --text-sub: #c4c6c5;
+      --input-bg: #1e1e1e;
+      --input-border: #8e918f;
+      --md-primary: #a8c7fa;
+      --md-on-primary: #042e6f;
+    }
+
+    body.light-mode {
+      --bg-color: #f8f9fa;
+      --surface-color: #ffffff;
+      --surface-variant: #e1e3e1;
+      --surface-card: #f1f3f4;
+      --primary-pill: #0b57d0;
+      --on-primary-pill: #ffffff;
+      --outline-pill: #747775;
+      --text-color: #1f1f1f;
+      --text-sub: #444746;
+      --input-bg: #ffffff;
+      --input-border: #747775;
+      --md-primary: #0b57d0;
+      --md-on-primary: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: 'M PLUS 1p', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0; padding: 0;
+      height: 100vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .app-bar {
+      height: 56px;
+      padding: 0 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .app-bar-title {
+      font-size: 20px; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .icon-btn {
+      background: none; border: none; color: var(--text-color);
+      cursor: pointer; padding: 8px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .main-container {
+      flex: 1;
+      padding: 12px 16px 80px;
+      display: flex; flex-direction: column; gap: 20px;
+      overflow-y: auto;
+    }
+
+    .view-panel {
+      display: none; flex-direction: column; gap: 16px; flex: 1;
+      align-items: center;
+    }
+    .view-panel.active { display: flex; }
+
+    .top-action-group {
+      display: flex; gap: 12px; width: 100%; max-width: 400px;
+    }
+
+    .pill-btn {
+      flex: 1; height: 48px; border-radius: 24px;
+      font-size: 14px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      border: none; cursor: pointer; transition: all 0.2s ease;
+    }
+
+    .pill-btn-primary {
+      background-color: var(--primary-pill);
+      color: var(--on-primary-pill);
+    }
+    .pill-btn-primary:disabled { opacity: 0.38; cursor: not-allowed; }
+
+    .pill-btn-outlined {
+      background-color: transparent;
+      border: 1px solid var(--outline-pill);
+      color: var(--text-color);
+    }
+    .pill-btn-outlined:disabled { opacity: 0.38; cursor: not-allowed; }
+
+    .center-display {
+      width: 100%; max-width: 320px; aspect-ratio: 1;
+      background-color: var(--surface-variant);
+      border-radius: 32px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      margin: auto 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      padding: 16px;
+      transition: border 0.2s;
+    }
+    
+    .center-display.drag-over {
+      border: 2px dashed var(--md-primary);
+    }
+
+    #qrcode {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background: #ffffff; border-radius: 16px; padding: 10px;
+    }
+    #qrcode img, #qrcode canvas {
+      max-width: 100%; max-height: 100%;
+    }
+
+    video { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Progress Bar */
+    .progress-container {
+      width: 100%; max-width: 320px;
+      height: 6px; background-color: var(--surface-variant);
+      border-radius: 3px; overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%; width: 0%;
+      background-color: var(--md-primary);
+      transition: width 0.1s linear;
+    }
+
+    .status-text {
+      font-size: 14px; color: var(--text-sub); text-align: center;
+      min-height: 20px;
+    }
+
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 64px; background-color: var(--surface-color);
+      display: flex; justify-content: space-around; align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .nav-tab {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-sub); cursor: pointer; background: none; border: none;
+      width: 50%; height: 100%;
+    }
+
+    .nav-tab-icon {
+      width: 64px; height: 32px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.2s ease;
+    }
+
+    .nav-tab-icon .material-symbols-outlined { font-size: 24px; }
+
+    .nav-tab.active { color: var(--text-color); }
+    .nav-tab.active .nav-tab-icon {
+      background-color: #004a77;
+      color: #c2e7ff;
+    }
+
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      z-index: 1000;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal-sheet {
+      background-color: var(--surface-color);
+      border-top-left-radius: 28px; border-top-right-radius: 28px;
+      padding: 16px 20px 32px;
+      max-height: 85vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 8px;
+    }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--text-color); }
+    .done-btn {
+      background: none; border: none;
+      color: var(--md-primary); font-size: 15px; font-weight: 700;
+      cursor: pointer; padding: 4px 8px;
+    }
+
+    .setting-card {
+      background-color: var(--surface-card);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex; flex-direction: column; gap: 12px;
+      transition: background-color 0.2s ease;
+    }
+
+    .card-item {
+      display: flex; align-items: center; gap: 16px;
+      color: var(--text-color); cursor: pointer;
+    }
+    .card-item .material-symbols-outlined {
+      color: var(--text-sub); transition: transform 0.2s ease;
+    }
+    .card-item-text { display: flex; flex-direction: column; flex: 1; }
+    .card-item-title { font-size: 15px; font-weight: 700; }
+    .card-item-desc { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+
+    .card-expand-content {
+      display: none;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      flex-direction: column; gap: 16px;
+    }
+    .setting-card.open .card-expand-content { display: flex; }
+    .setting-card.open .expand-arrow { transform: rotate(180deg); }
+
+    .settings-row {
+      display: flex; gap: 12px; align-items: center;
+    }
+
+    /* M3 Controls */
+    .m3-field-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      margin-top: 6px;
+    }
+
+    .m3-field-input, .m3-field-select {
+      width: 100%;
+      height: 52px;
+      background-color: transparent;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      color: var(--text-color);
+      padding: 0 16px;
+      font-size: 15px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color 0.2s, border-width 0.1s;
+    }
+
+    .m3-field-select {
+      padding-right: 40px;
+      cursor: pointer;
+    }
+
+    .m3-field-label {
+      position: absolute;
+      left: 12px;
+      top: -9px;
+      background-color: var(--surface-card);
+      padding: 0 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-sub);
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+
+    .m3-field-arrow {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--text-sub);
+      font-size: 24px;
+    }
+
+    .m3-field-input:focus, .m3-field-select:focus {
+      border-color: var(--md-primary);
+      border-width: 2px;
+    }
+
+    .m3-field-container:focus-within .m3-field-label {
+      color: var(--md-primary);
+    }
+
+    .m3-field-select option {
+      background-color: var(--surface-color);
+      color: var(--text-color);
+    }
+
+    .m3-checkbox-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 14px;
+      color: var(--text-color);
+      padding: 4px 0;
+    }
+
+    .m3-checkbox-input {
+      position: absolute;
+      opacity: 0; width: 0; height: 0;
+    }
+
+    .m3-checkbox-box {
+      width: 20px; height: 20px;
+      border: 2px solid var(--input-border);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.2s, border-color 0.2s;
+      position: relative;
+    }
+
+    .m3-checkbox-box::after {
+      content: '';
+      width: 5px; height: 10px;
+      border: solid var(--md-on-primary);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg) scale(0);
+      transition: transform 0.15s ease-in-out;
+      margin-bottom: 2px;
+    }
+
+    .m3-checkbox-input:checked + .m3-checkbox-box {
+      background-color: var(--md-primary);
+      border-color: var(--md-primary);
+    }
+
+    .m3-checkbox-input:checked + .m3-checkbox-box::after {
+      transform: rotate(45deg) scale(1);
+    }
+
+    .m3-checkbox-container:hover .m3-checkbox-box {
+      border-color: var(--md-primary);
+    }
+
+    .theme-options { display: flex; gap: 8px; }
+
+    .footer-links {
+      display: flex; justify-content: center; gap: 16px;
+      font-size: 12px; color: var(--text-sub); padding-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-bar">
+    <div class="app-bar-title">QR Drop</div>
+    <button class="icon-btn" id="settingsBtn">
+      <span class="material-symbols-outlined">settings</span>
+    </button>
+  </header>
+
+  <main class="main-container">
+    <div id="viewSend" class="view-panel active">
+      <input type="file" id="fileInput" style="display: none;">
+      
+      <div class="top-action-group">
+        <button class="pill-btn pill-btn-primary" id="fileSelectBtn">
+          <span class="material-symbols-outlined" id="fileIcon">add</span>
+          <span id="fileNameDisplay">新しいファイル</span>
+        </button>
+        <button class="pill-btn pill-btn-outlined" id="startBtn" disabled>
+          <span class="material-symbols-outlined">play_arrow</span>
+          送信開始
+        </button>
+      </div>
+
+      <div class="center-display" id="dropArea">
+        <div id="qrcode"></div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="sendProgressBar"></div>
+      </div>
+
+      <div class="status-text" id="sendStatus">ファイルを選択またはドロップ</div>
+
+      <div class="top-action-group">
+        <button class="pill-btn pill-btn-outlined" id="stopBtn" disabled style="width: 100%;">
+          <span class="material-symbols-outlined">stop</span>
+          停止
+        </button>
+      </div>
+    </div>
+
+    <div id="viewReceive" class="view-panel">
+      <div class="center-display">
+        <video id="video" playsinline></video>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="receiveProgressBar"></div>
+      </div>
+
+      <div class="status-text" id="receiveStatus">カメラの起動を待っています...</div>
+
+      <div class="top-action-group">
+        <button class="pill-btn pill-btn-outlined" id="resetBtn" style="width: 100%;">
+          <span class="material-symbols-outlined">refresh</span>
+          リセット・再読み取り
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <canvas id="hiddenCanvas" style="display:none;"></canvas>
+
+  <nav class="bottom-nav">
+    <button class="nav-tab active" id="navSend">
+      <div class="nav-tab-icon">
+        <span class="material-symbols-outlined">send</span>
+      </div>
+    </button>
+    <button class="nav-tab" id="navReceive">
+      <div class="nav-tab-icon">
+        <span class="material-symbols-outlined">qr_code_scanner</span>
+      </div>
+    </button>
+  </nav>
+
+  <!-- 設定モーダル -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">設定</div>
+        <button class="done-btn" id="closeSettingsBtn">完了</button>
+      </div>
+
+      <div class="setting-card open" id="cardTransfer">
+        <div class="card-item" id="cardTransferHeader">
+          <span class="material-symbols-outlined">tune</span>
+          <div class="card-item-text">
+            <div class="card-item-title">転送オプション</div>
+            <div class="card-item-desc">分割サイズ・スピード・復元速度のカスタマイズ</div>
+          </div>
+          <span class="material-symbols-outlined expand-arrow">expand_more</span>
+        </div>
+        
+        <div class="card-expand-content">
+          <div class="settings-row">
+            <div class="m3-field-container">
+              <span class="m3-field-label">分割サイズ (Byte)</span>
+              <input type="number" id="chunkSize" class="m3-field-input" value="300">
+            </div>
+            <div class="m3-field-container">
+              <span class="m3-field-label">送信速度 (FPS)</span>
+              <input type="number" id="fps" class="m3-field-input" value="8">
+            </div>
+          </div>
+
+          <div class="m3-field-container">
+            <span class="m3-field-label">誤り訂正レベル</span>
+            <select id="eccLevel" class="m3-field-select">
+              <option value="L" selected>L (低 - 送信量優先)</option>
+              <option value="M">M (中 - 標準)</option>
+              <option value="Q">Q (高 - 読み取り補正)</option>
+              <option value="H">H (最高 - 耐性強化)</option>
+            </select>
+            <span class="material-symbols-outlined m3-field-arrow">arrow_drop_down</span>
+          </div>
+
+          <div class="m3-field-container">
+            <span class="m3-field-label">QRコード表示サイズ</span>
+            <select id="qrSize" class="m3-field-select">
+              <option value="200">小 (200px)</option>
+              <option value="240" selected>中 (240px - 標準)</option>
+              <option value="280">大 (280px)</option>
+            </select>
+            <span class="material-symbols-outlined m3-field-arrow">arrow_drop_down</span>
+          </div>
+
+          <div class="settings-row" style="padding-top: 4px;">
+            <label class="m3-checkbox-container">
+              <input type="checkbox" id="loopTransmission" class="m3-checkbox-input" checked>
+              <span class="m3-checkbox-box"></span>
+              <span>全データ送信後に繰り返しループ送信する</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-card open" id="cardTheme">
+        <div class="card-item" id="cardThemeHeader">
+          <span class="material-symbols-outlined">palette</span>
+          <div class="card-item-text">
+            <div class="card-item-title">テーマ設定</div>
+            <div class="card-item-desc" id="themeDesc">ダークモード</div>
+          </div>
+          <span class="material-symbols-outlined expand-arrow">expand_more</span>
+        </div>
+        <div class="card-expand-content">
+          <div class="theme-options">
+            <button class="pill-btn pill-btn-primary" id="btnThemeDark">ダーク</button>
+            <button class="pill-btn pill-btn-outlined" id="btnThemeLight">ライト</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <span>プライバシー ポリシー</span>
+        <span>・</span>
+        <span>利用規約</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const navSend = document.getElementById('navSend');
+    const navReceive = document.getElementById('navReceive');
+    const viewSend = document.getElementById('viewSend');
+    const viewReceive = document.getElementById('viewReceive');
+
+    navSend.addEventListener('click', () => {
+      navSend.classList.add('active');
+      navReceive.classList.remove('active');
+      viewSend.classList.add('active');
+      viewReceive.classList.remove('active');
+      stopCamera();
+    });
+
+    navReceive.addEventListener('click', () => {
+      navReceive.classList.add('active');
+      navSend.classList.remove('active');
+      viewReceive.classList.add('active');
+      viewSend.classList.remove('active');
+      stopTransmission();
+      startCamera();
+    });
+
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+
+    settingsBtn.addEventListener('click', () => settingsModal.classList.add('open'));
+    
+    function closeModal() {
+      settingsModal.classList.remove('open');
+      applySettings();
+    }
+    closeSettingsBtn.addEventListener('click', closeModal);
+
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) closeModal();
+    });
+
+    document.getElementById('cardTransferHeader').addEventListener('click', () => {
+      document.getElementById('cardTransfer').classList.toggle('open');
+    });
+    document.getElementById('cardThemeHeader').addEventListener('click', () => {
+      document.getElementById('cardTheme').classList.toggle('open');
+    });
+
+    const btnThemeDark = document.getElementById('btnThemeDark');
+    const btnThemeLight = document.getElementById('btnThemeLight');
+    const themeDesc = document.getElementById('themeDesc');
+
+    btnThemeDark.addEventListener('click', () => {
+      document.body.classList.remove('light-mode');
+      themeDesc.textContent = 'ダークモード';
+      btnThemeDark.className = 'pill-btn pill-btn-primary';
+      btnThemeLight.className = 'pill-btn pill-btn-outlined';
+    });
+
+    btnThemeLight.addEventListener('click', () => {
+      document.body.classList.add('light-mode');
+      themeDesc.textContent = 'ライトモード';
+      btnThemeLight.className = 'pill-btn pill-btn-primary';
+      btnThemeDark.className = 'pill-btn pill-btn-outlined';
+    });
+
+    let currentRawData = null;
+    let currentFileName = '';
+    let chunks = [];
+    let timer = null;
+    let currentIndex = 0;
+    let qrcode = null;
+
+    const fileInput = document.getElementById('fileInput');
+    const fileSelectBtn = document.getElementById('fileSelectBtn');
+    const fileIcon = document.getElementById('fileIcon');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const sendStatus = document.getElementById('sendStatus');
+    const sendProgressBar = document.getElementById('sendProgressBar');
+    const qrContainer = document.getElementById('qrcode');
+    const dropArea = document.getElementById('dropArea');
+
+    fileSelectBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      handleFileSelect(e.target.files[0]);
+    });
+
+    // Drag and Drop
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const file = dt.files[0];
+      handleFileSelect(file);
+    });
+
+    function handleFileSelect(file) {
+      if (!file) return;
+
+      currentFileName = file.name;
+      fileNameDisplay.textContent = file.name;
+      fileIcon.textContent = 'description';
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        currentRawData = evt.target.result;
+        prepareChunks(currentFileName, currentRawData);
+        startBtn.disabled = false;
+        sendStatus.textContent = `準備完了: 全 ${chunks.length} チャンク`;
+        sendProgressBar.style.width = '0%';
+        renderQRCode(chunks[0]);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function applySettings() {
+      if (currentRawData && currentFileName) {
+        const wasRunning = timer !== null;
+        stopTransmission();
+        prepareChunks(currentFileName, currentRawData);
+        sendStatus.textContent = `設定反映済み: 全 ${chunks.length} チャンク`;
+        renderQRCode(chunks[0]);
+        if (wasRunning) startTransmission();
+      }
+    }
+
+    function prepareChunks(filename, data) {
+      const chunkSize = parseInt(document.getElementById('chunkSize').value, 10) || 300;
+      const totalChunks = Math.ceil(data.length / chunkSize);
+      const transferId = Math.random().toString(36).substring(2, 7);
+
+      chunks = [];
+      for (let i = 0; i < totalChunks; i++) {
+        const segment = data.slice(i * chunkSize, (i + 1) * chunkSize);
+        chunks.push(JSON.stringify({
+          id: transferId, name: filename, t: totalChunks, i: i, d: segment
+        }));
+      }
+    }
+
+    function renderQRCode(text) {
+      qrContainer.innerHTML = '';
+      const eccMap = {
+        'L': QRCode.CorrectLevel.L,
+        'M': QRCode.CorrectLevel.M,
+        'Q': QRCode.CorrectLevel.Q,
+        'H': QRCode.CorrectLevel.H
+      };
+      const eccSelect = document.getElementById('eccLevel').value || 'L';
+      const sizeSelect = parseInt(document.getElementById('qrSize').value, 10) || 240;
+
+      qrcode = new QRCode(qrContainer, {
+        text: text,
+        width: sizeSelect,
+        height: sizeSelect,
+        correctLevel: eccMap[eccSelect]
+      });
+    }
+
+    function startTransmission() {
+      if (chunks.length === 0) return;
+      const fps = parseInt(document.getElementById('fps').value, 10) || 8;
+      const isLoop = document.getElementById('loopTransmission').checked;
+
+      currentIndex = 0;
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      fileSelectBtn.disabled = true;
+
+      timer = setInterval(() => {
+        renderQRCode(chunks[currentIndex]);
+        sendStatus.textContent = `送信中: ${currentIndex + 1} / ${chunks.length}`;
+        sendProgressBar.style.width = `${((currentIndex + 1) / chunks.length) * 100}%`;
+        
+        currentIndex++;
+        if (currentIndex >= chunks.length) {
+          if (isLoop) {
+            currentIndex = 0;
+          } else {
+            stopTransmission();
+            sendStatus.textContent = '全データの送信完了';
+          }
+        }
+      }, 1000 / fps);
+    }
+
+    startBtn.addEventListener('click', startTransmission);
+
+    function stopTransmission() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        fileSelectBtn.disabled = false;
+        sendStatus.textContent = '停止中';
+      }
+    }
+    stopBtn.addEventListener('click', stopTransmission);
+
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('hiddenCanvas');
+    const ctx = canvas.getContext('2d');
+    const receiveStatus = document.getElementById('receiveStatus');
+    const receiveProgressBar = document.getElementById('receiveProgressBar');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let currentTransferId = null, totalChunks = 0, fileName = '', receivedChunks = {}, isCompleted = false;
+    let animationFrameId = null, streamRef = null;
+
+    function startCamera() {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then((stream) => {
+          streamRef = stream;
+          video.srcObject = stream;
+          video.setAttribute('playsinline', true);
+          video.play();
+          animationFrameId = requestAnimationFrame(tick);
+          receiveStatus.textContent = 'QRコードをカメラにかざしてください';
+          receiveProgressBar.style.width = '0%';
+        })
+        .catch((err) => {
+          receiveStatus.textContent = 'カメラの起動に失敗しました: ' + err;
+        });
+    }
+
+    function stopCamera() {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (streamRef) streamRef.getTracks().forEach(t => t.stop());
+    }
+
+    function tick() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA && !isCompleted) {
+        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+
+        if (code) processQrData(code.data);
+      }
+      if (viewReceive.classList.contains('active')) {
+        animationFrameId = requestAnimationFrame(tick);
+      }
+    }
+
+    function processQrData(dataString) {
+      try {
+        const payload = JSON.parse(dataString);
+        if (!payload.id || payload.t === undefined || payload.i === undefined || !payload.d) return;
+
+        if (currentTransferId !== payload.id) {
+          currentTransferId = payload.id;
+          totalChunks = payload.t;
+          fileName = payload.name || 'downloaded_file';
+          receivedChunks = {};
+          isCompleted = false;
+        }
+
+        if (!receivedChunks[payload.i]) {
+          receivedChunks[payload.i] = payload.d;
+          const count = Object.keys(receivedChunks).length;
+          const pct = Math.round((count / totalChunks) * 100);
+          receiveStatus.textContent = `受信中: ${count} / ${totalChunks} (${pct}%)`;
+          receiveProgressBar.style.width = `${pct}%`;
+
+          if (count === totalChunks) {
+            isCompleted = true;
+            receiveStatus.textContent = '受信完了！ファイルを復元中...';
+            assembleAndDownload();
+          }
+        }
+      } catch (e) {}
+    }
+
+    function assembleAndDownload() {
+      let fullBase64 = '';
+      for (let i = 0; i < totalChunks; i++) fullBase64 += receivedChunks[i];
+
+      const a = document.createElement('a');
+      a.href = fullBase64;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      receiveStatus.textContent = `ダウンロード完了: ${fileName}`;
+    }
+
+    resetBtn.addEventListener('click', () => {
+      currentTransferId = null; totalChunks = 0; receivedChunks = {}; isCompleted = false;
+      receiveStatus.textContent = 'リセットしました。QRコードをかざしてください';
+      receiveProgressBar.style.width = '0%';
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('SW Registered:', reg.scope))
+          .catch((err) => console.error('SW Register failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
