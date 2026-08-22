@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Data Sender</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 500px; margin: 0 auto; text-align: center; }
+    #qr-container { margin: 20px 0; min-height: 300px; display: flex; justify-content: center; align-items: center; background: #f0f0f0; border-radius: 8px; }
+    .controls { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+    input, button { padding: 8px; font-size: 14px; }
+    #status { font-weight: bold; margin-top: 10px; color: #333; }
+  </style>
+  <!-- QR生成ライブラリ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <h2>QR データ送信アプリ</h2>
+  <div class="controls">
+    <label>ファイル選択: <input type="file" id="fileInput"></label>
+    <label>1枚あたりの文字数 (推奨 200~400): <input type="number" id="chunkSize" value="300"></label>
+    <label>コマ送り速度 (FPS): <input type="number" id="fps" value="8" min="1" max="20"></label>
+    <button id="startBtn" disabled>転送開始</button>
+    <button id="stopBtn" disabled>停止</button>
+  </div>
+
+  <div id="status">ファイルを選択してください</div>
+  <div id="qr-container"><div id="qrcode"></div></div>
+
+  <script>
+    let chunks = [];
+    let timer = null;
+    let currentIndex = 0;
+    let qrcode = null;
+
+    const fileInput = document.getElementById('fileInput');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const status = document.getElementById('status');
+    const qrContainer = document.getElementById('qrcode');
+
+    // QRコードオブジェクト初期化
+    qrcode = new QRCode(qrContainer, {
+      width: 280,
+      height: 280,
+      correctLevel: QRCode.CorrectLevel.L // 容量を稼ぐため誤り訂正レベルはL
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const base64Data = evt.target.result;
+        prepareChunks(file.name, base64Data);
+        startBtn.disabled = false;
+        status.textContent = `準備完了: 全 ${chunks.length} チャンク`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function prepareChunks(filename, data) {
+      const chunkSize = parseInt(document.getElementById('chunkSize').value, 10);
+      const totalChunks = Math.ceil(data.length / chunkSize);
+      const transferId = Math.random().toString(36).substring(2, 7); // 転送識別用ID
+
+      chunks = [];
+      for (let i = 0; i < totalChunks; i++) {
+        const segment = data.slice(i * chunkSize, (i + 1) * chunkSize);
+        // 軽量なJSON形式でヘッダーとデータをパック
+        const payload = JSON.stringify({
+          id: transferId,
+          name: filename,
+          t: totalChunks,
+          i: i,
+          d: segment
+        });
+        chunks.push(payload);
+      }
+    }
+
+    startBtn.addEventListener('click', () => {
+      if (chunks.length === 0) return;
+      const fps = parseInt(document.getElementById('fps').value, 10);
+      const interval = 1000 / fps;
+
+      currentIndex = 0;
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      fileInput.disabled = true;
+
+      timer = setInterval(() => {
+        const payload = chunks[currentIndex];
+        qrcode.clear();
+        qrcode.makeCode(payload);
+
+        status.textContent = `送信中: ${currentIndex + 1} / ${chunks.length}`;
+        currentIndex = (currentIndex + 1) % chunks.length; // ループ再生
+      }, interval);
+    });
+
+    stopBtn.addEventListener('click', () => {
+      clearInterval(timer);
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      fileInput.disabled = false;
+      status.textContent = '停止中';
+    });
+  </script>
+</body>
+</html>

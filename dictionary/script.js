@@ -17,6 +17,7 @@ const defaultDictionarySelect = document.getElementById('default-dictionary');
 const openModeInputs = document.querySelectorAll('input[name="open-mode"]');
 const themeModeInputs = document.querySelectorAll('input[name="theme-mode"]');
 const clearHistoryButton = document.getElementById('clear-history');
+const clearHistoryStatus = document.getElementById('clear-history-status');
 const resetCacheButton = document.getElementById('reset-cache');
 const networkStatus = document.getElementById('network-status');
 const checkUpdateButton = document.getElementById('check-update');
@@ -261,6 +262,7 @@ function addSearchHistory(term, dictionaryKey) {
     searchHistory.splice(0, searchHistory.length - 60);
   }
   saveSearchHistory();
+  updateClearHistoryState();
 }
 
 function renderSearchHistory() {
@@ -521,6 +523,7 @@ function hideInstallBanner() {
 }
 
 function openSettings() {
+  updateClearHistoryState();
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     if (mainView) mainView.classList.add('hide');
     if (settingsOverlay) settingsOverlay.classList.remove('hide');
@@ -583,10 +586,28 @@ function showSettingsSection(sectionId) {
 }
 
 function clearSearchHistory() {
+  if (!searchHistory.length) {
+    alert('削除できる検索履歴がありません。');
+    updateClearHistoryState();
+    return;
+  }
+  const shouldClear = window.confirm('検索履歴をすべて削除します。よろしいですか？');
+  if (!shouldClear) return;
   searchHistory = [];
   saveSearchHistory();
   renderSearchHistory();
+  updateClearHistoryState();
   alert('検索履歴を削除しました。');
+}
+
+function updateClearHistoryState() {
+  const historyCount = searchHistory.length;
+  if (clearHistoryStatus) {
+    clearHistoryStatus.textContent = `保存件数: ${historyCount}件`;
+  }
+  if (clearHistoryButton) {
+    clearHistoryButton.disabled = historyCount === 0;
+  }
 }
 
 function resetCacheAndReload() {
@@ -853,6 +874,7 @@ window.addEventListener('DOMContentLoaded', () => {
   updateOpenModeInputs();
   updateThemeModeInputs();
   bindSettingsEvents();
+  updateClearHistoryState();
   if (appVersion) {
     appVersion.textContent = APP_VERSION;
   }
