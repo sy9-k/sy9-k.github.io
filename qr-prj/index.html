@@ -7,7 +7,7 @@
   
   <!-- PWA & Apple Touch Settings -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#121212">
+  <meta name="theme-color" content="#121212" id="themeColorMeta">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="QR Drop">
@@ -23,6 +23,7 @@
 
   <style>
     :root {
+      /* Dark Theme (Default) */
       --bg-color: #121212;
       --surface-color: #1e1e1e;
       --surface-variant: #2d2f31;
@@ -36,9 +37,13 @@
       --input-border: #8e918f;
       --md-primary: #a8c7fa;
       --md-on-primary: #042e6f;
+      --nav-active-bg: #004a77;
+      --nav-active-icon: #c2e7ff;
+      --border-color: rgba(255, 255, 255, 0.1);
     }
 
     body.light-mode {
+      /* Light Theme */
       --bg-color: #f8f9fa;
       --surface-color: #ffffff;
       --surface-variant: #e1e3e1;
@@ -52,6 +57,9 @@
       --input-border: #747775;
       --md-primary: #0b57d0;
       --md-on-primary: #ffffff;
+      --nav-active-bg: #c2e7ff;
+      --nav-active-icon: #001d35;
+      --border-color: rgba(0, 0, 0, 0.1);
     }
 
     * {
@@ -71,20 +79,27 @@
       transition: background-color 0.2s, color 0.2s;
     }
 
+    /* ヘッダー周りの見切れ修正 */
     .app-bar {
-      height: 56px;
-      padding: 0 16px;
-      display: flex; align-items: center; justify-content: space-between;
+      height: calc(56px + env(safe-area-inset-top));
       padding-top: env(safe-area-inset-top);
+      padding-left: 16px;
+      padding-right: 16px;
+      padding-bottom: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      background-color: var(--bg-color);
+      flex-shrink: 0;
     }
     .app-bar-title {
       font-size: 20px; font-weight: 700;
       display: flex; align-items: center; gap: 8px;
+      line-height: 56px;
     }
     .icon-btn {
       background: none; border: none; color: var(--text-color);
       cursor: pointer; padding: 8px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
     }
 
     .main-container {
@@ -104,11 +119,13 @@
       display: flex; gap: 12px; width: 100%; max-width: 400px;
     }
 
+    /* 統一されたPill Buttonスタイル */
     .pill-btn {
       flex: 1; height: 48px; border-radius: 24px;
-      font-size: 14px; font-weight: 500;
+      font-size: 15px; font-weight: 700;
       display: flex; align-items: center; justify-content: center; gap: 8px;
       border: none; cursor: pointer; transition: all 0.2s ease;
+      box-sizing: border-box;
     }
 
     .pill-btn-primary {
@@ -130,9 +147,9 @@
       border-radius: 32px; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
       margin: auto 0;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
       padding: 16px;
-      transition: border 0.2s;
+      transition: border 0.2s, background-color 0.2s;
     }
     
     .center-display.drag-over {
@@ -150,7 +167,6 @@
 
     video { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Progress Bar */
     .progress-container {
       width: 100%; max-width: 320px;
       height: 6px; background-color: var(--surface-variant);
@@ -167,16 +183,16 @@
       min-height: 20px;
     }
 
-    /* ボトムナビゲーション (iOSセーフエリア対応) */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
       height: auto;
       background-color: var(--surface-color);
       display: flex; justify-content: space-around; align-items: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid var(--border-color);
       padding-top: 12px;
       padding-bottom: max(16px, env(safe-area-inset-bottom));
       z-index: 100;
+      transition: background-color 0.2s, border-color 0.2s;
     }
 
     .nav-tab {
@@ -188,15 +204,15 @@
     .nav-tab-icon {
       width: 64px; height: 32px; border-radius: 16px;
       display: flex; align-items: center; justify-content: center;
-      transition: background-color 0.2s ease;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .nav-tab-icon .material-symbols-outlined { font-size: 24px; }
 
     .nav-tab.active { color: var(--text-color); }
     .nav-tab.active .nav-tab-icon {
-      background-color: #004a77;
-      color: #c2e7ff;
+      background-color: var(--nav-active-bg);
+      color: var(--nav-active-icon);
     }
 
     .modal-overlay {
@@ -216,7 +232,7 @@
       max-height: 85vh;
       overflow-y: auto;
       transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+      transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1), background-color 0.2s;
       display: flex; flex-direction: column; gap: 16px;
     }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
@@ -254,7 +270,7 @@
     .card-expand-content {
       display: none;
       padding-top: 16px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid var(--border-color);
       flex-direction: column; gap: 16px;
     }
     .setting-card.open .card-expand-content { display: flex; }
@@ -267,58 +283,37 @@
     /* M3 Controls */
     .m3-field-container {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      margin-top: 6px;
+      display: flex; flex-direction: column; flex: 1; margin-top: 6px;
     }
 
     .m3-field-input, .m3-field-select {
-      width: 100%;
-      height: 52px;
+      width: 100%; height: 52px;
       background-color: transparent;
       border: 1px solid var(--input-border);
-      border-radius: 8px;
-      color: var(--text-color);
-      padding: 0 16px;
-      font-size: 15px;
-      outline: none;
-      appearance: none;
-      -webkit-appearance: none;
+      border-radius: 8px; color: var(--text-color);
+      padding: 0 16px; font-size: 15px; outline: none;
+      appearance: none; -webkit-appearance: none;
       transition: border-color 0.2s, border-width 0.1s;
     }
 
-    .m3-field-select {
-      padding-right: 40px;
-      cursor: pointer;
-    }
+    .m3-field-select { padding-right: 40px; cursor: pointer; }
 
     .m3-field-label {
-      position: absolute;
-      left: 12px;
-      top: -9px;
+      position: absolute; left: 12px; top: -9px;
       background-color: var(--surface-card);
-      padding: 0 4px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-sub);
-      pointer-events: none;
-      transition: color 0.2s;
+      padding: 0 4px; font-size: 12px; font-weight: 500;
+      color: var(--text-sub); pointer-events: none;
+      transition: color 0.2s, background-color 0.2s;
     }
 
     .m3-field-arrow {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      color: var(--text-sub);
-      font-size: 24px;
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%); pointer-events: none;
+      color: var(--text-sub); font-size: 24px;
     }
 
     .m3-field-input:focus, .m3-field-select:focus {
-      border-color: var(--md-primary);
-      border-width: 2px;
+      border-color: var(--md-primary); border-width: 2px;
     }
 
     .m3-field-container:focus-within .m3-field-label {
@@ -331,19 +326,13 @@
     }
 
     .m3-checkbox-container {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      user-select: none;
-      font-size: 14px;
-      color: var(--text-color);
-      padding: 4px 0;
+      display: inline-flex; align-items: center; gap: 12px;
+      cursor: pointer; user-select: none; font-size: 14px;
+      color: var(--text-color); padding: 4px 0;
     }
 
     .m3-checkbox-input {
-      position: absolute;
-      opacity: 0; width: 0; height: 0;
+      position: absolute; opacity: 0; width: 0; height: 0;
     }
 
     .m3-checkbox-box {
@@ -356,8 +345,7 @@
     }
 
     .m3-checkbox-box::after {
-      content: '';
-      width: 5px; height: 10px;
+      content: ''; width: 5px; height: 10px;
       border: solid var(--md-on-primary);
       border-width: 0 2px 2px 0;
       transform: rotate(45deg) scale(0);
@@ -374,11 +362,16 @@
       transform: rotate(45deg) scale(1);
     }
 
-    .m3-checkbox-container:hover .m3-checkbox-box {
-      border-color: var(--md-primary);
-    }
+    .theme-options { display: flex; gap: 12px; }
 
-    .theme-options { display: flex; gap: 8px; }
+    .info-list {
+      display: flex; flex-direction: column; gap: 8px; font-size: 14px;
+    }
+    .info-row {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .info-label { color: var(--text-sub); }
+    .info-value { font-weight: 500; }
 
     .footer-links {
       display: flex; justify-content: center; gap: 16px;
@@ -471,6 +464,28 @@
         <button class="done-btn" id="closeSettingsBtn">完了</button>
       </div>
 
+      <!-- PWA インストール -->
+      <div class="setting-card open" id="cardInstall">
+        <div class="card-item" id="cardInstallHeader">
+          <span class="material-symbols-outlined">download</span>
+          <div class="card-item-text">
+            <div class="card-item-title">アプリのインストール</div>
+            <div class="card-item-desc" id="installDesc">ホーム画面に追加して快適に利用できます</div>
+          </div>
+          <span class="material-symbols-outlined expand-arrow">expand_more</span>
+        </div>
+        <div class="card-expand-content">
+          <button class="pill-btn pill-btn-primary" id="installPwaBtn" disabled style="width: 100%;">
+            <span class="material-symbols-outlined">get_app</span>
+            <span id="installBtnText">インストールできません</span>
+          </button>
+          <div id="iosInstallNotice" style="display: none; font-size: 12px; color: var(--text-sub); text-align: center;">
+            ※ iOS Safariの場合は共有ボタン <span class="material-symbols-outlined" style="font-size:14px; vertical-align:-2px;">share</span> から「ホーム画面に追加」を選択してください。
+          </div>
+        </div>
+      </div>
+
+      <!-- 転送オプション -->
       <div class="setting-card open" id="cardTransfer">
         <div class="card-item" id="cardTransferHeader">
           <span class="material-symbols-outlined">tune</span>
@@ -524,6 +539,31 @@
         </div>
       </div>
 
+      <!-- [追加] 通知 & サウンド設定 -->
+      <div class="setting-card open" id="cardNotification">
+        <div class="card-item" id="cardNotificationHeader">
+          <span class="material-symbols-outlined">notifications</span>
+          <div class="card-item-text">
+            <div class="card-item-title">通知・サウンド</div>
+            <div class="card-item-desc">完了時のバイブレーションや効果音</div>
+          </div>
+          <span class="material-symbols-outlined expand-arrow">expand_more</span>
+        </div>
+        <div class="card-expand-content">
+          <label class="m3-checkbox-container">
+            <input type="checkbox" id="enableVibration" class="m3-checkbox-input" checked>
+            <span class="m3-checkbox-box"></span>
+            <span>受信完了時にバイブレーションで通知</span>
+          </label>
+          <label class="m3-checkbox-container">
+            <input type="checkbox" id="autoDownload" class="m3-checkbox-input" checked>
+            <span class="m3-checkbox-box"></span>
+            <span>完了時に自動でファイル保存を起動</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- テーマ設定 -->
       <div class="setting-card open" id="cardTheme">
         <div class="card-item" id="cardThemeHeader">
           <span class="material-symbols-outlined">palette</span>
@@ -538,6 +578,38 @@
             <button class="pill-btn pill-btn-primary" id="btnThemeDark">ダーク</button>
             <button class="pill-btn pill-btn-outlined" id="btnThemeLight">ライト</button>
           </div>
+        </div>
+      </div>
+
+      <!-- バージョン・アプリ情報 -->
+      <div class="setting-card open" id="cardInfo">
+        <div class="card-item" id="cardInfoHeader">
+          <span class="material-symbols-outlined">info</span>
+          <div class="card-item-text">
+            <div class="card-item-title">アプリ情報</div>
+            <div class="card-item-desc">バージョンとシステム情報</div>
+          </div>
+          <span class="material-symbols-outlined expand-arrow">expand_more</span>
+        </div>
+        <div class="card-expand-content">
+          <div class="info-list">
+            <div class="info-row">
+              <span class="info-label">アプリ名</span>
+              <span class="info-value">QR Drop</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">バージョン</span>
+              <span class="info-value">v1.3.0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">開発構成</span>
+              <span class="info-value">PWA / Material 3</span>
+            </div>
+          </div>
+          <button class="pill-btn pill-btn-outlined" id="checkUpdateBtn" style="width: 100%; margin-top: 4px;">
+            <span class="material-symbols-outlined">system_update</span>
+            <span id="updateBtnText">アップデートを確認</span>
+          </button>
         </div>
       </div>
 
@@ -588,20 +660,26 @@
       if (e.target === settingsModal) closeModal();
     });
 
-    document.getElementById('cardTransferHeader').addEventListener('click', () => {
-      document.getElementById('cardTransfer').classList.toggle('open');
-    });
-    document.getElementById('cardThemeHeader').addEventListener('click', () => {
-      document.getElementById('cardTheme').classList.toggle('open');
+    // アコーディオン開閉
+    ['cardInstall', 'cardTransfer', 'cardNotification', 'cardTheme', 'cardInfo'].forEach(id => {
+      const header = document.getElementById(id + 'Header');
+      if (header) {
+        header.addEventListener('click', () => {
+          document.getElementById(id).classList.toggle('open');
+        });
+      }
     });
 
+    // テーマ切り替え処理
     const btnThemeDark = document.getElementById('btnThemeDark');
     const btnThemeLight = document.getElementById('btnThemeLight');
     const themeDesc = document.getElementById('themeDesc');
+    const themeColorMeta = document.getElementById('themeColorMeta');
 
     btnThemeDark.addEventListener('click', () => {
       document.body.classList.remove('light-mode');
       themeDesc.textContent = 'ダークモード';
+      themeColorMeta.setAttribute('content', '#121212');
       btnThemeDark.className = 'pill-btn pill-btn-primary';
       btnThemeLight.className = 'pill-btn pill-btn-outlined';
     });
@@ -609,8 +687,81 @@
     btnThemeLight.addEventListener('click', () => {
       document.body.classList.add('light-mode');
       themeDesc.textContent = 'ライトモード';
+      themeColorMeta.setAttribute('content', '#f8f9fa');
       btnThemeLight.className = 'pill-btn pill-btn-primary';
       btnThemeDark.className = 'pill-btn pill-btn-outlined';
+    });
+
+    // PWA Install Event
+    let deferredPrompt = null;
+    const installPwaBtn = document.getElementById('installPwaBtn');
+    const installBtnText = document.getElementById('installBtnText');
+    const installDesc = document.getElementById('installDesc');
+    const iosInstallNotice = document.getElementById('iosInstallNotice');
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isStandalone) {
+      installDesc.textContent = 'すでにアプリとして使用中です';
+      installBtnText.textContent = 'インストール済み';
+      installPwaBtn.disabled = true;
+    } else if (isIOS) {
+      installDesc.textContent = 'Safariの共有メニューから追加できます';
+      installBtnText.textContent = 'iOSでのインストール方法';
+      iosInstallNotice.style.display = 'block';
+      installPwaBtn.disabled = true;
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!isStandalone) {
+        installPwaBtn.disabled = false;
+        installBtnText.textContent = 'アプリをインストール';
+      }
+    });
+
+    installPwaBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            installDesc.textContent = 'インストールが完了しました';
+            installBtnText.textContent = 'インストール済み';
+            installPwaBtn.disabled = true;
+          }
+          deferredPrompt = null;
+        });
+      }
+    });
+
+    // PWA アップデート制御
+    let swRegistration = null;
+    const checkUpdateBtn = document.getElementById('checkUpdateBtn');
+    const updateBtnText = document.getElementById('updateBtnText');
+
+    checkUpdateBtn.addEventListener('click', () => {
+      if (!swRegistration) {
+        alert('Service Workerが登録されていないか、非対応です。');
+        return;
+      }
+
+      updateBtnText.textContent = '確認中...';
+      swRegistration.update()
+        .then(() => {
+          setTimeout(() => {
+            if (!swRegistration.waiting) {
+              updateBtnText.textContent = '最新バージョンです';
+              setTimeout(() => updateBtnText.textContent = 'アップデートを確認', 2000);
+            }
+          }, 1000);
+        })
+        .catch((err) => {
+          console.error('Update check failed:', err);
+          updateBtnText.textContent = '確認に失敗しました';
+          setTimeout(() => updateBtnText.textContent = 'アップデートを確認', 2000);
+        });
     });
 
     let currentRawData = null;
@@ -828,6 +979,12 @@
           if (count === totalChunks) {
             isCompleted = true;
             receiveStatus.textContent = '受信完了！ファイルを復元中...';
+            
+            // バイブレーション通知
+            if (document.getElementById('enableVibration').checked && navigator.vibrate) {
+              navigator.vibrate([100, 50, 100]);
+            }
+            
             assembleAndDownload();
           }
         }
@@ -838,14 +995,15 @@
       let fullBase64 = '';
       for (let i = 0; i < totalChunks; i++) fullBase64 += receivedChunks[i];
 
-      const a = document.createElement('a');
-      a.href = fullBase64;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      receiveStatus.textContent = `ダウンロード完了: ${fileName}`;
+      if (document.getElementById('autoDownload').checked) {
+        const a = document.createElement('a');
+        a.href = fullBase64;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        receiveStatus.textContent = `ダウンロード完了: ${fileName}`;
+      }
     }
 
     resetBtn.addEventListener('click', () => {
@@ -854,10 +1012,27 @@
       receiveProgressBar.style.width = '0%';
     });
 
+    // Service Worker 登録 & アップデート検知
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then((reg) => console.log('SW Registered:', reg.scope))
+          .then((reg) => {
+            swRegistration = reg;
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  updateBtnText.textContent = 'アップデートして再起動';
+                  checkUpdateBtn.classList.remove('pill-btn-outlined');
+                  checkUpdateBtn.classList.add('pill-btn-primary');
+                  checkUpdateBtn.onclick = () => {
+                    newWorker.postMessage({ action: 'skipWaiting' });
+                    window.location.reload();
+                  };
+                }
+              });
+            });
+          })
           .catch((err) => console.error('SW Register failed:', err));
       });
     }
