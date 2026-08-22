@@ -23,6 +23,12 @@
 
   <style>
     :root {
+      /* M3 Motion Easing & Duration */
+      --md-transition-duration: 0.3s;
+      --md-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+      --md-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+      --md-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+
       /* Dark Theme (Default) */
       --bg-color: #121212;
       --surface-color: #1e1e1e;
@@ -40,6 +46,10 @@
       --nav-active-bg: #004a77;
       --nav-active-icon: #c2e7ff;
       --border-color: rgba(255, 255, 255, 0.1);
+      --ripple-color: rgba(255, 255, 255, 0.15);
+      --drawer-bg: #1e1e1e;
+      --drawer-item-hover: rgba(255, 255, 255, 0.08);
+      --drawer-item-active: #004a77;
     }
 
     body.light-mode {
@@ -60,6 +70,10 @@
       --nav-active-bg: #c2e7ff;
       --nav-active-icon: #001d35;
       --border-color: rgba(0, 0, 0, 0.1);
+      --ripple-color: rgba(0, 0, 0, 0.1);
+      --drawer-bg: #f3f3f3;
+      --drawer-item-hover: rgba(0, 0, 0, 0.05);
+      --drawer-item-active: #c2e7ff;
     }
 
     * {
@@ -76,10 +90,69 @@
       height: 100vh;
       display: flex; flex-direction: column;
       overflow: hidden;
-      transition: background-color 0.2s, color 0.2s;
+      transition: background-color var(--md-transition-duration) var(--md-easing-standard), color var(--md-transition-duration) var(--md-easing-standard);
     }
 
-    /* ヘッダー周りの見切れ修正 */
+    /* Ripple Effect Container */
+    .ripple {
+      position: relative;
+      overflow: hidden;
+      transform: translateZ(0);
+    }
+
+    .ripple-effect {
+      position: absolute;
+      border-radius: 50%;
+      background-color: var(--ripple-color);
+      transform: scale(0);
+      animation: ripple-animation 0.5s var(--md-easing-decelerate);
+      pointer-events: none;
+    }
+
+    @keyframes ripple-animation {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Navigation Drawer */
+    .drawer-scrim {
+      position: fixed; inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 500;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s var(--md-easing-standard);
+    }
+    .drawer-scrim.open { opacity: 1; pointer-events: auto; }
+
+    .drawer {
+      position: fixed; top: 0; bottom: 0; left: 0;
+      width: 280px; background-color: var(--drawer-bg);
+      z-index: 501; padding: 24px 12px;
+      display: flex; flex-direction: column; gap: 8px;
+      transform: translateX(-100%);
+      transition: transform 0.3s var(--md-easing-emphasized);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      font-size: 14px; font-weight: 700; color: var(--text-sub);
+      padding: 8px 16px 16px; border-bottom: 1px solid var(--border-color);
+      margin-bottom: 8px;
+    }
+
+    .drawer-item {
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 16px; border-radius: 28px;
+      cursor: pointer; color: var(--text-color);
+      font-size: 15px; font-weight: 500;
+      transition: background-color 0.2s var(--md-easing-standard);
+    }
+    .drawer-item:hover { background-color: var(--drawer-item-hover); }
+    .drawer-item.active { background-color: var(--drawer-item-active); font-weight: 700; }
+
     .app-bar {
       height: calc(56px + env(safe-area-inset-top));
       padding-top: env(safe-area-inset-top);
@@ -89,7 +162,9 @@
       display: flex; align-items: center; justify-content: space-between;
       background-color: var(--bg-color);
       flex-shrink: 0;
+      transition: background-color var(--md-transition-duration) var(--md-easing-standard);
     }
+    .app-bar-left { display: flex; align-items: center; gap: 8px; }
     .app-bar-title {
       font-size: 20px; font-weight: 700;
       display: flex; align-items: center; gap: 8px;
@@ -100,6 +175,10 @@
       cursor: pointer; padding: 8px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       width: 40px; height: 40px;
+      transition: background-color 0.2s var(--md-easing-standard);
+    }
+    .icon-btn:active {
+      background-color: var(--ripple-color);
     }
 
     .main-container {
@@ -107,25 +186,43 @@
       padding: 12px 16px 110px;
       display: flex; flex-direction: column; gap: 20px;
       overflow-y: auto;
+      position: relative;
     }
 
     .view-panel {
-      display: none; flex-direction: column; gap: 16px; flex: 1;
+      display: flex; flex-direction: column; gap: 16px; flex: 1;
       align-items: center;
+      opacity: 0;
+      transform: scale(0.96) translateY(10px);
+      pointer-events: none;
+      position: absolute; inset: 12px 16px 110px;
+      transition: opacity var(--md-transition-duration) var(--md-easing-emphasized),
+                  transform var(--md-transition-duration) var(--md-easing-emphasized);
     }
-    .view-panel.active { display: flex; }
+    .view-panel.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+      position: relative; inset: auto;
+    }
 
     .top-action-group {
       display: flex; gap: 12px; width: 100%; max-width: 400px;
     }
 
-    /* 統一されたPill Buttonスタイル */
     .pill-btn {
       flex: 1; height: 48px; border-radius: 24px;
       font-size: 15px; font-weight: 700;
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      border: none; cursor: pointer; transition: all 0.2s ease;
+      border: none; cursor: pointer;
       box-sizing: border-box;
+      transition: background-color 0.2s var(--md-easing-standard), 
+                  transform 0.1s var(--md-easing-standard),
+                  box-shadow 0.2s var(--md-easing-standard),
+                  opacity 0.2s var(--md-easing-standard);
+    }
+    .pill-btn:active:not(:disabled) {
+      transform: scale(0.97);
     }
 
     .pill-btn-primary {
@@ -149,38 +246,54 @@
       margin: auto 0;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
       padding: 16px;
-      transition: border 0.2s, background-color 0.2s;
+      position: relative;
+      transition: border-color 0.2s var(--md-easing-standard), transform 0.2s var(--md-easing-standard);
     }
     
     .center-display.drag-over {
       border: 2px dashed var(--md-primary);
+      transform: scale(1.02);
     }
 
-    #qrcode {
+    .qr-box {
       width: 100%; height: 100%;
       display: flex; align-items: center; justify-content: center;
       background: #ffffff; border-radius: 16px; padding: 10px;
+      transition: transform 0.2s var(--md-easing-standard);
     }
-    #qrcode img, #qrcode canvas {
+    .qr-box img, .qr-box canvas {
       max-width: 100%; max-height: 100%;
     }
 
     video { width: 100%; height: 100%; object-fit: cover; }
 
+    /* Dev Overlay */
+    .dev-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      color: #00ff66; font-family: monospace; font-size: 11px;
+      padding: 10px; pointer-events: none;
+      display: none; flex-direction: column; gap: 4px;
+      z-index: 10; overflow: hidden; text-align: left;
+    }
+    .dev-overlay.active { display: flex; }
+
     .progress-container {
       width: 100%; max-width: 320px;
       height: 6px; background-color: var(--surface-variant);
       border-radius: 3px; overflow: hidden;
+      position: relative;
     }
     .progress-bar {
       height: 100%; width: 0%;
       background-color: var(--md-primary);
-      transition: width 0.1s linear;
+      transition: width 0.2s var(--md-easing-standard);
     }
 
     .status-text {
       font-size: 14px; color: var(--text-sub); text-align: center;
       min-height: 20px;
+      transition: color 0.2s var(--md-easing-standard);
     }
 
     .bottom-nav {
@@ -192,7 +305,7 @@
       padding-top: 12px;
       padding-bottom: max(16px, env(safe-area-inset-bottom));
       z-index: 100;
-      transition: background-color 0.2s, border-color 0.2s;
+      transition: background-color var(--md-transition-duration) var(--md-easing-standard);
     }
 
     .nav-tab {
@@ -204,7 +317,13 @@
     .nav-tab-icon {
       width: 64px; height: 32px; border-radius: 16px;
       display: flex; align-items: center; justify-content: center;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      transition: background-color 0.3s var(--md-easing-emphasized), 
+                  color 0.3s var(--md-easing-emphasized),
+                  transform 0.15s var(--md-easing-standard);
+    }
+
+    .nav-tab:active .nav-tab-icon {
+      transform: scale(0.92);
     }
 
     .nav-tab-icon .material-symbols-outlined { font-size: 24px; }
@@ -220,10 +339,14 @@
       background-color: rgba(0, 0, 0, 0.6);
       display: flex; flex-direction: column; justify-content: flex-end;
       z-index: 1000;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.25s ease;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s var(--md-easing-standard);
     }
-    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
     .modal-sheet {
       background-color: var(--surface-color);
@@ -231,11 +354,13 @@
       padding: 16px 20px max(32px, env(safe-area-inset-bottom));
       max-height: 85vh;
       overflow-y: auto;
-      transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1), background-color 0.2s;
       display: flex; flex-direction: column; gap: 16px;
+      transform: translateY(100%);
+      transition: transform 0.35s var(--md-easing-emphasized);
     }
-    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    .modal-overlay.open .modal-sheet {
+      transform: translateY(0);
+    }
 
     .modal-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -245,42 +370,57 @@
     .done-btn {
       background: none; border: none;
       color: var(--md-primary); font-size: 15px; font-weight: 700;
-      cursor: pointer; padding: 4px 8px;
+      cursor: pointer; padding: 4px 8px; border-radius: 12px;
+      transition: background-color 0.2s var(--md-easing-standard);
+    }
+    .done-btn:active {
+      background-color: var(--ripple-color);
     }
 
     .setting-card {
       background-color: var(--surface-card);
       border-radius: 20px;
       padding: 16px;
-      display: flex; flex-direction: column; gap: 12px;
-      transition: background-color 0.2s ease;
+      display: flex; flex-direction: column;
+      transition: background-color 0.2s var(--md-easing-standard);
     }
 
     .card-item {
       display: flex; align-items: center; gap: 16px;
       color: var(--text-color); cursor: pointer;
     }
-    .card-item .material-symbols-outlined {
-      color: var(--text-sub); transition: transform 0.2s ease;
-    }
     .card-item-text { display: flex; flex-direction: column; flex: 1; }
     .card-item-title { font-size: 15px; font-weight: 700; }
     .card-item-desc { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
 
+    .expand-arrow {
+      transition: transform 0.3s var(--md-easing-standard);
+    }
+
     .card-expand-content {
-      display: none;
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.3s var(--md-easing-standard),
+                  margin-top 0.3s var(--md-easing-standard),
+                  padding-top 0.3s var(--md-easing-standard);
+      overflow: hidden;
+    }
+    .card-expand-inner {
+      min-height: 0;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .setting-card.open .card-expand-content {
+      grid-template-rows: 1fr;
       padding-top: 16px;
       border-top: 1px solid var(--border-color);
-      flex-direction: column; gap: 16px;
+      margin-top: 16px;
     }
-    .setting-card.open .card-expand-content { display: flex; }
     .setting-card.open .expand-arrow { transform: rotate(180deg); }
 
     .settings-row {
       display: flex; gap: 12px; align-items: center;
     }
 
-    /* M3 Controls */
     .m3-field-container {
       position: relative;
       display: flex; flex-direction: column; flex: 1; margin-top: 6px;
@@ -293,7 +433,7 @@
       border-radius: 8px; color: var(--text-color);
       padding: 0 16px; font-size: 15px; outline: none;
       appearance: none; -webkit-appearance: none;
-      transition: border-color 0.2s, border-width 0.1s;
+      transition: border-color 0.2s var(--md-easing-standard);
     }
 
     .m3-field-select { padding-right: 40px; cursor: pointer; }
@@ -303,7 +443,7 @@
       background-color: var(--surface-card);
       padding: 0 4px; font-size: 12px; font-weight: 500;
       color: var(--text-sub); pointer-events: none;
-      transition: color 0.2s, background-color 0.2s;
+      transition: color 0.2s var(--md-easing-standard);
     }
 
     .m3-field-arrow {
@@ -340,16 +480,16 @@
       border: 2px solid var(--input-border);
       border-radius: 4px;
       display: flex; align-items: center; justify-content: center;
-      transition: background-color 0.2s, border-color 0.2s;
       position: relative;
+      transition: background-color 0.2s var(--md-easing-standard), border-color 0.2s var(--md-easing-standard);
     }
 
     .m3-checkbox-box::after {
       content: ''; width: 5px; height: 10px;
       border: solid var(--md-on-primary);
       border-width: 0 2px 2px 0;
-      transform: rotate(45deg) scale(0);
-      transition: transform 0.15s ease-in-out;
+      transform: rotate(45deg);
+      display: none;
       margin-bottom: 2px;
     }
 
@@ -359,7 +499,7 @@
     }
 
     .m3-checkbox-input:checked + .m3-checkbox-box::after {
-      transform: rotate(45deg) scale(1);
+      display: block;
     }
 
     .theme-options { display: flex; gap: 12px; }
@@ -381,30 +521,50 @@
 </head>
 <body>
 
+  <!-- Navigation Drawer (左側スライドメニュー) -->
+  <div class="drawer-scrim" id="drawerScrim"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">転送モード切り替え</div>
+    <div class="drawer-item active ripple" id="menuQrCode">
+      <span class="material-symbols-outlined">qr_code_2</span>
+      <span>QR Code Drop</span>
+    </div>
+    <div class="drawer-item ripple" id="menuQrWeb">
+      <span class="material-symbols-outlined">wifi_tethering</span>
+      <span>QR Web Drop</span>
+    </div>
+  </aside>
+
   <header class="app-bar">
-    <div class="app-bar-title">QR Drop</div>
-    <button class="icon-btn" id="settingsBtn">
+    <div class="app-bar-left">
+      <button class="icon-btn ripple" id="menuBtn">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <div class="app-bar-title" id="appBarTitle">QR Drop</div>
+    </div>
+    <button class="icon-btn ripple" id="settingsBtn">
       <span class="material-symbols-outlined">settings</span>
     </button>
   </header>
 
   <main class="main-container">
-    <div id="viewSend" class="view-panel active">
+    <!-- QR Code Drop (従来モード) -->
+    <div id="viewCodeSend" class="view-panel active">
       <input type="file" id="fileInput" style="display: none;">
       
       <div class="top-action-group">
-        <button class="pill-btn pill-btn-primary" id="fileSelectBtn">
+        <button class="pill-btn pill-btn-primary ripple" id="fileSelectBtn">
           <span class="material-symbols-outlined" id="fileIcon">add</span>
           <span id="fileNameDisplay">新しいファイル</span>
         </button>
-        <button class="pill-btn pill-btn-outlined" id="startBtn" disabled>
+        <button class="pill-btn pill-btn-outlined ripple" id="startBtn" disabled>
           <span class="material-symbols-outlined">play_arrow</span>
           送信開始
         </button>
       </div>
 
       <div class="center-display" id="dropArea">
-        <div id="qrcode"></div>
+        <div class="qr-box" id="qrcode"></div>
       </div>
 
       <div class="progress-container">
@@ -414,16 +574,23 @@
       <div class="status-text" id="sendStatus">ファイルを選択またはドロップ</div>
 
       <div class="top-action-group">
-        <button class="pill-btn pill-btn-outlined" id="stopBtn" disabled style="width: 100%;">
+        <button class="pill-btn pill-btn-outlined ripple" id="stopBtn" disabled style="width: 100%;">
           <span class="material-symbols-outlined">stop</span>
           停止
         </button>
       </div>
     </div>
 
-    <div id="viewReceive" class="view-panel">
+    <div id="viewCodeReceive" class="view-panel">
       <div class="center-display">
         <video id="video" playsinline></video>
+        <div class="dev-overlay" id="devOverlay">
+          <div>[DEV MODE]</div>
+          <div id="devFps">FPS: --</div>
+          <div id="devTime">Parse Time: --ms</div>
+          <div id="devRes">Resolution: --x--</div>
+          <div id="devChunk">Received: --</div>
+        </div>
       </div>
 
       <div class="progress-container">
@@ -433,9 +600,44 @@
       <div class="status-text" id="receiveStatus">カメラの起動を待っています...</div>
 
       <div class="top-action-group">
-        <button class="pill-btn pill-btn-outlined" id="resetBtn" style="width: 100%;">
+        <button class="pill-btn pill-btn-outlined ripple" id="resetBtn" style="width: 100%;">
           <span class="material-symbols-outlined">refresh</span>
           リセット・再読み取り
+        </button>
+      </div>
+    </div>
+
+    <!-- QR Web Drop (WebRTC P2P通信モード) -->
+    <div id="viewWebDrop" class="view-panel">
+      <input type="file" id="webFileInput" style="display: none;">
+
+      <div class="top-action-group">
+        <button class="pill-btn pill-btn-primary ripple" id="webInitBtn">
+          <span class="material-symbols-outlined">link</span>
+          接続QR生成 (Host)
+        </button>
+        <button class="pill-btn pill-btn-outlined ripple" id="webScanBtn">
+          <span class="material-symbols-outlined">qr_code_scanner</span>
+          接続スキャン
+        </button>
+      </div>
+
+      <div class="center-display">
+        <div class="qr-box" id="webQrDisplay">
+          <video id="webVideo" playsinline style="display:none;"></video>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="webProgressBar"></div>
+      </div>
+
+      <div class="status-text" id="webStatus">P2P接続を初期化してください</div>
+
+      <div class="top-action-group">
+        <button class="pill-btn pill-btn-primary ripple" id="webSendFileBtn" disabled style="width: 100%;">
+          <span class="material-symbols-outlined">send</span>
+          ファイル送信 (WebRTC)
         </button>
       </div>
     </div>
@@ -443,13 +645,13 @@
 
   <canvas id="hiddenCanvas" style="display:none;"></canvas>
 
-  <nav class="bottom-nav">
-    <button class="nav-tab active" id="navSend">
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-tab active ripple" id="navSend">
       <div class="nav-tab-icon">
         <span class="material-symbols-outlined">send</span>
       </div>
     </button>
-    <button class="nav-tab" id="navReceive">
+    <button class="nav-tab ripple" id="navReceive">
       <div class="nav-tab-icon">
         <span class="material-symbols-outlined">qr_code_scanner</span>
       </div>
@@ -461,7 +663,7 @@
     <div class="modal-sheet">
       <div class="modal-header">
         <div class="modal-title">設定</div>
-        <button class="done-btn" id="closeSettingsBtn">完了</button>
+        <button class="done-btn ripple" id="closeSettingsBtn">完了</button>
       </div>
 
       <!-- PWA インストール -->
@@ -475,12 +677,14 @@
           <span class="material-symbols-outlined expand-arrow">expand_more</span>
         </div>
         <div class="card-expand-content">
-          <button class="pill-btn pill-btn-primary" id="installPwaBtn" disabled style="width: 100%;">
-            <span class="material-symbols-outlined">get_app</span>
-            <span id="installBtnText">インストールできません</span>
-          </button>
-          <div id="iosInstallNotice" style="display: none; font-size: 12px; color: var(--text-sub); text-align: center;">
-            ※ iOS Safariの場合は共有ボタン <span class="material-symbols-outlined" style="font-size:14px; vertical-align:-2px;">share</span> から「ホーム画面に追加」を選択してください。
+          <div class="card-expand-inner">
+            <button class="pill-btn pill-btn-primary ripple" id="installPwaBtn" disabled style="width: 100%;">
+              <span class="material-symbols-outlined">get_app</span>
+              <span id="installBtnText">インストールできません</span>
+            </button>
+            <div id="iosInstallNotice" style="display: none; font-size: 12px; color: var(--text-sub); text-align: center;">
+              ※ iOS Safariの場合は共有ボタン <span class="material-symbols-outlined" style="font-size:14px; vertical-align:-2px;">share</span> から「ホーム画面に追加」を選択してください。
+            </div>
           </div>
         </div>
       </div>
@@ -497,49 +701,51 @@
         </div>
         
         <div class="card-expand-content">
-          <div class="settings-row">
-            <div class="m3-field-container">
-              <span class="m3-field-label">分割サイズ (Byte)</span>
-              <input type="number" id="chunkSize" class="m3-field-input" value="300">
+          <div class="card-expand-inner">
+            <div class="settings-row">
+              <div class="m3-field-container">
+                <span class="m3-field-label">分割サイズ (Byte)</span>
+                <input type="number" id="chunkSize" class="m3-field-input" value="300">
+              </div>
+              <div class="m3-field-container">
+                <span class="m3-field-label">送信速度 (FPS)</span>
+                <input type="number" id="fps" class="m3-field-input" value="8">
+              </div>
             </div>
+
             <div class="m3-field-container">
-              <span class="m3-field-label">送信速度 (FPS)</span>
-              <input type="number" id="fps" class="m3-field-input" value="8">
+              <span class="m3-field-label">誤り訂正レベル</span>
+              <select id="eccLevel" class="m3-field-select">
+                <option value="L" selected>L (低 - 送信量優先)</option>
+                <option value="M">M (中 - 標準)</option>
+                <option value="Q">Q (高 - 読み取り補正)</option>
+                <option value="H">H (最高 - 耐性強化)</option>
+              </select>
+              <span class="material-symbols-outlined m3-field-arrow">arrow_drop_down</span>
             </div>
-          </div>
 
-          <div class="m3-field-container">
-            <span class="m3-field-label">誤り訂正レベル</span>
-            <select id="eccLevel" class="m3-field-select">
-              <option value="L" selected>L (低 - 送信量優先)</option>
-              <option value="M">M (中 - 標準)</option>
-              <option value="Q">Q (高 - 読み取り補正)</option>
-              <option value="H">H (最高 - 耐性強化)</option>
-            </select>
-            <span class="material-symbols-outlined m3-field-arrow">arrow_drop_down</span>
-          </div>
+            <div class="m3-field-container">
+              <span class="m3-field-label">QRコード表示サイズ</span>
+              <select id="qrSize" class="m3-field-select">
+                <option value="200">小 (200px)</option>
+                <option value="240" selected>中 (240px - 標準)</option>
+                <option value="280">大 (280px)</option>
+              </select>
+              <span class="material-symbols-outlined m3-field-arrow">arrow_drop_down</span>
+            </div>
 
-          <div class="m3-field-container">
-            <span class="m3-field-label">QRコード表示サイズ</span>
-            <select id="qrSize" class="m3-field-select">
-              <option value="200">小 (200px)</option>
-              <option value="240" selected>中 (240px - 標準)</option>
-              <option value="280">大 (280px)</option>
-            </select>
-            <span class="material-symbols-outlined m3-field-arrow">arrow_drop_down</span>
-          </div>
-
-          <div class="settings-row" style="padding-top: 4px;">
-            <label class="m3-checkbox-container">
-              <input type="checkbox" id="loopTransmission" class="m3-checkbox-input" checked>
-              <span class="m3-checkbox-box"></span>
-              <span>全データ送信後に繰り返しループ送信する</span>
-            </label>
+            <div class="settings-row" style="padding-top: 4px;">
+              <label class="m3-checkbox-container">
+                <input type="checkbox" id="loopTransmission" class="m3-checkbox-input" checked>
+                <span class="m3-checkbox-box"></span>
+                <span>全データ送信後に繰り返しループ送信する</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- [追加] 通知 & サウンド設定 -->
+      <!-- 通知 & サウンド設定 -->
       <div class="setting-card open" id="cardNotification">
         <div class="card-item" id="cardNotificationHeader">
           <span class="material-symbols-outlined">notifications</span>
@@ -550,16 +756,39 @@
           <span class="material-symbols-outlined expand-arrow">expand_more</span>
         </div>
         <div class="card-expand-content">
-          <label class="m3-checkbox-container">
-            <input type="checkbox" id="enableVibration" class="m3-checkbox-input" checked>
-            <span class="m3-checkbox-box"></span>
-            <span>受信完了時にバイブレーションで通知</span>
-          </label>
-          <label class="m3-checkbox-container">
-            <input type="checkbox" id="autoDownload" class="m3-checkbox-input" checked>
-            <span class="m3-checkbox-box"></span>
-            <span>完了時に自動でファイル保存を起動</span>
-          </label>
+          <div class="card-expand-inner">
+            <label class="m3-checkbox-container">
+              <input type="checkbox" id="enableVibration" class="m3-checkbox-input" checked>
+              <span class="m3-checkbox-box"></span>
+              <span>受信完了時にバイブレーションで通知</span>
+            </label>
+            <label class="m3-checkbox-container">
+              <input type="checkbox" id="autoDownload" class="m3-checkbox-input" checked>
+              <span class="m3-checkbox-box"></span>
+              <span>完了時に自動でファイル保存を起動</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- デベロッパー設定 -->
+      <div class="setting-card open" id="cardDev">
+        <div class="card-item" id="cardDevHeader">
+          <span class="material-symbols-outlined">developer_mode</span>
+          <div class="card-item-text">
+            <div class="card-item-title">デベロッパー設定</div>
+            <div class="card-item-desc">開発者向けデバッグ機能</div>
+          </div>
+          <span class="material-symbols-outlined expand-arrow">expand_more</span>
+        </div>
+        <div class="card-expand-content">
+          <div class="card-expand-inner">
+            <label class="m3-checkbox-container">
+              <input type="checkbox" id="enableDevMode" class="m3-checkbox-input">
+              <span class="m3-checkbox-box"></span>
+              <span>Devモード (解析速度・FPSの表示)</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -574,9 +803,11 @@
           <span class="material-symbols-outlined expand-arrow">expand_more</span>
         </div>
         <div class="card-expand-content">
-          <div class="theme-options">
-            <button class="pill-btn pill-btn-primary" id="btnThemeDark">ダーク</button>
-            <button class="pill-btn pill-btn-outlined" id="btnThemeLight">ライト</button>
+          <div class="card-expand-inner">
+            <div class="theme-options">
+              <button class="pill-btn pill-btn-primary ripple" id="btnThemeDark">ダーク</button>
+              <button class="pill-btn pill-btn-outlined ripple" id="btnThemeLight">ライト</button>
+            </div>
           </div>
         </div>
       </div>
@@ -592,24 +823,26 @@
           <span class="material-symbols-outlined expand-arrow">expand_more</span>
         </div>
         <div class="card-expand-content">
-          <div class="info-list">
-            <div class="info-row">
-              <span class="info-label">アプリ名</span>
-              <span class="info-value">QR Drop</span>
+          <div class="card-expand-inner">
+            <div class="info-list">
+              <div class="info-row">
+                <span class="info-label">アプリ名</span>
+                <span class="info-value">QR Drop</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">バージョン</span>
+                <span class="info-value">v1.6.0</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">開発構成</span>
+                <span class="info-value">PWA / Material 3 / WebRTC</span>
+              </div>
             </div>
-            <div class="info-row">
-              <span class="info-label">バージョン</span>
-              <span class="info-value">v1.3.0</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">開発構成</span>
-              <span class="info-value">PWA / Material 3</span>
-            </div>
+            <button class="pill-btn pill-btn-outlined ripple" id="checkUpdateBtn" style="width: 100%; margin-top: 4px;">
+              <span class="material-symbols-outlined">system_update</span>
+              <span id="updateBtnText">アップデートを確認</span>
+            </button>
           </div>
-          <button class="pill-btn pill-btn-outlined" id="checkUpdateBtn" style="width: 100%; margin-top: 4px;">
-            <span class="material-symbols-outlined">system_update</span>
-            <span id="updateBtnText">アップデートを確認</span>
-          </button>
         </div>
       </div>
 
@@ -622,55 +855,121 @@
   </div>
 
   <script>
+    // --- Ripple Effect Implementation ---
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest('.ripple');
+      if (!target) return;
+
+      const rect = target.getBoundingClientRect();
+      const circle = document.createElement('span');
+      const diameter = Math.max(rect.width, rect.height);
+      const radius = diameter / 2;
+
+      circle.style.width = circle.style.height = `${diameter}px`;
+      circle.style.left = `${e.clientX - rect.left - radius}px`;
+      circle.style.top = `${e.clientY - rect.top - radius}px`;
+      circle.classList.add('ripple-effect');
+
+      const existingRipple = target.querySelector('.ripple-effect');
+      if (existingRipple) existingRipple.remove();
+
+      target.appendChild(circle);
+    });
+
+    // --- State & Mode Control ---
+    let activeAppMode = 'code'; // 'code' or 'web'
+    
+    const menuBtn = document.getElementById('menuBtn');
+    const drawer = document.getElementById('drawer');
+    const drawerScrim = document.getElementById('drawerScrim');
+    const menuQrCode = document.getElementById('menuQrCode');
+    const menuQrWeb = document.getElementById('menuQrWeb');
+    const appBarTitle = document.getElementById('appBarTitle');
+    const bottomNav = document.getElementById('bottomNav');
+
+    menuBtn.addEventListener('click', () => {
+      drawer.classList.add('open');
+      drawerScrim.classList.add('open');
+    });
+
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      drawerScrim.classList.remove('open');
+    }
+    drawerScrim.addEventListener('click', closeDrawer);
+
+    menuQrCode.addEventListener('click', () => {
+      activeAppMode = 'code';
+      menuQrCode.classList.add('active');
+      menuQrWeb.classList.remove('active');
+      appBarTitle.textContent = 'QR Drop';
+      bottomNav.style.display = 'flex';
+      closeDrawer();
+      switchTab('send');
+    });
+
+    menuQrWeb.addEventListener('click', () => {
+      activeAppMode = 'web';
+      menuQrWeb.classList.add('active');
+      menuQrCode.classList.remove('active');
+      appBarTitle.textContent = 'QR Web Drop';
+      bottomNav.style.display = 'none';
+      closeDrawer();
+      
+      // Web Drop View Activation
+      stopCamera();
+      stopTransmission();
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('viewWebDrop').classList.add('active');
+    });
+
+    // --- Tab Switch (QR Code Mode) ---
     const navSend = document.getElementById('navSend');
     const navReceive = document.getElementById('navReceive');
-    const viewSend = document.getElementById('viewSend');
-    const viewReceive = document.getElementById('viewReceive');
+    const viewCodeSend = document.getElementById('viewCodeSend');
+    const viewCodeReceive = document.getElementById('viewCodeReceive');
 
-    navSend.addEventListener('click', () => {
-      navSend.classList.add('active');
-      navReceive.classList.remove('active');
-      viewSend.classList.add('active');
-      viewReceive.classList.remove('active');
-      stopCamera();
-    });
+    function switchTab(tab) {
+      if (tab === 'send') {
+        navSend.classList.add('active');
+        navReceive.classList.remove('active');
+        viewCodeSend.classList.add('active');
+        viewCodeReceive.classList.remove('active');
+        stopCamera();
+      } else {
+        navReceive.classList.add('active');
+        navSend.classList.remove('active');
+        viewCodeReceive.classList.add('active');
+        viewCodeSend.classList.remove('active');
+        stopTransmission();
+        startCamera();
+      }
+    }
 
-    navReceive.addEventListener('click', () => {
-      navReceive.classList.add('active');
-      navSend.classList.remove('active');
-      viewReceive.classList.add('active');
-      viewSend.classList.remove('active');
-      stopTransmission();
-      startCamera();
-    });
+    navSend.addEventListener('click', () => switchTab('send'));
+    navReceive.addEventListener('click', () => switchTab('receive'));
 
+    // --- Settings Modal ---
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsModal = document.getElementById('settingsModal');
     const closeSettingsBtn = document.getElementById('closeSettingsBtn');
 
     settingsBtn.addEventListener('click', () => settingsModal.classList.add('open'));
-    
     function closeModal() {
       settingsModal.classList.remove('open');
       applySettings();
     }
     closeSettingsBtn.addEventListener('click', closeModal);
-
     settingsModal.addEventListener('click', (e) => {
       if (e.target === settingsModal) closeModal();
     });
 
-    // アコーディオン開閉
-    ['cardInstall', 'cardTransfer', 'cardNotification', 'cardTheme', 'cardInfo'].forEach(id => {
+    ['cardInstall', 'cardTransfer', 'cardNotification', 'cardDev', 'cardTheme', 'cardInfo'].forEach(id => {
       const header = document.getElementById(id + 'Header');
-      if (header) {
-        header.addEventListener('click', () => {
-          document.getElementById(id).classList.toggle('open');
-        });
-      }
+      if (header) header.addEventListener('click', () => document.getElementById(id).classList.toggle('open'));
     });
 
-    // テーマ切り替え処理
+    // --- Theme Control ---
     const btnThemeDark = document.getElementById('btnThemeDark');
     const btnThemeLight = document.getElementById('btnThemeLight');
     const themeDesc = document.getElementById('themeDesc');
@@ -680,19 +979,19 @@
       document.body.classList.remove('light-mode');
       themeDesc.textContent = 'ダークモード';
       themeColorMeta.setAttribute('content', '#121212');
-      btnThemeDark.className = 'pill-btn pill-btn-primary';
-      btnThemeLight.className = 'pill-btn pill-btn-outlined';
+      btnThemeDark.className = 'pill-btn pill-btn-primary ripple';
+      btnThemeLight.className = 'pill-btn pill-btn-outlined ripple';
     });
 
     btnThemeLight.addEventListener('click', () => {
       document.body.classList.add('light-mode');
       themeDesc.textContent = 'ライトモード';
       themeColorMeta.setAttribute('content', '#f8f9fa');
-      btnThemeLight.className = 'pill-btn pill-btn-primary';
-      btnThemeDark.className = 'pill-btn pill-btn-outlined';
+      btnThemeLight.className = 'pill-btn pill-btn-primary ripple';
+      btnThemeDark.className = 'pill-btn pill-btn-outlined ripple';
     });
 
-    // PWA Install Event
+    // --- PWA Installation ---
     let deferredPrompt = null;
     const installPwaBtn = document.getElementById('installPwaBtn');
     const installBtnText = document.getElementById('installBtnText');
@@ -736,7 +1035,7 @@
       }
     });
 
-    // PWA アップデート制御
+    // --- Service Worker & Update ---
     let swRegistration = null;
     const checkUpdateBtn = document.getElementById('checkUpdateBtn');
     const updateBtnText = document.getElementById('updateBtnText');
@@ -746,7 +1045,6 @@
         alert('Service Workerが登録されていないか、非対応です。');
         return;
       }
-
       updateBtnText.textContent = '確認中...';
       swRegistration.update()
         .then(() => {
@@ -764,6 +1062,7 @@
         });
     });
 
+    // --- Mode 1: QR Code Drop Logic ---
     let currentRawData = null;
     let currentFileName = '';
     let chunks = [];
@@ -783,31 +1082,17 @@
     const dropArea = document.getElementById('dropArea');
 
     fileSelectBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
 
-    fileInput.addEventListener('change', (e) => {
-      handleFileSelect(e.target.files[0]);
-    });
-
-    // Drag and Drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
       dropArea.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
     });
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
-    });
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
-    });
-
-    dropArea.addEventListener('drop', (e) => {
-      const dt = e.dataTransfer;
-      const file = dt.files[0];
-      handleFileSelect(file);
-    });
+    ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false));
+    ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false));
+    dropArea.addEventListener('drop', (e) => handleFileSelect(e.dataTransfer.files[0]));
 
     function handleFileSelect(file) {
       if (!file) return;
-
       currentFileName = file.name;
       fileNameDisplay.textContent = file.name;
       fileIcon.textContent = 'description';
@@ -825,6 +1110,11 @@
     }
 
     function applySettings() {
+      const enableDev = document.getElementById('enableDevMode').checked;
+      const devOverlay = document.getElementById('devOverlay');
+      if (enableDev) devOverlay.classList.add('active');
+      else devOverlay.classList.remove('active');
+
       if (currentRawData && currentFileName) {
         const wasRunning = timer !== null;
         stopTransmission();
@@ -849,18 +1139,13 @@
       }
     }
 
-    function renderQRCode(text) {
-      qrContainer.innerHTML = '';
-      const eccMap = {
-        'L': QRCode.CorrectLevel.L,
-        'M': QRCode.CorrectLevel.M,
-        'Q': QRCode.CorrectLevel.Q,
-        'H': QRCode.CorrectLevel.H
-      };
+    function renderQRCode(text, container = qrContainer) {
+      container.innerHTML = '';
+      const eccMap = { 'L': QRCode.CorrectLevel.L, 'M': QRCode.CorrectLevel.M, 'Q': QRCode.CorrectLevel.Q, 'H': QRCode.CorrectLevel.H };
       const eccSelect = document.getElementById('eccLevel').value || 'L';
       const sizeSelect = parseInt(document.getElementById('qrSize').value, 10) || 240;
 
-      qrcode = new QRCode(qrContainer, {
+      new QRCode(container, {
         text: text,
         width: sizeSelect,
         height: sizeSelect,
@@ -885,9 +1170,8 @@
         
         currentIndex++;
         if (currentIndex >= chunks.length) {
-          if (isLoop) {
-            currentIndex = 0;
-          } else {
+          if (isLoop) currentIndex = 0;
+          else {
             stopTransmission();
             sendStatus.textContent = '全データの送信完了';
           }
@@ -909,6 +1193,7 @@
     }
     stopBtn.addEventListener('click', stopTransmission);
 
+    // QR Reception
     const video = document.getElementById('video');
     const canvas = document.getElementById('hiddenCanvas');
     const ctx = canvas.getContext('2d');
@@ -918,9 +1203,12 @@
 
     let currentTransferId = null, totalChunks = 0, fileName = '', receivedChunks = {}, isCompleted = false;
     let animationFrameId = null, streamRef = null;
+    let lastFrameTime = performance.now(), frameCount = 0, currentFps = 0;
 
     function startCamera() {
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 60, max: 60 } } 
+      })
         .then((stream) => {
           streamRef = stream;
           video.srcObject = stream;
@@ -930,9 +1218,7 @@
           receiveStatus.textContent = 'QRコードをカメラにかざしてください';
           receiveProgressBar.style.width = '0%';
         })
-        .catch((err) => {
-          receiveStatus.textContent = 'カメラの起動に失敗しました: ' + err;
-        });
+        .catch((err) => receiveStatus.textContent = 'カメラの起動に失敗しました: ' + err);
     }
 
     function stopCamera() {
@@ -941,17 +1227,39 @@
     }
 
     function tick() {
+      const now = performance.now();
+      frameCount++;
+      if (now - lastFrameTime >= 1000) {
+        currentFps = frameCount; frameCount = 0; lastFrameTime = now;
+      }
+
       if (video.readyState === video.HAVE_ENOUGH_DATA && !isCompleted) {
-        canvas.height = video.videoHeight;
-        canvas.width = video.videoWidth;
+        const parseStart = performance.now();
+        const maxWidth = 640;
+        let scale = 1;
+        if (video.videoWidth > maxWidth) scale = maxWidth / video.videoWidth;
+
+        canvas.width = video.videoWidth * scale;
+        canvas.height = video.videoHeight * scale;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
 
+        const parseEnd = performance.now();
+        const parseDuration = (parseEnd - parseStart).toFixed(1);
+
+        if (document.getElementById('enableDevMode').checked) {
+          document.getElementById('devFps').textContent = `FPS: ${currentFps}`;
+          document.getElementById('devTime').textContent = `Parse Time: ${parseDuration}ms`;
+          document.getElementById('devRes').textContent = `Res: ${canvas.width}x${canvas.height}`;
+          document.getElementById('devChunk').textContent = `Received: ${Object.keys(receivedChunks).length}/${totalChunks || 0}`;
+        }
+
         if (code) processQrData(code.data);
       }
-      if (viewReceive.classList.contains('active')) {
+
+      if (viewCodeReceive.classList.contains('active')) {
         animationFrameId = requestAnimationFrame(tick);
       }
     }
@@ -979,12 +1287,7 @@
           if (count === totalChunks) {
             isCompleted = true;
             receiveStatus.textContent = '受信完了！ファイルを復元中...';
-            
-            // バイブレーション通知
-            if (document.getElementById('enableVibration').checked && navigator.vibrate) {
-              navigator.vibrate([100, 50, 100]);
-            }
-            
+            if (document.getElementById('enableVibration').checked && navigator.vibrate) navigator.vibrate([100, 50, 100]);
             assembleAndDownload();
           }
         }
@@ -1012,7 +1315,161 @@
       receiveProgressBar.style.width = '0%';
     });
 
-    // Service Worker 登録 & アップデート検知
+    // --- Mode 2: QR Web Drop (WebRTC Direct P2P) Logic ---
+    let peerConnection = null;
+    let dataChannel = null;
+    const webInitBtn = document.getElementById('webInitBtn');
+    const webScanBtn = document.getElementById('webScanBtn');
+    const webSendFileBtn = document.getElementById('webSendFileBtn');
+    const webFileInput = document.getElementById('webFileInput');
+    const webQrDisplay = document.getElementById('webQrDisplay');
+    const webVideo = document.getElementById('webVideo');
+    const webStatus = document.getElementById('webStatus');
+    const webProgressBar = document.getElementById('webProgressBar');
+
+    const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+    webInitBtn.addEventListener('click', async () => {
+      peerConnection = new RTCPeerConnection(rtcConfig);
+      dataChannel = peerConnection.createDataChannel('fileTransfer');
+      setupDataChannel();
+
+      peerConnection.onicecandidate = (e) => {
+        if (!e.candidate) {
+          // 全ICE候補を含んだSDPをQR化
+          const offerSdp = JSON.stringify(peerConnection.localDescription);
+          webVideo.style.display = 'none';
+          renderQRCode(offerSdp, webQrDisplay);
+          webStatus.textContent = '相手端末でこのQRコードをスキャンしてください';
+        }
+      };
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+    });
+
+    webScanBtn.addEventListener('click', () => {
+      webQrDisplay.innerHTML = '';
+      webVideo.style.display = 'block';
+      webQrDisplay.appendChild(webVideo);
+
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(stream => {
+        webVideo.srcObject = stream;
+        webVideo.play();
+        scanWebSignal(stream);
+      });
+    });
+
+    function scanWebSignal(stream) {
+      const scanTick = () => {
+        if (webVideo.readyState === webVideo.HAVE_ENOUGH_DATA) {
+          canvas.width = webVideo.videoWidth;
+          canvas.height = webVideo.videoHeight;
+          ctx.drawImage(webVideo, 0, 0, canvas.width, canvas.height);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+          if (code) {
+            try {
+              const signal = JSON.parse(code.data);
+              stream.getTracks().forEach(t => t.stop());
+              webVideo.style.display = 'none';
+              handleWebSignal(signal);
+              return;
+            } catch (e) {}
+          }
+        }
+        if (activeAppMode === 'web') requestAnimationFrame(scanTick);
+      };
+      requestAnimationFrame(scanTick);
+    }
+
+    async function handleWebSignal(signal) {
+      if (signal.type === 'offer') {
+        peerConnection = new RTCPeerConnection(rtcConfig);
+        peerConnection.ondatachannel = (e) => {
+          dataChannel = e.channel;
+          setupDataChannel();
+        };
+
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+
+        peerConnection.onicecandidate = (e) => {
+          if (!e.candidate) {
+            const answerSdp = JSON.stringify(peerConnection.localDescription);
+            renderQRCode(answerSdp, webQrDisplay);
+            webStatus.textContent = 'Host側でこのAnswer QRを読み取ってください';
+          }
+        };
+      } else if (signal.type === 'answer') {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
+        webStatus.textContent = '接続確立中...';
+      }
+    }
+
+    function setupDataChannel() {
+      dataChannel.onopen = () => {
+        webStatus.textContent = 'P2Pトンネル接続成功！ファイル送信が可能です';
+        webSendFileBtn.disabled = false;
+      };
+      
+      let incomingBuffers = [];
+      let incomingMeta = null;
+
+      dataChannel.onmessage = (e) => {
+        if (typeof e.data === 'string') {
+          incomingMeta = JSON.parse(e.data);
+          incomingBuffers = [];
+          webStatus.textContent = `受信中: ${incomingMeta.name}`;
+        } else {
+          incomingBuffers.push(e.data);
+          const receivedSize = incomingBuffers.reduce((acc, curr) => acc + curr.byteLength, 0);
+          const pct = Math.round((receivedSize / incomingMeta.size) * 100);
+          webProgressBar.style.width = `${pct}%`;
+
+          if (receivedSize >= incomingMeta.size) {
+            const blob = new Blob(incomingBuffers);
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = incomingMeta.name;
+            a.click();
+            webStatus.textContent = `受信完了: ${incomingMeta.name}`;
+          }
+        }
+      };
+    }
+
+    webSendFileBtn.addEventListener('click', () => webFileInput.click());
+    webFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file || !dataChannel) return;
+
+      dataChannel.send(JSON.stringify({ name: file.name, size: file.size }));
+      const chunkSize = 16384;
+      const reader = new FileReader();
+      let offset = 0;
+
+      reader.onload = (evt) => {
+        dataChannel.send(evt.target.result);
+        offset += evt.target.result.byteLength;
+        const pct = Math.round((offset / file.size) * 100);
+        webProgressBar.style.width = `${pct}%`;
+        webStatus.textContent = `送信中: ${pct}%`;
+
+        if (offset < file.size) readNextChunk();
+        else webStatus.textContent = 'P2P送信完了！';
+      };
+
+      function readNextChunk() {
+        const slice = file.slice(offset, offset + chunkSize);
+        reader.readAsArrayBuffer(slice);
+      }
+      readNextChunk();
+    });
+
+    // --- SW Registration ---
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
