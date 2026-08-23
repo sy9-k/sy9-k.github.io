@@ -379,6 +379,15 @@
       transition: color 0.2s var(--md-easing-standard);
     }
 
+    .file-open-link {
+      display: none;
+      color: var(--md-primary);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .file-open-link.visible { display: inline-flex; }
+
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
       height: auto;
@@ -724,6 +733,7 @@
       </div>
 
       <div class="status-text" id="receiveStatus">カメラの起動を待っています...</div>
+      <a class="file-open-link" id="receiveOpenLink" target="_blank" rel="noopener">ファイルを開く</a>
 
       <div class="top-action-group">
         <button class="pill-btn pill-btn-outlined ripple" id="resetBtn" style="width: 100%;">
@@ -759,6 +769,7 @@
       </div>
 
       <div class="status-text" id="webStatus">P2P接続を初期化してください</div>
+      <a class="file-open-link" id="webOpenLink" target="_blank" rel="noopener">ファイルを開く</a>
 
       <div class="top-action-group">
         <button class="pill-btn pill-btn-primary ripple" id="webSendFileBtn" disabled style="width: 100%;">
@@ -1150,6 +1161,7 @@
     const closeHelpBtn = document.getElementById('closeHelpBtn');
     const changelogModal = document.getElementById('changelogModal');
     const closeChangelogBtn = document.getElementById('closeChangelogBtn');
+    let historyObjectUrls = [];
 
     const historyDbPromise = new Promise((resolve, reject) => {
       const request = indexedDB.open('qr-drop-history', 1);
@@ -1180,6 +1192,8 @@
     async function showHistory() {
       closeDrawer();
       historyModal.classList.add('open');
+      historyObjectUrls.forEach(url => URL.revokeObjectURL(url));
+      historyObjectUrls = [];
       historyList.innerHTML = '<div class="empty-message">履歴を読み込んでいます...</div>';
       try {
         const db = await historyDbPromise;
@@ -1188,14 +1202,18 @@
           request.onsuccess = () => resolve(request.result.sort((a, b) => b.createdAt - a.createdAt));
           request.onerror = () => reject(request.error);
         });
-        historyList.innerHTML = records.length ? records.map(record => `
-          <button class="history-item ripple" data-history-id="${record.id}">
+        historyList.innerHTML = records.length ? records.map(record => {
+          const fileUrl = URL.createObjectURL(record.blob);
+          historyObjectUrls.push(fileUrl);
+          return `
+          <a class="history-item ripple" data-history-id="${record.id}" href="${fileUrl}" target="_blank" rel="noopener">
             <span class="material-symbols-outlined">description</span>
             <span class="history-item-text">
               <span class="history-item-name">${escapeHtml(record.name)}</span>
               <span class="history-item-meta">${record.direction || '送信'} ・ ${formatFileSize(record.size)} ・ ${new Date(record.createdAt).toLocaleString('ja-JP')}</span>
             </span>
-          </button>`).join('') : '<div class="empty-message">保存された履歴はありません</div>';
+          </a>`;
+        }).join('') : '<div class="empty-message">保存された履歴はありません</div>';
       } catch (error) {
         historyList.innerHTML = '<div class="empty-message">履歴を読み込めませんでした</div>';
       }
@@ -1252,20 +1270,7 @@
     historyList.addEventListener('click', async event => {
       const item = event.target.closest('[data-history-id]');
       if (!item) return;
-      try {
-        const db = await historyDbPromise;
-        const record = await new Promise((resolve, reject) => {
-          const request = db.transaction('files', 'readonly').objectStore('files').get(Number(item.dataset.historyId));
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = () => reject(request.error);
-        });
-        if (!record) return;
-        closeHistoryModal();
-        menuQrCode.click();
-        handleFileSelect(new File([record.blob], record.name, { type: record.type, lastModified: record.lastModified }), false);
-      } catch (error) {
-        historyList.insertAdjacentHTML('afterbegin', '<div class="empty-message">ファイルを開けませんでした</div>');
-      }
+      closeHistoryModal();
     });
 
     menuQrCode.addEventListener('click', () => {
@@ -1743,6 +1748,8 @@
     const receiveStatus = document.getElementById('receiveStatus');
     const receiveProgressBar = document.getElementById('receiveProgressBar');
     const resetBtn = document.getElementById('resetBtn');
+    const receiveOpenLink = document.getElementById('receiveOpenLink');
+    let receiveObjectUrl = null;
 
     let currentTransferId = null, totalChunks = 0, fileName = '', mimeHeader = '', receivedChunks = {}, isCompleted = false;
     let animationFrameId = null, streamRef = null;
@@ -1849,6 +1856,12 @@
           lastModified: Date.now()
         });
         await saveFileToHistory(receivedFile, '受信');
+
+        if (receiveObjectUrl) URL.revokeObjectURL(receiveObjectUrl);
+        receiveObjectUrl = URL.createObjectURL(receivedBlob);
+        receiveOpenLink.href = receiveObjectUrl;
+        receiveOpenLink.textContent = `ファイルを開く: ${fileName}`;
+        receiveOpenLink.classList.add('visible');
       } catch (error) {
         console.warn('受信履歴の保存に失敗しました', error);
       }
@@ -1868,6 +1881,7 @@
       currentTransferId = null; totalChunks = 0; receivedChunks = {}; isCompleted = false;
       receiveStatus.textContent = 'リセットしました。QRコードをかざしてください';
       receiveProgressBar.style.width = '0%';
+      receiveOpenLink.classList.remove('visible');
     });
 
     // --- Web Drop Logic ---
@@ -1878,6 +1892,8 @@
     const webSendFileBtn = document.getElementById('webSendFileBtn');
     const webFileInput = document.getElementById('webFileInput');
     const webQrDisplay = document.getElementById('webQrDisplay');
+    const webOpenLink = document.getElementById('webOpenLink');
+    let webObjectUrl = null;
     const webVideo = document.getElementById('webVideo');
     const webStatus = document.getElementById('webStatus');
     const webProgressBar = document.getElementById('webProgressBar');
@@ -2018,8 +2034,13 @@
 
           if (receivedSize >= incomingMeta.size) {
             const blob = new Blob(incomingBuffers);
+            if (webObjectUrl) URL.revokeObjectURL(webObjectUrl);
+            webObjectUrl = URL.createObjectURL(blob);
+            webOpenLink.href = webObjectUrl;
+            webOpenLink.textContent = `ファイルを開く: ${incomingMeta.name}`;
+            webOpenLink.classList.add('visible');
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
+            a.href = webObjectUrl;
             a.download = incomingMeta.name;
             a.click();
             webStatus.textContent = `受信完了: ${incomingMeta.name}`;
