@@ -48,6 +48,8 @@
       --drawer-bg: #1e1e1e;
       --drawer-item-hover: rgba(255, 255, 255, 0.08);
       --drawer-item-active: #004a77;
+      --accent-color: #a8c7fa;
+      --accent-on-color: #042e6f;
     }
 
     body.light-mode {
@@ -71,6 +73,84 @@
       --drawer-bg: #f3f3f3;
       --drawer-item-hover: rgba(0, 0, 0, 0.05);
       --drawer-item-active: #c2e7ff;
+      --accent-color: #0b57d0;
+      --accent-on-color: #ffffff;
+    }
+
+    body.device-theme {
+      --bg-color: #121212;
+      --surface-color: #1e1e1e;
+      --surface-variant: #2d2f31;
+      --surface-card: #28292a;
+      --primary-pill: var(--accent-color);
+      --on-primary-pill: var(--accent-on-color);
+      --md-primary: var(--accent-color);
+      --md-on-primary: var(--accent-on-color);
+      --text-color: #e3e2e6;
+      --text-sub: #c4c6c5;
+      --input-bg: #1e1e1e;
+      --input-border: #8e918f;
+      --nav-active-bg: #004a77;
+      --nav-active-icon: #c2e7ff;
+      --drawer-bg: #1e1e1e;
+      --drawer-item-hover: rgba(255, 255, 255, 0.08);
+      --drawer-item-active: #004a77;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body.device-theme {
+        --bg-color: #f8f9fa;
+        --surface-color: #ffffff;
+        --surface-variant: #e1e3e1;
+        --surface-card: #f1f3f4;
+        --text-color: #1f1f1f;
+        --text-sub: #444746;
+        --input-bg: #ffffff;
+        --input-border: #747775;
+        --nav-active-bg: #c2e7ff;
+        --nav-active-icon: #001d35;
+        --drawer-bg: #f3f3f3;
+        --drawer-item-hover: rgba(0, 0, 0, 0.05);
+        --drawer-item-active: #c2e7ff;
+      }
+    }
+
+    body.accent-green {
+      --accent-color: #86efac; --accent-on-color: #063b20;
+      --primary-pill: #86efac; --on-primary-pill: #063b20; --md-primary: #86efac;
+      --nav-active-bg: #166534; --nav-active-icon: #bbf7d0; --drawer-item-active: #166534; --outline-pill: #86efac;
+    }
+    body.accent-orange {
+      --accent-color: #ffb77d; --accent-on-color: #4a2000;
+      --primary-pill: #ffb77d; --on-primary-pill: #4a2000; --md-primary: #ffb77d;
+      --nav-active-bg: #9a3412; --nav-active-icon: #fed7aa; --drawer-item-active: #9a3412; --outline-pill: #ffb77d;
+    }
+    body.accent-pink {
+      --accent-color: #ffb1c8; --accent-on-color: #4b1029;
+      --primary-pill: #ffb1c8; --on-primary-pill: #4b1029; --md-primary: #ffb1c8;
+      --nav-active-bg: #9d174d; --nav-active-icon: #fbcfe8; --drawer-item-active: #9d174d; --outline-pill: #ffb1c8;
+    }
+
+    body.light-mode.accent-green {
+      --nav-active-bg: #bbf7d0; --nav-active-icon: #064e3b; --drawer-item-active: #bbf7d0;
+    }
+    body.light-mode.accent-orange {
+      --nav-active-bg: #fed7aa; --nav-active-icon: #7c2d12; --drawer-item-active: #fed7aa;
+    }
+    body.light-mode.accent-pink {
+      --nav-active-bg: #fbcfe8; --nav-active-icon: #831843; --drawer-item-active: #fbcfe8;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body.device-theme.accent-green {
+        --nav-active-bg: #bbf7d0; --nav-active-icon: #064e3b; --drawer-item-active: #bbf7d0;
+      }
+      body.device-theme.accent-orange {
+        --nav-active-bg: #fed7aa; --nav-active-icon: #7c2d12; --drawer-item-active: #fed7aa;
+      }
+      body.device-theme.accent-pink {
+        --nav-active-bg: #fbcfe8; --nav-active-icon: #831843; --drawer-item-active: #fbcfe8;
+      }
     }
 
     * {
@@ -147,6 +227,11 @@
     }
     .drawer-item:hover { background-color: var(--drawer-item-hover); }
     .drawer-item.active { background-color: var(--drawer-item-active); font-weight: 700; }
+
+      .drawer-section-title {
+        color: var(--text-sub); font-size: 12px; font-weight: 700;
+        padding: 16px 16px 4px;
+      }
 
     .app-bar {
       height: calc(56px + env(safe-area-inset-top));
@@ -502,6 +587,14 @@
 
     .theme-options { display: flex; gap: 12px; }
 
+    .accent-options { display: flex; gap: 12px; flex-wrap: wrap; }
+    .accent-btn {
+      width: 40px; height: 40px; border: 3px solid transparent;
+      border-radius: 50%; cursor: pointer; padding: 0;
+      box-shadow: 0 0 0 1px var(--border-color);
+    }
+    .accent-btn.selected { border-color: var(--text-color); box-shadow: 0 0 0 1px var(--text-color); }
+
     .info-list {
       display: flex; flex-direction: column; gap: 8px; font-size: 14px;
     }
@@ -510,6 +603,28 @@
     }
     .info-label { color: var(--text-sub); }
     .info-value { font-weight: 500; }
+
+      .history-list, .help-list {
+        display: flex; flex-direction: column; gap: 8px;
+      }
+      .history-item {
+        display: flex; align-items: center; gap: 12px;
+        width: 100%; padding: 12px; border: none;
+        border-radius: 12px; background-color: var(--surface-card);
+        color: var(--text-color); text-align: left; cursor: pointer;
+      }
+      .history-item:hover { background-color: var(--surface-variant); }
+      .history-item .material-symbols-outlined { color: var(--md-primary); }
+      .history-item-text { min-width: 0; flex: 1; }
+      .history-item-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+      .history-item-meta { color: var(--text-sub); font-size: 12px; margin-top: 2px; }
+      .empty-message { color: var(--text-sub); font-size: 14px; text-align: center; padding: 20px 0; }
+      .help-step { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; }
+      .help-step-number {
+        display: flex; align-items: center; justify-content: center;
+        flex: 0 0 28px; height: 28px; border-radius: 50%;
+        background-color: var(--nav-active-bg); color: var(--nav-active-icon); font-weight: 700;
+      }
 
     .footer-links {
       display: flex; justify-content: center; gap: 16px;
@@ -531,6 +646,19 @@
       <span class="material-symbols-outlined">wifi_tethering</span>
       <span>QR Web Drop</span>
     </div>
+      <div class="drawer-section-title">その他</div>
+      <div class="drawer-item ripple" id="menuHistory">
+        <span class="material-symbols-outlined">history</span>
+        <span>転送履歴</span>
+      </div>
+      <div class="drawer-item ripple" id="menuHelp">
+        <span class="material-symbols-outlined">help</span>
+        <span>使い方</span>
+      </div>
+      <div class="drawer-item ripple" id="menuChangelog">
+        <span class="material-symbols-outlined">new_releases</span>
+        <span>更新履歴</span>
+      </div>
   </aside>
 
   <header class="app-bar">
@@ -664,7 +792,7 @@
         <button class="done-btn ripple" id="closeSettingsBtn">完了</button>
       </div>
 
-      <div class="setting-card open" id="cardInstall">
+      <div class="setting-card" id="cardInstall">
         <div class="card-item" id="cardInstallHeader">
           <span class="material-symbols-outlined">download</span>
           <div class="card-item-text">
@@ -679,6 +807,17 @@
               <span class="material-symbols-outlined">get_app</span>
               <span id="installBtnText">インストールできません</span>
             </button>
+            <div class="status-text" id="pwaStatus">オフライン対応を確認しています...</div>
+            <div class="settings-row">
+              <button class="pill-btn pill-btn-outlined ripple" id="updatePwaBtn" style="width: 100%;">
+                <span class="material-symbols-outlined">sync</span>
+                更新を確認
+              </button>
+              <button class="pill-btn pill-btn-outlined ripple" id="clearPwaCacheBtn" style="width: 100%;">
+                <span class="material-symbols-outlined">delete_sweep</span>
+                キャッシュ削除
+              </button>
+            </div>
             <div id="iosInstallNotice" style="display: none; font-size: 12px; color: var(--text-sub); text-align: center;">
               ※ iOS Safariの場合は共有ボタン <span class="material-symbols-outlined" style="font-size:14px; vertical-align:-2px;">share</span> から「ホーム画面に追加」を選択してください。
             </div>
@@ -686,7 +825,7 @@
         </div>
       </div>
 
-      <div class="setting-card open" id="cardTransfer">
+      <div class="setting-card" id="cardTransfer">
         <div class="card-item" id="cardTransferHeader">
           <span class="material-symbols-outlined">tune</span>
           <div class="card-item-text">
@@ -741,7 +880,7 @@
         </div>
       </div>
 
-      <div class="setting-card open" id="cardNotification">
+      <div class="setting-card" id="cardNotification">
         <div class="card-item" id="cardNotificationHeader">
           <span class="material-symbols-outlined">notifications</span>
           <div class="card-item-text">
@@ -757,16 +896,65 @@
               <span class="m3-checkbox-box"></span>
               <span>受信完了時にバイブレーションで通知</span>
             </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-card" id="cardHistorySettings">
+        <div class="card-item" id="cardHistorySettingsHeader">
+          <span class="material-symbols-outlined">history</span>
+          <div class="card-item-text">
+            <div class="card-item-title">履歴設定</div>
+            <div class="card-item-desc">保存件数・保存容量の管理</div>
+          </div>
+          <span class="material-symbols-outlined expand-arrow">expand_more</span>
+        </div>
+        <div class="card-expand-content">
+          <div class="card-expand-inner">
+            <label class="m3-checkbox-container">
+              <input type="checkbox" id="enableHistory" class="m3-checkbox-input" checked>
+              <span class="m3-checkbox-box"></span>
+              <span>転送履歴をこの端末に保存</span>
+            </label>
+            <div class="m3-field-container">
+              <span class="m3-field-label">最大保存件数</span>
+              <input type="number" id="historyLimit" class="m3-field-input" value="20" min="1" max="100">
+            </div>
+            <div class="status-text" id="historyStorageStatus">保存容量を確認しています...</div>
+            <button class="pill-btn pill-btn-outlined ripple" id="clearHistoryBtn" style="width: 100%;">
+              <span class="material-symbols-outlined">delete_sweep</span>
+              履歴をすべて削除
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-card" id="cardReceiveSettings">
+        <div class="card-item" id="cardReceiveSettingsHeader">
+          <span class="material-symbols-outlined">download</span>
+          <div class="card-item-text">
+            <div class="card-item-title">受信設定</div>
+            <div class="card-item-desc">受信完了後のファイル処理</div>
+          </div>
+          <span class="material-symbols-outlined expand-arrow">expand_more</span>
+        </div>
+        <div class="card-expand-content">
+          <div class="card-expand-inner">
             <label class="m3-checkbox-container">
               <input type="checkbox" id="autoDownload" class="m3-checkbox-input" checked>
               <span class="m3-checkbox-box"></span>
-              <span>完了時に自動でファイル保存を起動</span>
+              <span>受信完了時に自動で保存を起動</span>
+            </label>
+            <label class="m3-checkbox-container">
+              <input type="checkbox" id="renameDuplicateFiles" class="m3-checkbox-input" checked>
+              <span class="m3-checkbox-box"></span>
+              <span>同名ファイルに連番を付ける</span>
             </label>
           </div>
         </div>
       </div>
 
-      <div class="setting-card open" id="cardDev">
+      <div class="setting-card" id="cardDev">
         <div class="card-item" id="cardDevHeader">
           <span class="material-symbols-outlined">developer_mode</span>
           <div class="card-item-text">
@@ -786,7 +974,7 @@
         </div>
       </div>
 
-      <div class="setting-card open" id="cardTheme">
+      <div class="setting-card" id="cardTheme">
         <div class="card-item" id="cardThemeHeader">
           <span class="material-symbols-outlined">palette</span>
           <div class="card-item-text">
@@ -800,12 +988,47 @@
             <div class="theme-options">
               <button class="pill-btn pill-btn-primary ripple" id="btnThemeDark">ダーク</button>
               <button class="pill-btn pill-btn-outlined ripple" id="btnThemeLight">ライト</button>
+              <button class="pill-btn pill-btn-outlined ripple" id="btnThemeDevice">デバイス</button>
+            </div>
+            <div class="m3-field-container">
+              <span class="m3-field-label">アクセントカラー</span>
+              <div class="accent-options">
+                <button class="accent-btn selected" id="accentBlue" aria-label="ブルー" title="ブルー" style="background-color: #6ea8fe;"></button>
+                <button class="accent-btn" id="accentGreen" aria-label="グリーン" title="グリーン" style="background-color: #86efac;"></button>
+                <button class="accent-btn" id="accentOrange" aria-label="オレンジ" title="オレンジ" style="background-color: #ffb77d;"></button>
+                <button class="accent-btn" id="accentPink" aria-label="ピンク" title="ピンク" style="background-color: #ffb1c8;"></button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="setting-card open" id="cardInfo">
+      <div class="setting-card" id="cardLanguage">
+        <div class="card-item" id="cardLanguageHeader">
+          <span class="material-symbols-outlined">language</span>
+          <div class="card-item-text">
+            <div class="card-item-title">言語</div>
+            <div class="card-item-desc">表示言語を変更</div>
+          </div>
+          <span class="material-symbols-outlined expand-arrow">expand_more</span>
+        </div>
+        <div class="card-expand-content">
+          <div class="card-expand-inner">
+            <div class="m3-field-container">
+              <span class="m3-field-label">言語</span>
+              <select id="languageSelect" class="m3-field-select">
+                <option value="ja">日本語</option>
+                <option value="en">English</option>
+                <option value="ko">한국어</option>
+                <option value="zh">简体中文</option>
+              </select>
+              <span class="material-symbols-outlined m3-field-arrow">arrow_drop_down</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-card" id="cardInfo">
         <div class="card-item" id="cardInfoHeader">
           <span class="material-symbols-outlined">info</span>
           <div class="card-item-text">
@@ -825,9 +1048,64 @@
                 <span class="info-label">バージョン</span>
                 <span class="info-value">v1.6.1</span>
               </div>
+                <div class="info-row">
+                  <span class="info-label">説明</span>
+                  <span class="info-value">オフラインファイル転送</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">転送方式</span>
+                  <span class="info-value">QR / WebRTC</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">履歴の保存先</span>
+                  <span class="info-value">この端末のみ</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">対応</span>
+                  <span class="info-value">PWA・オフライン</span>
+                </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">転送履歴</div>
+        <button class="done-btn ripple" id="closeHistoryBtn">完了</button>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">使い方</div>
+        <button class="done-btn ripple" id="closeHelpBtn">完了</button>
+      </div>
+      <div class="help-list">
+        <div class="help-step"><span class="help-step-number">1</span><span>QR Code Dropで送信側がファイルを選び、表示されたQRコードを受信側のカメラで読み取ります。</span></div>
+        <div class="help-step"><span class="help-step-number">2</span><span>送信開始を押すとQRコードが順番に切り替わります。受信側は完了までカメラを向けてください。</span></div>
+        <div class="help-step"><span class="help-step-number">3</span><span>QR Web Dropでは接続QRを交換した後、WebRTCでファイルを直接送信できます。</span></div>
+        <div class="help-step"><span class="help-step-number">4</span><span>選択したファイルはこの端末の転送履歴に保存され、後から再送信できます。</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="changelogModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">更新履歴</div>
+        <button class="done-btn ripple" id="closeChangelogBtn">完了</button>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span class="info-label">v1.6.1</span><span class="info-value">Web Drop・転送履歴を改善</span></div>
+        <div class="info-row"><span class="info-label">v1.6.0</span><span class="info-value">QR Web Dropを追加</span></div>
+        <div class="info-row"><span class="info-label">v1.5.0</span><span class="info-value">QR転送・PWAに対応</span></div>
       </div>
     </div>
   </div>
@@ -860,8 +1138,25 @@
     const drawerScrim = document.getElementById('drawerScrim');
     const menuQrCode = document.getElementById('menuQrCode');
     const menuQrWeb = document.getElementById('menuQrWeb');
+    const menuHistory = document.getElementById('menuHistory');
+    const menuHelp = document.getElementById('menuHelp');
+    const menuChangelog = document.getElementById('menuChangelog');
     const appBarTitle = document.getElementById('appBarTitle');
     const bottomNav = document.getElementById('bottomNav');
+    const historyModal = document.getElementById('historyModal');
+    const helpModal = document.getElementById('helpModal');
+    const historyList = document.getElementById('historyList');
+    const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+    const closeHelpBtn = document.getElementById('closeHelpBtn');
+    const changelogModal = document.getElementById('changelogModal');
+    const closeChangelogBtn = document.getElementById('closeChangelogBtn');
+
+    const historyDbPromise = new Promise((resolve, reject) => {
+      const request = indexedDB.open('qr-drop-history', 1);
+      request.onupgradeneeded = () => request.result.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
 
     menuBtn.addEventListener('click', () => {
       drawer.classList.add('open');
@@ -873,6 +1168,105 @@
       drawerScrim.classList.remove('open');
     }
     drawerScrim.addEventListener('click', closeDrawer);
+
+    function closeHistoryModal() {
+      historyModal.classList.remove('open');
+    }
+
+    function closeHelpModal() {
+      helpModal.classList.remove('open');
+    }
+
+    async function showHistory() {
+      closeDrawer();
+      historyModal.classList.add('open');
+      historyList.innerHTML = '<div class="empty-message">履歴を読み込んでいます...</div>';
+      try {
+        const db = await historyDbPromise;
+        const records = await new Promise((resolve, reject) => {
+          const request = db.transaction('files', 'readonly').objectStore('files').getAll();
+          request.onsuccess = () => resolve(request.result.sort((a, b) => b.createdAt - a.createdAt));
+          request.onerror = () => reject(request.error);
+        });
+        historyList.innerHTML = records.length ? records.map(record => `
+          <button class="history-item ripple" data-history-id="${record.id}">
+            <span class="material-symbols-outlined">description</span>
+            <span class="history-item-text">
+              <span class="history-item-name">${escapeHtml(record.name)}</span>
+              <span class="history-item-meta">${record.direction || '送信'} ・ ${formatFileSize(record.size)} ・ ${new Date(record.createdAt).toLocaleString('ja-JP')}</span>
+            </span>
+          </button>`).join('') : '<div class="empty-message">保存された履歴はありません</div>';
+      } catch (error) {
+        historyList.innerHTML = '<div class="empty-message">履歴を読み込めませんでした</div>';
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
+    }
+
+    function formatFileSize(size) {
+      if (size < 1024) return `${size} B`;
+      if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+      return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    async function updateHistoryStorageStatus() {
+      try {
+        const db = await historyDbPromise;
+        const records = await new Promise((resolve, reject) => {
+          const request = db.transaction('files', 'readonly').objectStore('files').getAll();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        const totalSize = records.reduce((sum, record) => sum + record.size, 0);
+        document.getElementById('historyStorageStatus').textContent = `${records.length}件 ・ ${formatFileSize(totalSize)}を保存中`;
+      } catch (error) {
+        document.getElementById('historyStorageStatus').textContent = '保存容量を確認できません';
+      }
+    }
+
+    menuHistory.addEventListener('click', showHistory);
+    document.getElementById('cardHistorySettingsHeader').addEventListener('click', updateHistoryStorageStatus);
+    menuHelp.addEventListener('click', () => {
+      closeDrawer();
+      helpModal.classList.add('open');
+    });
+    menuChangelog.addEventListener('click', () => {
+      closeDrawer();
+      changelogModal.classList.add('open');
+    });
+    closeHistoryBtn.addEventListener('click', closeHistoryModal);
+    closeHelpBtn.addEventListener('click', closeHelpModal);
+    closeChangelogBtn.addEventListener('click', () => changelogModal.classList.remove('open'));
+    historyModal.addEventListener('click', event => {
+      if (event.target === historyModal) closeHistoryModal();
+    });
+    helpModal.addEventListener('click', event => {
+      if (event.target === helpModal) closeHelpModal();
+    });
+    changelogModal.addEventListener('click', event => {
+      if (event.target === changelogModal) changelogModal.classList.remove('open');
+    });
+
+    historyList.addEventListener('click', async event => {
+      const item = event.target.closest('[data-history-id]');
+      if (!item) return;
+      try {
+        const db = await historyDbPromise;
+        const record = await new Promise((resolve, reject) => {
+          const request = db.transaction('files', 'readonly').objectStore('files').get(Number(item.dataset.historyId));
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        if (!record) return;
+        closeHistoryModal();
+        menuQrCode.click();
+        handleFileSelect(new File([record.blob], record.name, { type: record.type, lastModified: record.lastModified }), false);
+      } catch (error) {
+        historyList.insertAdjacentHTML('afterbegin', '<div class="empty-message">ファイルを開けませんでした</div>');
+      }
+    });
 
     menuQrCode.addEventListener('click', () => {
       activeAppMode = 'code';
@@ -904,6 +1298,8 @@
     const viewCodeReceive = document.getElementById('viewCodeReceive');
 
     function switchTab(tab) {
+      document.getElementById('viewWebDrop').classList.remove('active');
+
       if (tab === 'send') {
         navSend.classList.add('active');
         navReceive.classList.remove('active');
@@ -937,31 +1333,220 @@
       if (e.target === settingsModal) closeModal();
     });
 
-    ['cardInstall', 'cardTransfer', 'cardNotification', 'cardDev', 'cardTheme', 'cardInfo'].forEach(id => {
+    ['cardInstall', 'cardTransfer', 'cardNotification', 'cardHistorySettings', 'cardReceiveSettings', 'cardDev', 'cardTheme', 'cardLanguage', 'cardInfo'].forEach(id => {
       const header = document.getElementById(id + 'Header');
       if (header) header.addEventListener('click', () => document.getElementById(id).classList.toggle('open'));
     });
 
     const btnThemeDark = document.getElementById('btnThemeDark');
     const btnThemeLight = document.getElementById('btnThemeLight');
+    const btnThemeDevice = document.getElementById('btnThemeDevice');
     const themeDesc = document.getElementById('themeDesc');
     const themeColorMeta = document.getElementById('themeColorMeta');
+    const languageSelect = document.getElementById('languageSelect');
+
+    const storedSettings = JSON.parse(localStorage.getItem('qr-drop-settings') || '{}');
+    if (storedSettings.enableHistory !== undefined) document.getElementById('enableHistory').checked = storedSettings.enableHistory;
+    if (storedSettings.historyLimit) document.getElementById('historyLimit').value = storedSettings.historyLimit;
+    if (storedSettings.autoDownload !== undefined) document.getElementById('autoDownload').checked = storedSettings.autoDownload;
+    if (storedSettings.renameDuplicateFiles !== undefined) document.getElementById('renameDuplicateFiles').checked = storedSettings.renameDuplicateFiles;
+    languageSelect.value = storedSettings.language || 'ja';
+
+    const translations = {
+      en: {
+        '転送モード切り替え': 'Transfer mode', 'QR Code Drop': 'QR Code Drop', 'QR Web Drop': 'QR Web Drop',
+        'その他': 'Other', '転送履歴': 'Transfer history', '使い方': 'How to use', '更新履歴': 'Changelog',
+        '新しいファイル': 'New file', '送信開始': 'Start sending', '停止': 'Stop',
+        'ファイルを選択またはドロップ': 'Select or drop a file', 'カメラの起動を待っています...': 'Waiting for camera...',
+        'リセット・再読み取り': 'Reset and scan again', '接続QR生成 (Host)': 'Generate connection QR (Host)',
+        '接続スキャン': 'Scan connection QR', 'P2P接続を初期化してください': 'Initialize the P2P connection',
+        'ファイル送信 (WebRTC)': 'Send file (WebRTC)', '設定': 'Settings', '完了': 'Done',
+        'アプリのインストール': 'Install app', 'ホーム画面に追加して快適に利用できます': 'Add it to your home screen for a better experience',
+        '転送オプション': 'Transfer options', '通知・サウンド': 'Notifications and sound', '履歴設定': 'History settings',
+        '受信設定': 'Receive settings', 'デベロッパー設定': 'Developer settings', 'テーマ設定': 'Theme', 'アプリ情報': 'App information',
+        '言語': 'Language', '表示言語を変更': 'Change display language', '保存件数・保存容量の管理': 'Manage saved items and storage',
+        '受信完了後のファイル処理': 'Actions after receiving a file', '開発者向けデバッグ機能': 'Developer debugging tools',
+        'バージョンとシステム情報': 'Version and system information', 'ダーク': 'Dark', 'ライト': 'Light', 'デバイス': 'Device',
+        'アクセントカラー': 'Accent color', '説明': 'Description', 'オフラインファイル転送': 'Offline file transfer',
+        '転送方式': 'Transfer methods', '履歴の保存先': 'History storage', 'この端末のみ': 'This device only',
+        '対応': 'Support', 'PWA・オフライン': 'PWA and offline', '更新履歴': 'Changelog',
+        '履歴をすべて削除': 'Delete all history', '転送履歴をこの端末に保存': 'Save transfer history on this device',
+        '最大保存件数': 'Maximum saved items', '受信完了時に自動で保存を起動': 'Automatically save after receiving',
+        '同名ファイルに連番を付ける': 'Add a number to duplicate filenames', 'QRコードを利用したオフラインファイル転送ツール': 'Offline file transfer using QR codes',
+        '受信完了時にバイブレーションで通知': 'Vibrate when receiving is complete', '全データ送信後に繰り返しループ送信する': 'Loop after sending all data',
+        'Devモード (解析速度・FPSの表示)': 'Developer mode (show parse speed and FPS)', 'QRコード表示サイズ': 'QR code display size',
+        '誤り訂正レベル': 'Error correction level', '分割サイズ (Byte)': 'Chunk size (bytes)', '送信速度 (FPS)': 'Send speed (FPS)',
+        'アプリ名': 'App name', 'バージョン': 'Version', 'オフラインファイル転送': 'Offline file transfer'
+        , 'ダークモード': 'Dark mode', 'ライトモード': 'Light mode', 'デバイス設定に準拠': 'Follow device settings'
+        , 'アプリをインストール': 'Install app', 'インストール済み': 'Installed', '更新を確認': 'Check for updates', 'キャッシュ削除': 'Clear cache'
+        , 'QR Code Dropで送信側がファイルを選び、表示されたQRコードを受信側のカメラで読み取ります。': 'In QR Code Drop, select a file on the sender and scan the displayed QR code with the receiver camera.'
+        , '送信開始を押すとQRコードが順番に切り替わります。受信側は完了までカメラを向けてください。': 'Press Start sending to cycle through the QR codes. Keep the receiver camera pointed at them until complete.'
+        , 'QR Web Dropでは接続QRを交換した後、WebRTCでファイルを直接送信できます。': 'In QR Web Drop, exchange connection QR codes and send files directly with WebRTC.'
+        , '選択したファイルはこの端末の転送履歴に保存され、後から再送信できます。': 'Selected files are saved in this device history and can be sent again later.'
+      },
+      ko: {
+        '転送モード切り替え': '전송 모드', 'その他': '기타', '転送履歴': '전송 기록', '使い方': '사용 방법', '更新履歴': '업데이트 기록',
+        '新しいファイル': '새 파일', '送信開始': '전송 시작', '停止': '중지', 'ファイルを選択またはドロップ': '파일을 선택하거나 놓으세요',
+        '設定': '설정', '完了': '완료', 'アプリのインストール': '앱 설치', '転送オプション': '전송 옵션', '通知・サウンド': '알림 및 소리',
+        '履歴設定': '기록 설정', '受信設定': '수신 설정', 'デベロッパー設定': '개발자 설정', 'テーマ設定': '테마 설정', 'アプリ情報': '앱 정보',
+        '言語': '언어', '表示言語を変更': '표시 언어 변경', 'ダーク': '어두운 테마', 'ライト': '밝은 테마', 'デバイス': '기기 설정',
+        'アクセントカラー': '강조 색상', '履歴をすべて削除': '기록 모두 삭제', '転送履歴をこの端末に保存': '이 기기에 전송 기록 저장',
+        '最大保存件数': '최대 저장 항목', '受信完了時に自動で保存を起動': '수신 완료 후 자동 저장', '同名ファイルに連番を付ける': '같은 이름에 번호 추가',
+        '説明': '설명', '転送方式': '전송 방식', '履歴の保存先': '기록 저장 위치', 'この端末のみ': '이 기기만', '対応': '지원', 'PWA・オフライン': 'PWA 및 오프라인',
+        'アプリ名': '앱 이름', 'バージョン': '버전', 'オフラインファイル転送': '오프라인 파일 전송',
+        'ダークモード': '어두운 테마', 'ライトモード': '밝은 테마', 'デバイス設定に準拠': '기기 설정 따름', 'アプリをインストール': '앱 설치', 'インストール済み': '설치됨', '更新を確認': '업데이트 확인', 'キャッシュ削除': '캐시 삭제'
+      },
+      zh: {
+        '転送モード切り替え': '传输模式', 'その他': '其他', '転送履歴': '传输记录', '使い方': '使用方法', '更新履歴': '更新记录',
+        '新しいファイル': '新文件', '送信開始': '开始发送', '停止': '停止', 'ファイルを選択またはドロップ': '选择或拖放文件',
+        '設定': '设置', '完了': '完成', 'アプリのインストール': '安装应用', '転送オプション': '传输选项', '通知・サウンド': '通知和声音',
+        '履歴設定': '记录设置', '受信設定': '接收设置', 'デベロッパー設定': '开发者设置', 'テーマ設定': '主题设置', 'アプリ情報': '应用信息',
+        '言語': '语言', '表示言語を変更': '更改显示语言', 'ダーク': '深色', 'ライト': '浅色', 'デバイス': '跟随设备',
+        'アクセントカラー': '强调色', '履歴をすべて削除': '删除所有记录', '転送履歴をこの端末に保存': '将传输记录保存到此设备',
+        '最大保存件数': '最大保存数量', '受信完了時に自動で保存を起動': '接收完成后自动保存', '同名ファイルに連番を付ける': '同名文件添加序号',
+        '説明': '说明', '転送方式': '传输方式', '履歴の保存先': '记录存储位置', 'この端末のみ': '仅此设备', '対応': '支持', 'PWA・オフライン': 'PWA和离线',
+        'アプリ名': '应用名称', 'バージョン': '版本', 'オフラインファイル転送': '离线文件传输',
+        'ダークモード': '深色模式', 'ライトモード': '浅色模式', 'デバイス設定に準拠': '跟随设备设置', 'アプリをインストール': '安装应用', 'インストール済み': '已安装', '更新を確認': '检查更新', 'キャッシュ削除': '清除缓存'
+      }
+    };
+
+    function applyLanguage(language) {
+      const dictionary = translations[language] || {};
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        if (!node.parentElement.closest('script, style')) {
+          if (!node._translationKey && translations.en[node.nodeValue.trim()]) node._translationKey = node.nodeValue.trim();
+          if (!node._translationKey) {
+            node._translationKey = Object.keys(translations.en).find(key => translations.en[key] === node.nodeValue.trim());
+          }
+          const key = node._translationKey;
+          if (key) node.nodeValue = node.nodeValue.replace(node.nodeValue.trim(), dictionary[key] || key);
+        }
+      }
+      document.documentElement.lang = language;
+      languageSelect.value = language;
+      const settings = JSON.parse(localStorage.getItem('qr-drop-settings') || '{}');
+      settings.language = language;
+      localStorage.setItem('qr-drop-settings', JSON.stringify(settings));
+    }
+
+    function setTheme(theme) {
+      document.body.classList.remove('light-mode', 'device-theme');
+      if (theme === 'light') document.body.classList.add('light-mode');
+      if (theme === 'device') document.body.classList.add('device-theme');
+      themeDesc.textContent = theme === 'light' ? 'ライトモード' : theme === 'device' ? 'デバイス設定に準拠' : 'ダークモード';
+      themeColorMeta.setAttribute('content', theme === 'light' ? '#f8f9fa' : '#121212');
+      btnThemeDark.className = `pill-btn ${theme === 'dark' ? 'pill-btn-primary' : 'pill-btn-outlined'} ripple`;
+      btnThemeLight.className = `pill-btn ${theme === 'light' ? 'pill-btn-primary' : 'pill-btn-outlined'} ripple`;
+      btnThemeDevice.className = `pill-btn ${theme === 'device' ? 'pill-btn-primary' : 'pill-btn-outlined'} ripple`;
+      const settings = JSON.parse(localStorage.getItem('qr-drop-settings') || '{}');
+      settings.theme = theme;
+      localStorage.setItem('qr-drop-settings', JSON.stringify(settings));
+      if (languageSelect) applyLanguage(languageSelect.value);
+    }
+
+    function setAccent(accent) {
+      document.body.classList.remove('accent-green', 'accent-orange', 'accent-pink');
+      if (accent !== 'blue') document.body.classList.add(`accent-${accent}`);
+      document.querySelectorAll('.accent-btn').forEach(button => button.classList.remove('selected'));
+      document.getElementById(`accent${accent[0].toUpperCase()}${accent.slice(1)}`).classList.add('selected');
+      const settings = JSON.parse(localStorage.getItem('qr-drop-settings') || '{}');
+      settings.accent = accent;
+      localStorage.setItem('qr-drop-settings', JSON.stringify(settings));
+    }
+
+    function saveSettings() {
+      const settings = JSON.parse(localStorage.getItem('qr-drop-settings') || '{}');
+      settings.enableHistory = document.getElementById('enableHistory').checked;
+      settings.historyLimit = Math.min(100, Math.max(1, parseInt(document.getElementById('historyLimit').value, 10) || 20));
+      settings.autoDownload = document.getElementById('autoDownload').checked;
+      settings.renameDuplicateFiles = document.getElementById('renameDuplicateFiles').checked;
+      localStorage.setItem('qr-drop-settings', JSON.stringify({
+        ...settings
+      }));
+    }
 
     btnThemeDark.addEventListener('click', () => {
-      document.body.classList.remove('light-mode');
-      themeDesc.textContent = 'ダークモード';
-      themeColorMeta.setAttribute('content', '#121212');
-      btnThemeDark.className = 'pill-btn pill-btn-primary ripple';
-      btnThemeLight.className = 'pill-btn pill-btn-outlined ripple';
+      setTheme('dark');
     });
 
     btnThemeLight.addEventListener('click', () => {
-      document.body.classList.add('light-mode');
-      themeDesc.textContent = 'ライトモード';
-      themeColorMeta.setAttribute('content', '#f8f9fa');
-      btnThemeLight.className = 'pill-btn pill-btn-primary ripple';
-      btnThemeDark.className = 'pill-btn pill-btn-outlined ripple';
+      setTheme('light');
     });
+
+    btnThemeDevice.addEventListener('click', () => setTheme('device'));
+    document.getElementById('accentBlue').addEventListener('click', () => setAccent('blue'));
+    document.getElementById('accentGreen').addEventListener('click', () => setAccent('green'));
+    document.getElementById('accentOrange').addEventListener('click', () => setAccent('orange'));
+    document.getElementById('accentPink').addEventListener('click', () => setAccent('pink'));
+    languageSelect.addEventListener('change', event => applyLanguage(event.target.value));
+    setTheme(storedSettings.theme || 'dark');
+    setAccent(storedSettings.accent || 'blue');
+    applyLanguage(storedSettings.language || 'ja');
+
+    document.getElementById('enableHistory').addEventListener('change', saveSettings);
+    document.getElementById('historyLimit').addEventListener('change', saveSettings);
+    document.getElementById('autoDownload').addEventListener('change', saveSettings);
+    document.getElementById('renameDuplicateFiles').addEventListener('change', saveSettings);
+
+    let deferredInstallPrompt = null;
+    let serviceWorkerRegistration = null;
+    const installPwaBtn = document.getElementById('installPwaBtn');
+    const installBtnText = document.getElementById('installBtnText');
+    const pwaStatus = document.getElementById('pwaStatus');
+
+    window.addEventListener('beforeinstallprompt', event => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      installPwaBtn.disabled = false;
+      installBtnText.textContent = 'アプリをインストール';
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      installPwaBtn.disabled = true;
+      installBtnText.textContent = 'インストール済み';
+      pwaStatus.textContent = 'PWAとしてインストールされています';
+    });
+
+    installPwaBtn.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      installPwaBtn.disabled = true;
+    });
+
+    async function registerServiceWorker() {
+      if (!('serviceWorker' in navigator)) {
+        pwaStatus.textContent = 'このブラウザはオフライン機能に対応していません';
+        return;
+      }
+      try {
+        serviceWorkerRegistration = await navigator.serviceWorker.register('./sw.js');
+        pwaStatus.textContent = 'オフライン利用に対応しています';
+      } catch (error) {
+        pwaStatus.textContent = 'PWAはHTTPSまたはlocalhostで利用できます';
+      }
+    }
+
+    document.getElementById('updatePwaBtn').addEventListener('click', async () => {
+      if (!serviceWorkerRegistration) {
+        pwaStatus.textContent = 'Service Workerが利用できません';
+        return;
+      }
+      await serviceWorkerRegistration.update();
+      pwaStatus.textContent = '最新版を確認しました';
+    });
+
+    document.getElementById('clearPwaCacheBtn').addEventListener('click', async () => {
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+      pwaStatus.textContent = 'キャッシュを削除しました。再読み込みしてください';
+    });
+
+    registerServiceWorker();
 
     // --- QR Code Transmission Logic ---
     let currentRawData = null;
@@ -992,8 +1577,46 @@
     ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false));
     dropArea.addEventListener('drop', (e) => handleFileSelect(e.dataTransfer.files[0]));
 
-    function handleFileSelect(file) {
+    async function saveFileToHistory(file, direction = '送信') {
+      if (!document.getElementById('enableHistory').checked) return;
+      try {
+        const db = await historyDbPromise;
+        const historyLimit = Math.min(100, Math.max(1, parseInt(document.getElementById('historyLimit').value, 10) || 20));
+        await new Promise((resolve, reject) => {
+          const transaction = db.transaction('files', 'readwrite');
+          const store = transaction.objectStore('files');
+          store.add({ name: file.name, type: file.type, size: file.size, lastModified: file.lastModified, direction, createdAt: Date.now(), blob: file });
+          const request = store.getAll();
+          request.onsuccess = () => {
+            request.result
+              .sort((a, b) => b.createdAt - a.createdAt)
+              .slice(historyLimit)
+              .forEach(record => store.delete(record.id));
+          };
+          transaction.oncomplete = resolve;
+          transaction.onerror = () => reject(transaction.error);
+        });
+      } catch (error) {
+        console.warn('履歴の保存に失敗しました', error);
+      }
+    }
+
+    document.getElementById('clearHistoryBtn').addEventListener('click', async () => {
+      if (!confirm('転送履歴をすべて削除しますか？')) return;
+      const db = await historyDbPromise;
+      await new Promise((resolve, reject) => {
+        const transaction = db.transaction('files', 'readwrite');
+        transaction.objectStore('files').clear();
+        transaction.oncomplete = resolve;
+        transaction.onerror = () => reject(transaction.error);
+      });
+      document.getElementById('historyStorageStatus').textContent = '履歴を削除しました';
+      historyList.innerHTML = '<div class="empty-message">保存された履歴はありません</div>';
+    });
+
+    function handleFileSelect(file, saveToHistory = true) {
       if (!file) return;
+      if (saveToHistory) saveFileToHistory(file);
       currentFileName = file.name;
       fileNameDisplay.textContent = file.name;
       fileIcon.textContent = 'description';
@@ -1048,19 +1671,24 @@
 
     function renderQRCode(text, container = qrContainer) {
       if (!text) return;
-      container.innerHTML = '';
+      
       const eccMap = { 'L': QRCode.CorrectLevel.L, 'M': QRCode.CorrectLevel.M, 'Q': QRCode.CorrectLevel.Q, 'H': QRCode.CorrectLevel.H };
       const eccSelect = document.getElementById('eccLevel').value || 'L';
       const sizeSelect = parseInt(document.getElementById('qrSize').value, 10) || 280;
 
+      // 古いキャンバス・DOM要素を安全に破棄
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+
       try {
         new QRCode(container, {
-          text: text,
+          text: String(text),
           width: sizeSelect,
           height: sizeSelect,
           colorDark : "#000000",
           colorLight : "#ffffff",
-          correctLevel: eccMap[eccSelect]
+          correctLevel: eccMap[eccSelect] || QRCode.CorrectLevel.L
         });
       } catch (err) {
         console.error("QR Code generation failed:", err);
@@ -1210,9 +1838,20 @@
       } catch (e) {}
     }
 
-    function assembleAndDownload() {
+    async function assembleAndDownload() {
       let fullBase64 = mimeHeader + ',';
       for (let i = 0; i < totalChunks; i++) fullBase64 += receivedChunks[i];
+
+      try {
+        const receivedBlob = await fetch(fullBase64).then(response => response.blob());
+        const receivedFile = new File([receivedBlob], fileName, {
+          type: receivedBlob.type || 'application/octet-stream',
+          lastModified: Date.now()
+        });
+        await saveFileToHistory(receivedFile, '受信');
+      } catch (error) {
+        console.warn('受信履歴の保存に失敗しました', error);
+      }
 
       if (document.getElementById('autoDownload').checked) {
         const a = document.createElement('a');
@@ -1245,22 +1884,59 @@
 
     const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
+    async function encodeWebSignal(type, description) {
+      const signal = JSON.stringify({ type, sdp: description.sdp });
+      if (!('CompressionStream' in window)) return JSON.parse(signal);
+
+      const compressedStream = new Blob([signal]).stream().pipeThrough(new CompressionStream('gzip'));
+      const compressedBytes = new Uint8Array(await new Response(compressedStream).arrayBuffer());
+      let binary = '';
+      compressedBytes.forEach(byte => binary += String.fromCharCode(byte));
+      return { type, compressed: true, data: btoa(binary) };
+    }
+
+    async function decodeWebSignal(signal) {
+      if (!signal.compressed) return signal;
+
+      const binary = atob(signal.data);
+      const compressedBytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+      const compressedStream = new Blob([compressedBytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+      return JSON.parse(await new Response(compressedStream).text());
+    }
+
+    function waitForIceGatheringComplete(connection) {
+      if (connection.iceGatheringState === 'complete') return Promise.resolve();
+
+      return new Promise(resolve => {
+        const timeoutId = setTimeout(done, 3000);
+        function done() {
+          clearTimeout(timeoutId);
+          connection.removeEventListener('icegatheringstatechange', checkState);
+          resolve();
+        }
+        function checkState() {
+          if (connection.iceGatheringState === 'complete') done();
+        }
+        connection.addEventListener('icegatheringstatechange', checkState);
+      });
+    }
+
     webInitBtn.addEventListener('click', async () => {
       peerConnection = new RTCPeerConnection(rtcConfig);
       dataChannel = peerConnection.createDataChannel('fileTransfer');
       setupDataChannel();
 
-      peerConnection.onicecandidate = (e) => {
-        if (!e.candidate) {
-          const offerSdp = JSON.stringify(peerConnection.localDescription);
-          webVideo.style.display = 'none';
-          renderQRCode(offerSdp, webQrDisplay);
-          webStatus.textContent = '相手端末でこのQRコードをスキャンしてください';
-        }
-      };
-
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
+      try {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        await waitForIceGatheringComplete(peerConnection);
+        const signal = await encodeWebSignal('offer', peerConnection.localDescription);
+        webVideo.style.display = 'none';
+        renderQRCode(JSON.stringify(signal), webQrDisplay);
+        webStatus.textContent = '相手端末でこのQRコードをスキャンしてください';
+      } catch (error) {
+        webStatus.textContent = '接続QRの生成に失敗しました: ' + error.message;
+      }
     });
 
     webScanBtn.addEventListener('click', () => {
@@ -1276,7 +1952,7 @@
     });
 
     function scanWebSignal(stream) {
-      const scanTick = () => {
+      const scanTick = async () => {
         if (webVideo.readyState === webVideo.HAVE_ENOUGH_DATA) {
           canvas.width = webVideo.videoWidth;
           canvas.height = webVideo.videoHeight;
@@ -1286,7 +1962,7 @@
 
           if (code) {
             try {
-              const signal = JSON.parse(code.data);
+              const signal = await decodeWebSignal(JSON.parse(code.data));
               stream.getTracks().forEach(t => t.stop());
               webVideo.style.display = 'none';
               handleWebSignal(signal);
@@ -1310,14 +1986,10 @@
         await peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
-
-        peerConnection.onicecandidate = (e) => {
-          if (!e.candidate) {
-            const answerSdp = JSON.stringify(peerConnection.localDescription);
-            renderQRCode(answerSdp, webQrDisplay);
-            webStatus.textContent = 'Host側でこのAnswer QRを読み取ってください';
-          }
-        };
+        await waitForIceGatheringComplete(peerConnection);
+        const answerSignal = await encodeWebSignal('answer', peerConnection.localDescription);
+        renderQRCode(JSON.stringify(answerSignal), webQrDisplay);
+        webStatus.textContent = 'Host側でこのAnswer QRを読み取ってください';
       } else if (signal.type === 'answer') {
         await peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
         webStatus.textContent = '接続確立中...';

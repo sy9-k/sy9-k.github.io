@@ -1,10 +1,10 @@
 {
-  "name": "QR AirDrop",
-  "short_name": "QR AirDrop",
+  "name": "QR Drop",
+  "short_name": "QR Drop",
   "description": "QRコードを利用したオフラインファイル転送ツール",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": #121212",
+  "background_color": "#121212",
   "theme_color": "#121212",
   "icons": [
     {
