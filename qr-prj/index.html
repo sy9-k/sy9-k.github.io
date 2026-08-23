@@ -23,13 +23,11 @@
 
   <style>
     :root {
-      /* M3 Motion Easing & Duration */
       --md-transition-duration: 0.3s;
       --md-easing-standard: cubic-bezier(0.2, 0, 0, 1);
       --md-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
       --md-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
 
-      /* Dark Theme (Default) */
       --bg-color: #121212;
       --surface-color: #1e1e1e;
       --surface-variant: #2d2f31;
@@ -53,7 +51,6 @@
     }
 
     body.light-mode {
-      /* Light Theme */
       --bg-color: #f8f9fa;
       --surface-color: #ffffff;
       --surface-variant: #e1e3e1;
@@ -93,7 +90,6 @@
       transition: background-color var(--md-transition-duration) var(--md-easing-standard), color var(--md-transition-duration) var(--md-easing-standard);
     }
 
-    /* Ripple Effect Container */
     .ripple {
       position: relative;
       overflow: hidden;
@@ -116,7 +112,6 @@
       }
     }
 
-    /* Navigation Drawer */
     .drawer-scrim {
       position: fixed; inset: 0;
       background-color: rgba(0, 0, 0, 0.5);
@@ -262,17 +257,15 @@
       transition: transform 0.2s var(--md-easing-standard);
     }
 
-    /* ドットの視認性を高めるCSS定義を追加 */
     .qr-box img, .qr-box canvas {
       max-width: 100%; max-height: 100%;
-      image-rendering: pixelated; /* ドットの境界を強調 */
+      image-rendering: pixelated;
       display: block;
       margin: auto;
     }
 
     video { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Dev Overlay */
     .dev-overlay {
       position: absolute; inset: 0;
       background: rgba(0, 0, 0, 0.75);
@@ -526,7 +519,7 @@
 </head>
 <body>
 
-  <!-- Navigation Drawer (左側スライドメニュー) -->
+  <!-- Navigation Drawer -->
   <div class="drawer-scrim" id="drawerScrim"></div>
   <aside class="drawer" id="drawer">
     <div class="drawer-header">転送モード切り替え</div>
@@ -612,7 +605,7 @@
       </div>
     </div>
 
-    <!-- QR Web Drop (WebRTC P2P通信モード) -->
+    <!-- QR Web Drop Mode -->
     <div id="viewWebDrop" class="view-panel">
       <input type="file" id="webFileInput" style="display: none;">
 
@@ -671,7 +664,6 @@
         <button class="done-btn ripple" id="closeSettingsBtn">完了</button>
       </div>
 
-      <!-- PWA インストール -->
       <div class="setting-card open" id="cardInstall">
         <div class="card-item" id="cardInstallHeader">
           <span class="material-symbols-outlined">download</span>
@@ -694,7 +686,6 @@
         </div>
       </div>
 
-      <!-- 転送オプション -->
       <div class="setting-card open" id="cardTransfer">
         <div class="card-item" id="cardTransferHeader">
           <span class="material-symbols-outlined">tune</span>
@@ -710,7 +701,7 @@
             <div class="settings-row">
               <div class="m3-field-container">
                 <span class="m3-field-label">分割サイズ (Byte)</span>
-                <input type="number" id="chunkSize" class="m3-field-input" value="300">
+                <input type="number" id="chunkSize" class="m3-field-input" value="150">
               </div>
               <div class="m3-field-container">
                 <span class="m3-field-label">送信速度 (FPS)</span>
@@ -750,7 +741,6 @@
         </div>
       </div>
 
-      <!-- 通知 & サウンド設定 -->
       <div class="setting-card open" id="cardNotification">
         <div class="card-item" id="cardNotificationHeader">
           <span class="material-symbols-outlined">notifications</span>
@@ -776,7 +766,6 @@
         </div>
       </div>
 
-      <!-- デベロッパー設定 -->
       <div class="setting-card open" id="cardDev">
         <div class="card-item" id="cardDevHeader">
           <span class="material-symbols-outlined">developer_mode</span>
@@ -797,7 +786,6 @@
         </div>
       </div>
 
-      <!-- テーマ設定 -->
       <div class="setting-card open" id="cardTheme">
         <div class="card-item" id="cardThemeHeader">
           <span class="material-symbols-outlined">palette</span>
@@ -817,7 +805,6 @@
         </div>
       </div>
 
-      <!-- バージョン・アプリ情報 -->
       <div class="setting-card open" id="cardInfo">
         <div class="card-item" id="cardInfoHeader">
           <span class="material-symbols-outlined">info</span>
@@ -836,31 +823,16 @@
               </div>
               <div class="info-row">
                 <span class="info-label">バージョン</span>
-                <span class="info-value">v1.6.0</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">開発構成</span>
-                <span class="info-value">PWA / Material 3 / WebRTC</span>
+                <span class="info-value">v1.6.1</span>
               </div>
             </div>
-            <button class="pill-btn pill-btn-outlined ripple" id="checkUpdateBtn" style="width: 100%; margin-top: 4px;">
-              <span class="material-symbols-outlined">system_update</span>
-              <span id="updateBtnText">アップデートを確認</span>
-            </button>
           </div>
         </div>
-      </div>
-
-      <div class="footer-links">
-        <span>プライバシー ポリシー</span>
-        <span>・</span>
-        <span>利用規約</span>
       </div>
     </div>
   </div>
 
   <script>
-    // --- Ripple Effect Implementation ---
     document.addEventListener('click', (e) => {
       const target = e.target.closest('.ripple');
       if (!target) return;
@@ -881,8 +853,7 @@
       target.appendChild(circle);
     });
 
-    // --- State & Mode Control ---
-    let activeAppMode = 'code'; // 'code' or 'web'
+    let activeAppMode = 'code'; 
     
     const menuBtn = document.getElementById('menuBtn');
     const drawer = document.getElementById('drawer');
@@ -921,14 +892,12 @@
       bottomNav.style.display = 'none';
       closeDrawer();
       
-      // Web Drop View Activation
       stopCamera();
       stopTransmission();
       document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('viewWebDrop').classList.add('active');
     });
 
-    // --- Tab Switch (QR Code Mode) ---
     const navSend = document.getElementById('navSend');
     const navReceive = document.getElementById('navReceive');
     const viewCodeSend = document.getElementById('viewCodeSend');
@@ -954,7 +923,6 @@
     navSend.addEventListener('click', () => switchTab('send'));
     navReceive.addEventListener('click', () => switchTab('receive'));
 
-    // --- Settings Modal ---
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsModal = document.getElementById('settingsModal');
     const closeSettingsBtn = document.getElementById('closeSettingsBtn');
@@ -974,7 +942,6 @@
       if (header) header.addEventListener('click', () => document.getElementById(id).classList.toggle('open'));
     });
 
-    // --- Theme Control ---
     const btnThemeDark = document.getElementById('btnThemeDark');
     const btnThemeLight = document.getElementById('btnThemeLight');
     const themeDesc = document.getElementById('themeDesc');
@@ -996,80 +963,10 @@
       btnThemeDark.className = 'pill-btn pill-btn-outlined ripple';
     });
 
-    // --- PWA Installation ---
-    let deferredPrompt = null;
-    const installPwaBtn = document.getElementById('installPwaBtn');
-    const installBtnText = document.getElementById('installBtnText');
-    const installDesc = document.getElementById('installDesc');
-    const iosInstallNotice = document.getElementById('iosInstallNotice');
-
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-    if (isStandalone) {
-      installDesc.textContent = 'すでにアプリとして使用中です';
-      installBtnText.textContent = 'インストール済み';
-      installPwaBtn.disabled = true;
-    } else if (isIOS) {
-      installDesc.textContent = 'Safariの共有メニューから追加できます';
-      installBtnText.textContent = 'iOSでのインストール方法';
-      iosInstallNotice.style.display = 'block';
-      installPwaBtn.disabled = true;
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (!isStandalone) {
-        installPwaBtn.disabled = false;
-        installBtnText.textContent = 'アプリをインストール';
-      }
-    });
-
-    installPwaBtn.addEventListener('click', () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            installDesc.textContent = 'インストールが完了しました';
-            installBtnText.textContent = 'インストール済み';
-            installPwaBtn.disabled = true;
-          }
-          deferredPrompt = null;
-        });
-      }
-    });
-
-    // --- Service Worker & Update ---
-    let swRegistration = null;
-    const checkUpdateBtn = document.getElementById('checkUpdateBtn');
-    const updateBtnText = document.getElementById('updateBtnText');
-
-    checkUpdateBtn.addEventListener('click', () => {
-      if (!swRegistration) {
-        alert('Service Workerが登録されていないか、非対応です。');
-        return;
-      }
-      updateBtnText.textContent = '確認中...';
-      swRegistration.update()
-        .then(() => {
-          setTimeout(() => {
-            if (!swRegistration.waiting) {
-              updateBtnText.textContent = '最新バージョンです';
-              setTimeout(() => updateBtnText.textContent = 'アップデートを確認', 2000);
-            }
-          }, 1000);
-        })
-        .catch((err) => {
-          console.error('Update check failed:', err);
-          updateBtnText.textContent = '確認に失敗しました';
-          setTimeout(() => updateBtnText.textContent = 'アップデートを確認', 2000);
-        });
-    });
-
-    // --- Mode 1: QR Code Drop Logic ---
+    // --- QR Code Transmission Logic ---
     let currentRawData = null;
     let currentFileName = '';
+    let currentMimeType = '';
     let chunks = [];
     let timer = null;
     let currentIndex = 0;
@@ -1103,12 +1000,18 @@
 
       const reader = new FileReader();
       reader.onload = (evt) => {
-        currentRawData = evt.target.result;
-        prepareChunks(currentFileName, currentRawData);
-        startBtn.disabled = false;
-        sendStatus.textContent = `準備完了: 全 ${chunks.length} チャンク`;
-        sendProgressBar.style.width = '0%';
-        renderQRCode(chunks[0]);
+        const result = evt.target.result;
+        const commaIdx = result.indexOf(',');
+        currentMimeType = result.substring(0, commaIdx);
+        currentRawData = result.substring(commaIdx + 1);
+
+        prepareChunks(currentFileName, currentRawData, currentMimeType);
+        if (chunks.length > 0) {
+          startBtn.disabled = false;
+          sendStatus.textContent = `準備完了: 全 ${chunks.length} チャンク`;
+          sendProgressBar.style.width = '0%';
+          renderQRCode(chunks[0]);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -1122,42 +1025,47 @@
       if (currentRawData && currentFileName) {
         const wasRunning = timer !== null;
         stopTransmission();
-        prepareChunks(currentFileName, currentRawData);
+        prepareChunks(currentFileName, currentRawData, currentMimeType);
         sendStatus.textContent = `設定反映済み: 全 ${chunks.length} チャンク`;
         renderQRCode(chunks[0]);
         if (wasRunning) startTransmission();
       }
     }
 
-    function prepareChunks(filename, data) {
-      const chunkSize = parseInt(document.getElementById('chunkSize').value, 10) || 300;
-      const totalChunks = Math.ceil(data.length / chunkSize);
+    function prepareChunks(filename, base64Data, mimeHeader) {
+      const chunkSize = parseInt(document.getElementById('chunkSize').value, 10) || 150;
+      const totalChunks = Math.ceil(base64Data.length / chunkSize);
       const transferId = Math.random().toString(36).substring(2, 7);
 
       chunks = [];
       for (let i = 0; i < totalChunks; i++) {
-        const segment = data.slice(i * chunkSize, (i + 1) * chunkSize);
+        const segment = base64Data.slice(i * chunkSize, (i + 1) * chunkSize);
         chunks.push(JSON.stringify({
-          id: transferId, name: filename, t: totalChunks, i: i, d: segment
+          id: transferId, name: filename, m: mimeHeader, t: totalChunks, i: i, d: segment
         }));
       }
     }
 
-    /* QRコードのセル（ドット）を太く大きくなるよう描画処理を強化 */
     function renderQRCode(text, container = qrContainer) {
+      if (!text) return;
       container.innerHTML = '';
       const eccMap = { 'L': QRCode.CorrectLevel.L, 'M': QRCode.CorrectLevel.M, 'Q': QRCode.CorrectLevel.Q, 'H': QRCode.CorrectLevel.H };
       const eccSelect = document.getElementById('eccLevel').value || 'L';
       const sizeSelect = parseInt(document.getElementById('qrSize').value, 10) || 280;
 
-      new QRCode(container, {
-        text: text,
-        width: sizeSelect,
-        height: sizeSelect,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel: eccMap[eccSelect]
-      });
+      try {
+        new QRCode(container, {
+          text: text,
+          width: sizeSelect,
+          height: sizeSelect,
+          colorDark : "#000000",
+          colorLight : "#ffffff",
+          correctLevel: eccMap[eccSelect]
+        });
+      } catch (err) {
+        console.error("QR Code generation failed:", err);
+        sendStatus.textContent = "QR生成エラー: 分割サイズを小さくしてください";
+      }
     }
 
     function startTransmission() {
@@ -1200,7 +1108,7 @@
     }
     stopBtn.addEventListener('click', stopTransmission);
 
-    // QR Reception
+    // --- QR Reception Logic ---
     const video = document.getElementById('video');
     const canvas = document.getElementById('hiddenCanvas');
     const ctx = canvas.getContext('2d');
@@ -1208,7 +1116,7 @@
     const receiveProgressBar = document.getElementById('receiveProgressBar');
     const resetBtn = document.getElementById('resetBtn');
 
-    let currentTransferId = null, totalChunks = 0, fileName = '', receivedChunks = {}, isCompleted = false;
+    let currentTransferId = null, totalChunks = 0, fileName = '', mimeHeader = '', receivedChunks = {}, isCompleted = false;
     let animationFrameId = null, streamRef = null;
     let lastFrameTime = performance.now(), frameCount = 0, currentFps = 0;
 
@@ -1280,6 +1188,7 @@
           currentTransferId = payload.id;
           totalChunks = payload.t;
           fileName = payload.name || 'downloaded_file';
+          mimeHeader = payload.m || 'data:application/octet-stream;base64';
           receivedChunks = {};
           isCompleted = false;
         }
@@ -1302,7 +1211,7 @@
     }
 
     function assembleAndDownload() {
-      let fullBase64 = '';
+      let fullBase64 = mimeHeader + ',';
       for (let i = 0; i < totalChunks; i++) fullBase64 += receivedChunks[i];
 
       if (document.getElementById('autoDownload').checked) {
@@ -1322,7 +1231,7 @@
       receiveProgressBar.style.width = '0%';
     });
 
-    // --- Mode 2: QR Web Drop (WebRTC Direct P2P) Logic ---
+    // --- Web Drop Logic ---
     let peerConnection = null;
     let dataChannel = null;
     const webInitBtn = document.getElementById('webInitBtn');
@@ -1343,7 +1252,6 @@
 
       peerConnection.onicecandidate = (e) => {
         if (!e.candidate) {
-          // 全ICE候補を含んだSDPをQR化（renderQRCode経由で大型表示）
           const offerSdp = JSON.stringify(peerConnection.localDescription);
           webVideo.style.display = 'none';
           renderQRCode(offerSdp, webQrDisplay);
@@ -1475,31 +1383,6 @@
       }
       readNextChunk();
     });
-
-    // --- SW Registration ---
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then((reg) => {
-            swRegistration = reg;
-            reg.addEventListener('updatefound', () => {
-              const newWorker = reg.installing;
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  updateBtnText.textContent = 'アップデートして再起動';
-                  checkUpdateBtn.classList.remove('pill-btn-outlined');
-                  checkUpdateBtn.classList.add('pill-btn-primary');
-                  checkUpdateBtn.onclick = () => {
-                    newWorker.postMessage({ action: 'skipWaiting' });
-                    window.location.reload();
-                  };
-                }
-              });
-            });
-          })
-          .catch((err) => console.error('SW Register failed:', err));
-      });
-    }
   </script>
 </body>
 </html>
