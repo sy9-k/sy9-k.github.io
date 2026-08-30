@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スマートダッシュボード 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  :root {
+    --card-bg: #ffffff;
+    --card-radius: 20px;
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    --ink: #111827;
+    --muted: #6b7280;
+    --blue-1: #1e40af;
+    --blue-2: #1e1b4b;
+    --accent: #2563eb;
+    --spotify-green: #1ed760;
+    --spotify-black: #121212;
+    --gap: 16px;
+    --pad: 20px;
+  }
+  
+  * { box-sizing: border-box; }
+  
+  html, body {
+    margin: 0; padding: 0;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    background: #090d16;
+    font-family: 'M PLUS 1p', system-ui, sans-serif;
+    color: var(--ink);
+  }
+
+  #dashboard {
+    width: 100vw; height: 100vh;
+    padding: var(--gap);
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr;
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-areas:
+      "slotHero slot1 slot2"
+      "slotHero slot3 slot4"
+      "slotHero slot5 slot6";
+    gap: var(--gap);
+    transition: transform 0.8s ease;
+  }
+
+  .widget-slot {
+    width: 100%; height: 100%;
+    min-height: 0; min-width: 0;
+  }
+  #slotHero { grid-area: slotHero; }
+  #slot1 { grid-area: slot1; }
+  #slot2 { grid-area: slot2; }
+  #slot3 { grid-area: slot3; }
+  #slot4 { grid-area: slot4; }
+  #slot5 { grid-area: slot5; }
+  #slot6 { grid-area: slot6; }
+
+  .widget {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: var(--pad);
+    width: 100%; height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+  }
+
+  .widget h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .02em;
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .widget-hero {
+    padding: 0;
+    background: #111;
+    position: relative;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: opacity 1.5s ease-in-out;
+  }
+  #heroBgA { opacity: 1; z-index: 1; }
+  #heroBgB { opacity: 0; z-index: 2; }
+  .hero-shade {
+    position: absolute; inset: 0; z-index: 3;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.85) 100%);
+  }
+  .hero-overlay {
+    position: absolute; left: 28px; right: 28px; bottom: 28px; z-index: 4;
+    color: #fff; text-shadow: 0 4px 16px rgba(0,0,0,0.6);
+  }
+  .hero-clock {
+    font-family: 'M PLUS 1p', system-ui, sans-serif;
+    font-size: 80px; font-weight: 900; line-height: 1;
+    letter-spacing: -2px;
+  }
+  .hero-date { font-size: 20px; font-weight: 500; margin-top: 8px; opacity: .95; }
+  .hero-weather-mini {
+    display: flex; align-items: center; gap: 10px; margin-top: 12px;
+    font-size: 18px; font-weight: 500; background: rgba(0,0,0,0.3);
+    padding: 6px 14px; border-radius: 30px; width: fit-content;
+    backdrop-filter: blur(8px);
+  }
+
+  .widget-clock {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff;
+  }
+  .clock-digital {
+    font-family: 'M PLUS 1p', system-ui, sans-serif;
+    font-size: 36px; font-weight: 900; letter-spacing: -1px; color: #38bdf8;
+  }
+  .clock-analog-canvas {
+    width: 110px; height: 110px; margin-bottom: 6px;
+  }
+
+  .widget-calendar { display: flex; flex-direction: column; height: 100%; }
+  .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .cal-title-btn { font-size: 15px; font-weight: 700; background: none; border: none; cursor: pointer; color: var(--ink); display: flex; align-items: center; gap: 4px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; flex: 1; }
+  .cal-day-label { font-size: 11px; font-weight: 700; color: var(--muted); padding-bottom: 4px; }
+  .cal-cell {
+    font-size: 12px; font-weight: 500; border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding-top: 4px; cursor: pointer; transition: background 0.15s; position: relative;
+  }
+  .cal-cell:hover { background: #f3f4f6; }
+  .cal-cell.today { background: #eff6ff; color: var(--accent); font-weight: 900; }
+  .cal-cell.selected { border: 2px solid var(--accent); }
+  .cal-dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 3px; }
+  .cal-events-list { margin-top: 6px; max-height: 55px; overflow-y: auto; font-size: 12px; border-top: 1px solid #eee; padding-top: 4px; }
+  .cal-event-item { background: #f0fdf4; border-left: 3px solid #22c55e; padding: 2px 6px; border-radius: 4px; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center; }
+
+  .widget-spotify { background: var(--spotify-black); color: #fff; padding: 14px; }
+  .spotify-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-shrink: 0; }
+  .spotify-logo-wrap { display: flex; align-items: center; gap: 6px; height: 26px; }
+  .spotify-logo-svg { height: 24px; width: auto; max-width: 120px; display: block; }
+  .spotify-tab-btn { background: rgba(255,255,255,0.12); border: none; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+  .spotify-tab-btn.active { background: var(--spotify-green); color: #000; font-weight: 700; }
+  .spotify-frame-container { flex: 1; width: 100%; border-radius: 12px; overflow: hidden; background: #000; position: relative; }
+  .spotify-frame-container iframe { width: 100%; height: 100%; border: none; }
+  
+  .bgm-player-panel { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #181818; border-radius: 12px; padding: 12px; text-align: center; }
+  .bgm-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; color: #fff; }
+  .bgm-subtitle { font-size: 11px; color: #b3b3b3; margin-bottom: 10px; }
+  .bgm-controls { display: flex; gap: 10px; align-items: center; }
+  .bgm-btn { background: var(--spotify-green); color: #000; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; }
+  .bgm-btn:hover { transform: scale(1.06); }
+  .bgm-select { background: #282828; color: #fff; border: 1px solid #333; padding: 6px 10px; border-radius: 6px; font-size: 12px; margin-top: 10px; width: 100%; }
+
+  .widget-weather { color: #fff; background: linear-gradient(160deg, var(--blue-1), var(--blue-2)); }
+  .widget-weather h3 { color: rgba(255,255,255,0.85); }
+  .wcur { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .wcur .wicon-big { font-size: 46px; }
+  .wcur .wtemp { font-size: 36px; font-weight: 900; }
+  .wforecast { display: flex; justify-content: space-between; margin-top: auto; gap: 6px; }
+  .wforecast .day { flex: 1; text-align: center; background: rgba(255,255,255,0.12); border-radius: 8px; padding: 6px 2px; }
+  .wforecast .day .lbl { font-size: 11px; opacity: .85; }
+  .wforecast .day .ic { font-size: 20px; margin: 2px 0; }
+  .wforecast .day .tmp { font-size: 12px; font-weight: 700; }
+
+  .widget-news ul { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; }
+  .widget-news li { padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 13.5px; line-height: 1.35; }
+  .widget-news a { color: var(--ink); text-decoration: none; }
+  .widget-news a:hover { color: var(--accent); }
+
+  .widget-trash { background: linear-gradient(160deg,#0d9488,#0a5f57); color: #fff; }
+  .widget-trash h3 { color: rgba(255,255,255,0.85); }
+  .trash-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+  .trash-row .ic { font-size: 24px; }
+  .trash-row .name { font-size: 16px; font-weight: 700; }
+  .trash-empty { font-size: 13px; opacity: .85; }
+  .trash-divider { height: 1px; background: rgba(255,255,255,0.2); margin: 6px 0; }
+
+  .widget-memo ul { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; }
+  .widget-memo li { font-size: 13.5px; background: #fffbe3; border-left: 4px solid #f59e0b; border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 6px; align-items: center; }
+  .widget-memo li button { background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer; }
+  .memo-add { display: flex; gap: 6px; margin-top: 4px; }
+  .memo-add input { flex: 1; font-size: 13px; padding: 6px 8px; border-radius: 6px; border: 1px solid #ddd; }
+  .memo-add button { font-size: 13px; padding: 6px 12px; border-radius: 6px; border: none; background: var(--accent); color: #fff; cursor: pointer; }
+
+  .widget-timer { text-align: center; justify-content: space-between; }
+  .timer-time-wrap { display: flex; align-items: center; justify-content: center; gap: 4px; margin: 2px 0; }
+  .timer-input { width: 56px; font-size: 32px; font-weight: 900; font-family: 'M PLUS 1p', system-ui, sans-serif; text-align: center; border: 1px solid transparent; background: none; border-radius: 6px; color: var(--ink); }
+  .timer-input:focus { border-color: var(--accent); background: #f0f7ff; }
+  .timer-colon { font-size: 28px; font-weight: 900; }
+  .timer-quick-btns { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; flex-wrap: wrap; }
+  .timer-quick-btn { background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; padding: 3px 6px; font-size: 11px; font-weight: 700; color: #374151; cursor: pointer; }
+  .timer-quick-btn:hover { background: #e5e7eb; }
+  .timer-controls { display: flex; justify-content: center; gap: 6px; }
+  .timer-controls button { padding: 6px 12px; font-size: 13px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #fff; flex: 1; }
+  .timer-controls button.btn-reset { background: #e5e7eb; color: #374151; flex: 0 0 auto; }
+
+  /* NEW WIDGET STYLES */
+  .widget-todo ul { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+  .widget-todo li { font-size: 13.5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .widget-todo li.completed span { text-decoration: line-through; color: #94a3b8; }
+  .todo-checkbox { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
+  .widget-habit { display: flex; flex-direction: column; height: 100%; }
+  .habit-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; }
+  .habit-item { display: flex; align-items: center; justify-content: space-between; background: #f1f5f9; padding: 8px 12px; border-radius: 10px; }
+  .habit-info { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+  .habit-btn { background: #cbd5e1; border: none; color: #fff; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .habit-btn.done { background: #10b981; }
+
+  .widget-pomodoro { text-align: center; justify-content: space-between; background: linear-gradient(135deg, #be123c, #881337); color: #fff; }
+  .widget-pomodoro h3 { color: rgba(255,255,255,0.9); }
+  .pomo-timer { font-size: 40px; font-weight: 900; letter-spacing: -1px; margin: 4px 0; font-family: 'M PLUS 1p', system-ui; }
+  .pomo-mode { font-size: 12px; font-weight: 700; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px; display: inline-block; }
+  .pomo-controls { display: flex; gap: 6px; justify-content: center; }
+  .pomo-btn { background: #fff; color: #881337; font-weight: 700; border: none; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+
+  .widget-countdown { text-align: center; justify-content: center; background: linear-gradient(135deg, #4f46e5, #312e81); color: #fff; }
+  .widget-countdown h3 { color: rgba(255,255,255,0.85); justify-content: center; }
+  .countdown-days { font-size: 46px; font-weight: 900; line-height: 1; color: #38bdf8; margin: 4px 0; }
+  .countdown-target { font-size: 13px; font-weight: 700; opacity: 0.9; }
+
+  .widget-quote { display: flex; flex-direction: column; justify-content: center; text-align: center; background: #fafaf9; border-left: 5px solid #f59e0b; }
+  .quote-text { font-size: 13.5px; font-weight: 700; line-height: 1.5; color: #334155; font-style: italic; margin-bottom: 8px; }
+  .quote-author { font-size: 11.5px; color: #64748b; text-align: right; font-weight: 500; }
+
+  .widget-market { display: flex; flex-direction: column; height: 100%; }
+  .market-grid { display: flex; flex-direction: column; gap: 6px; flex: 1; justify-content: center; }
+  .market-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px; }
+  .market-symbol { font-weight: 700; color: #1e293b; }
+  .market-price { font-weight: 900; color: #0f172a; }
+  .market-change { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .market-up { background: #dcfce7; color: #15803d; }
+  .market-down { background: #fee2e2; color: #b91c1c; }
+
+  #settingsBtn {
+    position: fixed; top: 20px; right: 20px; z-index: 50;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(15, 23, 42, 0.75); color: #fff; border: 1px solid rgba(255,255,255,0.15);
+    font-size: 24px; cursor: pointer; backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s ease, background 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  #settingsBtn:hover { transform: scale(1.08); background: rgba(30, 41, 59, 0.9); }
+
+  #modalOverlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(6px);
+  }
+  #modalOverlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 20px; width: min(780px, 94vw); max-height: 88vh; overflow-y: auto;
+    padding: 28px 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+  }
+  .modal h2 { margin-top: 0; font-size: 22px; display: flex; align-items: center; gap: 8px; color: var(--ink); }
+  .modal-section { margin-bottom: 22px; border-bottom: 1px solid #f3f4f6; padding-bottom: 16px; }
+  .modal-section-title { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .modal label { display: block; font-size: 12.5px; color: var(--muted); font-weight: 700; margin: 10px 0 4px; }
+  .modal input[type=text], .modal select {
+    width: 100%; padding: 8px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #ddd; background: #fff;
+  }
+  .modal .hint { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+
+  .slot-config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .slot-config-item { background: #f9fafb; padding: 10px 12px; border-radius: 10px; border: 1px solid #e5e7eb; }
+  .slot-config-item label { margin: 0 0 4px 0; color: var(--ink); }
+
+  .spotify-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .spotify-preset-btn { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; border-radius: 6px; padding: 5px 10px; font-size: 11.5px; font-weight: 700; cursor: pointer; }
+  .spotify-preset-btn:hover { background: #c8e6c9; }
+
+  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+  .modal-actions button { font-size: 14px; padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; }
+  .btn-cancel { background: #f3f4f6; color: var(--ink); }
+  .btn-save { background: var(--accent); color: #fff; }
+
+  .material-symbols-outlined { vertical-align: middle; }
+  .icon-sm { font-size: 18px; }
+
+  :focus { outline: none; }
+  .focusable:focus-visible, .focusable.kbd-focus {
+    outline: 3px solid #f59e0b !important;
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div id="dashboard">
+  <div class="widget-slot" id="slotHero"></div>
+  <div class="widget-slot" id="slot1"></div>
+  <div class="widget-slot" id="slot2"></div>
+  <div class="widget-slot" id="slot3"></div>
+  <div class="widget-slot" id="slot4"></div>
+  <div class="widget-slot" id="slot5"></div>
+  <div class="widget-slot" id="slot6"></div>
+</div>
+
+<button id="settingsBtn" class="focusable" aria-label="設定"><span class="material-symbols-outlined">settings</span></button>
+
+<div id="modalOverlay">
+  <div class="modal">
+    <h2><span class="material-symbols-outlined">settings</span> ダッシュボード設定</h2>
+
+    <!-- WIDGET SLOTS -->
+    <div class="modal-section">
+      <div class="modal-section-title"><span class="material-symbols-outlined">grid_view</span> ウィジェット配置</div>
+      <div class="slot-config-grid">
+        <div class="slot-config-item">
+          <label for="cfgSlotHero">ヒーロー（左側メイン枠）</label>
+          <select id="cfgSlotHero" class="focusable slot-select"></select>
+        </div>
+        <div class="slot-config-item">
+          <label for="cfgSlot1">スロット 1（右上1）</label>
+          <select id="cfgSlot1" class="focusable slot-select"></select>
+        </div>
+        <div class="slot-config-item">
+          <label for="cfgSlot2">スロット 2（右上2）</label>
+          <select id="cfgSlot2" class="focusable slot-select"></select>
+        </div>
+        <div class="slot-config-item">
+          <label for="cfgSlot3">スロット 3（中右1）</label>
+          <select id="cfgSlot3" class="focusable slot-select"></select>
+        </div>
+        <div class="slot-config-item">
+          <label for="cfgSlot4">スロット 4（中右2）</label>
+          <select id="cfgSlot4" class="focusable slot-select"></select>
+        </div>
+        <div class="slot-config-item">
+          <label for="cfgSlot5">スロット 5（右下1）</label>
+          <select id="cfgSlot5" class="focusable slot-select"></select>
+        </div>
+        <div class="slot-config-item">
+          <label for="cfgSlot6">スロット 6（右下2）</label>
+          <select id="cfgSlot6" class="focusable slot-select"></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACKGROUND SETTINGS -->
+    <div class="modal-section">
+      <div class="modal-section-title"><span class="material-symbols-outlined">image</span> 背景画像テーマ設定</div>
+      <label for="cfgBgTheme">ヒーロー背景画像のテーマ</label>
+      <select id="cfgBgTheme" class="focusable">
+        <option value="nature">🌿 自然・風景 (Nature)</option>
+        <option value="city">🏙️ 都市・夜景 (City Architecture)</option>
+        <option value="minimal">🎨 ミニマル・抽象アート (Minimal Abstract)</option>
+        <option value="dark">🌙 ダーク・宇宙 (Dark Space)</option>
+      </select>
+    </div>
+
+    <!-- CALENDAR SETTINGS -->
+    <div class="modal-section">
+      <div class="modal-section-title"><span class="material-symbols-outlined">calendar_month</span> カレンダー設定</div>
+      <label for="cfgCalMode">カレンダーの連携モード</label>
+      <select id="cfgCalMode" class="focusable">
+        <option value="native">組み込みローカルカレンダー</option>
+        <option value="ical">Googleカレンダー (iCal/ICS 自動同期 - 推奨)</option>
+        <option value="google">Googleカレンダー (埋め込み iframe)</option>
+      </select>
+      
+      <div id="icalUrlWrap" style="margin-top:8px; display:none;">
+        <label for="cfgIcalUrl">Googleカレンダー iCal URL (.ics)</label>
+        <input type="text" id="cfgIcalUrl" class="focusable" placeholder="https://calendar.google.com/calendar/ical/.../basic.ics">
+        <div class="hint">💡 Googleカレンダーの「設定と共有」＞「カレンダーの統合」から「iCal形式の秘密のアドレス」を取得して貼り付けてください。</div>
+      </div>
+
+      <div id="googleCalUrlWrap" style="margin-top:8px; display:none;">
+        <label for="cfgCalUrl">Googleカレンダー 埋め込みURL</label>
+        <input type="text" id="cfgCalUrl" class="focusable" placeholder="https://calendar.google.com/calendar/embed?src=...">
+      </div>
+    </div>
+
+    <!-- SPOTIFY CONFIG -->
+    <div class="modal-section">
+      <div class="modal-section-title"><span class="material-symbols-outlined" style="color:var(--spotify-green);">graphic_eq</span> Spotify 音楽設定</div>
+      <label for="cfgSpotifyUrl">Spotify 埋め込み URL / プレイリストリンク</label>
+      <input type="text" id="cfgSpotifyUrl" class="focusable" placeholder="https://open.spotify.com/embed/playlist/...">
+      
+      <div style="margin-top:8px;">
+        <span style="font-size:11.5px; font-weight:700; color:var(--muted);">クイックプリセット:</span>
+        <div class="spotify-presets">
+          <button class="spotify-preset-btn focusable" data-url="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M">☕ Lofi Beats</button>
+          <button class="spotify-preset-btn focusable" data-url="https://open.spotify.com/embed/playlist/37i9dQZF1DX4WY4goI233M">🎷 Chill Jazz</button>
+          <button class="spotify-preset-btn focusable" data-url="https://open.spotify.com/embed/playlist/37i9dQZF1DXa2Pv1211yA1">🎹 Acoustic Japan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEATHER & NEWS -->
+    <div class="modal-section">
+      <div class="modal-section-title"><span class="material-symbols-outlined">tune</span> 天気・ニュース設定</div>
+      <label for="cfgApiKey">OpenWeatherMap APIキー</label>
+      <input type="text" id="cfgApiKey" class="focusable" placeholder="APIキーを入力（空欄時はデモ表示）">
+
+      <label for="cfgCity">都市名</label>
+      <input type="text" id="cfgCity" class="focusable" placeholder="例: Kyoto,JP">
+
+      <label for="cfgNewsUrl">ニュースRSSのURL</label>
+      <input type="text" id="cfgNewsUrl" class="focusable" placeholder="https://news.yahoo.co.jp/rss/topics/top-picks.xml">
+    </div>
+
+    <!-- COUNTDOWN CONFIG -->
+    <div class="modal-section">
+      <div class="modal-section-title"><span class="material-symbols-outlined">hourglass_top</span> カウントダウン設定</div>
+      <label for="cfgCountTitle">イベント・目標の名称</label>
+      <input type="text" id="cfgCountTitle" class="focusable" placeholder="例: 旅行 / 試験 / リリース日">
+      
+      <label for="cfgCountDate">目標日</label>
+      <input type="date" id="cfgCountDate" class="focusable">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel focusable" id="btnCancel">閉じる</button>
+      <button class="btn-save focusable" id="btnSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const DAY_LABELS = ["日","月","火","水","木","金","土"];
+  
+  const WIDGET_TYPES = [
+    { id: "hero", name: "ヒーロー背景 & 時計", icon: "schedule" },
+    { id: "clock", name: "独立時計ウィジェット", icon: "access_time" },
+    { id: "calendar", name: "カレンダー & 予定", icon: "calendar_month" },
+    { id: "spotify", name: "Spotify / 音楽プレイヤー", icon: "graphic_eq" },
+    { id: "weather", name: "天気予報", icon: "cloud" },
+    { id: "news", name: "ニュース RSS", icon: "newspaper" },
+    { id: "trash", name: "ゴミ出し通知", icon: "delete_sweep" },
+    { id: "memo", name: "メモ帳", icon: "sticky_note_2" },
+    { id: "todo", name: "ToDo・タスク", icon: "check_box" },
+    { id: "habit", name: "習慣トラッカー", icon: "task_alt" },
+    { id: "pomodoro", name: "ポモドーロタイマー", icon: "ecg_heart" },
+    { id: "countdown", name: "カウントダウン", icon: "hourglass_bottom" },
+    { id: "quote", name: "今日の一言・名言", icon: "format_quote" },
+    { id: "market", name: "為替・マーケット", icon: "show_chart" },
+    { id: "timer", name: "キッチンタイマー", icon: "timer" },
+    { id: "none", name: "（非表示）", icon: "check_box_outline_blank" }
+  ];
+
+  const BGM_STREAMS = [
+    { name: "☕ Lofi Chill Stream", url: "https://stream.zeno.fm/f3wvbbqmdg8uv" },
+    { name: "🎷 Smooth Jazz Radio", url: "https://stream.zeno.fm/0r0xa792kwzuv" },
+    { name: "🌧️ Relaxing Rain Sounds", url: "https://stream.zeno.fm/2q9b81q2kwzuv" }
+  ];
+
+  const DEFAULT_CONFIG = {
+    slots: {
+      slotHero: "hero",
+      slot1: "calendar",
+      slot2: "spotify",
+      slot3: "weather",
+      slot4: "clock",
+      slot5: "trash",
+      slot6: "memo"
+    },
+    bgTheme: "nature",
+    calMode: "native", // native | ical | google
+    calendarUrl: "",
+    icalUrl: "",
+    events: {},
+    spotifyUrl: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M",
+    owmApiKey: "",
+    city: "Kyoto,JP",
+    newsUrl: "https://news.yahoo.co.jp/rss/topics/top-picks.xml",
+    memos: ["冷蔵庫のミルクを確認", "ゴミ袋を買う"],
+    todos: [
+      { text: "部屋の掃除をする", done: false },
+      { text: "牛乳を買う", done: true }
+    ],
+    habits: [
+      { name: "水分補給 2L", icon: "local_drink", done: false },
+      { name: "読書 20分", icon: "menu_book", done: true },
+      { name: "ストレッチ", icon: "fitness_center", done: false }
+    ],
+    countdownTitle: "夏休みまで",
+    countdownDate: "2026-08-10",
+    trashTypes: [
+      { name:"燃えるゴミ", icon:"local_fire_department", color:"#ef4444", days:[1,4] },
+      { name:"資源ごみ",   icon:"recycling", color:"#10b981", days:[3] },
+      { name:"プラゴミ",   icon:"eco", color:"#f59e0b", days:[2] },
+      { name:"不燃ゴミ",   icon:"delete", color:"#6366f1", days:[5] }
+    ]
+  };
+
+  function loadConfig(){
+    try {
+      const saved = localStorage.getItem('smart_dashboard_config_v2');
+      if(saved) return Object.assign({}, DEFAULT_CONFIG, JSON.parse(saved));
+    } catch(e) {}
+    return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  }
+
+  function saveConfig(cfg){
+    try {
+      localStorage.setItem('smart_dashboard_config_v2', JSON.stringify(cfg));
+    } catch(e) {}
+  }
+
+  let CONFIG = loadConfig();
+  let fetchedIcalEvents = {};
+
+  async function loadIcalData(url){
+    if(!url || !url.trim()) return;
+    try {
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url.trim())}`;
+      const res = await fetch(proxyUrl);
+      if(!res.ok) throw new Error("iCal fetch failed");
+      const text = await res.text();
+      
+      const events = {};
+      const vevents = text.split("BEGIN:VEVENT");
+      
+      vevents.slice(1).forEach(block => {
+        const summaryMatch = block.match(/SUMMARY:(.*)/);
+        const dtstartMatch = block.match(/DTSTART(?:;VALUE=DATE)?:(\d{8})/);
+        
+        if(summaryMatch && dtstartMatch){
+          const title = summaryMatch[1].trim().replace(/\\,/g, ',');
+          const rawDate = dtstartMatch[1];
+          const formattedDate = `${rawDate.slice(0,4)}-${rawDate.slice(4,6)}-${rawDate.slice(6,8)}`;
+          
+          events[formattedDate] = events[formattedDate] || [];
+          if(!events[formattedDate].includes(title)){
+            events[formattedDate].push(title);
+          }
+        }
+      });
+      fetchedIcalEvents = events;
+    } catch(e) {
+      console.warn("Failed to parse iCal feed:", e);
+    }
+  }
+
+  function renderHeroWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-hero">
+        <div class="hero-bg" id="heroBgA" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80')"></div>
+        <div class="hero-bg" id="heroBgB"></div>
+        <div class="hero-shade"></div>
+        <div class="hero-overlay">
+          <div class="hero-clock" id="heroClock">00:00</div>
+          <div class="hero-date" id="heroDate">----年--月--日（-）</div>
+          <div class="hero-weather-mini" id="heroWeatherMini">
+            <span class="material-symbols-outlined" id="heroWIcon">wb_sunny</span>
+            <span id="heroWText">22°C</span>
+          </div>
+        </div>
+      </div>`;
+    updateClocks();
+  }
+
+  function renderClockWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-clock">
+        <canvas id="analogClockCanvas" class="clock-analog-canvas" width="220" height="220"></canvas>
+        <div class="clock-digital" id="clockDigitalTime">00:00:00</div>
+        <div style="font-size:12.5px; opacity:0.8; margin-top:4px;" id="clockDigitalDate">----/--/--</div>
+      </div>`;
+    drawAnalogClock();
+  }
+
+  function drawAnalogClock(){
+    const canvas = document.getElementById("analogClockCanvas");
+    if(!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    const radius = width / 2;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.save();
+    ctx.translate(radius, radius);
+
+    // Clock Face
+    ctx.beginPath();
+    ctx.arc(0, 0, radius - 6, 0, 2 * Math.PI);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#38bdf8";
+    ctx.stroke();
+
+    // Hour Ticks
+    for (let i = 0; i < 12; i++) {
+      const angle = (i * Math.PI) / 6;
+      ctx.beginPath();
+      ctx.moveTo((radius - 16) * Math.sin(angle), -(radius - 16) * Math.cos(angle));
+      ctx.lineTo((radius - 8) * Math.sin(angle), -(radius - 8) * Math.cos(angle));
+      ctx.lineWidth = i % 3 === 0 ? 3 : 1;
+      ctx.strokeStyle = i % 3 === 0 ? "#38bdf8" : "rgba(255,255,255,0.4)";
+      ctx.stroke();
+    }
+
+    const now = new Date();
+    const hour = now.getHours() % 12;
+    const minute = now.getMinutes();
+    const second = now.getSeconds();
+
+    // Hour Hand
+    const hourAngle = ((hour + minute / 60) * Math.PI) / 6;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo((radius * 0.48) * Math.sin(hourAngle), -(radius * 0.48) * Math.cos(hourAngle));
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineCap = "round";
+    ctx.stroke();
+
+    // Minute Hand
+    const minuteAngle = ((minute + second / 60) * Math.PI) / 30;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo((radius * 0.68) * Math.sin(minuteAngle), -(radius * 0.68) * Math.cos(minuteAngle));
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineCap = "round";
+    ctx.stroke();
+
+    // Second Hand
+    const secondAngle = (second * Math.PI) / 30;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo((radius * 0.78) * Math.sin(secondAngle), -(radius * 0.78) * Math.cos(secondAngle));
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "#ef4444";
+    ctx.stroke();
+
+    // Center Dot
+    ctx.beginPath();
+    ctx.arc(0, 0, 4, 0, 2 * Math.PI);
+    ctx.fillStyle = "#ef4444";
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  let calCurrentDate = new Date();
+  let calSelectedDateStr = new Date().toISOString().split('T')[0];
+
+  function renderCalendarWidget(container){
+    if(CONFIG.calMode === "google" && CONFIG.calendarUrl){
+      container.innerHTML = `
+        <div class="widget widget-calendar">
+          <h3><span class="material-symbols-outlined icon-sm">calendar_month</span> Googleカレンダー</h3>
+          <iframe src="${CONFIG.calendarUrl}" style="width:100%; height:100%; border:none; border-radius:10px;"></iframe>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="widget widget-calendar">
+        <div class="cal-header">
+          <button class="cal-title-btn focusable" id="calPrevBtn"><span class="material-symbols-outlined">chevron_left</span></button>
+          <span style="font-weight:700; font-size:15px;" id="calMonthLabel">----年--月</span>
+          <button class="cal-title-btn focusable" id="calNextBtn"><span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-events-list" id="calEventsList"></div>
+        <div style="display:flex; gap:4px; margin-top:4px;">
+          <input type="text" id="calNewEvInput" class="focusable" placeholder="新予定を追加..." style="font-size:11.5px; padding:3px 6px; border-radius:4px; border:1px solid #ddd; flex:1;">
+          <button id="calAddEvBtn" class="focusable" style="font-size:11.5px; background:var(--accent); color:#fff; border:none; border-radius:4px; padding:3px 8px; cursor:pointer;">追加</button>
+        </div>
+      </div>`;
+
+    container.querySelector("#calPrevBtn").onclick = () => {
+      calCurrentDate.setMonth(calCurrentDate.getMonth() - 1);
+      updateCalendarGrid(container);
+    };
+    container.querySelector("#calNextBtn").onclick = () => {
+      calCurrentDate.setMonth(calCurrentDate.getMonth() + 1);
+      updateCalendarGrid(container);
+    };
+    container.querySelector("#calAddEvBtn").onclick = () => {
+      const input = container.querySelector("#calNewEvInput");
+      const val = input.value.trim();
+      if(!val) return;
+      CONFIG.events = CONFIG.events || {};
+      CONFIG.events[calSelectedDateStr] = CONFIG.events[calSelectedDateStr] || [];
+      CONFIG.events[calSelectedDateStr].push(val);
+      saveConfig(CONFIG);
+      input.value = "";
+      updateCalendarGrid(container);
+    };
+
+    if(CONFIG.calMode === "ical" && CONFIG.icalUrl){
+      loadIcalData(CONFIG.icalUrl).then(() => updateCalendarGrid(container));
+    } else {
+      updateCalendarGrid(container);
+    }
+  }
+
+  function updateCalendarGrid(container){
+    const grid = container.querySelector("#calGrid");
+    const label = container.querySelector("#calMonthLabel");
+    if(!grid || !label) return;
+
+    const year = calCurrentDate.getFullYear();
+    const month = calCurrentDate.getMonth();
+    label.textContent = `${year}年 ${month + 1}月`;
+
+    grid.innerHTML = DAY_LABELS.map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    for(let i = 0; i < firstDay; i++){
+      grid.appendChild(document.createElement("div"));
+    }
+
+    for(let d = 1; d <= daysInMonth; d++){
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const cell = document.createElement("div");
+      cell.className = `cal-cell ${dateStr === todayStr ? 'today' : ''} ${dateStr === calSelectedDateStr ? 'selected' : ''}`;
+      cell.textContent = d;
+
+      const hasLocalEvs = CONFIG.events && CONFIG.events[dateStr] && CONFIG.events[dateStr].length > 0;
+      const hasIcalEvs = fetchedIcalEvents[dateStr] && fetchedIcalEvents[dateStr].length > 0;
+
+      if(hasLocalEvs || hasIcalEvs){
+        const dot = document.createElement("div");
+        dot.className = "cal-dot";
+        if(hasIcalEvs && !hasLocalEvs) dot.style.background = "#3b82f6";
+        cell.appendChild(dot);
+      }
+
+      cell.onclick = () => {
+        calSelectedDateStr = dateStr;
+        updateCalendarGrid(container);
+      };
+
+      grid.appendChild(cell);
+    }
+
+    const evList = container.querySelector("#calEventsList");
+    if(evList){
+      evList.innerHTML = `<div style="font-weight:700; color:var(--muted); margin-bottom:2px;">${calSelectedDateStr} の予定:</div>`;
+      const localEvs = (CONFIG.events && CONFIG.events[calSelectedDateStr]) || [];
+      const icalEvs = fetchedIcalEvents[calSelectedDateStr] || [];
+      
+      if(localEvs.length === 0 && icalEvs.length === 0){
+        evList.innerHTML += `<div style="color:#9ca3af; font-size:11px;">予定はありません</div>`;
+      } else {
+        icalEvs.forEach(ev => {
+          const item = document.createElement("div");
+          item.className = "cal-event-item";
+          item.style.background = "#eff6ff";
+          item.style.borderLeft = "3px solid #3b82f6";
+          item.innerHTML = `<span>📅 ${ev} <small style="color:#6b7280;">(Google)</small></span>`;
+          evList.appendChild(item);
+        });
+
+        localEvs.forEach((ev, idx) => {
+          const item = document.createElement("div");
+          item.className = "cal-event-item";
+          item.innerHTML = `<span>${ev}</span><button class="focusable" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:0 2px;">×</button>`;
+          item.querySelector("button").onclick = () => {
+            CONFIG.events[calSelectedDateStr].splice(idx, 1);
+            saveConfig(CONFIG);
+            updateCalendarGrid(container);
+          };
+          evList.appendChild(item);
+        });
+      }
+    }
+  }
+
+  let activeMusicTab = "spotify";
+  let bgmAudio = null;
+
+  function renderSpotifyWidget(container){
+    const spotifyUrl = CONFIG.spotifyUrl || "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M";
+    
+    container.innerHTML = `
+      <div class="widget widget-spotify">
+        <div class="spotify-header">
+          <div class="spotify-logo-wrap">
+            <svg class="spotify-logo-svg" viewBox="0 0 1134 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M170 0C76.1 0 0 76.1 0 170s76.1 170 170 170 170-76.1 170-170S263.9 0 170 0zm77.9 245.2c-3 4.9-9.5 6.5-14.4 3.5-39.5-24.1-89.2-29.6-147.7-16.2-5.6 1.3-11.2-2.3-12.5-7.9-1.3-5.6 2.3-11.2 7.9-12.5 64.1-14.6 119.1-8.4 163.2 18.6 4.9 3 6.5 9.5 3.5 14.5zm15.6-34.8c-3.8 6.1-11.9 8.1-18 4.3-45.2-27.8-114.1-35.8-167.6-19.6-6.9 2.1-14.2-1.8-16.3-8.7-2.1-6.9 1.8-14.2 8.7-16.3 61.2-18.6 137.2-9.5 188.9 22.3 6.1 3.8 8.1 11.9 4.3 18zm1.3-36.4C210.6 141.4 121 138.4 69.8 153.9c-8.2 2.5-16.9-2.2-19.4-10.4-2.5-8.2 2.2-16.9 10.4-19.4 58.7-17.8 157.9-14.4 219.7 22.3 7.4 4.4 9.8 14 5.4 21.4-4.4 7.3-14 9.7-21.1 5.2z" fill="#1ED760"/>
+              <text x="380" y="240" fill="#FFFFFF" font-family="'Inter', sans-serif" font-size="210" font-weight="700" letter-spacing="-5">Spotify</text>
+            </svg>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="spotify-tab-btn focusable ${activeMusicTab === 'spotify' ? 'active' : ''}" id="tabSpotifyBtn">Spotify</button>
+            <button class="spotify-tab-btn focusable ${activeMusicTab === 'bgm' ? 'active' : ''}" id="tabBgmBtn">BGM</button>
+          </div>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;" id="musicTabContent"></div>
+      </div>`;
+
+    const contentArea = container.querySelector("#musicTabContent");
+    if (activeMusicTab === 'spotify') {
+      contentArea.innerHTML = `
+        <div class="spotify-frame-container">
+          <iframe src="${spotifyUrl}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>`;
+    } else {
+      contentArea.innerHTML = `
+        <div class="bgm-player-panel">
+          <div class="bgm-title" id="bgmStreamTitle">Lofi Chill</div>
+          <div class="bgm-subtitle" id="bgmStatus">停止中</div>
+          <div class="bgm-controls">
+            <button class="bgm-btn focusable" id="bgmPlayBtn">
+              <span class="material-symbols-outlined" id="bgmPlayIcon">play_arrow</span>
+            </button>
+          </div>
+          <select id="bgmSelect" class="bgm-select focusable">
+            ${BGM_STREAMS.map((s, idx) => `<option value="${idx}">${s.name}</option>`).join('')}
+          </select>
+        </div>`;
+
+      const playBtn = contentArea.querySelector("#bgmPlayBtn");
+      const playIcon = contentArea.querySelector("#bgmPlayIcon");
+      const statusEl = contentArea.querySelector("#bgmStatus");
+      const selectEl = contentArea.querySelector("#bgmSelect");
+      const titleEl = contentArea.querySelector("#bgmStreamTitle");
+
+      if (bgmAudio && !bgmAudio.paused) {
+        playIcon.textContent = "pause";
+        statusEl.textContent = "再生中";
+      }
+
+      playBtn.onclick = () => {
+        if (!bgmAudio) {
+          const stream = BGM_STREAMS[selectEl.value];
+          bgmAudio = new Audio(stream.url);
+        }
+
+        if (bgmAudio.paused) {
+          bgmAudio.src = BGM_STREAMS[selectEl.value].url;
+          bgmAudio.play().then(() => {
+            playIcon.textContent = "pause";
+            statusEl.textContent = "再生中";
+          }).catch(() => {
+            statusEl.textContent = "再生エラー";
+          });
+        } else {
+          bgmAudio.pause();
+          playIcon.textContent = "play_arrow";
+          statusEl.textContent = "一時停止";
+        }
+      };
+
+      selectEl.onchange = () => {
+        const stream = BGM_STREAMS[selectEl.value];
+        titleEl.textContent = stream.name.split(' ')[1] || stream.name;
+        if (bgmAudio) {
+          bgmAudio.pause();
+          bgmAudio.src = stream.url;
+          if (statusEl.textContent === "再生中") {
+            bgmAudio.play();
+          }
+        }
+      };
+    }
+
+    container.querySelector("#tabSpotifyBtn").onclick = () => {
+      activeMusicTab = "spotify";
+      renderSpotifyWidget(container);
+    };
+    container.querySelector("#tabBgmBtn").onclick = () => {
+      activeMusicTab = "bgm";
+      renderSpotifyWidget(container);
+    };
+  }
+
+  function renderWeatherWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-weather">
+        <h3><span class="material-symbols-outlined icon-sm">cloud</span> 天気予報</h3>
+        <div class="wcur">
+          <span class="wicon-big material-symbols-outlined" id="wIconBig">wb_sunny</span>
+          <div>
+            <div class="wtemp" id="wTempBig">22°C</div>
+            <div style="font-size:12px; opacity:.9;" id="wDesc">晴れ</div>
+          </div>
+        </div>
+        <div class="wforecast" id="wForecast"></div>
+      </div>`;
+    loadWeatherData();
+  }
+
+  const WICON_MAP = {
+    '01d':'wb_sunny', '01n':'nights_stay',
+    '02d':'partly_cloudy_day', '02n':'partly_cloudy_night',
+    '03d':'cloud', '03n':'cloud',
+    '04d':'cloud', '04n':'cloud',
+    '09d':'rainy', '09n':'rainy',
+    '10d':'rainy', '10n':'rainy',
+    '11d':'thunderstorm', '11n':'thunderstorm',
+    '13d':'ac_unit', '13n':'ac_unit',
+    '50d':'foggy', '50n':'foggy'
+  };
+
+  async function loadWeatherData(){
+    const city = CONFIG.city || "Kyoto,JP";
+    const apiKey = CONFIG.owmApiKey;
+
+    if(apiKey){
+      try {
+        // 現在の天気
+        const resCur = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=ja`);
+        if(resCur.ok){
+          const dataCur = await resCur.json();
+          const temp = `${Math.round(dataCur.main.temp)}°C`;
+          const desc = dataCur.weather[0].description;
+          const iconCode = dataCur.weather[0].icon;
+          const icon = WICON_MAP[iconCode] || 'cloud';
+          updateWeatherUI(icon, temp, desc);
+        }
+
+        // 今後5日間の予報 (3時間ごと)
+        const resForecast = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=ja`);
+        if(resForecast.ok){
+          const dataForecast = await resForecast.json();
+          if(dataForecast.list && dataForecast.list.length > 0){
+            const byDay = {};
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            dataForecast.list.forEach(item => {
+              const dateStr = item.dt_txt.split(' ')[0];
+              if(dateStr !== todayStr){
+                byDay[dateStr] = byDay[dateStr] || [];
+                byDay[dateStr].push(item);
+              }
+            });
+
+            const nextDays = Object.keys(byDay).slice(0, 3);
+            const forecastDays = nextDays.map(dStr => {
+              const items = byDay[dStr];
+              const temps = items.map(i => i.main.temp);
+              const maxTemp = Math.round(Math.max(...temps));
+              const minTemp = Math.round(Math.min(...temps));
+              const midItem = items[Math.floor(items.length / 2)];
+              const ic = WICON_MAP[midItem.weather[0].icon] || 'cloud';
+              const dow = DAY_LABELS[new Date(dStr).getDay()];
+
+              return {
+                lbl: `${dow}曜`,
+                ic: ic,
+                tmp: `${maxTemp}°/${minTemp}°`
+              };
+            });
+
+            if(forecastDays.length > 0){
+              renderForecast(forecastDays);
+              return;
+            }
+          }
+        }
+      } catch(e){
+        console.warn("OpenWeatherMap fetch error:", e);
+      }
+    }
+
+    // APIキーがない場合、または失敗時のデモフォールバック
+    updateWeatherUI('wb_sunny', '22°C', '晴れ（デモ）');
+    renderForecast([
+      { lbl: '明日', ic: 'wb_sunny', tmp: '23°/15°' },
+      { lbl: '明後日', ic: 'partly_cloudy_day', tmp: '20°/14°' },
+      { lbl: '3日後', ic: 'rainy', tmp: '18°/12°' }
+    ]);
+  }
+
+  function updateWeatherUI(icon, temp, desc){
+    const icBig = document.getElementById("wIconBig");
+    const tmpBig = document.getElementById("wTempBig");
+    const descEl = document.getElementById("wDesc");
+    if(icBig) icBig.textContent = icon;
+    if(tmpBig) tmpBig.textContent = temp;
+    if(descEl) descEl.textContent = desc;
+
+    const heroWIcon = document.getElementById("heroWIcon");
+    const heroWText = document.getElementById("heroWText");
+    if(heroWIcon) heroWIcon.textContent = icon;
+    if(heroWText) heroWText.textContent = temp;
+  }
+
+  function renderForecast(days){
+    const el = document.getElementById("wForecast");
+    if(!el) return;
+    el.innerHTML = days.map(d=>`
+      <div class="day">
+        <div class="lbl">${d.lbl}</div>
+        <div class="ic material-symbols-outlined">${d.ic}</div>
+        <div class="tmp">${d.tmp}</div>
+      </div>`).join('');
+  }
+
+  function renderNewsWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-news">
+        <h3><span class="material-symbols-outlined icon-sm">newspaper</span> ニュース</h3>
+        <ul id="newsList"><li>読み込み中...</li></ul>
+      </div>`;
+    loadNewsData();
+  }
+
+  async function loadNewsData(){
+    const list = document.getElementById("newsList");
+    if(!list) return;
+    const rss = CONFIG.newsUrl && CONFIG.newsUrl.trim();
+    if(!rss){ list.innerHTML = "<li>ニュースRSSが未設定です</li>"; return; }
+    try{
+      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}`);
+      const data = await res.json();
+      if(data.status !== "ok") throw new Error();
+      list.innerHTML = "";
+      data.items.slice(0,5).forEach(item=>{
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="${item.link}" target="_blank" rel="noopener" class="focusable">${item.title}</a>`;
+        list.appendChild(li);
+      });
+    }catch(e){ list.innerHTML = "<li>ニュース取得失敗</li>"; }
+  }
+
+  function renderTrashWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-trash">
+        <h3><span class="material-symbols-outlined icon-sm">delete_sweep</span> ゴミ出し</h3>
+        <div id="trashToday"></div>
+        <div class="trash-divider"></div>
+        <div id="trashNext"></div>
+      </div>`;
+    updateTrashDisplay();
+  }
+
+  function updateTrashDisplay(){
+    const todayEl = document.getElementById("trashToday");
+    const nextEl = document.getElementById("trashNext");
+    if(!todayEl || !nextEl) return;
+
+    const today = new Date().getDay();
+    const types = CONFIG.trashTypes || [];
+
+    const todayTypes = types.filter(t => (t.days||[]).includes(today));
+    if(todayTypes.length){
+      todayEl.innerHTML = `<div style="opacity:.85;font-size:11px;margin-bottom:2px;">今日収集</div>` +
+        todayTypes.map(t=>`<div class="trash-row"><span class="ic material-symbols-outlined">${t.icon}</span><span class="name">${t.name}</span></div>`).join("");
+    }else{
+      todayEl.innerHTML = `<div style="opacity:.85;font-size:11px;margin-bottom:2px;">今日収集</div><div class="trash-empty">本日の収集はありません</div>`;
+    }
+
+    let bestOffset = 8, nextTypes = [];
+    types.forEach(t=>{
+      (t.days||[]).forEach(day=>{
+        let offset = (day - today + 7) % 7;
+        if(offset === 0) offset = 7;
+        if(offset < bestOffset){ bestOffset = offset; nextTypes = [t]; }
+        else if(offset === bestOffset){ nextTypes.push(t); }
+      });
+    });
+    if(nextTypes.length){
+      const dow = DAY_LABELS[(today + bestOffset) % 7];
+      const when = bestOffset === 1 ? "明日" : `${dow}曜日`;
+      nextEl.innerHTML = `<div style="opacity:.85;font-size:11px;margin-bottom:2px;">次回（${when}）</div>` +
+        nextTypes.map(t=>`<div class="trash-row"><span class="ic material-symbols-outlined">${t.icon}</span><span class="name">${t.name}</span></div>`).join("");
+    }else{
+      nextEl.innerHTML = `<div class="trash-empty">予定なし</div>`;
+    }
+  }
+
+  function renderMemoWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-memo">
+        <h3><span class="material-symbols-outlined icon-sm">sticky_note_2</span> メモ</h3>
+        <ul id="memoList"></ul>
+        <div class="memo-add">
+          <input type="text" id="memoInput" class="focusable" placeholder="メモ追加...">
+          <button id="memoAddBtn" class="focusable">追加</button>
+        </div>
+      </div>`;
+    updateMemoList();
+    const addBtn = container.querySelector("#memoAddBtn");
+    const input = container.querySelector("#memoInput");
+    if(addBtn && input){
+      addBtn.onclick = () => {
+        const val = input.value.trim();
+        if(!val) return;
+        CONFIG.memos = CONFIG.memos || [];
+        CONFIG.memos.push(val);
+        saveConfig(CONFIG);
+        input.value = "";
+        updateMemoList();
+      };
+    }
+  }
+
+  function updateMemoList(){
+    const ul = document.getElementById("memoList");
+    if(!ul) return;
+    ul.innerHTML = "";
+    (CONFIG.memos||[]).forEach((m, idx)=>{
+      const li = document.createElement("li");
+      li.innerHTML = `<span>${m}</span><button class="focusable"><span class="material-symbols-outlined icon-sm">close</span></button>`;
+      li.querySelector("button").onclick = () => {
+        CONFIG.memos.splice(idx,1);
+        saveConfig(CONFIG);
+        updateMemoList();
+      };
+      ul.appendChild(li);
+    });
+  }
+
+  /* NEW WIDGET RENDER FUNCTIONS */
+
+  // 1. TODO WIDGET
+  function renderTodoWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-todo">
+        <h3><span class="material-symbols-outlined icon-sm">check_box</span> ToDo リスト</h3>
+        <ul id="todoList"></ul>
+        <div class="memo-add" style="margin-top:auto;">
+          <input type="text" id="todoInput" class="focusable" placeholder="タスクを追加...">
+          <button id="todoAddBtn" class="focusable">追加</button>
+        </div>
+      </div>`;
+    updateTodoList();
+
+    const addBtn = container.querySelector("#todoAddBtn");
+    const input = container.querySelector("#todoInput");
+    if(addBtn && input){
+      addBtn.onclick = () => {
+        const val = input.value.trim();
+        if(!val) return;
+        CONFIG.todos = CONFIG.todos || [];
+        CONFIG.todos.push({ text: val, done: false });
+        saveConfig(CONFIG);
+        input.value = "";
+        updateTodoList();
+      };
+    }
+  }
+
+  function updateTodoList(){
+    const ul = document.getElementById("todoList");
+    if(!ul) return;
+    ul.innerHTML = "";
+    (CONFIG.todos || []).forEach((t, idx) => {
+      const li = document.createElement("li");
+      if(t.done) li.classList.add("completed");
+      li.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" class="todo-checkbox focusable" ${t.done ? 'checked' : ''}>
+          <span>${t.text}</span>
+        </div>
+        <button class="focusable" style="background:none; border:none; color:#ef4444; cursor:pointer;"><span class="material-symbols-outlined icon-sm">close</span></button>`;
+      
+      li.querySelector(".todo-checkbox").onchange = (e) => {
+        CONFIG.todos[idx].done = e.target.checked;
+        saveConfig(CONFIG);
+        updateTodoList();
+      };
+
+      li.querySelector("button").onclick = () => {
+        CONFIG.todos.splice(idx, 1);
+        saveConfig(CONFIG);
+        updateTodoList();
+      };
+      ul.appendChild(li);
+    });
+  }
+
+  // 2. HABIT TRACKER WIDGET
+  function renderHabitWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-habit">
+        <h3><span class="material-symbols-outlined icon-sm">task_alt</span> 習慣トラッカー</h3>
+        <div class="habit-list" id="habitList"></div>
+      </div>`;
+    updateHabitList();
+  }
+
+  function updateHabitList(){
+    const el = document.getElementById("habitList");
+    if(!el) return;
+    el.innerHTML = "";
+    (CONFIG.habits || []).forEach((h, idx) => {
+      const item = document.createElement("div");
+      item.className = "habit-item";
+      item.innerHTML = `
+        <div class="habit-info">
+          <span class="material-symbols-outlined icon-sm" style="color:var(--accent);">${h.icon || 'star'}</span>
+          <span>${h.name}</span>
+        </div>
+        <button class="habit-btn focusable ${h.done ? 'done' : ''}">${h.done ? '達成！' : '未完了'}</button>`;
+      item.querySelector("button").onclick = () => {
+        CONFIG.habits[idx].done = !CONFIG.habits[idx].done;
+        saveConfig(CONFIG);
+        updateHabitList();
+      };
+      el.appendChild(item);
+    });
+  }
+
+  // 3. POMODORO TIMER WIDGET
+  let pomoTimerInterval = null, pomoSeconds = 1500, isPomoRunning = false, isPomoWorkMode = true;
+  function renderPomodoroWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-pomodoro">
+        <h3><span class="material-symbols-outlined icon-sm">ecg_heart</span> ポモドーロ</h3>
+        <div>
+          <span class="pomo-mode" id="pomoMode">${isPomoWorkMode ? '🔥 集中タイム (25分)' : '☕ 休憩タイム (5分)'}</span>
+          <div class="pomo-timer" id="pomoTimerDisplay">25:00</div>
+        </div>
+        <div class="pomo-controls">
+          <button class="pomo-btn focusable" id="pomoStartBtn">${isPomoRunning ? '一時停止' : 'スタート'}</button>
+          <button class="pomo-btn focusable" id="pomoResetBtn" style="background:rgba(255,255,255,0.2); color:#fff;">リセット</button>
+        </div>
+      </div>`;
+
+    const startBtn = container.querySelector("#pomoStartBtn");
+    const resetBtn = container.querySelector("#pomoResetBtn");
+    const timerDisplay = container.querySelector("#pomoTimerDisplay");
+    const modeDisplay = container.querySelector("#pomoMode");
+
+    const updateDisplay = () => {
+      const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+      const s = String(pomoSeconds % 60).padStart(2, '0');
+      if(timerDisplay) timerDisplay.textContent = `${m}:${s}`;
+    };
+
+    startBtn.onclick = () => {
+      if(!isPomoRunning){
+        isPomoRunning = true;
+        startBtn.textContent = '一時停止';
+        pomoTimerInterval = setInterval(() => {
+          if(pomoSeconds > 0){
+            pomoSeconds--;
+            updateDisplay();
+          } else {
+            clearInterval(pomoTimerInterval);
+            isPomoRunning = false;
+            isPomoWorkMode = !isPomoWorkMode;
+            pomoSeconds = isPomoWorkMode ? 1500 : 300;
+            modeDisplay.textContent = isPomoWorkMode ? '🔥 集中タイム (25分)' : '☕ 休憩タイム (5分)';
+            startBtn.textContent = 'スタート';
+            updateDisplay();
+          }
+        }, 1000);
+      } else {
+        clearInterval(pomoTimerInterval);
+        isPomoRunning = false;
+        startBtn.textContent = 'スタート';
+      }
+    };
+
+    resetBtn.onclick = () => {
+      clearInterval(pomoTimerInterval);
+      isPomoRunning = false;
+      isPomoWorkMode = true;
+      pomoSeconds = 1500;
+      modeDisplay.textContent = '🔥 集中タイム (25分)';
+      startBtn.textContent = 'スタート';
+      updateDisplay();
+    };
+    updateDisplay();
+  }
+
+  // 4. COUNTDOWN WIDGET
+  function renderCountdownWidget(container){
+    const title = CONFIG.countdownTitle || "目標日";
+    const targetDateStr = CONFIG.countdownDate || new Date().toISOString().split('T')[0];
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const target = new Date(targetDateStr);
+    target.setHours(0,0,0,0);
+
+    const diffTime = target - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    container.innerHTML = `
+      <div class="widget widget-countdown">
+        <h3><span class="material-symbols-outlined icon-sm">hourglass_bottom</span> カウントダウン</h3>
+        <div>
+          <div class="countdown-target">${title} まで</div>
+          <div class="countdown-days">${diffDays >= 0 ? `あと ${diffDays} 日` : `${Math.abs(diffDays)} 日経過`}</div>
+        </div>
+      </div>`;
+  }
+
+  // 5. QUOTE OF THE DAY WIDGET
+  const QUOTES = [
+    { text: "継続は力なり。一歩一歩の積み重ねが未来を創る。", author: "ことわざ" },
+    { text: "今日という日は、残りの人生の最初の一日である。", author: "チャールズ・ディードリッヒ" },
+    { text: "失敗したのではない。うまくいかない方法を1万通り発見しただけだ。", author: "トーマス・エジソン" },
+    { text: "シンプルであることは、究極の洗練である。", author: "レオナルド・ダ・ヴィンチ" },
+    { text: "思い立った日が吉日。", author: "日本の格言" }
+  ];
+
+  function renderQuoteWidget(container){
+    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+    const quote = QUOTES[dayOfYear % QUOTES.length];
+
+    container.innerHTML = `
+      <div class="widget widget-quote">
+        <h3 style="margin-bottom:8px;"><span class="material-symbols-outlined icon-sm">format_quote</span> 今日の一言</h3>
+        <div class="quote-text">“${quote.text}”</div>
+        <div class="quote-author">— ${quote.author}</div>
+      </div>`;
+  }
+
+  // 6. MARKET / EXCHANGE RATES WIDGET
+  function renderMarketWidget(container){
+    container.innerHTML = `
+      <div class="widget widget-market">
+        <h3><span class="material-symbols-outlined icon-sm">show_chart</span> 為替・マーケット</h3>
+        <div class="market-grid">
+          <div class="market-item">
+            <span class="market-symbol">USD / JPY</span>
+            <span class="market-price">¥154.20</span>
+            <span class="market-change market-up">+0.35%</span>
+          </div>
+          <div class="market-item">
+            <span class="market-symbol">EUR / JPY</span>
+            <span class="market-price">¥165.80</span>
+            <span class="market-change market-down">-0.12%</span>
+          </div>
+          <div class="market-item">
+            <span class="market-symbol">BTC / JPY</span>
+            <span class="market-price">¥10,420,000</span>
+            <span class="market-change market-up">+2.40%</span>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  let timerInterval = null, timerSeconds = 300, isTimerRunning = false;
+  function renderTimerWidget(container){
+    // Clear any dangling interval when re-rendering
+    if (timerInterval && !isTimerRunning) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    container.innerHTML = `
+      <div class="widget widget-timer">
+        <h3><span class="material-symbols-outlined icon-sm">timer</span> タイマー</h3>
+        <div class="timer-time-wrap">
+          <input type="number" id="timerMin" class="timer-input focusable" min="0" max="99" value="${String(Math.floor(timerSeconds / 60)).padStart(2,"0")}">
+          <span class="timer-colon">:</span>
+          <input type="number" id="timerSec" class="timer-input focusable" min="0" max="59" value="${String(timerSeconds % 60).padStart(2,"0")}">
+        </div>
+        <div class="timer-quick-btns">
+          <button class="timer-quick-btn focusable" data-add="600">+10分</button>
+          <button class="timer-quick-btn focusable" data-add="60">+1分</button>
+          <button class="timer-quick-btn focusable" data-add="10">+10秒</button>
+          <button class="timer-quick-btn focusable" id="btnTimerClear">クリア</button>
+        </div>
+        <div class="timer-controls">
+          <button id="btnTimerStart" class="focusable">${isTimerRunning ? '一時停止' : 'スタート'}</button>
+          <button id="btnTimerReset" class="focusable btn-reset">リセット</button>
+        </div>
+      </div>`;
+
+    const startBtn = container.querySelector("#btnTimerStart");
+    const resetBtn = container.querySelector("#btnTimerReset");
+    const minInput = container.querySelector("#timerMin");
+    const secInput = container.querySelector("#timerSec");
+    const clearBtn = container.querySelector("#btnTimerClear");
+    const quickBtns = container.querySelectorAll(".timer-quick-btn[data-add]");
+
+    const getSecondsFromInputs = () => {
+      const m = Math.max(0, parseInt(minInput.value) || 0);
+      const s = Math.min(59, Math.max(0, parseInt(secInput.value) || 0));
+      return m * 60 + s;
+    };
+
+    const updateDisplayFromSeconds = (secs) => {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      minInput.value = String(m).padStart(2, "0");
+      secInput.value = String(s).padStart(2, "0");
+    };
+
+    // Quick time buttons (+10分, +1分, +10秒)
+    quickBtns.forEach(btn => {
+      btn.onclick = () => {
+        const addSecs = parseInt(btn.dataset.add) || 0;
+        let currentSecs = isTimerRunning ? timerSeconds : getSecondsFromInputs();
+        currentSecs += addSecs;
+        timerSeconds = currentSecs;
+        updateDisplayFromSeconds(timerSeconds);
+      };
+    });
+
+    // Clear button
+    if (clearBtn) {
+      clearBtn.onclick = () => {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+        isTimerRunning = false;
+        timerSeconds = 0;
+        updateDisplayFromSeconds(0);
+        startBtn.textContent = 'スタート';
+      };
+    }
+
+    // Manual input field formatting
+    minInput.onchange = () => {
+      if (!isTimerRunning) timerSeconds = getSecondsFromInputs();
+      updateDisplayFromSeconds(timerSeconds);
+    };
+    secInput.onchange = () => {
+      if (!isTimerRunning) timerSeconds = getSecondsFromInputs();
+      updateDisplayFromSeconds(timerSeconds);
+    };
+
+    // Alarm beep using Web Audio API
+    function playAlarmSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        [0, 0.25, 0.5].forEach(delay => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now + delay);
+          gain.gain.setValueAtTime(0.3, now + delay);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.18);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + delay);
+          osc.stop(now + delay + 0.2);
+        });
+      } catch(e) {}
+    }
+
+    // Start / Pause button
+    startBtn.onclick = () => {
+      if (!isTimerRunning) {
+        timerSeconds = getSecondsFromInputs();
+        if (timerSeconds <= 0) return;
+        isTimerRunning = true;
+        startBtn.textContent = '一時停止';
+        
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          if (timerSeconds > 0) {
+            timerSeconds--;
+            updateDisplayFromSeconds(timerSeconds);
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isTimerRunning = false;
+            startBtn.textContent = 'スタート';
+            playAlarmSound();
+          }
+        }, 1000);
+      } else {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+        isTimerRunning = false;
+        startBtn.textContent = 'スタート';
+      }
+    };
+
+    // Reset button
+    resetBtn.onclick = () => {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      isTimerRunning = false;
+      timerSeconds = 300;
+      updateDisplayFromSeconds(300);
+      startBtn.textContent = 'スタート';
+    };
+  }
+
+  function buildDashboardLayout(){
+    const slots = ["slotHero", "slot1", "slot2", "slot3", "slot4", "slot5", "slot6"];
+    slots.forEach(slotId => {
+      const container = document.getElementById(slotId);
+      if(!container) return;
+      const widgetType = CONFIG.slots[slotId] || "none";
+      container.innerHTML = "";
+
+      switch(widgetType){
+        case "hero": renderHeroWidget(container); break;
+        case "clock": renderClockWidget(container); break;
+        case "spotify": renderSpotifyWidget(container); break;
+        case "calendar": renderCalendarWidget(container); break;
+        case "weather": renderWeatherWidget(container); break;
+        case "news": renderNewsWidget(container); break;
+        case "trash": renderTrashWidget(container); break;
+        case "memo": renderMemoWidget(container); break;
+        case "todo": renderTodoWidget(container); break;
+        case "habit": renderHabitWidget(container); break;
+        case "pomodoro": renderPomodoroWidget(container); break;
+        case "countdown": renderCountdownWidget(container); break;
+        case "quote": renderQuoteWidget(container); break;
+        case "market": renderMarketWidget(container); break;
+        case "timer": renderTimerWidget(container); break;
+        default: container.innerHTML = ""; break;
+      }
+    });
+  }
+
+  function updateClocks(){
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2,"0");
+    const mm = String(now.getMinutes()).padStart(2,"0");
+    const ss = String(now.getSeconds()).padStart(2,"0");
+
+    const heroClock = document.getElementById("heroClock");
+    const heroDate = document.getElementById("heroDate");
+    if(heroClock) heroClock.textContent = `${hh}:${mm}`;
+    if(heroDate) heroDate.textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${DAY_LABELS[now.getDay()]}）`;
+
+    const digiTime = document.getElementById("clockDigitalTime");
+    const digiDate = document.getElementById("clockDigitalDate");
+    if(digiTime) digiTime.textContent = `${hh}:${mm}:${ss}`;
+    if(digiDate) digiDate.textContent = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} (${DAY_LABELS[now.getDay()]})`;
+
+    drawAnalogClock();
+  }
+  setInterval(updateClocks, 1000);
+
+  const modalOverlay = document.getElementById("modalOverlay");
+  const settingsBtn = document.getElementById("settingsBtn");
+
+  function populateWidgetSelectors(){
+    document.querySelectorAll(".slot-select").forEach(sel => {
+      sel.innerHTML = "";
+      WIDGET_TYPES.forEach(w => {
+        const opt = document.createElement("option");
+        opt.value = w.id; opt.textContent = w.name;
+        sel.appendChild(opt);
+      });
+    });
+  }
+
+  function openModal(){
+    populateWidgetSelectors();
+    ["slotHero", "slot1", "slot2", "slot3", "slot4", "slot5", "slot6"].forEach(s => {
+      const el = document.getElementById("cfg" + s.charAt(0).toUpperCase() + s.slice(1));
+      if(el) el.value = CONFIG.slots[s] || "none";
+    });
+
+    document.getElementById("cfgBgTheme").value = CONFIG.bgTheme || "nature";
+    
+    const calModeSel = document.getElementById("cfgCalMode");
+    calModeSel.value = CONFIG.calMode || "native";
+    document.getElementById("cfgCalUrl").value = CONFIG.calendarUrl || "";
+    document.getElementById("cfgIcalUrl").value = CONFIG.icalUrl || "";
+
+    const toggleCalInputs = () => {
+      document.getElementById("icalUrlWrap").style.display = calModeSel.value === "ical" ? "block" : "none";
+      document.getElementById("googleCalUrlWrap").style.display = calModeSel.value === "google" ? "block" : "none";
+    };
+    calModeSel.onchange = toggleCalInputs;
+    toggleCalInputs();
+
+    document.getElementById("cfgSpotifyUrl").value = CONFIG.spotifyUrl || "";
+    document.getElementById("cfgApiKey").value = CONFIG.owmApiKey || "";
+    document.getElementById("cfgCity").value = CONFIG.city || "";
+    document.getElementById("cfgNewsUrl").value = CONFIG.newsUrl || "";
+
+    if(document.getElementById("cfgCountTitle")) {
+      document.getElementById("cfgCountTitle").value = CONFIG.countdownTitle || "";
+      document.getElementById("cfgCountDate").value = CONFIG.countdownDate || "";
+    }
+
+    modalOverlay.classList.add("open");
+  }
+
+  function closeModal(){ modalOverlay.classList.remove("open"); }
+
+  settingsBtn.onclick = openModal;
+  document.getElementById("btnCancel").onclick = closeModal;
+
+  document.querySelectorAll(".spotify-preset-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.getElementById("cfgSpotifyUrl").value = btn.dataset.url;
+    };
+  });
+
+  document.getElementById("btnSave").onclick = () => {
+    ["slotHero", "slot1", "slot2", "slot3", "slot4", "slot5", "slot6"].forEach(s => {
+      const el = document.getElementById("cfg" + s.charAt(0).toUpperCase() + s.slice(1));
+      if(el) CONFIG.slots[s] = el.value;
+    });
+
+    CONFIG.bgTheme = document.getElementById("cfgBgTheme").value;
+    CONFIG.calMode = document.getElementById("cfgCalMode").value;
+    CONFIG.calendarUrl = document.getElementById("cfgCalUrl").value.trim();
+    CONFIG.icalUrl = document.getElementById("cfgIcalUrl").value.trim();
+    CONFIG.spotifyUrl = document.getElementById("cfgSpotifyUrl").value.trim();
+    CONFIG.owmApiKey = document.getElementById("cfgApiKey").value.trim();
+    CONFIG.city = document.getElementById("cfgCity").value.trim() || "Kyoto,JP";
+    CONFIG.newsUrl = document.getElementById("cfgNewsUrl").value.trim();
+
+    if(document.getElementById("cfgCountTitle")){
+      CONFIG.countdownTitle = document.getElementById("cfgCountTitle").value.trim();
+      CONFIG.countdownDate = document.getElementById("cfgCountDate").value;
+    }
+
+    saveConfig(CONFIG);
+    closeModal();
+    buildDashboardLayout();
+  };
+
+  buildDashboardLayout();
+
+})();
+</script>
+</body>
+</html>
