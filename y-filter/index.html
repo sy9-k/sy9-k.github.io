@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Y-FILTER. Systems 管理コンソール</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="shared/icon-32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared/admin.css">
+  <link rel="stylesheet" href="console.css">
+</head>
+<body>
+  <!-- 読み込み中 -->
+  <div id="loading" class="gate"><div class="hint">読み込み中…</div></div>
+
+  <!-- 設定前 -->
+  <div id="unconfigured" class="gate" hidden>
+    <div class="gate-card">
+      <div class="brand">
+        <img class="brand-mark" src="shared/icon.svg" alt="">
+        <div><div class="brand-name">Y-FILTER. Systems</div><div class="brand-sub">Management Console</div></div>
+      </div>
+      <h1>Firebase の設定が必要です</h1>
+      <p><code>firebase-config.js</code> に Firebase のウェブアプリの値を入力してください（手順: y-filter リポジトリの docs/SYSTEMS_SETUP_JA.md）。</p>
+    </div>
+  </div>
+
+  <!-- ログイン -->
+  <div id="signin" class="gate" hidden>
+    <div class="gate-card">
+      <div class="brand">
+        <img class="brand-mark" src="shared/icon.svg" alt="">
+        <div><div class="brand-name">Y-FILTER. Systems</div><div class="brand-sub">Management Console</div></div>
+      </div>
+      <h1>管理コンソールにログイン</h1>
+      <p>Google アカウントでログインすると、このアカウントに接続した端末の設定をまとめて管理できます。</p>
+      <button id="signin-btn" class="btn btn-primary btn-block" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.2c0-.7-.1-1.3-.2-1.9H12v3.6h5.1a4.4 4.4 0 0 1-1.9 2.9v2.4h3.1c1.8-1.7 2.7-4.1 2.7-7z" fill="#fff" stroke="none"/><path d="M12 21.5c2.6 0 4.7-.9 6.3-2.3l-3.1-2.4c-.9.6-2 .9-3.2.9-2.5 0-4.5-1.7-5.3-3.9H3.5v2.5a9.5 9.5 0 0 0 8.5 5.2z" fill="#fff" stroke="none" opacity=".8"/></svg>
+        Google でログイン
+      </button>
+      <div id="signin-msg" class="gate-msg"></div>
+    </div>
+  </div>
+
+  <!-- 管理画面 -->
+  <div id="app" hidden>
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-mark" src="shared/icon.svg" alt="">
+        <div><div class="brand-name">Y-FILTER. Systems</div><div class="brand-sub">Management Console</div></div>
+      </div>
+      <div class="topbar-actions">
+        <span class="user" id="user-email"></span>
+        <button id="signout-btn" class="btn btn-tonal" type="button">ログアウト</button>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="page-head">
+        <div class="section-head" style="margin:0;">
+          <h1>端末</h1>
+          <p>このアカウントに接続している端末です。選んだ端末の設定をまとめて変更できます。</p>
+        </div>
+        <button id="add-device" class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>端末を追加
+        </button>
+      </div>
+
+      <div class="stats summary">
+        <div class="stat"><span class="stat-label">接続中の端末</span><span class="stat-value" id="sum-total">0 台</span></div>
+        <div class="stat"><span class="stat-label">オンライン</span><span class="stat-value" id="sum-online">0 台</span></div>
+        <div class="stat"><span class="stat-label">反映待ち</span><span class="stat-value" id="sum-pending">0 台</span></div>
+        <div class="stat"><span class="stat-label">端末側で変更あり</span><span class="stat-value" id="sum-changed">0 台</span></div>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <label class="select-all"><input type="checkbox" id="select-all"> すべて選択</label>
+          <span class="hint" id="sel-count">0 台を選択中</span>
+          <div class="toolbar-actions">
+            <button id="bulk-edit" class="btn btn-primary" type="button" disabled>設定を変更</button>
+            <button id="bulk-copy" class="btn btn-tonal" type="button" disabled>ほかの端末の設定をコピー</button>
+            <select id="bulk-learning" class="btn-select" disabled>
+              <option value="">学習モード…</option>
+              <option value="30">30分 開始</option>
+              <option value="60">60分 開始</option>
+              <option value="120">120分 開始</option>
+              <option value="stop">終了する</option>
+            </select>
+            <button id="bulk-remove" class="btn btn-tonal danger-text" type="button" disabled>接続を解除</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data devices">
+            <thead>
+              <tr>
+                <th class="cb"></th>
+                <th>端末名</th>
+                <th>状態</th>
+                <th>設定</th>
+                <th>最終接続</th>
+                <th>端末</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="device-rows"></tbody>
+          </table>
+        </div>
+        <div id="empty" class="empty" hidden>
+          <p>まだ端末が接続されていません。</p>
+          <p class="hint">「端末を追加」でペアリングコードを発行し、子供の端末の Y-FILTER. で入力してください。</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 端末を追加（ペアリングコード） -->
+  <dialog id="dlg-pair" class="dlg">
+    <div class="dlg-head"><h2>端末を追加</h2><button class="dlg-x" data-close type="button" aria-label="閉じる">×</button></div>
+    <div class="dlg-body">
+      <p class="hint">子供の端末の Y-FILTER. で「設定 → セキュリティ → Y-FILTER. Systems」（または最初の welcome 画面）を開き、このコードを入力してください。有効期限内なら何台でも登録できます。</p>
+      <div class="pair-code" id="pair-code">----</div>
+      <div class="pair-exp hint" id="pair-exp"></div>
+      <div id="pair-msg" class="gate-msg"></div>
+      <div class="field-label" style="margin-top:18px;">有効なコード</div>
+      <div id="pair-list" class="log"></div>
+    </div>
+    <div class="dlg-foot">
+      <button id="pair-new" class="btn btn-tonal" type="button">新しいコードを発行</button>
+      <button class="btn btn-primary" data-close type="button">閉じる</button>
+    </div>
+  </dialog>
+
+  <!-- 設定を変更 -->
+  <dialog id="dlg-edit" class="dlg dlg-wide">
+    <div class="dlg-head"><h2 id="edit-title">設定を変更</h2><button class="dlg-x" data-close type="button" aria-label="閉じる">×</button></div>
+    <div class="dlg-body">
+      <div class="notice" id="edit-note"></div>
+      <div id="edit-form"></div>
+    </div>
+    <div class="dlg-foot">
+      <span class="hint" id="edit-dirty">変更した項目: 0</span>
+      <button class="btn btn-tonal" data-close type="button">キャンセル</button>
+      <button id="edit-apply" class="btn btn-primary" type="button" disabled>適用</button>
+    </div>
+  </dialog>
+
+  <!-- ほかの端末の設定をコピー -->
+  <dialog id="dlg-copy" class="dlg">
+    <div class="dlg-head"><h2>ほかの端末の設定をコピー</h2><button class="dlg-x" data-close type="button" aria-label="閉じる">×</button></div>
+    <div class="dlg-body">
+      <label class="field-label" for="copy-source">コピー元の端末</label>
+      <select id="copy-source"></select>
+      <label class="field-label" style="margin-top:14px;">コピーする設定</label>
+      <label class="radio"><input type="radio" name="copy-kind" value="reported" checked> 端末で今使われている設定（端末側で変更した内容を含む）</label>
+      <label class="radio"><input type="radio" name="copy-kind" value="settings"> 管理コンソールから配信した設定</label>
+      <p class="hint" id="copy-note"></p>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn btn-tonal" data-close type="button">キャンセル</button>
+      <button id="copy-apply" class="btn btn-primary" type="button">コピーして適用</button>
+    </div>
+  </dialog>
+
+  <!-- 端末の詳細 -->
+  <dialog id="dlg-detail" class="dlg">
+    <div class="dlg-head"><h2>端末の詳細</h2><button class="dlg-x" data-close type="button" aria-label="閉じる">×</button></div>
+    <div class="dlg-body">
+      <label class="field-label" for="detail-name">端末名</label>
+      <div class="inline">
+        <input type="text" id="detail-name" class="grow" maxlength="60">
+        <button id="detail-rename" class="btn btn-tonal" type="button">変更</button>
+      </div>
+      <div class="kv-list" id="detail-kv" style="margin-top:16px;"></div>
+      <div id="detail-diff" class="notice" hidden></div>
+    </div>
+    <div class="dlg-foot">
+      <button id="detail-adopt" class="btn btn-tonal" type="button" hidden>端末の設定を配信設定として取り込む</button>
+      <button class="btn btn-primary" data-close type="button">閉じる</button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="console.js"></script>
+</body>
+</html>
