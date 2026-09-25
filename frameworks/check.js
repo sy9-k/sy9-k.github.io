@@ -73,7 +73,7 @@
     const RedCheckOSS = {
         CONFIG: {
             // SK Hub Systems（Firebase プロジェクト y-filter-systems）
-            // 値は y-filter/firebase-config.js と同じ。Firestore のルールは firebase/sk-hub.rules を参照。
+            // 値は y-filter/firebase-config.js と同じ。Firestore のルールは y-filter リポジトリの systems/firestore.rules（hub_access_logs・hub_blocklist）。
             HUB: {
                 FIREBASE_PROJECT_ID: "y-filter-systems",
                 FIREBASE_API_KEY: "AIzaSyB4gqzPEPyP0NrEJw33-OTAxUrF48MmiuI",

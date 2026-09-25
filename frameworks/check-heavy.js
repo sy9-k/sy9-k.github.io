@@ -1,7 +1,7 @@
 // SK Hub Systems: check.js が読み込む通信部分（window.RedCheckOSSHeavy）。
 // 元の check-oss-uuid.js は使わず、SK 用に独自に実装しています。
 // Firebase SDK を使わず、Cloud Firestore の REST API に API キーで直接アクセスします（Spark プランで動作）。
-// 読み書きできる範囲は Firestore のセキュリティルール（firebase/sk-hub.rules）で制限しています。
+// 読み書きできる範囲は Firestore のセキュリティルール（y-filter リポジトリの systems/firestore.rules）で制限しています。
 (function() {
     "use strict";
 

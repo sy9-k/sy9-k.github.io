@@ -432,10 +432,31 @@ a.product-card:hover .more svg { transform: translateX(3px); }
 .doc th, .doc td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .doc th { width: 34%; font-weight: 700; }
 .doc .table-wrap { overflow-x: auto; }
+.doc .doc-title { font-size: 26px; font-weight: 800; letter-spacing: -.01em; margin-top: 28px; padding-bottom: 0; border-bottom: 0; }
+.doc .meta { color: var(--muted); font-size: 14px; margin-top: 6px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.doc h3 { margin-top: 30px; padding-left: 12px; border-left: 3px solid var(--accent); line-height: 1.4; }
+.doc .sub { padding-left: 1.4em; margin-top: 4px; }
+.doc .raw-link { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; }
+.doc[aria-busy="true"] { opacity: .6; transition: opacity .2s ease; }
+.doc-toc .toc-label { padding: 12px 12px 4px; font-size: 11px; font-weight: 800; letter-spacing: .1em; color: var(--muted); }
+.doc-toc .toc-label:first-child { padding-top: 4px; }
+.doc-toc a.active { background: var(--green-soft); color: var(--link); }
+
+.policy-map { display: grid; grid-template-columns: 1fr 1.25fr; gap: 16px; }
+.pm-col { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); corner-shape: superellipse(1.5); padding: 22px; box-shadow: var(--shadow); }
+.pm-col h2 { font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: .04em; margin-bottom: 12px; }
+.pm-item { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 16px; background: var(--bg); color: var(--ink); text-decoration: none; transition: transform .2s ease, background .2s ease; }
+.pm-item + .pm-item { margin-top: 8px; }
+.pm-item:hover { transform: translateX(3px); background: var(--surface-2); }
+.pm-item img { width: 44px; height: 44px; border-radius: 14px; flex: none; }
+.pm-item strong { display: block; font-size: 15px; line-height: 1.4; }
+.pm-item small { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+@media (max-width: 760px) { .policy-map { grid-template-columns: 1fr; } }
 @media (max-width: 860px) {
   .doc-layout { grid-template-columns: 1fr; gap: 20px; }
   .doc-toc { position: static; flex-direction: row; flex-wrap: wrap; gap: 6px; background: transparent; border: 0; padding: 0; }
   .doc-toc a { background: #fff; box-shadow: inset 0 0 0 1px var(--line); padding: 6px 12px; border-radius: 999px; }
+  .doc-toc .toc-label { display: none; }
   .doc { padding: 4px 20px 28px; }
 }
 

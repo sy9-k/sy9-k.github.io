@@ -291,4 +291,102 @@
     renderId();
     document.addEventListener("skhub:ready", renderId);
   }
+
+  // ---------- 利用規約ページ ----------
+  // 本文は /policies/docs/*.txt（Y-FILTER. の個別規約は拡張機能のリポジトリから systems/sync-console.mjs でコピーされる）
+  const viewer = document.querySelector("[data-policy-viewer]");
+  if (viewer) {
+    const DOCS = {
+      "sk-terms": "sk-terms.txt",
+      "sk-privacy": "sk-privacy.txt",
+      "y-filter": "y-filter.txt",
+      "sk-hub-systems": "sk-hub-systems.txt",
+      "newtab": "newtab.txt"
+    };
+    // 以前のページ内リンク
+    const ALIASES = { terms: "sk-terms", privacy: "sk-privacy", products: "y-filter" };
+    const links = document.querySelectorAll("[data-policy-link]");
+    const layout = document.getElementById("policy-docs");
+    let current = null;
+
+    // URL をリンクにした段落を作る（本文は textContent で入れる）
+    function paragraph(text, className) {
+      const p = document.createElement("p");
+      if (className) p.className = className;
+      text.split(/(https?:\/\/[^\s）)」、。]+)/).forEach((part, i) => {
+        if (i % 2 === 1) {
+          const a = document.createElement("a");
+          a.href = part;
+          a.textContent = part;
+          if (!part.startsWith(location.origin)) { a.target = "_blank"; a.rel = "noopener"; }
+          p.appendChild(a);
+        } else if (part) {
+          p.appendChild(document.createTextNode(part));
+        }
+      });
+      return p;
+    }
+
+    function render(text, file) {
+      const nodes = [];
+      let titled = false;
+      text.split(/\r?\n/).forEach(raw => {
+        const line = raw.trim();
+        if (!line) return;
+        if (!titled) {
+          const h = document.createElement("h2");
+          h.className = "doc-title";
+          h.textContent = line;
+          nodes.push(h);
+          titled = true;
+        } else if (/^制定日/.test(line)) {
+          nodes.push(paragraph(line, "meta"));
+        } else if (/^(第[一二三四五六七八九十]+条|附則)/.test(line)) {
+          const h = document.createElement("h3");
+          h.textContent = line;
+          nodes.push(h);
+        } else if (/^\([a-z]\)/.test(line)) {
+          nodes.push(paragraph(line, "sub"));
+        } else {
+          nodes.push(paragraph(line));
+        }
+      });
+      const raw = document.createElement("p");
+      raw.className = "raw-link";
+      const a = document.createElement("a");
+      a.href = `/policies/docs/${file}`;
+      a.textContent = "テキストファイルで見る";
+      raw.appendChild(a);
+      nodes.push(raw);
+      viewer.replaceChildren(...nodes);
+    }
+
+    async function show(id, scroll) {
+      if (current === id) return;
+      current = id;
+      links.forEach(l => l.classList.toggle("active", l.dataset.policyLink === id));
+      viewer.setAttribute("aria-busy", "true");
+      try {
+        const res = await fetch(`/policies/docs/${DOCS[id]}`, { cache: "no-cache" });
+        if (!res.ok) throw new Error(String(res.status));
+        render(await res.text(), DOCS[id]);
+      } catch (e) {
+        viewer.replaceChildren(paragraph("規約を読み込めませんでした。時間をおいて再度お試しください。"));
+        current = null;
+      } finally {
+        viewer.removeAttribute("aria-busy");
+      }
+      if (scroll && layout) layout.scrollIntoView({ block: "start" });
+    }
+
+    function route(scroll) {
+      const hash = decodeURIComponent(location.hash.slice(1));
+      const id = ALIASES[hash] || hash;
+      if (DOCS[id]) show(id, scroll);
+      else if (!current) show("sk-terms", false);
+    }
+
+    window.addEventListener("hashchange", () => route(true));
+    route(!!location.hash);
+  }
 })();
