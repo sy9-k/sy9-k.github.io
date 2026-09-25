@@ -2,7 +2,7 @@
 //
 // コードそのものは保存しない。PBKDF2（SHA-256）で作ったハッシュだけを chrome.storage.sync の
 // accessCodeHash に保存し、入力されたコードを同じ方法で計算して比べる。
-// 管理コンソール（Y-FILTER. Systems）もこのファイルを使い、新しいコードのハッシュを作って配信する。
+// 管理コンソール（SK Hub Systems）もこのファイルを使い、新しいコードのハッシュを作って配信する。
 // （拡張機能・Service Worker・管理コンソールのどこでも動くよう、Web Crypto だけを使う）
 
 export const ACCESS_CODE_HASH_KEY = "accessCodeHash";

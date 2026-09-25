@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>少々お待ちください…</title>
+  <script>
+    // 「同意しない」または同意の撤回: 未同意として記録し、案内ページへ移動
+    try { localStorage.setItem("skhub_terms_accepted", "false"); } catch (e) {}
+    location.replace("/usercheck/terms_not_accepted.html");
+  </script>
+</head>
+<body></body>
+</html>

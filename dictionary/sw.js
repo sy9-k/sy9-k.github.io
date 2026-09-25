@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dictionary-v4';
+const CACHE_NAME = 'dictionary-v5';
 const urlsToCache = [
   '/dictionary/',
   '/dictionary/index.html',
@@ -41,6 +41,13 @@ self.addEventListener('activate', (event) => {
 // ネットワークファースト + キャッシュフォールバック戦略
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // 他サイト（Firestore など）と SK Hub Systems のアクセスチェック（/frameworks/）はキャッシュしない。
+  // キャッシュすると、ブロックの解除や check.js の更新が反映されなくなるため。
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin || url.pathname.startsWith('/frameworks/')) {
     return;
   }
 

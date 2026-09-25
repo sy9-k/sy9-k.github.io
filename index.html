@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SK</title>
+  <meta name="description" content="SK が開発しているプロダクト（Y-FILTER.・MALU）の紹介とサポート情報。">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+  <a class="skip" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <a class="hd-logo" href="/" aria-label="ホーム">
+      <span class="hd-logo-image" aria-hidden="true"><img src="/assets/logo.svg" alt="" width="26" height="26"></span>
+      <span class="hd-logo-back" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+    <a class="hd-item" href="/about/">私について</a>
+    <a class="hd-item" href="/#products" data-menu="products">プロダクト</a>
+    <a class="hd-item" href="/support/" data-menu="support" data-no-navigation="true">サポートと情報</a>
+    <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
+  </header>
+  <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
+  <div class="hd-backdrop" id="hd-backdrop"></div>
+
+  <main id="main">
+    <section class="hero band">
+      <div class="wrap hero-inner">
+        <div class="hero-text">
+          <a class="hero-pill" href="/about/"><img src="/assets/logo.svg" alt="" width="22" height="22">SK のサイトへようこそ</a>
+          <h1>毎日のネットを、<br>もう少し<span class="mark">安心</span>で<br><span class="mark">便利</span>に。</h1>
+          <p class="lead">ブラウザ向けフィルタ「Y-FILTER.」と、辞書検索アプリ「MALU」を開発しています。プロダクトの情報とサポートは、このサイトにまとめています。</p>
+          <div class="btn-row">
+            <a class="btn btn-ink" href="#products">プロダクトを見る<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <a class="btn btn-tonal" href="/about/">私について</a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="window">
+            <div class="window-bar"><i></i><i></i><i></i><span class="window-url">sy9-k.github.io/dictionary</span></div>
+            <img src="/assets/screenshots/malu.png" alt="" width="2400" height="1240">
+          </div>
+          <div class="float-card float-yf">
+            <div class="head">
+              <img src="/y-filter/shared/icon.svg" alt="">
+              <div><strong>Y-FILTER.</strong><small>開発中のフィルタ拡張機能</small></div>
+            </div>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>カテゴリでブロック</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>1日の利用時間の上限</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>複数の端末を遠隔管理</li>
+            </ul>
+          </div>
+          <div class="float-card float-chip">
+            <span class="tile-ico ti-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zm0 0a2 2 0 0 0 2 2h13"/></svg></span>
+            6 つの辞書カテゴリ
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="products">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Products</span>
+          <h2>プロダクト</h2>
+          <p>毎日のネットを、安心で便利にするためのプロダクトをつくっています。</p>
+        </div>
+        <div class="grid-2">
+          <a class="card product-card pc-yf" href="/products/y-filter/">
+            <div class="cover">
+              <img class="icon" src="/y-filter/shared/icon.svg" alt="">
+              <div><h3>Y-FILTER.</h3><div class="kind">ブラウザ拡張機能</div></div>
+              <span class="badge badge-dev"><span class="dot"></span>開発中</span>
+            </div>
+            <div class="body">
+              <p>有害なサイトのブロックや利用時間の管理ができるフィルタリング拡張機能。保護者や学校が、管理コンソールから複数の端末をまとめて管理できます。</p>
+              <ul class="checks">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>カテゴリ・キーワードでブロック</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>1日の利用時間の上限</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>管理コンソールで遠隔管理</li>
+              </ul>
+              <span class="more">詳しく見る<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </div>
+          </a>
+          <a class="card product-card pc-malu" href="/products/malu/">
+            <div class="cover">
+              <img class="icon" src="/dictionary/ico/icon-192.png" alt="">
+              <div><h3>MALU</h3><div class="kind">辞書検索アプリ（Web）</div></div>
+              <span class="badge badge-live"><span class="dot"></span>公開中</span>
+            </div>
+            <div class="body">
+              <p>国語・英語・韓国語・中国語などの辞書を、ひとつの検索ボックスから引けるアプリ。ホーム画面に追加して、アプリのように使えます。</p>
+              <ul class="checks">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>6 つのカテゴリの辞書と翻訳サイト</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>ホーム画面に追加できる</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>検索履歴はブラウザの中だけに保存</li>
+              </ul>
+              <span class="more">詳しく見る<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="about-teaser">
+          <img src="/assets/logo.svg" alt="" width="88" height="88">
+          <div>
+            <h2>つくっている人</h2>
+            <p>高校生の SK です。趣味のアプリ開発で、毎日のネットをもう少し安心で便利にするものをつくっています。</p>
+          </div>
+          <a class="btn" href="/about/">私について<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Support</span>
+          <h2>サポートと情報</h2>
+          <p>困ったときや、ご意見があるときはこちらから。</p>
+        </div>
+        <div class="grid-4">
+          <a class="link-tile" href="/support/">
+            <span class="tile-ico ti-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.4M12 17h.01"/></svg></span>
+            <strong>サポート<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong><span>よくある質問と使い方</span>
+          </a>
+          <a class="link-tile" href="/contact/">
+            <span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+            <strong>お問い合わせ<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong><span>不具合の報告・ご要望</span>
+          </a>
+          <a class="link-tile" href="https://github.com/sy9-k" target="_blank" rel="noopener">
+            <span class="tile-ico ti-ink"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.5-2.6-.3-5.2-1.3-5.2-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.1v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5Z"/></svg></span>
+            <strong>私のGitHub<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v5M19 5l-8 8M18 14v5H5V6h5"/></svg></strong><span>ソースコードと更新</span>
+          </a>
+          <a class="link-tile" href="/policies/">
+            <span class="tile-ico ti-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9.5 13h6M9.5 17h6"/></svg></span>
+            <strong>利用規約<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong><span>規約とプライバシーポリシー</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <div>
+          <a class="logo" href="/" aria-label="SK ホーム"><img src="/assets/logo.svg" alt="" width="36" height="36">SK</a>
+          <p class="about">毎日のネットを、もう少し安心で便利に。Y-FILTER. と MALU を開発しています。</p>
+        </div>
+        <div>
+          <h2>プロダクト</h2>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li></ul>
+        </div>
+        <div>
+          <h2>サポートと情報</h2>
+          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">SK</div>
+      <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
+    </div>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
+  <script src="/frameworks/check.js" defer></script>
+</body>
+</html>

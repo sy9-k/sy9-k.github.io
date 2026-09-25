@@ -85,7 +85,7 @@
             BLOCKED_URL:
                 "/usercheck/blocked.html",
             ABOUT_URL:
-                "/",
+                "/about/",
             POLICIES_URL:
                 "/policies/",
             UUID_KEY:

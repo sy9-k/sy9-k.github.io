@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>サポート | SK</title>
+  <meta name="description" content="SK のプロダクト（Y-FILTER.・MALU）のよくある質問と使い方。">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+  <a class="skip" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <a class="hd-logo" href="/" aria-label="ホーム">
+      <span class="hd-logo-image" aria-hidden="true"><img src="/assets/logo.svg" alt="" width="26" height="26"></span>
+      <span class="hd-logo-back" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+    <a class="hd-item" href="/about/">私について</a>
+    <a class="hd-item" href="/#products" data-menu="products">プロダクト</a>
+    <a class="hd-item" href="/support/" data-menu="support" data-no-navigation="true">サポートと情報</a>
+    <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
+  </header>
+  <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
+  <div class="hd-backdrop" id="hd-backdrop"></div>
+
+  <main id="main">
+    <section class="p-hero band band--plain">
+      <div class="wrap">
+        <span class="eyebrow">Support</span>
+        <h1>サポート</h1>
+        <p class="lead">よくある質問と使い方をまとめています。解決しないときは、お問い合わせからご連絡ください。</p>
+        <div class="btn-row">
+          <a class="btn btn-ink" href="/contact/">お問い合わせ</a>
+          <a class="btn btn-tonal" href="#malu">MALU</a>
+          <a class="btn btn-tonal" href="#y-filter">Y-FILTER.</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="card id-card" id="support-id">
+          <h2 style="font-size:20px;font-weight:800">あなたのサポートID</h2>
+          <p style="color:var(--muted);margin-top:8px;font-size:15px">このサイトがブラウザごとに発行している ID です。お問い合わせのときに伝えていただくと、調査がスムーズになります。名前やメールアドレスとは結び付いていません。</p>
+          <div class="id-box">
+            <code data-support-id>読み込み中…</code>
+            <button class="btn btn-tonal" type="button" data-copy-id hidden>コピー</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="faq-group" id="malu">
+          <h3><img src="/dictionary/ico/icon-192.png" alt="">MALU</h3>
+          <div class="faq">
+            <details>
+              <summary>ホーム画面に追加するには？</summary>
+              <div class="answer">
+                <p>パソコンの Chrome・Edge では、MALU を開いてアドレスバー右側のインストールボタンを押すか、画面上に出る「ホーム画面に追加できます」の「追加」を押します。</p>
+                <p>iPhone・iPad の Safari では、共有ボタン →「ホーム画面に追加」を選びます。</p>
+              </div>
+            </details>
+            <details>
+              <summary>検索しても辞書のページが開かない</summary>
+              <div class="answer">
+                <p>MALU は選んだ辞書のサイトを新しいタブで開きます。ブラウザのポップアップブロックが有効だと開かないことがあるので、sy9-k.github.io のポップアップを許可してください。</p>
+              </div>
+            </details>
+            <details>
+              <summary>検索履歴を消したい</summary>
+              <div class="answer">
+                <p>MALU の右上の設定ボタン →「検索履歴」の「履歴を消去」から削除できます。履歴はお使いのブラウザの中だけに保存され、サーバーには送られません。</p>
+              </div>
+            </details>
+            <details>
+              <summary>オフラインでも使える？</summary>
+              <div class="answer">
+                <p>MALU の画面自体は開けますが、辞書はそれぞれの外部サイトを開くため、検索にはインターネット接続が必要です。</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="faq-group" id="y-filter">
+          <h3><img src="/y-filter/shared/icon.svg" alt="">Y-FILTER.</h3>
+          <div class="faq">
+            <details>
+              <summary>いつから使えますか？</summary>
+              <div class="answer">
+                <p>Y-FILTER. は現在開発中で、一般向けの配布はまだ行っていません。公開日は未定です。準備ができたら <a href="/products/y-filter/">Y-FILTER. のページ</a>でお知らせします。</p>
+              </div>
+            </details>
+            <details>
+              <summary>管理コンソールは使えますか？</summary>
+              <div class="answer">
+                <p>管理コンソールは、テストに協力いただいている関係者向けに公開しています。ログインすると、SK Hub Systems 利用規約に同意したことになります。</p>
+              </div>
+            </details>
+            <details>
+              <summary>どんな情報が送信されますか？</summary>
+              <div class="answer">
+                <p>遠隔管理機能を使う場合に限り、設定内容や端末の状態などが SK Hub Systems に送信されます。閲覧履歴や検索語は送信しません。詳しくは<a href="/y-filter/shared/systems-terms.txt" target="_blank" rel="noopener">SK Hub Systems 利用規約</a>をご覧ください。</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="faq-group" id="site">
+          <h3>このサイトについて</h3>
+          <div class="faq">
+            <details>
+              <summary>右下に出た「ようこそ！」のカードは何？</summary>
+              <div class="answer">
+                <p>初めてアクセスしたときに表示される、利用規約とプライバシーポリシーのお知らせです。「同意して閉じる」を押すか、次にアクセスした時点で同意したものとして扱います。取り扱う情報は<a href="/policies/#privacy">プライバシーポリシー</a>をご覧ください。</p>
+              </div>
+            </details>
+            <details>
+              <summary>「同意しない」を押してしまった</summary>
+              <div class="answer">
+                <p><a href="/usercheck/terms_not_accepted.html">こちらのページ</a>から、あらためて同意できます。</p>
+              </div>
+            </details>
+            <details>
+              <summary>「アクセスが制限されています」と表示される</summary>
+              <div class="answer">
+                <p>利用規約に反する使い方が確認された場合などに、アクセスを制限することがあります。心当たりがない場合は、制限画面に表示されるサポートIDを添えてお問い合わせください。</p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <div>
+          <a class="logo" href="/" aria-label="SK ホーム"><img src="/assets/logo.svg" alt="" width="36" height="36">SK</a>
+          <p class="about">毎日のネットを、もう少し安心で便利に。Y-FILTER. と MALU を開発しています。</p>
+        </div>
+        <div>
+          <h2>プロダクト</h2>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li></ul>
+        </div>
+        <div>
+          <h2>サポートと情報</h2>
+          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">SK</div>
+      <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
+    </div>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
+  <script src="/frameworks/check.js?check=none" defer></script>
+</body>
+</html>

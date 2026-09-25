@@ -279,3 +279,6 @@ p,h1,h2,h3{margin:0}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}
 }
+
+/* SK Hub Systems のアクセスチェック（右下の表示・同意カード）と重ならないよう、下のバナーを上げる */
+@media (max-width:760px){body:has([data-RedCheckOSS-info-widget]) .install-banner{bottom:72px}body:has([data-RedCheckOSS-consent-card]) .install-banner{display:none}}

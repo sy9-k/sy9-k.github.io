@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>利用規約に未同意 | SK</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body class="solo-page">
+  <main class="solo">
+    <div class="card">
+      <a class="logo" href="/" aria-label="SK ホーム"><img src="/assets/logo.svg" alt="" width="48" height="48"></a>
+      <h1>利用規約に同意していません</h1>
+      <p>利用規約とプライバシーポリシーに同意していないため、このサイトの一部のページはご利用いただけません。ご利用いただくには、内容を確認して同意してください。</p>
+      <div class="btn-row">
+        <a class="btn btn-tonal" href="/policies/">規約を読む</a>
+        <button class="btn btn-primary" type="button" id="agree">同意して利用する</button>
+      </div>
+    </div>
+  </main>
+  <script>
+    document.getElementById("agree").addEventListener("click", () => {
+      try { localStorage.setItem("skhub_terms_accepted", "true"); } catch (e) {}
+      location.href = "/";
+    });
+  </script>
+</body>
+</html>
