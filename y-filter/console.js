@@ -2,20 +2,21 @@
 // Google ログインした管理者が、管理グループに接続した端末の設定をまとめて管理する。
 //   管理グループ … 持ち主（最初の管理者）の UID が ID。共同管理者を招待して一緒に管理できる
 //   リクエスト   … 端末のブロック画面から届く「このサイトを開きたい」。許可すると許可リストに追加する
-//   ブロックリスト … すべての Y-FILTER. が使うカテゴリ。開発者（config/developers）だけが編集できる
+// ブロックリスト（カテゴリ）は読むだけ（カテゴリの選択肢に使う）。編集は開発者の PC だけで動く
+// y-filter リポジトリの systems/blocklist-editor で行い、この管理コンソールには置かない。
 // データ構造・権限は y-filter リポジトリの systems/firestore.rules を参照。
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  Timestamp, arrayRemove, arrayUnion, collection, deleteDoc, deleteField, doc, getDoc, getDocs, getFirestore,
-  increment, limit, onSnapshot, orderBy, query, serverTimestamp, setDoc, updateDoc, where, writeBatch
+  Timestamp, arrayRemove, arrayUnion, collection, deleteDoc, deleteField, doc, getDoc, getFirestore,
+  increment, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 import { NEWTAB_MODES, REMOTE_SETTING_KEYS, buildDefaultSettings, normalizeSettings } from "./shared/settings-schema.js";
 
-// 以前のブロックリスト（Firestore にまだ保存されていないときの予備・取り込み元）
+// 以前のブロックリスト（Firestore にまだ公開されていないときの予備）
 const LEGACY_CATEGORIES_URL = "https://sy9-k.github.io/y-filter-system/categories.json";
 const ONLINE_WINDOW_MS = 15 * 60 * 1000; // 端末は最長 10 分ごとに報告する
 const PAIRING_TTL_MS = 30 * 60 * 1000;
@@ -50,9 +51,7 @@ const state = {
   selected: new Set(),
   pairingCodes: [],
   invites: [],
-  categories: {},
-  categoryDoc: null,    // config/categories（{ json, version, updatedAt, updatedBy }）
-  isDeveloper: false,
+  categories: {},       // ブロックリスト（読むだけ）
   userUnsubs: [],       // ログイン中ずっと使う購読
   teamUnsubs: []        // 管理グループごとの購読
 };
@@ -159,12 +158,10 @@ onAuthStateChanged(auth, async (user) => {
   state.user = user;
   state.teams = [];
   state.teamId = "";
-  state.isDeveloper = false;
   show("signin", !user);
   show("app", !!user);
   if (!user) return;
   $("user-email").textContent = user.email || "";
-  setView("devices");
   await ensureOwnTeam();
   // まず自分のグループを開き、前回ほかのグループを表示していたら一覧が届いてから切り替える
   const saved = savedTeamId();
@@ -172,7 +169,6 @@ onAuthStateChanged(auth, async (user) => {
   selectTeam(user.uid);
   subscribeTeams();
   loadCategories();
-  checkDeveloper();
 });
 
 // ---------- 管理グループ（共同管理者） ----------
@@ -461,7 +457,7 @@ $("team-join").addEventListener("click", async () => {
   }
 });
 
-// ---------- ブロックリスト（カテゴリ）の読み込み ----------
+// ---------- ブロックリスト（カテゴリ）の読み込み（読むだけ） ----------
 
 // JSON のほか `export const CATEGORY_DATA = {...}` 形式（以前の categories.json）も読める
 function parseCategoryData(text) {
@@ -490,44 +486,18 @@ async function loadCategories() {
   try {
     const snap = await getDoc(doc(db, "config", "categories"));
     if (snap.exists()) {
-      state.categoryDoc = snap.data();
-      state.categories = parseCategoryData(state.categoryDoc.json);
+      state.categories = parseCategoryData(snap.data().json);
       return;
     }
   } catch (e) {
     // 予備の取得先を使う
   }
-  state.categoryDoc = null;
   try {
     state.categories = await fetchLegacyCategories();
   } catch (e) {
     state.categories = {};
   }
 }
-
-async function checkDeveloper() {
-  try {
-    const snap = await getDoc(doc(db, "config", "developers"));
-    state.isDeveloper = snap.exists() && (snap.data().uids || []).includes(state.user.uid);
-  } catch (e) {
-    state.isDeveloper = false;
-  }
-  show("nav-blocklist", state.isDeveloper);
-}
-
-// ---------- 表示の切り替え ----------
-
-function setView(view) {
-  if (view === "blocklist" && !state.isDeveloper) view = "devices";
-  document.querySelectorAll(".view-btn").forEach((b) => b.classList.toggle("active", b.dataset.view === view));
-  show("view-devices", view === "devices");
-  show("view-blocklist", view === "blocklist");
-  if (view === "blocklist") openBlocklist();
-}
-document.querySelectorAll(".view-btn").forEach((b) => b.addEventListener("click", () => {
-  if (b.dataset.view === "devices" && blocklist.dirty && !confirm("ブロックリストの保存していない変更があります。移動してもよろしいですか？（変更は残ります）")) return;
-  setView(b.dataset.view);
-}));
 
 // ---------- 端末一覧 ----------
 
@@ -1042,237 +1012,6 @@ $("add-device").addEventListener("click", async () => {
 });
 $("pair-new").addEventListener("click", issueCode);
 $("dlg-pair").addEventListener("close", () => clearInterval(pairTimer));
-
-// ---------- ブロックリストの編集（開発者のみ） ----------
-
-const blocklist = {
-  items: [],        // [{ name, domains: [], keywords: [] }]（表示順）
-  original: "",     // 読み込んだ時点の内容（変更の有無の判定用）
-  index: -1,        // 選んでいるカテゴリ
-  dirty: false,
-  loaded: false
-};
-
-function toItems(data) {
-  return Object.entries(data || {}).map(([name, v]) => ({
-    name,
-    domains: [...(v?.domains || [])],
-    keywords: [...(v?.keywords || [])]
-  }));
-}
-
-const itemsJson = (items) => JSON.stringify(items.map((i) => [i.name, i.domains, i.keywords]));
-
-// 1 行 1 件の入力を整える（ドメインは小文字にして、https:// やパスを取り除く）
-function cleanDomains(text) {
-  const out = [];
-  for (const line of String(text || "").split("\n")) {
-    let d = line.trim().toLowerCase();
-    if (!d) continue;
-    d = d.replace(/^[a-z]+:\/\//, "").replace(/[/?#].*$/, "").replace(/^\*\./, "").replace(/\.$/, "");
-    if (d && !out.includes(d)) out.push(d);
-  }
-  return out;
-}
-
-function cleanLines(text) {
-  const out = [];
-  for (const line of String(text || "").split("\n")) {
-    const v = line.trim();
-    if (v && !out.includes(v)) out.push(v);
-  }
-  return out;
-}
-
-async function openBlocklist() {
-  if (blocklist.loaded) {
-    renderBlocklist();
-    return;
-  }
-  await loadCategories();
-  setBlocklistItems(toItems(state.categories));
-  blocklist.loaded = true;
-}
-
-function setBlocklistItems(items, { keepOriginal = false } = {}) {
-  blocklist.items = items;
-  if (!keepOriginal) blocklist.original = itemsJson(items);
-  blocklist.index = items.length ? Math.min(Math.max(blocklist.index, 0), items.length - 1) : -1;
-  updateBlocklistDirty();
-  renderBlocklist();
-}
-
-function updateBlocklistDirty() {
-  blocklist.dirty = itemsJson(blocklist.items) !== blocklist.original;
-  // まだ Firebase に保存していないときは、読み込んだ内容のままでも公開できる
-  $("bl-save").disabled = !blocklist.dirty && !!state.categoryDoc;
-  $("bl-revert").disabled = !blocklist.dirty;
-  const d = state.categoryDoc;
-  const base = d
-    ? `公開中: バージョン ${Number(d.version || 0)} · ${d.updatedAt ? new Date(toMillis(d.updatedAt)).toLocaleString() : "-"} · ${d.updatedBy || "-"}`
-    : "まだ Firebase に保存されていません（端末は以前の GitHub のブロックリストを使っています）。「保存して公開」を押すと、この内容で公開します。";
-  $("bl-status").textContent = blocklist.dirty ? `${base}　／　保存していない変更があります` : base;
-  $("bl-status").classList.toggle("dirty", blocklist.dirty);
-}
-
-function renderBlocklist() {
-  const filter = $("bl-filter").value.trim().toLowerCase();
-  const list = $("bl-list");
-  list.replaceChildren(...blocklist.items.map((item, i) => {
-    const hit = !filter
-      || item.name.toLowerCase().includes(filter)
-      || item.domains.some((d) => d.includes(filter))
-      || item.keywords.some((k) => k.toLowerCase().includes(filter));
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = `bl-item${i === blocklist.index ? " active" : ""}`;
-    btn.hidden = !hit;
-    btn.innerHTML = `<span class="bl-item-name">${escapeHtml(item.name || "（名前なし）")}</span><span class="hint">${item.domains.length} ドメイン · ${item.keywords.length} 語</span>`;
-    btn.addEventListener("click", () => {
-      blocklist.index = i;
-      renderBlocklist();
-    });
-    return btn;
-  }));
-  const item = blocklist.items[blocklist.index];
-  show("bl-empty", !item);
-  show("bl-form", !!item);
-  if (!item) return;
-  // 入力中の欄は書き換えない（カーソル位置が飛ぶため）
-  const active = document.activeElement;
-  if (active !== $("bl-name")) $("bl-name").value = item.name;
-  if (active !== $("bl-domains")) $("bl-domains").value = item.domains.join("\n");
-  if (active !== $("bl-keywords")) $("bl-keywords").value = item.keywords.join("\n");
-  $("bl-domains-count").textContent = `${item.domains.length} 件`;
-  $("bl-keywords-count").textContent = `${item.keywords.length} 件`;
-  $("bl-up").disabled = blocklist.index === 0;
-  $("bl-down").disabled = blocklist.index === blocklist.items.length - 1;
-  const invalid = item.keywords.filter((k) => {
-    try { new RegExp(k, "iu"); return false; } catch (e) { return true; }
-  });
-  $("bl-form-msg").textContent = invalid.length ? `正規表現として正しくないキーワード（端末では無視されます）: ${invalid.join("、")}` : "";
-}
-
-function editCurrent(mutate) {
-  const item = blocklist.items[blocklist.index];
-  if (!item) return;
-  mutate(item);
-  updateBlocklistDirty();
-  renderBlocklist();
-}
-
-$("bl-name").addEventListener("input", (e) => editCurrent((item) => { item.name = e.target.value.trim(); }));
-$("bl-domains").addEventListener("input", (e) => editCurrent((item) => { item.domains = cleanDomains(e.target.value); }));
-$("bl-keywords").addEventListener("input", (e) => editCurrent((item) => { item.keywords = cleanLines(e.target.value); }));
-// 入力が終わったら、整えた内容を表示し直す
-["bl-domains", "bl-keywords"].forEach((id) => $(id).addEventListener("blur", () => setTimeout(renderBlocklist, 0)));
-$("bl-filter").addEventListener("input", renderBlocklist);
-
-$("bl-add").addEventListener("click", () => {
-  let name = "新しいカテゴリ";
-  for (let n = 2; blocklist.items.some((i) => i.name === name); n++) name = `新しいカテゴリ ${n}`;
-  blocklist.items.push({ name, domains: [], keywords: [] });
-  blocklist.index = blocklist.items.length - 1;
-  $("bl-filter").value = "";
-  updateBlocklistDirty();
-  renderBlocklist();
-  $("bl-name").focus();
-  $("bl-name").select();
-});
-
-$("bl-delete").addEventListener("click", () => {
-  const item = blocklist.items[blocklist.index];
-  if (!item || !confirm(`カテゴリ「${item.name}」を削除します（保存するまで公開されません）。よろしいですか？`)) return;
-  blocklist.items.splice(blocklist.index, 1);
-  blocklist.index = Math.min(blocklist.index, blocklist.items.length - 1);
-  updateBlocklistDirty();
-  renderBlocklist();
-});
-
-function moveCurrent(delta) {
-  const i = blocklist.index;
-  const j = i + delta;
-  if (j < 0 || j >= blocklist.items.length) return;
-  [blocklist.items[i], blocklist.items[j]] = [blocklist.items[j], blocklist.items[i]];
-  blocklist.index = j;
-  updateBlocklistDirty();
-  renderBlocklist();
-}
-$("bl-up").addEventListener("click", () => moveCurrent(-1));
-$("bl-down").addEventListener("click", () => moveCurrent(1));
-
-$("bl-revert").addEventListener("click", () => {
-  if (!confirm("保存していない変更を取り消して、公開中の内容に戻します。よろしいですか？")) return;
-  setBlocklistItems(toItems(state.categories));
-});
-
-$("bl-import").addEventListener("click", async () => {
-  if (blocklist.dirty && !confirm("保存していない変更は失われます。GitHub のブロックリストを読み込みますか？")) return;
-  try {
-    const data = await fetchLegacyCategories();
-    if (!Object.keys(data).length) throw new Error("内容を読み込めませんでした");
-    setBlocklistItems(toItems(data), { keepOriginal: true });
-    toast("GitHub のブロックリストを読み込みました。確認して「保存して公開」を押してください");
-  } catch (err) {
-    toast(`読み込めませんでした: ${errText(err)}`, true);
-  }
-});
-
-$("bl-save").addEventListener("click", async () => {
-  const names = blocklist.items.map((i) => i.name.trim());
-  if (!names.length) return toast("カテゴリが 1 つもありません", true);
-  if (names.some((n) => !n)) return toast("名前のないカテゴリがあります", true);
-  if (new Set(names).size !== names.length) return toast("同じ名前のカテゴリがあります", true);
-  const data = {};
-  for (const item of blocklist.items) data[item.name.trim()] = { domains: item.domains, keywords: item.keywords };
-  const json = JSON.stringify(data);
-  const version = Number(state.categoryDoc?.version || 0) + 1;
-  if (!confirm(`ブロックリスト（${names.length} カテゴリ）をバージョン ${version} として公開します。すべての Y-FILTER. に 30 分以内に反映されます。よろしいですか？`)) return;
-  try {
-    const by = state.user.email || state.user.uid;
-    const batch = writeBatch(db);
-    batch.set(doc(db, "config", "categories"), { json, version, updatedAt: serverTimestamp(), updatedBy: by });
-    batch.set(doc(collection(db, "categoryHistory")), { json, version, savedAt: serverTimestamp(), savedBy: by });
-    await batch.commit();
-    await loadCategories();
-    setBlocklistItems(toItems(state.categories));
-    toast(`バージョン ${version} を公開しました`);
-  } catch (err) {
-    toast(`保存できませんでした: ${errText(err)}`, true);
-  }
-});
-
-$("bl-history").addEventListener("click", async () => {
-  const list = $("history-list");
-  list.innerHTML = '<div class="hint">読み込み中…</div>';
-  $("dlg-history").showModal();
-  try {
-    const snap = await getDocs(query(collection(db, "categoryHistory"), orderBy("savedAt", "desc"), limit(20)));
-    if (snap.empty) {
-      list.innerHTML = '<div class="hint">履歴はまだありません。</div>';
-      return;
-    }
-    list.replaceChildren(...snap.docs.map((d) => {
-      const h = d.data();
-      const row = document.createElement("div");
-      row.className = "pair-row";
-      row.innerHTML = `<b>v${escapeHtml(h.version)}</b><span class="hint">${escapeHtml(h.savedAt ? new Date(toMillis(h.savedAt)).toLocaleString() : "-")} · ${escapeHtml(h.savedBy || "-")}</span><button class="link-btn" type="button">読み込む</button>`;
-      row.querySelector("button").addEventListener("click", () => {
-        if (blocklist.dirty && !confirm("保存していない変更は失われます。この版を読み込みますか？")) return;
-        setBlocklistItems(toItems(parseCategoryData(h.json)), { keepOriginal: true });
-        $("dlg-history").close();
-        toast(`v${h.version} を読み込みました。公開するには「保存して公開」を押してください`);
-      });
-      return row;
-    }));
-  } catch (err) {
-    list.innerHTML = `<div class="hint">読み込めませんでした（${escapeHtml(errText(err))}）</div>`;
-  }
-});
-
-window.addEventListener("beforeunload", (e) => {
-  if (blocklist.dirty) e.preventDefault();
-});
 
 // ---------- ダイアログ共通 ----------
 
