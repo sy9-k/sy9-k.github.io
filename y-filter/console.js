@@ -14,7 +14,9 @@ import {
   increment, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
-import { NEWTAB_MODES, REMOTE_SETTING_KEYS, buildDefaultSettings, normalizeSettings } from "./shared/settings-schema.js";
+import { NEWTAB_MODES, REMOTE_SETTING_KEYS, buildDefaultSettings, localDateKey, normalizeSettings } from "./shared/settings-schema.js";
+import { hashAccessCode, validateNewAccessCode } from "./shared/access-code.js";
+import "./shared/time-rules.js"; // globalThis.YFilterTime（ルールの説明文に使う）
 
 const ONLINE_WINDOW_MS = 15 * 60 * 1000; // 端末は最長 10 分ごとに報告する
 const PAIRING_TTL_MS = 30 * 60 * 1000;
@@ -87,11 +89,6 @@ function formatMinutes(minutes) {
   const m = minutes % 60;
   if (h === 0) return `${m}分`;
   return m === 0 ? `${h}時間` : `${h}時間${m}分`;
-}
-
-function localDateKey(date = new Date()) {
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 function generateCode() {
@@ -580,7 +577,7 @@ function renderDevices() {
   $("sel-count").textContent = `${n} 台を選択中`;
   $("select-all").checked = n > 0 && n === state.devices.length;
   $("select-all").indeterminate = n > 0 && n < state.devices.length;
-  ["bulk-edit", "bulk-copy", "bulk-learning", "bulk-remove"].forEach((id) => { $(id).disabled = n === 0; });
+  ["bulk-edit", "bulk-copy", "bulk-learning", "bulk-extend", "bulk-remove"].forEach((id) => { $(id).disabled = n === 0; });
 }
 
 $("select-all").addEventListener("change", (e) => {
@@ -620,18 +617,34 @@ function renderRequests() {
     const device = state.devices.find((d) => d.id === r.deviceId);
     const row = document.createElement("div");
     row.className = "request-row";
-    row.innerHTML = `
-      <div class="request-main">
-        <div class="request-domain">${escapeHtml(r.domain)}</div>
-        <div class="hint">${escapeHtml(device?.name || r.deviceName || "不明な端末")} · ${escapeHtml(r.category || "未分類")} · ${escapeHtml(timeAgo(toMillis(r.createdAt)))}</div>
-        <a class="request-url hint" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.url)}</a>
-        ${r.message ? `<div class="request-message">「${escapeHtml(r.message)}」</div>` : ""}
-      </div>
-      <div class="request-actions">
-        <button class="btn btn-primary" type="button" data-act="device">この端末で許可</button>
-        <button class="btn btn-tonal" type="button" data-act="all">すべての端末で許可</button>
-        <button class="btn btn-tonal danger-text" type="button" data-act="reject">許可しない</button>
-      </div>`;
+    const who = `${escapeHtml(device?.name || r.deviceName || "不明な端末")} · ${escapeHtml(timeAgo(toMillis(r.createdAt)))}`;
+    const message = r.message ? `<div class="request-message">「${escapeHtml(r.message)}」</div>` : "";
+    if (r.kind === "extend") {
+      const usage = usageText(device || {});
+      row.innerHTML = `
+        <div class="request-main">
+          <div class="request-domain">利用時間の延長 +${escapeHtml(r.minutes)}分</div>
+          <div class="hint">${who}${usage ? ` · 今日の利用 ${escapeHtml(usage)}` : ""}</div>
+          ${message}
+        </div>
+        <div class="request-actions">
+          <button class="btn btn-primary" type="button" data-act="device">許可（今日だけ ${escapeHtml(r.minutes)} 分延長）</button>
+          <button class="btn btn-tonal danger-text" type="button" data-act="reject">許可しない</button>
+        </div>`;
+    } else {
+      row.innerHTML = `
+        <div class="request-main">
+          <div class="request-domain">${escapeHtml(r.domain)}</div>
+          <div class="hint">${who} · ${escapeHtml(r.category || "未分類")}</div>
+          <a class="request-url hint" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.url)}</a>
+          ${message}
+        </div>
+        <div class="request-actions">
+          <button class="btn btn-primary" type="button" data-act="device">この端末で許可</button>
+          <button class="btn btn-tonal" type="button" data-act="all">すべての端末で許可</button>
+          <button class="btn btn-tonal danger-text" type="button" data-act="reject">許可しない</button>
+        </div>`;
+    }
     row.querySelector('[data-act="device"]').disabled = !device;
     row.querySelectorAll("button").forEach((btn) => {
       btn.addEventListener("click", () => decideRequest(r, btn.dataset.act));
@@ -640,8 +653,32 @@ function renderRequests() {
   }));
 }
 
+// その日だけ上限を延ばす（dailyLimit.extra。日付が違えば 0 から数え直す）
+function withExtraMinutes(settings, date, minutes) {
+  const s = normalizeSettings(settings || {});
+  const current = s.dailyLimit.extra.date === date ? s.dailyLimit.extra.minutes : 0;
+  return { ...s, dailyLimit: { ...s.dailyLimit, extra: { date, minutes: Math.min(24 * 60, current + minutes) } } };
+}
+
 async function decideRequest(r, action) {
   const approve = action !== "reject";
+  if (r.kind === "extend") {
+    const device = state.devices.find((d) => d.id === r.deviceId);
+    try {
+      const batch = writeBatch(db);
+      batch.update(doc(db, "requests", r.id), {
+        status: approve ? "approved" : "rejected",
+        decidedAt: serverTimestamp(),
+        decidedBy: state.user.email || state.user.uid
+      });
+      if (approve && device) addDeliveries(batch, [device], (d) => withExtraMinutes(d.settings, r.date, Number(r.minutes || 0)));
+      await batch.commit();
+      toast(approve ? `${device?.name || "端末"} の今日の利用時間を ${r.minutes} 分延長しました` : "延長のリクエストを許可しませんでした");
+    } catch (err) {
+      toast(`処理できませんでした: ${errText(err)}`, true);
+    }
+    return;
+  }
   const targets = action === "all" ? state.devices : state.devices.filter((d) => d.id === r.deviceId);
   if (action === "all" && !confirm(`${r.domain} を、このグループのすべての端末（${targets.length} 台）の許可リストに追加します。よろしいですか？`)) return;
   try {
@@ -681,6 +718,89 @@ $("bulk-learning").addEventListener("change", async (e) => {
   }
 });
 
+$("bulk-extend").addEventListener("change", async (e) => {
+  const minutes = Number(e.target.value);
+  e.target.value = "";
+  if (!minutes) return;
+  const targets = selectedDevices();
+  const today = localDateKey();
+  try {
+    await deliver(targets, (d) => withExtraMinutes(d.settings, today, minutes));
+    toast(`${targets.length} 台の今日の利用時間を ${minutes} 分延長しました`);
+  } catch (err) {
+    toast(`配信に失敗しました: ${errText(err)}`, true);
+  }
+});
+
+// ---------- 利用レポート ----------
+
+const WEEK_DAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
+
+function lastSevenDays() {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push({ key: localDateKey(d), label: `${d.getMonth() + 1}/${d.getDate()}(${WEEK_DAY_LABELS[d.getDay()]})` });
+  }
+  return days;
+}
+
+// 端末の報告から、日付ごとの利用時間（分）を取り出す
+function usageByDate(device) {
+  const map = new Map();
+  for (const h of device.reported?.usage?.history || []) map.set(h.date, Number(h.minutes || 0));
+  const u = device.reported?.usage;
+  if (u?.date) map.set(u.date, Number(u.minutes || 0));
+  return map;
+}
+
+// 端末の設定から、その日の上限（分）。上限なしなら null
+function limitOn(device, dateKey) {
+  const s = normalizeSettings(device.settings || {});
+  if (!s.dailyLimit.enabled) return null;
+  const date = new Date(`${dateKey}T00:00:00`);
+  const base = date.getDay() === 0 || date.getDay() === 6 ? s.dailyLimit.weekend : s.dailyLimit.weekday;
+  return base + (s.dailyLimit.extra.date === dateKey ? s.dailyLimit.extra.minutes : 0);
+}
+
+function renderUsageBars(container, device) {
+  const byDate = usageByDate(device);
+  const days = lastSevenDays();
+  const values = days.map((d) => byDate.get(d.key) ?? 0);
+  const max = Math.max(60, ...values, ...days.map((d) => limitOn(device, d.key) || 0));
+  container.replaceChildren(...days.map((d, i) => {
+    const col = document.createElement("div");
+    col.className = "usage-day";
+    const limit = limitOn(device, d.key);
+    col.innerHTML = `<b>${values[i] ? escapeHtml(formatMinutes(values[i])) : "-"}</b>
+      <div class="usage-bar${limit !== null && values[i] >= limit ? " over" : ""}" style="height:${Math.round((values[i] / max) * 70)}px"></div>
+      <span>${escapeHtml(d.label)}</span>`;
+    return col;
+  }));
+  return byDate.size > 0;
+}
+
+$("open-report").addEventListener("click", () => {
+  const days = lastSevenDays();
+  const head = `<thead><tr><th>端末</th>${days.map((d) => `<th>${escapeHtml(d.label)}</th>`).join("")}<th>合計</th><th>1日平均</th></tr></thead>`;
+  const rows = state.devices.map((device) => {
+    const byDate = usageByDate(device);
+    const values = days.map((d) => byDate.get(d.key) ?? null);
+    const known = values.filter((v) => v !== null);
+    const total = known.reduce((a, b) => a + b, 0);
+    const cells = values.map((v, i) => {
+      if (v === null) return '<td class="hint">-</td>';
+      const limit = limitOn(device, days[i].key);
+      return `<td class="${limit !== null && v >= limit ? "danger-text" : ""}">${escapeHtml(formatMinutes(v))}</td>`;
+    }).join("");
+    return `<tr><td><div class="dev-name">${escapeHtml(device.name || "名前なし")}</div></td>${cells}
+      <td><b>${escapeHtml(formatMinutes(total))}</b></td><td>${known.length ? escapeHtml(formatMinutes(Math.round(total / known.length))) : "-"}</td></tr>`;
+  }).join("");
+  $("report-table").innerHTML = head + `<tbody>${rows || `<tr><td colspan="${days.length + 3}" class="hint">端末がありません。</td></tr>`}</tbody>`;
+  $("dlg-report").showModal();
+});
+
 $("bulk-remove").addEventListener("click", async () => {
   const targets = selectedDevices();
   if (!confirm(`${targets.length} 台の接続を解除します。解除した端末は管理できなくなります（端末の設定はそのまま残ります）。よろしいですか？`)) return;
@@ -702,7 +822,7 @@ const SECTIONS = [
     { key: "systemEnabled", type: "switch", label: "Y-FILTER を有効にする" },
     { key: "uiMode", type: "select", label: "ユーザーモード", options: [["admin", "管理者モード"], ["user", "ユーザーモード（閲覧のみ）"]] },
     { key: "accessMode", type: "select", label: "設定画面へのアクセス", desc: "完全ブロック・利用者表示にすると、その端末からこの管理コンソールも開けなくなります", number: true, options: [["0", "通常（アクセスコードで開ける）"], ["1", "完全ブロック（開けない）"], ["2", "利用者表示（ステータスのみ）"]] },
-    { key: "accessCode", type: "text", label: "アクセスコード" }
+    { key: "accessCodeHash", type: "accesscode", label: "アクセスコード", desc: "設定画面などを開くときのコード。変更するときだけ入力します（コードは保存されず、元に戻せない形で配信します）" }
   ] },
   { title: "ブロック", fields: [
     { key: "safeSearchEnabled", type: "switch", label: "セーフサーチ", desc: "検索結果の安全フィルタと YouTube の制限付きモード" },
@@ -712,7 +832,8 @@ const SECTIONS = [
     { key: "blockPageStyle", type: "select", label: "ブロック画面のデザイン", options: [["modern", "新しいデザイン"], ["classic", "従来のデザイン"], ["kids", "子供向け"]] }
   ] },
   { title: "時間", fields: [
-    { key: "timeConfig", type: "time", label: "時間制限", desc: "指定した時間帯はアクセスを制限します" },
+    { key: "timeConfig", type: "time", label: "時間制限（毎日）", desc: "指定した時間帯は毎日アクセスを制限します" },
+    { key: "timeSchedule", type: "schedule", label: "曜日・時間帯のルール", desc: "曜日ごとに使えない時間帯を決めます（例: 平日 9:00〜15:00 は授業中）。最大 10 件。開始が終了より遅いときは日をまたぎます" },
     { key: "dailyLimit", type: "dailylimit", label: "1日の利用時間の上限", desc: "Web ページを見ていた時間を数え、上限に達したらその日はアクセスを制限します" }
   ] },
   { title: "広告ブロック", fields: [
@@ -802,9 +923,25 @@ function fieldControl(field, value) {
         el: wrap,
         get: () => {
           const [on, wd, we] = wrap.querySelectorAll("input");
-          return { enabled: on.checked, weekday: readMinutes(wd, 120), weekend: readMinutes(we, 180) };
+          // その日の延長（extra）はそのまま残す
+          return { ...(value || {}), enabled: on.checked, weekday: readMinutes(wd, 120), weekend: readMinutes(we, 180) };
         }
       };
+    case "accesscode":
+      // 入力したときだけ変更する（入力したコードは「適用」のときにハッシュにして配信する）
+      wrap.className = "inline";
+      wrap.innerHTML = `<input type="password" maxlength="32" autocomplete="new-password" placeholder="新しいコード（変更するときだけ）">
+        <input type="password" maxlength="32" autocomplete="new-password" placeholder="もう一度入力">`;
+      return {
+        el: wrap,
+        get: () => {
+          const [code, confirmCode] = wrap.querySelectorAll("input");
+          if (!code.value && !confirmCode.value) return value ?? null;
+          return { newCode: code.value.trim(), confirm: confirmCode.value.trim() };
+        }
+      };
+    case "schedule":
+      return scheduleControl(value);
     case "categories":
     case "exts": {
       const names = field.type === "exts" ? EXTENSIONS : Object.keys(state.categories);
@@ -829,6 +966,47 @@ function fieldControl(field, value) {
   }
 }
 
+// 曜日・時間帯のルールの入力欄
+const DAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
+function scheduleControl(value) {
+  const wrap = document.createElement("div");
+  wrap.className = "schedule-edit";
+  wrap.innerHTML = `
+    <label class="inline"><input type="checkbox" class="switch" ${value?.enabled ? "checked" : ""}><span class="hint">ルールを使う</span></label>
+    <div class="schedule-rules"></div>
+    <button class="btn btn-tonal" type="button">ルールを追加</button>`;
+  const list = wrap.querySelector(".schedule-rules");
+  const addRow = (rule = { days: [1, 2, 3, 4, 5], start: "09:00", end: "15:00" }) => {
+    if (list.children.length >= 10) return;
+    const row = document.createElement("div");
+    row.className = "schedule-rule";
+    row.innerHTML = `
+      <div class="schedule-days">${DAY_LABELS.map((l, d) => `<label><input type="checkbox" value="${d}" ${rule.days?.includes(d) ? "checked" : ""}>${l}</label>`).join("")}</div>
+      <input type="time" value="${escapeHtml(rule.start || "09:00")}"><span class="hint">〜</span><input type="time" value="${escapeHtml(rule.end || "15:00")}">
+      <button class="link-btn danger-text remove" type="button">削除</button>`;
+    row.querySelector(".remove").addEventListener("click", () => {
+      row.remove();
+      wrap.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    list.appendChild(row);
+  };
+  (value?.rules || []).forEach((r) => addRow(r));
+  wrap.querySelector("button.btn").addEventListener("click", () => {
+    addRow();
+    wrap.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  return {
+    el: wrap,
+    get: () => ({
+      enabled: wrap.querySelector(".switch").checked,
+      rules: Array.from(list.querySelectorAll(".schedule-rule")).map((row) => {
+        const [s, e] = row.querySelectorAll('input[type="time"]');
+        return { days: Array.from(row.querySelectorAll(".schedule-days input:checked")).map((i) => Number(i.value)), start: s.value, end: e.value };
+      }).filter((r) => r.days.length && r.start && r.end)
+    })
+  };
+}
+
 function openEditor() {
   const targets = selectedDevices();
   if (!targets.length) return;
@@ -848,7 +1026,7 @@ function openEditor() {
     for (const field of section.fields) {
       const control = fieldControl(field, base[field.key]);
       const row = document.createElement("div");
-      const stacked = ["lines", "rules", "categories", "exts"].includes(field.type);
+      const stacked = ["lines", "rules", "categories", "exts", "schedule"].includes(field.type);
       row.className = `ed-field${stacked ? " stack" : ""}`;
       row.innerHTML = `<div><div class="ed-label">${escapeHtml(field.label)}<span class="ed-badge">変更</span></div>${field.desc ? `<div class="ed-desc">${escapeHtml(field.desc)}</div>` : ""}</div>`;
       row.appendChild(control.el);
@@ -882,6 +1060,13 @@ $("edit-apply").addEventListener("click", async () => {
   const patch = {};
   for (const key of editor.dirty) patch[key] = editor.fields.get(key).get();
   if (patch.enabledCategories) patch.blockKeywords = keywordsFor(patch.enabledCategories);
+  // 新しいアクセスコードは、ここでハッシュにする（コードそのものは配信しない）
+  if (patch.accessCodeHash?.newCode !== undefined) {
+    const { newCode, confirm: confirmCode } = patch.accessCodeHash;
+    const error = validateNewAccessCode(newCode) || (newCode !== confirmCode ? "確認のために入力したアクセスコードが一致しません。" : "");
+    if (error) return toast(error, true);
+    patch.accessCodeHash = await hashAccessCode(newCode);
+  }
   const targets = selectedDevices();
   try {
     await deliver(targets, (d) => ({ ...d.settings, ...patch }));
@@ -959,6 +1144,10 @@ function openDetail(id) {
   if (info.loginEmail) rows.push(["ログインユーザー", escapeHtml(info.loginEmail)]);
   if (info.memoryUsage !== undefined) rows.push(["メモリ使用率", `${escapeHtml(info.memoryUsage)}%`]);
   $("detail-kv").innerHTML = rows.map(([k, v]) => `<div class="row"><div class="k">${escapeHtml(k)}</div><div class="v">${v}</div></div>`).join("");
+
+  const hasUsage = renderUsageBars($("detail-usage"), d);
+  show("detail-usage", hasUsage);
+  show("detail-usage-empty", !hasUsage);
 
   const changedKeys = d.reported?.settings ? diffKeys(d.settings, d.reported.settings) : [];
   show("detail-diff", !st.pending && changedKeys.length > 0);

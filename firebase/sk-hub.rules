@@ -1,0 +1,34 @@
+// SK Hub Systems: サイト（sy9-k.github.io）のアクセスチェック用 Firestore ルール
+//
+// ※ このファイルだけでルールを「置き換え」ないこと（Y-FILTER. 用のルールが消えます）。
+//   Firebase コンソール > Firestore Database > ルール を開き、既存の
+//     match /databases/{database}/documents {
+//       ...
+//     }
+//   の「中」に、下の 2 つの match ブロックを追記して「公開」してください。
+//
+// ・hub_access_logs: だれでも 1 件追加できるだけ。読み取り・変更・削除はできない
+//   （閲覧は Firebase コンソールから。コンソールはルールの対象外）。
+// ・hub_blocklist: ID を指定した 1 件の取得だけ可能（一覧は取れない）。
+//   ブロックしたい人の UUID をドキュメント ID にして、Firebase コンソールで作成する
+//   （フィールドは自由。例: reason: "迷惑行為", createdAt: 日時）。削除すれば解除。
+
+    match /hub_access_logs/{logId} {
+      allow create: if request.resource.data.keys().hasOnly(['uuid', 'page', 'referrer', 'userAgent', 'language', 'status', 'createdAt'])
+        && request.resource.data.keys().hasAll(['uuid', 'page', 'referrer', 'userAgent', 'language', 'status', 'createdAt'])
+        && request.resource.data.uuid is string && request.resource.data.uuid.matches('^[0-9a-fA-F-]{36}$')
+        && request.resource.data.page is string && request.resource.data.page.matches('^https?://.*') && request.resource.data.page.size() <= 512
+        && request.resource.data.referrer is string && request.resource.data.referrer.size() <= 512
+        && request.resource.data.userAgent is string && request.resource.data.userAgent.size() <= 512
+        && request.resource.data.language is string && request.resource.data.language.size() <= 32
+        && request.resource.data.status in ['normal', 'blocked']
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.createdAt > request.time - duration.value(10, 'm')
+        && request.resource.data.createdAt < request.time + duration.value(10, 'm');
+      allow read, update, delete: if false;
+    }
+
+    match /hub_blocklist/{uuid} {
+      allow get: if true;
+      allow list, write: if false;
+    }

@@ -4,8 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="複数の言語辞書に対応した検索アプリケーション" />
-<meta name="theme-color" content="#1b4b8d" />
+<meta name="theme-color" content="#f8f9ff" />
 <title>MALU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Roboto:wght@400;500&display=swap" />
 <link rel="stylesheet" href="styles.css" />
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" type="image/png" href="ico/icon-192.png" />
@@ -16,68 +19,70 @@
     <div class="install-banner__inner">
       <p class="install-banner__text">ホーム画面に追加できます。</p>
       <div class="install-banner__actions">
-        <button id="install-button" type="button" class="install-banner__button">追加</button>
         <button id="install-dismiss" type="button" class="install-banner__dismiss">閉じる</button>
+        <button id="install-button" type="button" class="install-banner__button">追加</button>
       </div>
     </div>
   </div>
 
   <div id="main-view" class="wrapper">
-    <header class="header">
-      <nav class="nav-global-wrap">
-        <ul class="nav-global">
-          <li class="item"><p class="nav-text"><button class="nav-link category-tab active" type="button" data-category="kokugo">国語辞書</button></p></li>
-          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="eigo">英語辞書</button></p></li>
-          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="kankoku">韓国語辞書</button></p></li>
-          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="chinese">中国語辞典</button></p></li>
-          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="eij">英和・和英辞典</button></p></li>
-          <li class="item"><p class="nav-text"><button class="nav-link category-tab" type="button" data-category="nikankoku">日韓・韓日辞典</button></p></li>
-        </ul>
-      </nav>
-
-      <div class="time-banner">
-        <button id="settings-button" type="button" class="settings-button" aria-label="設定"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="var(--text-color)"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg> 設定</button>
-        <p class="time-label" id="current-date">--年--月--日 --曜日</p>
-        <p class="time-value" id="current-time">--:--</p>
+    <header class="header top-app-bar" id="top-app-bar">
+      <div class="top-app-bar__row">
+        <img class="top-app-bar__logo" src="ico/icon-192.png" alt="" width="32" height="32">
+        <h1 class="top-app-bar__title">MALU</h1>
+        <button id="settings-button" type="button" class="icon-button settings-button" aria-label="設定"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" aria-hidden="true"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg></button>
       </div>
+      <nav class="tabs" aria-label="辞書カテゴリ">
+        <div class="tabs__list">
+          <button class="tab category-tab active" type="button" data-category="kokugo"><span class="tab__label">国語辞書</span></button>
+          <button class="tab category-tab" type="button" data-category="eigo"><span class="tab__label">英語辞書</span></button>
+          <button class="tab category-tab" type="button" data-category="kankoku"><span class="tab__label">韓国語辞書</span></button>
+          <button class="tab category-tab" type="button" data-category="chinese"><span class="tab__label">中国語辞典</span></button>
+          <button class="tab category-tab" type="button" data-category="eij"><span class="tab__label">英和・和英辞典</span></button>
+          <button class="tab category-tab" type="button" data-category="nikankoku"><span class="tab__label">日韓・韓日辞典</span></button>
+        </div>
+      </nav>
     </header>
 
-    <section class="search-area">
-      <div class="search-area-inner">
-        <p class="search-area-title">調べたいことばを検索しよう</p>
+    <main class="content">
+      <section class="clock-card" aria-label="現在の日時">
+        <p class="clock-card__date" id="current-date">--年--月--日 --曜日</p>
+        <p class="clock-card__time" id="current-time">--:--</p>
+      </section>
+
+      <section class="search-area">
+        <h2 class="search-area-title">調べたいことばを検索しよう</h2>
         <form id="dictionary-form" action="#" method="get">
           <div class="dictionary-panel">
-            <div class="form-group">
-              <div class="input-group">
-                <input id="query-input" type="text" maxlength="2048" name="query" class="form-control form-search" placeholder="言葉を入力して検索する" autocomplete="off" autofocus>
-                <div class="input-group-append">
-                  <button class="btn-search" type="submit" aria-label="検索"><span class="ico-search"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></span></button>
-                </div>
-              </div>
+            <div class="search-bar">
+              <svg class="search-bar__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input id="query-input" type="text" maxlength="2048" name="query" class="search-bar__input" placeholder="言葉を入力して検索" autocomplete="off" aria-label="検索語" autofocus>
+              <button class="btn-search" type="submit" aria-label="検索"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg></button>
             </div>
           </div>
         </form>
         <div class="dictionary-select" id="dictionary-select-row" role="group" aria-label="辞書選択"></div>
-        <div class="search-history" id="search-history" aria-live="polite"></div>
-      </div>
-    </section>
+      </section>
+
+      <section class="search-history" id="search-history" aria-live="polite"></section>
+    </main>
   </div>
 
   <section id="settings-overlay" class="settings-view hide" aria-labelledby="settings-title">
     <div class="settings-panel">
       <div class="settings-panel__header">
+        <button id="settings-close" type="button" class="icon-button settings-close" aria-label="戻る"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
         <h2 id="settings-title">設定</h2>
-        <button id="settings-close" type="button" class="settings-close" aria-label="戻る">戻る</button>
       </div>
       <div class="settings-layout">
         <aside class="settings-sidebar" aria-label="設定カテゴリ">
           <p class="settings-sidebar__title">MALU</p>
           <nav class="settings-nav">
-            <a href="#settings-general" class="settings-nav__item active" data-settings-target="settings-general">基本設定</a>
-            <a href="#settings-data" class="settings-nav__item" data-settings-target="settings-data">データ</a>
-            <a href="#settings-status" class="settings-nav__item" data-settings-target="settings-status">状態</a>
-            <a href="#settings-pwa" class="settings-nav__item" data-settings-target="settings-pwa">PWA</a>
-            <a href="#settings-about" class="settings-nav__item" data-settings-target="settings-about">このアプリについて</a>
+            <a href="#settings-general" class="settings-nav__item active" data-settings-target="settings-general"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>基本設定</a>
+            <a href="#settings-data" class="settings-nav__item" data-settings-target="settings-data"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/></svg>データ</a>
+            <a href="#settings-status" class="settings-nav__item" data-settings-target="settings-status"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>状態</a>
+            <a href="#settings-pwa" class="settings-nav__item" data-settings-target="settings-pwa"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>PWA</a>
+            <a href="#settings-about" class="settings-nav__item" data-settings-target="settings-about"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>このアプリについて</a>
           </nav>
         </aside>
 
@@ -89,14 +94,16 @@
                 <p class="settings-item__title">デフォルト辞書</p>
                 <p class="settings-item__description">検索開始時に最初に選択される辞書を設定します。</p>
               </div>
-              <select id="default-dictionary" class="settings-select"></select>
+              <div class="select-field">
+                <select id="default-dictionary" class="settings-select" aria-label="デフォルト辞書"></select>
+              </div>
             </div>
             <div class="settings-item">
               <div>
                 <p class="settings-item__title">結果表示</p>
                 <p class="settings-item__description">検索結果を開く方法を選択します。</p>
               </div>
-              <div class="settings-mode">
+              <div class="settings-mode" role="radiogroup" aria-label="結果表示">
                 <label><input type="radio" name="open-mode" value="new" /> 新しいタブ</label>
                 <label><input type="radio" name="open-mode" value="same" /> 同じタブ</label>
               </div>
@@ -106,7 +113,7 @@
                 <p class="settings-item__title">テーマ</p>
                 <p class="settings-item__description">画面の明るさを切り替えます。</p>
               </div>
-              <div class="settings-mode">
+              <div class="settings-mode" role="radiogroup" aria-label="テーマ">
                 <label><input type="radio" name="theme-mode" value="auto" /> 自動</label>
                 <label><input type="radio" name="theme-mode" value="light" /> ライト</label>
                 <label><input type="radio" name="theme-mode" value="dark" /> ダーク</label>
@@ -177,8 +184,8 @@
                 <p class="about-description">複数のオンライン辞書をすばやく開ける検索アプリです。</p>
               </div>
             </div>
-            <div class="about-status">
-              <div class="about-status__mark" aria-hidden="true">✓</div>
+            <div class="settings-item about-status">
+              <div class="about-status__mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
               <div>
                 <p id="about-update-status" class="settings-item__title">MALU は最新です</p>
                 <p class="settings-item__description">更新は Service Worker とブラウザのキャッシュによって自動的に反映されます。</p>
@@ -198,13 +205,14 @@
               </div>
             </div>
           </section>
-          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <div id="offline-overlay" class="offline-overlay hide" role="status" aria-live="polite">
     <div class="offline-overlay__content">
+      <svg class="offline-overlay__icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4.01 1.17l1.46 1.46C10.21 6.23 11.08 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3 0 1.13-.64 2.11-1.56 2.62l1.45 1.45C23.16 18.16 24 16.68 24 15c0-2.64-2.05-4.78-4.65-4.96zM3 5.27l2.75 2.74C2.56 8.15 0 10.77 0 14c0 3.31 2.69 6 6 6h11.73l2 2L21 20.73 4.27 4 3 5.27zM7.73 10l8 8H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h1.73z"/></svg>
       <p class="offline-overlay__title">オフライン中です</p>
       <p class="offline-overlay__description">辞書は使えません。ネットワークに接続してから再度お試しください。</p>
     </div>

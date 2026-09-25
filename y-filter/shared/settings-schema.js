@@ -26,14 +26,18 @@ export const REMOTE_SETTING_KEYS = Object.freeze([
   "chromeOsOfflineScreen",
   "chromeOsReportHardwareStats",
   "safeSearchEnabled",
-  "accessCode",
+  "accessCodeHash",
   "accessMode",
   "blockedExtensions",
   "newTabConfig",
   "blockPageStyle",
   "adBlockBadge",
-  "dailyLimit"
+  "dailyLimit",
+  "timeSchedule"
 ]);
+
+// 曜日・時間帯のルールの最大数
+export const TIME_SCHEDULE_MAX_RULES = 10;
 
 // 1 日の利用時間の上限（分）。平日と土日で分けられる
 export const DAILY_LIMIT_MAX_MINUTES = 24 * 60;
@@ -58,13 +62,14 @@ export const DEFAULT_SETTINGS = Object.freeze({
   chromeOsOfflineScreen: false,
   chromeOsReportHardwareStats: false,
   safeSearchEnabled: false,
-  accessCode: "0000",
+  accessCodeHash: null,
   accessMode: 0,
   blockedExtensions: ["exe", "msi"],
   newTabConfig: { enabled: false, agreed: false, mode: "normal" },
   blockPageStyle: "modern",
   adBlockBadge: false,
-  dailyLimit: { enabled: false, weekday: 120, weekend: 180 }
+  dailyLimit: { enabled: false, weekday: 120, weekend: 180, extra: { date: "", minutes: 0 } },
+  timeSchedule: { enabled: false, rules: [] }
 });
 
 function isObject(value) {
@@ -157,20 +162,57 @@ function normalizeLimitMinutes(value, fallback) {
   return Math.min(DAILY_LIMIT_MAX_MINUTES, Math.max(0, n));
 }
 
+export function localDateKey(date = new Date()) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+// extra … その日だけの延長（「あと○分」のリクエストを許可したとき）。date が今日のときだけ上限に足す
 export function normalizeDailyLimit(value) {
   const src = isObject(value) ? value : {};
+  const extra = isObject(src.extra) ? src.extra : {};
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(String(extra.date || "")) ? String(extra.date) : "";
   return {
     enabled: normalizeBoolean(src.enabled, false),
     weekday: normalizeLimitMinutes(src.weekday, 120),
-    weekend: normalizeLimitMinutes(src.weekend, 180)
+    weekend: normalizeLimitMinutes(src.weekend, 180),
+    extra: { date, minutes: date ? normalizeLimitMinutes(extra.minutes, 0) : 0 }
   };
 }
 
-// 今日の上限（分）。土日は weekend、それ以外は weekday
+// 今日の上限（分）。土日は weekend、それ以外は weekday。今日の延長があれば足す
 export function dailyLimitMinutesFor(limit, date = new Date()) {
   const cfg = normalizeDailyLimit(limit);
   const day = date.getDay();
-  return day === 0 || day === 6 ? cfg.weekend : cfg.weekday;
+  const base = day === 0 || day === 6 ? cfg.weekend : cfg.weekday;
+  const extra = cfg.extra.date === localDateKey(date) ? cfg.extra.minutes : 0;
+  return Math.min(DAILY_LIMIT_MAX_MINUTES, base + extra);
+}
+
+// 曜日・時間帯のルール。days は 0（日）〜6（土）。start > end は日をまたぐ（start の曜日で判定）
+export function normalizeTimeSchedule(value) {
+  const src = isObject(value) ? value : {};
+  const rules = [];
+  for (const rule of Array.isArray(src.rules) ? src.rules : []) {
+    if (!isObject(rule)) continue;
+    const days = [...new Set((Array.isArray(rule.days) ? rule.days : [])
+      .map((d) => normalizeNumber(d, -1)).filter((d) => d >= 0 && d <= 6))].sort((a, b) => a - b);
+    const start = normalizeTime(rule.start, "");
+    const end = normalizeTime(rule.end, "");
+    if (!days.length || !start || !end) continue;
+    rules.push({ days, start, end });
+    if (rules.length >= TIME_SCHEDULE_MAX_RULES) break;
+  }
+  return { enabled: normalizeBoolean(src.enabled, false), rules };
+}
+
+// アクセスコードのハッシュ（access-code.js）。形が正しくなければ null
+function normalizeAccessCodeHash(value) {
+  if (!isObject(value)) return null;
+  const { alg, iter, salt, hash, updatedAt } = value;
+  if (alg !== "PBKDF2-SHA256" || !Number.isInteger(iter) || iter <= 0) return null;
+  if (typeof salt !== "string" || !salt || typeof hash !== "string" || !hash) return null;
+  return { alg, iter, salt, hash, updatedAt: normalizeNumber(updatedAt, 0) };
 }
 
 function normalizeNewTabConfig(value) {
@@ -206,13 +248,14 @@ export function buildDefaultSettings() {
     chromeOsOfflineScreen: false,
     chromeOsReportHardwareStats: false,
     safeSearchEnabled: false,
-    accessCode: "0000",
+    accessCodeHash: null,
     accessMode: 0,
     blockedExtensions: ["exe", "msi"],
     newTabConfig: { enabled: false, agreed: false, mode: "normal" },
     blockPageStyle: "modern",
     adBlockBadge: false,
-    dailyLimit: { enabled: false, weekday: 120, weekend: 180 }
+    dailyLimit: { enabled: false, weekday: 120, weekend: 180, extra: { date: "", minutes: 0 } },
+    timeSchedule: { enabled: false, rules: [] }
   };
 }
 
@@ -239,13 +282,14 @@ export function normalizeSettings(raw = {}) {
   out.chromeOsOfflineScreen = normalizeBoolean(src.chromeOsOfflineScreen, false);
   out.chromeOsReportHardwareStats = normalizeBoolean(src.chromeOsReportHardwareStats, false);
   out.safeSearchEnabled = normalizeBoolean(src.safeSearchEnabled, false);
-  out.accessCode = normalizeString(String(src.accessCode || "0000")) || "0000";
+  out.accessCodeHash = normalizeAccessCodeHash(src.accessCodeHash);
   out.accessMode = normalizeAccessMode(src.accessMode);
   out.blockedExtensions = normalizeStringArray(src.blockedExtensions, { lower: true });
   out.newTabConfig = normalizeNewTabConfig(src.newTabConfig);
   out.blockPageStyle = ["modern", "classic", "kids"].includes(src.blockPageStyle) ? src.blockPageStyle : "modern";
   out.adBlockBadge = normalizeBoolean(src.adBlockBadge, false);
   out.dailyLimit = normalizeDailyLimit(src.dailyLimit);
+  out.timeSchedule = normalizeTimeSchedule(src.timeSchedule);
 
   return out;
 }

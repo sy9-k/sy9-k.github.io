@@ -87,6 +87,12 @@ table.devices tr.selected td { background: var(--primary-soft); }
 .request-message { margin-top: 4px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); font-size: 13px; }
 .request-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; flex: none; }
 td.usage { white-space: nowrap; font-variant-numeric: tabular-nums; }
+table.report th, table.report td { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+table.report th:first-child, table.report td:first-child { text-align: left; }
+.schedule-edit { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.schedule-edit .schedule-rules { width: 100%; }
+.ed-field .schedule-rule input[type="time"] { min-width: 0; }
+#detail-usage { margin-top: 6px; }
 
 /* 管理者 */
 .member-list { display: flex; flex-direction: column; gap: 6px; }

@@ -35,7 +35,8 @@ const currentTime = document.getElementById('current-time');
 const CACHE_NAME = 'dictionary-v2';
 const APP_VERSION = '1.0.0';
 const DEFAULT_SETTINGS = { defaultDictionary: 'weblio', openMode: 'new', theme: 'auto' };
-const DARK_THEME_COLOR = '#0b1120';
+const topAppBar = document.getElementById('top-app-bar');
+const RIPPLE_SELECTOR = '.icon-button, .tab, .btn-search, .dict-pill, .history-item, .settings-nav__item, .settings-action, .settings-mode label, .install-banner__button, .install-banner__dismiss';
 const DICTIONARY_THEME_COLORS = {
   weblio: '#1b4b8d',
   goo: '#2563a9',
@@ -110,7 +111,116 @@ function applyTheme() {
   const resolvedTheme = getResolvedTheme();
   document.documentElement.dataset.theme = resolvedTheme;
   document.documentElement.style.colorScheme = resolvedTheme;
-  updateThemeColor();
+  applyColorScheme();
+}
+
+// Material 3 のダイナミックカラー：シード色から色相を取り出し、
+// トーン（CIELAB の L*）ごとの色で配色ロールを組み立てる
+const LAB_EPSILON = 216 / 24389;
+const LAB_KAPPA = 24389 / 27;
+const D65_WHITE = [0.95047, 1, 1.08883];
+
+function srgbToLinear(channel) {
+  const value = channel / 255;
+  return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+}
+
+function linearToSrgb(channel) {
+  const value = channel <= 0.0031308 ? channel * 12.92 : 1.055 * channel ** (1 / 2.4) - 0.055;
+  return Math.round(Math.min(Math.max(value, 0), 1) * 255);
+}
+
+function labF(value) {
+  return value > LAB_EPSILON ? Math.cbrt(value) : (LAB_KAPPA * value + 16) / 116;
+}
+
+function labFInverse(value) {
+  const cubed = value ** 3;
+  return cubed > LAB_EPSILON ? cubed : (116 * value - 16) / LAB_KAPPA;
+}
+
+function hexToLch(hex) {
+  const number = parseInt(hex.replace('#', ''), 16);
+  const [r, g, b] = [(number >> 16) & 255, (number >> 8) & 255, number & 255].map(srgbToLinear);
+  const fx = labF((0.4124 * r + 0.3576 * g + 0.1805 * b) / D65_WHITE[0]);
+  const fy = labF(0.2126 * r + 0.7152 * g + 0.0722 * b);
+  const fz = labF((0.0193 * r + 0.1192 * g + 0.9505 * b) / D65_WHITE[2]);
+  const a = 500 * (fx - fy);
+  const bValue = 200 * (fy - fz);
+  return { l: 116 * fy - 16, c: Math.hypot(a, bValue), h: Math.atan2(bValue, a) };
+}
+
+function lchToLinearRgb(l, c, h) {
+  const fy = (l + 16) / 116;
+  const fx = fy + (c * Math.cos(h)) / 500;
+  const fz = fy - (c * Math.sin(h)) / 200;
+  const x = labFInverse(fx) * D65_WHITE[0];
+  const y = l > LAB_KAPPA * LAB_EPSILON ? fy ** 3 : l / LAB_KAPPA;
+  const z = labFInverse(fz) * D65_WHITE[2];
+  return [
+    3.2406 * x - 1.5372 * y - 0.4986 * z,
+    -0.9689 * x + 1.8758 * y + 0.0415 * z,
+    0.0557 * x - 0.204 * y + 1.057 * z
+  ];
+}
+
+// トーンを固定したまま、sRGB に収まるまで彩度を下げる
+function toneToHex(hue, chroma, tone) {
+  const inGamut = (rgb) => rgb.every((channel) => channel >= -0.0001 && channel <= 1.0001);
+  let rgb = lchToLinearRgb(tone, chroma, hue);
+  if (!inGamut(rgb)) {
+    let low = 0;
+    let high = chroma;
+    for (let i = 0; i < 16; i += 1) {
+      const mid = (low + high) / 2;
+      if (inGamut(lchToLinearRgb(tone, mid, hue))) low = mid;
+      else high = mid;
+    }
+    rgb = lchToLinearRgb(tone, low, hue);
+  }
+  return `#${rgb.map((channel) => linearToSrgb(channel).toString(16).padStart(2, '0')).join('')}`;
+}
+
+function createColorScheme(seedColor, isDark) {
+  const { c, h } = hexToLch(seedColor);
+  const primary = (tone) => toneToHex(h, Math.min(Math.max(c, 36), 64), tone);
+  const secondary = (tone) => toneToHex(h, 18, tone);
+  const neutral = (tone) => toneToHex(h, 4, tone);
+  const neutralVariant = (tone) => toneToHex(h, 9, tone);
+  const pick = (light, dark) => (isDark ? dark : light);
+
+  return {
+    primary: primary(pick(40, 80)),
+    'on-primary': primary(pick(100, 20)),
+    'primary-container': primary(pick(90, 30)),
+    'on-primary-container': primary(pick(10, 90)),
+    'inverse-primary': primary(pick(80, 40)),
+    'secondary-container': secondary(pick(90, 30)),
+    'on-secondary-container': secondary(pick(10, 90)),
+    surface: neutral(pick(98, 6)),
+    'surface-container-lowest': neutral(pick(100, 4)),
+    'surface-container-low': neutral(pick(96, 10)),
+    'surface-container': neutral(pick(94, 12)),
+    'surface-container-high': neutral(pick(92, 17)),
+    'surface-container-highest': neutral(pick(90, 22)),
+    'on-surface': neutral(pick(10, 90)),
+    'on-surface-variant': neutralVariant(pick(30, 80)),
+    outline: neutralVariant(pick(50, 60)),
+    'outline-variant': neutralVariant(pick(80, 30)),
+    'inverse-surface': neutral(pick(20, 90)),
+    'inverse-on-surface': neutral(pick(95, 20))
+  };
+}
+
+function applyColorScheme(seedColor = getSelectedAccentColor()) {
+  const scheme = createColorScheme(seedColor, getResolvedTheme() === 'dark');
+  const rootStyle = document.documentElement.style;
+  Object.entries(scheme).forEach(([role, value]) => {
+    rootStyle.setProperty(`--md-${role}`, value);
+  });
+  if (themeColorMeta) {
+    themeColorMeta.setAttribute('content', scheme.surface);
+  }
 }
 
 function findCategoryForDictionary(dictionaryKey) {
@@ -439,15 +549,7 @@ function getSelectedAccentColor() {
 }
 
 function setAccent(color) {
-  document.documentElement.style.setProperty('--accent-color', color);
-  updateThemeColor(color);
-}
-
-function updateThemeColor(accentColor = getSelectedAccentColor()) {
-  if (themeColorMeta) {
-    const resolvedTheme = getResolvedTheme();
-    themeColorMeta.setAttribute('content', resolvedTheme === 'dark' ? DARK_THEME_COLOR : accentColor);
-  }
+  applyColorScheme(color);
 }
 
 function animateElement(element, className, duration = 320) {
@@ -701,7 +803,9 @@ async function checkForServiceWorkerUpdates() {
 
 function updateCategorySelection() {
   categoryButtons.forEach((button) => {
-    button.classList.toggle('active', button.dataset.category === selectedCategory);
+    const isActive = button.dataset.category === selectedCategory;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
   });
   const category = categories[selectedCategory];
   if (!category.dictionaries.some((dict) => dict.key === selectedDictionary)) {
@@ -818,6 +922,27 @@ if (pwaCheckUpdateButton) {
 if (pwaResetCacheButton) {
   pwaResetCacheButton.addEventListener('click', resetCacheAndReload);
 }
+
+document.addEventListener('pointerdown', (event) => {
+  const target = event.target.closest(RIPPLE_SELECTOR);
+  if (!target || target.disabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const rect = target.getBoundingClientRect();
+  const size = Math.hypot(rect.width, rect.height) * 2;
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  ripple.style.width = `${size}px`;
+  ripple.style.height = `${size}px`;
+  ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
+  ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
+  target.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+});
+
+window.addEventListener('scroll', () => {
+  if (topAppBar) {
+    topAppBar.classList.toggle('is-scrolled', window.scrollY > 0);
+  }
+}, { passive: true });
 
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && settingsOverlay && !settingsOverlay.classList.contains('hide')) {

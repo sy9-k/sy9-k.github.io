@@ -94,6 +94,7 @@
         <div class="toolbar">
           <label class="select-all"><input type="checkbox" id="select-all"> すべて選択</label>
           <span class="hint" id="sel-count">0 台を選択中</span>
+          <button id="open-report" class="link-btn" type="button">利用レポート</button>
           <div class="toolbar-actions">
             <button id="bulk-edit" class="btn btn-primary" type="button" disabled>設定を変更</button>
             <button id="bulk-copy" class="btn btn-tonal" type="button" disabled>ほかの端末の設定をコピー</button>
@@ -103,6 +104,12 @@
               <option value="60">60分 開始</option>
               <option value="120">120分 開始</option>
               <option value="stop">終了する</option>
+            </select>
+            <select id="bulk-extend" class="btn-select" disabled title="1日の利用時間の上限を、今日だけ延ばします">
+              <option value="">今日だけ延長…</option>
+              <option value="15">+15分</option>
+              <option value="30">+30分</option>
+              <option value="60">+60分</option>
             </select>
             <button id="bulk-remove" class="btn btn-tonal danger-text" type="button" disabled>接続を解除</button>
           </div>
@@ -126,7 +133,7 @@
         </div>
         <div id="empty" class="empty" hidden>
           <p>まだ端末が接続されていません。</p>
-          <p class="hint">「端末を追加」でペアリングコードを発行し、子供の端末の Y-FILTER. で入力してください。</p>
+          <p class="hint">「端末を追加」でペアリングコードを発行し、管理したい端末（子供・生徒・社員の端末など）の Y-FILTER. で入力してください。</p>
         </div>
       </div>
     </main>
@@ -137,7 +144,7 @@
   <dialog id="dlg-pair" class="dlg">
     <div class="dlg-head"><h2>端末を追加</h2><button class="dlg-x" data-close type="button" aria-label="閉じる">×</button></div>
     <div class="dlg-body">
-      <p class="hint">子供の端末の Y-FILTER. で「設定 → セキュリティ → Y-FILTER. Systems」（または最初の welcome 画面）を開き、このコードを入力してください。有効期限内なら何台でも登録できます。</p>
+      <p class="hint">管理したい端末の Y-FILTER. で「設定 → セキュリティ → Y-FILTER. Systems」（または最初の welcome 画面）を開き、このコードを入力してください。有効期限内なら何台でも登録できます。</p>
       <div class="pair-code" id="pair-code">----</div>
       <div class="pair-exp hint" id="pair-exp"></div>
       <div id="pair-msg" class="gate-msg"></div>
@@ -191,6 +198,9 @@
         <button id="detail-rename" class="btn btn-tonal" type="button">変更</button>
       </div>
       <div class="kv-list" id="detail-kv" style="margin-top:16px;"></div>
+      <div class="field-label" style="margin-top:16px;">直近 7 日の利用時間</div>
+      <div class="usage-week" id="detail-usage"></div>
+      <p class="hint" id="detail-usage-empty" hidden>まだ記録がありません（端末の Y-FILTER. を v7 に更新すると記録されます）。</p>
       <div id="detail-diff" class="notice" hidden></div>
     </div>
     <div class="dlg-foot">
@@ -226,6 +236,18 @@
     </div>
     <div class="dlg-foot">
       <button id="team-leave" class="btn btn-tonal danger-text" type="button" hidden>このグループから抜ける</button>
+      <button class="btn btn-primary" data-close type="button">閉じる</button>
+    </div>
+  </dialog>
+
+  <!-- 利用レポート -->
+  <dialog id="dlg-report" class="dlg dlg-wide">
+    <div class="dlg-head"><h2>利用レポート（直近 7 日）</h2><button class="dlg-x" data-close type="button" aria-label="閉じる">×</button></div>
+    <div class="dlg-body">
+      <p class="hint">各端末が Web ページを見ていた時間です（操作がなく音も出ていない時間は含みません）。どのサイトを見たかは記録していません。赤い数字はその日の上限に達した日です。</p>
+      <div class="table-wrap"><table class="data report" id="report-table"></table></div>
+    </div>
+    <div class="dlg-foot">
       <button class="btn btn-primary" data-close type="button">閉じる</button>
     </div>
   </dialog>
