@@ -24,6 +24,8 @@ table.devices tr.selected td { background: var(--primary-soft); }
 .pill.off { color: var(--faint); background: var(--surface-2); }
 .pill.warn { color: #a15c00; background: #fff4d6; }
 .pill.info { color: var(--primary); background: var(--primary-soft); }
+.pill.danger { color: var(--danger); background: var(--danger-soft); margin-top: 4px; }
+.warn-notice { margin-bottom: 16px; border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
 .link-btn { border: 0; background: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
 .link-btn:hover { background: var(--primary-soft); }
 .empty { padding: 40px 20px; text-align: center; }

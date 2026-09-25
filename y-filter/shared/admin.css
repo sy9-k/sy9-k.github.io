@@ -249,3 +249,8 @@ a.list-row:hover { background: var(--surface-2); }
   .kv-list { grid-template-columns: 1fr; }
   .kv-list .v { border-top: 0; padding-top: 0; }
 }
+
+/* シークレットモードで動いていないときの警告（設定画面） */
+.card.incognito-warn { border-color: var(--danger); background: var(--danger-soft); }
+.card.incognito-warn .card-head h3 { color: var(--danger); }
+

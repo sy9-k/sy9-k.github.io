@@ -16,8 +16,6 @@ import {
 import { firebaseConfig } from "./firebase-config.js";
 import { NEWTAB_MODES, REMOTE_SETTING_KEYS, buildDefaultSettings, normalizeSettings } from "./shared/settings-schema.js";
 
-// 以前のブロックリスト（Firestore にまだ公開されていないときの予備）
-const LEGACY_CATEGORIES_URL = "https://sy9-k.github.io/y-filter-system/categories.json";
 const ONLINE_WINDOW_MS = 15 * 60 * 1000; // 端末は最長 10 分ごとに報告する
 const PAIRING_TTL_MS = 30 * 60 * 1000;
 const INVITE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -263,6 +261,7 @@ function selectTeam(teamId) {
   clearTeamSubscriptions();
   state.devices = [];
   state.requests = [];
+  state.allRequests = [];
   state.pairingCodes = [];
   state.invites = [];
   state.selected.clear();
@@ -274,6 +273,15 @@ function selectTeam(teamId) {
 
 function subscribeTeam() {
   const teamId = state.teamId;
+  const isOwner = teamId === state.user.uid;
+  const loaded = new Set();
+  const markLoaded = (name) => {
+    loaded.add(name);
+    // 必要な一覧がそろったら、古いデータを片付ける
+    if (["devices", "codes", "requests", ...(isOwner ? ["invites"] : [])].every((n) => loaded.has(n))) {
+      cleanupStaleData(teamId).catch(() => {});
+    }
+  };
   state.teamUnsubs.push(onSnapshot(
     query(collection(db, "devices"), where("ownerUid", "==", teamId)),
     (snap) => {
@@ -282,6 +290,7 @@ function subscribeTeam() {
       for (const id of [...state.selected]) if (!state.devices.some((d) => d.id === id)) state.selected.delete(id);
       renderDevices();
       renderRequests();
+      if (!snap.metadata?.fromCache) markLoaded("devices");
     },
     (err) => toast(`端末一覧を読み込めません: ${errText(err)}`, true)
   ));
@@ -290,28 +299,63 @@ function subscribeTeam() {
     (snap) => {
       state.pairingCodes = snap.docs.map((d) => ({ code: d.id, ...d.data() }));
       renderPairingList();
+      if (!snap.metadata?.fromCache) markLoaded("codes");
     },
     () => {}
   ));
+  // 返事済みのものも受け取り、表示は返事待ちだけにする（返事済みは片付けに使う）
   state.teamUnsubs.push(onSnapshot(
-    query(collection(db, "requests"), where("ownerUid", "==", teamId), where("status", "==", "pending")),
+    query(collection(db, "requests"), where("ownerUid", "==", teamId)),
     (snap) => {
-      state.requests = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+      state.allRequests = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      state.requests = state.allRequests.filter((r) => r.status === "pending")
         .sort((a, b) => toMillis(b.createdAt) - toMillis(a.createdAt));
       renderRequests();
+      if (!snap.metadata?.fromCache) markLoaded("requests");
     },
     (err) => toast(`リクエストを読み込めません: ${errText(err)}`, true)
   ));
   // 招待コードは持ち主だけが発行・一覧できる
-  if (teamId === state.user.uid) {
+  if (isOwner) {
     state.teamUnsubs.push(onSnapshot(
       query(collection(db, "teamInvites"), where("teamId", "==", teamId)),
       (snap) => {
         state.invites = snap.docs.map((d) => ({ code: d.id, ...d.data() }));
         if ($("dlg-team").open) renderInviteList();
+        if (!snap.metadata?.fromCache) markLoaded("invites");
       },
       () => {}
     ));
+  }
+}
+
+// ---------- 古いデータの片付け ----------
+// 管理コンソールを開いたときに、使い終わったデータを Firebase から削除する（管理グループごとに 10 分に 1 回まで）
+//   ・期限切れから 1 時間たったペアリングコード・招待コード
+//   ・返事から 7 日たったリクエスト（端末が返事を受け取れなかったもの）
+//   ・30 日たっても返事のないリクエスト、接続を解除した端末のリクエスト
+const CLEANUP_INTERVAL_MS = 10 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+const lastCleanupAt = new Map();
+
+async function cleanupStaleData(teamId) {
+  const now = Date.now();
+  if (teamId !== state.teamId || now - (lastCleanupAt.get(teamId) || 0) < CLEANUP_INTERVAL_MS) return;
+  lastCleanupAt.set(teamId, now);
+  const deviceIds = new Set(state.devices.map((d) => d.id));
+  const refs = [
+    ...state.pairingCodes.filter((p) => toMillis(p.expiresAt) < now - 60 * 60 * 1000).map((p) => doc(db, "pairingCodes", p.code)),
+    ...state.invites.filter((i) => toMillis(i.expiresAt) < now - 60 * 60 * 1000).map((i) => doc(db, "teamInvites", i.code)),
+    ...(state.allRequests || []).filter((r) => {
+      const created = toMillis(r.createdAt);
+      if (r.status !== "pending") return toMillis(r.decidedAt || r.createdAt) < now - 7 * DAY_MS;
+      return created < now - 30 * DAY_MS || (!deviceIds.has(r.deviceId) && created < now - DAY_MS);
+    }).map((r) => doc(db, "requests", r.id))
+  ];
+  for (let i = 0; i < refs.length; i += 400) {
+    const batch = writeBatch(db);
+    refs.slice(i, i + 400).forEach((ref) => batch.delete(ref));
+    await batch.commit();
   }
 }
 
@@ -478,22 +522,10 @@ function parseCategoryData(text) {
   }
 }
 
-async function fetchLegacyCategories() {
-  return parseCategoryData(await fetch(LEGACY_CATEGORIES_URL, { cache: "no-store" }).then((r) => r.text()));
-}
-
 async function loadCategories() {
   try {
     const snap = await getDoc(doc(db, "config", "categories"));
-    if (snap.exists()) {
-      state.categories = parseCategoryData(snap.data().json);
-      return;
-    }
-  } catch (e) {
-    // 予備の取得先を使う
-  }
-  try {
-    state.categories = await fetchLegacyCategories();
+    state.categories = snap.exists() ? parseCategoryData(snap.data().json) : {};
   } catch (e) {
     state.categories = {};
   }
@@ -505,18 +537,20 @@ function renderDevices() {
   const rows = $("device-rows");
   rows.replaceChildren();
   let online = 0, pending = 0;
+  const noIncognito = [];
   for (const d of state.devices) {
     const st = deviceStatus(d);
     if (st.online) online++;
     if (st.pending) pending++;
     const info = d.reported?.info || {};
     const usage = usageText(d);
+    if (info.incognitoAllowed === false) noIncognito.push(d);
     const tr = document.createElement("tr");
     tr.classList.toggle("selected", state.selected.has(d.id));
     tr.innerHTML = `
       <td class="cb"><input type="checkbox" ${state.selected.has(d.id) ? "checked" : ""} aria-label="選択"></td>
       <td><div class="dev-name">${escapeHtml(d.name || "名前なし")}</div><div class="dev-sub">${escapeHtml(d.id.slice(0, 10))}…</div></td>
-      <td><span class="pill ${st.online ? "on" : "off"}">${st.online ? "オンライン" : "オフライン"}</span></td>
+      <td><span class="pill ${st.online ? "on" : "off"}">${st.online ? "オンライン" : "オフライン"}</span>${info.incognitoAllowed === false ? ' <span class="pill danger" title="シークレットウィンドウではフィルターがかかりません">シークレット未対策</span>' : ""}</td>
       <td>${st.pending ? '<span class="pill warn">反映待ち</span>' : st.changed ? '<span class="pill info">端末側で変更あり</span>' : '<span class="pill on">最新</span>'}</td>
       <td class="usage">${usage ? escapeHtml(usage) : '<span class="hint">-</span>'}</td>
       <td>${escapeHtml(timeAgo(st.lastSeen))}</td>
@@ -531,6 +565,12 @@ function renderDevices() {
     rows.appendChild(tr);
   }
   show("empty", state.devices.length === 0);
+  show("incognito-notice", noIncognito.length > 0);
+  $("incognito-notice").textContent = noIncognito.length
+    ? `${noIncognito.map((d) => d.name || "名前なし").join("、")} では、シークレットモードで Y-FILTER. が動いていません（シークレットウィンドウではフィルターがかかりません）。`
+      + "その端末の chrome://extensions で Y-FILTER. の「詳細」を開き、「シークレット モードでの実行を許可する」をオンにしてください。"
+      + "シークレットモード自体を使えなくすることもできます（y-filter リポジトリの docs/SYSTEMS_SETUP_JA.md「シークレットモード対策」）。"
+    : "";
   $("sum-total").textContent = `${state.devices.length} 台`;
   $("sum-online").textContent = `${online} 台`;
   $("sum-pending").textContent = `${pending} 台`;
@@ -909,7 +949,10 @@ function openDetail(id) {
     ["接続した日時", escapeHtml(d.pairedAt ? new Date(toMillis(d.pairedAt)).toLocaleString() : "-")],
     ["配信番号（反映済み / 最新）", `${Number(d.reported?.appliedRev || 0)} / ${Number(d.settingsRev || 0)}`],
     ["OS", escapeHtml(OS_LABEL[info.os] || info.os || "-")],
-    ["Y-FILTER のバージョン", escapeHtml(info.extensionVersion || "-")]
+    ["Y-FILTER のバージョン", escapeHtml(info.extensionVersion || "-")],
+    ["シークレットモード", info.incognitoAllowed === false
+      ? '<span class="danger-text">Y-FILTER. が動いていません（拡張機能の詳細で許可が必要）</span>'
+      : info.incognitoAllowed === true ? "Y-FILTER. が動いています" : "-"]
   ];
   if (d.settingsUpdatedBy) rows.push(["最後に配信した人", escapeHtml(d.settingsUpdatedBy)]);
   if (info.assetId) rows.push(["資産 ID", escapeHtml(info.assetId)]);
