@@ -66,12 +66,68 @@ table.devices tr.selected td { background: var(--primary-soft); }
 .ed-field select, .ed-field input[type="text"], .ed-field input[type="time"] { width: auto; min-width: 200px; }
 .ed-field textarea { min-height: 90px; }
 
+.topbar { flex-wrap: wrap; }
+.topbar-actions { align-items: center; }
+.page { max-width: 1180px; }
+
+/* 表示の切り替え（端末 / ブロックリスト） */
+.views { display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: var(--surface-2); }
+.view-btn { border: 0; background: none; padding: 7px 14px; border-radius: 9px; font: 600 13px var(--font); color: var(--muted); cursor: pointer; }
+.view-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.signin-terms { margin-top: 14px; font-size: 12px; }
+.signin-terms a { color: var(--primary); }
+.stat-value[data-state="warn"] { color: #a15c00; }
+
+/* リクエスト */
+.requests-card { margin-bottom: 16px; border-color: #f0c36a; }
+.request-list { display: flex; flex-direction: column; }
+.request-row { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--border); }
+.request-main { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.request-domain { font-weight: 700; font-size: 15px; }
+.request-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 520px; text-decoration: none; }
+.request-url:hover { text-decoration: underline; }
+.request-message { margin-top: 4px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); font-size: 13px; }
+.request-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; flex: none; }
+td.usage { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* 管理者 */
+.member-list { display: flex; flex-direction: column; gap: 6px; }
+.member-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; }
+.member-main { min-width: 0; }
+.member-row .pill { margin-left: 6px; }
+.member-row .pill::before { display: none; }
+.invite-code { font: 800 22px/1.2 var(--mono); letter-spacing: 0.12em; color: var(--primary); }
+input.num { width: 90px; min-width: 0 !important; }
+
+/* ブロックリスト */
+.bl-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+#bl-status { margin-bottom: 14px; }
+#bl-status.dirty { border-color: var(--primary); }
+.bl-layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 16px; align-items: start; }
+.bl-side { display: flex; flex-direction: column; max-height: calc(100vh - 220px); }
+.bl-side-head { display: flex; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border); }
+.bl-side-head input { flex: 1; min-width: 0; }
+.bl-list { overflow: auto; padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+.bl-item { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; border: 0; background: none; text-align: left; padding: 9px 12px; border-radius: 10px; cursor: pointer; color: var(--text); font: 13.5px var(--font); }
+.bl-item:hover { background: var(--surface-2); }
+.bl-item.active { background: var(--primary-soft); }
+.bl-item-name { font-weight: 600; }
+.bl-editor { padding: 18px 20px; }
+#bl-form > * + * { margin-top: 8px; }
+#bl-form .field-label { margin-top: 16px; }
+#bl-domains, #bl-keywords { min-height: 220px; font-family: var(--mono); font-size: 12.5px; }
+
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; z-index: 50; padding: 12px 18px; border-radius: 12px; background: #141821; color: #fff; font-size: 13px; box-shadow: 0 12px 40px rgba(0,0,0,0.25); transition: opacity 180ms ease, transform 180ms ease; max-width: calc(100vw - 32px); }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .toast.error { background: var(--danger); }
 
 @media (max-width: 860px) {
   .toolbar-actions { margin-left: 0; }
+  .bl-layout { grid-template-columns: 1fr; }
+  .bl-side { max-height: 320px; }
+  .request-row { flex-direction: column; }
+  .request-actions { justify-content: flex-start; }
+  .views { order: 3; }
   .ed-field { flex-direction: column; }
   .ed-field select, .ed-field input[type="text"] { width: 100%; }
 }

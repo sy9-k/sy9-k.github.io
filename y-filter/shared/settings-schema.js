@@ -31,15 +31,19 @@ export const REMOTE_SETTING_KEYS = Object.freeze([
   "blockedExtensions",
   "newTabConfig",
   "blockPageStyle",
-  "adBlockBadge"
+  "adBlockBadge",
+  "dailyLimit"
 ]);
+
+// 1 日の利用時間の上限（分）。平日と土日で分けられる
+export const DAILY_LIMIT_MAX_MINUTES = 24 * 60;
 
 export const DEFAULT_SETTINGS = Object.freeze({
   blockRules: [],
   blockKeywords: [],
   enabledCategories: [],
   timeConfig: { enabled: false, start: "21:00", end: "07:00" },
-  allowList: ["search3958.github.io"],
+  allowList: ["search3958.github.io", "sy9-k.github.io"],
   uiMode: "admin",
   adBlockEnabled: true,
   adBlockLevel: "medium",
@@ -59,7 +63,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
   blockedExtensions: ["exe", "msi"],
   newTabConfig: { enabled: false, agreed: false, mode: "normal" },
   blockPageStyle: "modern",
-  adBlockBadge: false
+  adBlockBadge: false,
+  dailyLimit: { enabled: false, weekday: 120, weekend: 180 }
 });
 
 function isObject(value) {
@@ -147,6 +152,27 @@ function normalizeTimeConfig(value) {
   };
 }
 
+function normalizeLimitMinutes(value, fallback) {
+  const n = normalizeNumber(value, fallback);
+  return Math.min(DAILY_LIMIT_MAX_MINUTES, Math.max(0, n));
+}
+
+export function normalizeDailyLimit(value) {
+  const src = isObject(value) ? value : {};
+  return {
+    enabled: normalizeBoolean(src.enabled, false),
+    weekday: normalizeLimitMinutes(src.weekday, 120),
+    weekend: normalizeLimitMinutes(src.weekend, 180)
+  };
+}
+
+// 今日の上限（分）。土日は weekend、それ以外は weekday
+export function dailyLimitMinutesFor(limit, date = new Date()) {
+  const cfg = normalizeDailyLimit(limit);
+  const day = date.getDay();
+  return day === 0 || day === 6 ? cfg.weekend : cfg.weekday;
+}
+
 function normalizeNewTabConfig(value) {
   const src = isObject(value) ? value : {};
   const rawMode = normalizeString(String(src.mode || "")).toLowerCase();
@@ -165,7 +191,7 @@ export function buildDefaultSettings() {
     blockKeywords: [],
     enabledCategories: [],
     timeConfig: { enabled: false, start: "21:00", end: "07:00" },
-    allowList: ["search3958.github.io"],
+    allowList: ["search3958.github.io", "sy9-k.github.io"],
     uiMode: "admin",
     adBlockEnabled: true,
     adBlockLevel: "medium",
@@ -185,7 +211,8 @@ export function buildDefaultSettings() {
     blockedExtensions: ["exe", "msi"],
     newTabConfig: { enabled: false, agreed: false, mode: "normal" },
     blockPageStyle: "modern",
-    adBlockBadge: false
+    adBlockBadge: false,
+    dailyLimit: { enabled: false, weekday: 120, weekend: 180 }
   };
 }
 
@@ -218,6 +245,7 @@ export function normalizeSettings(raw = {}) {
   out.newTabConfig = normalizeNewTabConfig(src.newTabConfig);
   out.blockPageStyle = ["modern", "classic", "kids"].includes(src.blockPageStyle) ? src.blockPageStyle : "modern";
   out.adBlockBadge = normalizeBoolean(src.adBlockBadge, false);
+  out.dailyLimit = normalizeDailyLimit(src.dailyLimit);
 
   return out;
 }

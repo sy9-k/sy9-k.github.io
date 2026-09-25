@@ -39,6 +39,7 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.2c0-.7-.1-1.3-.2-1.9H12v3.6h5.1a4.4 4.4 0 0 1-1.9 2.9v2.4h3.1c1.8-1.7 2.7-4.1 2.7-7z" fill="#fff" stroke="none"/><path d="M12 21.5c2.6 0 4.7-.9 6.3-2.3l-3.1-2.4c-.9.6-2 .9-3.2.9-2.5 0-4.5-1.7-5.3-3.9H3.5v2.5a9.5 9.5 0 0 0 8.5 5.2z" fill="#fff" stroke="none" opacity=".8"/></svg>
         Google でログイン
       </button>
+      <p class="hint signin-terms">ログインすると、<a href="shared/systems-terms.txt" target="_blank" rel="noopener">Y-FILTER. Systems 利用規約</a>に同意したことになります。</p>
       <div id="signin-msg" class="gate-msg"></div>
     </div>
   </div>
@@ -50,17 +51,24 @@
         <img class="brand-mark" src="shared/icon.svg" alt="">
         <div><div class="brand-name">Y-FILTER. Systems</div><div class="brand-sub">Management Console</div></div>
       </div>
+      <nav class="views" aria-label="表示の切り替え">
+        <button class="view-btn active" type="button" data-view="devices">端末</button>
+        <button class="view-btn" type="button" data-view="blocklist" id="nav-blocklist" hidden>ブロックリスト</button>
+      </nav>
       <div class="topbar-actions">
+        <select id="team-select" class="btn-select" aria-label="管理グループ" hidden></select>
+        <button id="team-btn" class="btn btn-tonal" type="button">管理者</button>
         <span class="user" id="user-email"></span>
         <button id="signout-btn" class="btn btn-tonal" type="button">ログアウト</button>
       </div>
     </header>
 
-    <main class="page">
+    <!-- 端末 -->
+    <main class="page" id="view-devices">
       <div class="page-head">
         <div class="section-head" style="margin:0;">
           <h1>端末</h1>
-          <p>このアカウントに接続している端末です。選んだ端末の設定をまとめて変更できます。</p>
+          <p id="devices-lead">このグループに接続している端末です。選んだ端末の設定をまとめて変更できます。</p>
         </div>
         <button id="add-device" class="btn btn-primary" type="button">
           <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>端末を追加
@@ -71,7 +79,16 @@
         <div class="stat"><span class="stat-label">接続中の端末</span><span class="stat-value" id="sum-total">0 台</span></div>
         <div class="stat"><span class="stat-label">オンライン</span><span class="stat-value" id="sum-online">0 台</span></div>
         <div class="stat"><span class="stat-label">反映待ち</span><span class="stat-value" id="sum-pending">0 台</span></div>
-        <div class="stat"><span class="stat-label">端末側で変更あり</span><span class="stat-value" id="sum-changed">0 台</span></div>
+        <div class="stat"><span class="stat-label">リクエスト</span><span class="stat-value" id="sum-requests">0 件</span></div>
+      </div>
+
+      <!-- 「このサイトを開きたい」リクエスト -->
+      <div class="card requests-card" id="requests-card" hidden>
+        <div class="card-head">
+          <h3>サイトを開きたいリクエスト</h3>
+          <p>ブロック画面から送られたリクエストです。許可すると、そのサイト（ドメイン）が端末の許可リストに入ります。</p>
+        </div>
+        <div id="request-rows" class="request-list"></div>
       </div>
 
       <div class="card">
@@ -99,6 +116,7 @@
                 <th>端末名</th>
                 <th>状態</th>
                 <th>設定</th>
+                <th>今日の利用</th>
                 <th>最終接続</th>
                 <th>端末</th>
                 <th></th>
@@ -110,6 +128,50 @@
         <div id="empty" class="empty" hidden>
           <p>まだ端末が接続されていません。</p>
           <p class="hint">「端末を追加」でペアリングコードを発行し、子供の端末の Y-FILTER. で入力してください。</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- ブロックリスト（開発者のみ） -->
+    <main class="page" id="view-blocklist" hidden>
+      <div class="page-head">
+        <div class="section-head" style="margin:0;">
+          <h1>ブロックリスト</h1>
+          <p>すべての Y-FILTER. が使うカテゴリ（ドメインとキーワード）です。保存すると、各端末に 30 分以内に反映されます。</p>
+        </div>
+        <div class="bl-actions">
+          <button id="bl-history" class="btn btn-tonal" type="button">履歴</button>
+          <button id="bl-import" class="btn btn-tonal" type="button">GitHub から取り込む</button>
+          <button id="bl-revert" class="btn btn-tonal" type="button" disabled>変更を取り消す</button>
+          <button id="bl-save" class="btn btn-primary" type="button" disabled>保存して公開</button>
+        </div>
+      </div>
+      <div class="notice" id="bl-status"></div>
+      <div class="bl-layout">
+        <div class="card bl-side">
+          <div class="bl-side-head">
+            <input type="search" id="bl-filter" placeholder="カテゴリ・ドメインを検索">
+            <button id="bl-add" class="btn btn-tonal" type="button">追加</button>
+          </div>
+          <div id="bl-list" class="bl-list"></div>
+        </div>
+        <div class="card bl-editor" id="bl-editor">
+          <div class="empty" id="bl-empty"><p class="hint">左からカテゴリを選んでください。</p></div>
+          <div id="bl-form" hidden>
+            <label class="field-label" for="bl-name">カテゴリ名</label>
+            <div class="inline">
+              <input type="text" id="bl-name" class="grow" maxlength="60">
+              <button id="bl-up" class="btn btn-tonal" type="button" title="上へ">↑</button>
+              <button id="bl-down" class="btn btn-tonal" type="button" title="下へ">↓</button>
+              <button id="bl-delete" class="btn btn-tonal danger-text" type="button">削除</button>
+            </div>
+            <p class="hint">名前を変えると、そのカテゴリを選んでいた端末では選択が外れます。</p>
+            <label class="field-label" for="bl-domains">ドメイン <span class="hint" id="bl-domains-count"></span></label>
+            <textarea id="bl-domains" spellcheck="false" placeholder="example.com（1行に1件。サブドメインも対象になります）"></textarea>
+            <label class="field-label" for="bl-keywords">キーワード <span class="hint" id="bl-keywords-count"></span></label>
+            <textarea id="bl-keywords" spellcheck="false" placeholder="1行に1件。ページ本文・URL・検索語に含まれるとブロックします（正規表現として扱います）"></textarea>
+            <div class="gate-msg" id="bl-form-msg"></div>
+          </div>
         </div>
       </div>
     </main>
@@ -177,6 +239,49 @@
     </div>
     <div class="dlg-foot">
       <button id="detail-adopt" class="btn btn-tonal" type="button" hidden>端末の設定を配信設定として取り込む</button>
+      <button class="btn btn-primary" data-close type="button">閉じる</button>
+    </div>
+  </dialog>
+
+  <!-- 管理者（共同管理者） -->
+  <dialog id="dlg-team" class="dlg">
+    <div class="dlg-head"><h2>管理者</h2><button class="dlg-x" data-close type="button" aria-label="閉じる">×</button></div>
+    <div class="dlg-body">
+      <p class="hint" id="team-lead"></p>
+      <div id="team-members" class="member-list"></div>
+
+      <div id="team-invite-box" hidden>
+        <div class="field-label" style="margin-top:18px;">共同管理者を招待</div>
+        <p class="hint">招待コードを相手に伝えてください。相手がこの管理コンソールに Google でログインし、「招待コードで参加」に入力すると、このグループの端末を一緒に管理できるようになります（24 時間有効・1 回だけ使えます）。</p>
+        <div class="inline">
+          <button id="team-invite-new" class="btn btn-tonal" type="button">招待コードを発行</button>
+          <span class="invite-code" id="team-invite-code"></span>
+        </div>
+        <div id="team-invite-list" class="log" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="field-label" style="margin-top:18px;">招待コードで参加</div>
+      <p class="hint">ほかの人のグループに招待されたときは、ここにコードを入力します。</p>
+      <div class="inline">
+        <input type="text" id="team-join-code" class="grow mono" maxlength="9" placeholder="XXXX-XXXX" autocomplete="off">
+        <button id="team-join" class="btn btn-primary" type="button">参加</button>
+      </div>
+      <div id="team-msg" class="gate-msg"></div>
+    </div>
+    <div class="dlg-foot">
+      <button id="team-leave" class="btn btn-tonal danger-text" type="button" hidden>このグループから抜ける</button>
+      <button class="btn btn-primary" data-close type="button">閉じる</button>
+    </div>
+  </dialog>
+
+  <!-- ブロックリストの履歴 -->
+  <dialog id="dlg-history" class="dlg">
+    <div class="dlg-head"><h2>ブロックリストの履歴</h2><button class="dlg-x" data-close type="button" aria-label="閉じる">×</button></div>
+    <div class="dlg-body">
+      <p class="hint">保存した内容の履歴です（新しい順に 20 件）。「読み込む」を押すと編集画面に読み込みます（保存するまで公開されません）。</p>
+      <div id="history-list" class="log"></div>
+    </div>
+    <div class="dlg-foot">
       <button class="btn btn-primary" data-close type="button">閉じる</button>
     </div>
   </dialog>
