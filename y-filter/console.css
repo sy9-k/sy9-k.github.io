@@ -1,4 +1,18 @@
 /* 管理コンソール固有のスタイル（共通部分は shared/admin.css） */
+
+/* 配色: SK Hub Systems（SK の六角形アイコンの青）。shared/admin.css の Y-FILTER. の金色を上書きする */
+:root {
+  --bg: #f3f6fb;
+  --surface-2: #f6f8fc;
+  --border: #e1e7f0;
+  --border-strong: #cad4e3;
+  --primary: #1a56db;
+  --primary-hover: #1646b3;
+  --primary-soft: #e8f0ff;
+  --primary-ring: rgba(26, 86, 219, 0.22);
+}
+.notice { border-color: #cddcff; }
+
 [hidden] { display: none !important; }
 .btn svg { width: 16px; height: 16px; }
 #signin-btn svg { stroke: none; }

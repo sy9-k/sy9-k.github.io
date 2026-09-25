@@ -88,6 +88,9 @@
                 "/about/",
             POLICIES_URL:
                 "/policies/",
+            // 右下に出すアイコン
+            ICON_URL:
+                "/assets/sk-32.png",
             UUID_KEY:
                 "skhub_uuid",
             TERMS_ACCEPTED_KEY:
@@ -460,8 +463,8 @@
                     color:#000;
                 }
                 .RedCheckOSS-consent-card__button--agree{
-                    background:#08F480;
-                    color:#000;
+                    background:#2563eb;
+                    color:#fff;
                 }
                 @media(max-width:600px){
                     .RedCheckOSS-consent-card{right:10px;bottom:10px;max-width:calc(100vw - 20px)}
@@ -635,11 +638,11 @@
                     border:0;
                     color:#fff9;
                 }
-                .RedCheckOSS-info-widget__toggle svg{
+                .RedCheckOSS-info-widget__toggle img{
                     display:block;
                     width:22px;
                     height:22px;
-                    fill:currentColor;
+                    border-radius:6px;
                 }
                 .RedCheckOSS-info-widget__links{
                     display:flex;
@@ -698,53 +701,13 @@
             const toggle = document.createElement("div");
             toggle.className = "RedCheckOSS-info-widget__toggle";
             toggle.setAttribute("aria-hidden", "true");
-            toggle.innerHTML = `
-                <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <g clip-path="url(#clip0_57_48)">
-                        <path d="M0 0H12V12L0 7V0Z" fill="url(#paint0_linear_57_48_red_flag)" />
-                        <path d="M24 24H12V12L24 17V24Z" fill="url(#paint1_linear_57_48_red_flag)" />
-                        <path d="M12 0L24 5V12H12V0Z" fill="url(#paint2_linear_57_48_red_flag)" />
-                        <path d="M12 7L24 12H12V7Z" fill="url(#paint3_linear_57_48_red_flag)" />
-                        <path d="M12 24L0 19V12H12V24Z" fill="url(#paint4_linear_57_48_red_flag)" />
-                        <path d="M12 17L0 12H12V17Z" fill="url(#paint5_linear_57_48_red_flag)" />
-                    </g>
-                    <defs>
-                        <linearGradient id="paint0_linear_57_48_red_flag" x1="0" y1="6" x2="12" y2="6" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white" stop-opacity="0.34" />
-                            <stop offset="1" stop-color="white" stop-opacity="0.83" />
-                        </linearGradient>
-                        <linearGradient id="paint1_linear_57_48_red_flag" x1="24" y1="18" x2="12" y2="18" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white" stop-opacity="0.34" />
-                            <stop offset="1" stop-color="white" stop-opacity="0.83" />
-                        </linearGradient>
-                        <linearGradient id="paint2_linear_57_48_red_flag" x1="12" y1="6" x2="24" y2="6" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white" stop-opacity="0.34" />
-                            <stop offset="1" stop-color="white" stop-opacity="0.83" />
-                        </linearGradient>
-                        <linearGradient id="paint3_linear_57_48_red_flag" x1="12" y1="9.5" x2="24" y2="9.5" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white" stop-opacity="0.34" />
-                            <stop offset="1" stop-color="white" stop-opacity="0.83" />
-                        </linearGradient>
-                        <linearGradient id="paint4_linear_57_48_red_flag" x1="12" y1="18" x2="0" y2="18" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white" stop-opacity="0.34" />
-                            <stop offset="1" stop-color="white" stop-opacity="0.83" />
-                        </linearGradient>
-                        <linearGradient id="paint5_linear_57_48_red_flag" x1="12" y1="14.5" x2="0" y2="14.5" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white" stop-opacity="0.34" />
-                            <stop offset="1" stop-color="white" stop-opacity="0.83" />
-                        </linearGradient>
-                        <clipPath id="clip0_57_48">
-                            <rect width="24" height="24" fill="white" />
-                        </clipPath>
-                    </defs>
-                </svg>
-            `;
+            // 右下のアイコン（SK の小さいアイコン）
+            const toggleIcon = document.createElement("img");
+            toggleIcon.src = this.CONFIG.ICON_URL;
+            toggleIcon.alt = "";
+            toggleIcon.width = 22;
+            toggleIcon.height = 22;
+            toggle.appendChild(toggleIcon);
 
             const links = document.createElement("div");
             links.className = "RedCheckOSS-info-widget__links";

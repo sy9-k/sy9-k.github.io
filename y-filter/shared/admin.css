@@ -1,17 +1,18 @@
 /* Y-FILTER. 管理系ページ共通スタイル（options / remote / diagnostics / policy） */
+/* 配色は Y-FILTER. の盾アイコン（金・琥珀色）に合わせる。管理コンソール（SK Hub Systems）は console.css で青に上書きする */
 :root {
-  --bg: #f3f4f8;
+  --bg: #f5f3ee;
   --surface: #ffffff;
-  --surface-2: #f7f8fb;
-  --border: #e3e6ee;
-  --border-strong: #cfd4e0;
+  --surface-2: #faf8f4;
+  --border: #e7e2d8;
+  --border-strong: #d5cdbf;
   --text: #141821;
   --muted: #5c6475;
   --faint: #8a91a1;
-  --primary: #2a57b7;
-  --primary-hover: #234a9d;
-  --primary-soft: #eaf0ff;
-  --primary-ring: rgba(42, 87, 183, 0.22);
+  --primary: #9a5a00;
+  --primary-hover: #7f4a00;
+  --primary-soft: #fff4d9;
+  --primary-ring: rgba(214, 150, 30, 0.22);
   --ok: #1b7f3b;
   --ok-soft: #e6f5ec;
   --danger: #b3261e;
@@ -180,7 +181,7 @@ table.data td.mono { word-break: break-all; }
 .count-row b { flex: none; color: var(--ok); font-variant-numeric: tabular-nums; }
 .log > .hint { font-family: var(--font); }
 
-.notice { padding: 14px 16px; border-radius: 12px; background: var(--primary-soft); border: 1px solid #cdd9ff; font-size: 13px; }
+.notice { padding: 14px 16px; border-radius: 12px; background: var(--primary-soft); border: 1px solid #f0dca8; font-size: 13px; }
 .notice.danger { background: var(--danger-soft); border-color: #f1c9c5; color: #6d1a14; }
 .notice h4 { font-size: 13.5px; margin-bottom: 6px; }
 .status-error { color: var(--danger); font-size: 12px; margin: 0; }
@@ -272,3 +273,7 @@ a.list-row:hover { background: var(--surface-2); }
 .usage-bar { width: 100%; max-width: 34px; border-radius: 6px 6px 2px 2px; background: var(--primary); min-height: 2px; }
 .usage-bar.over { background: var(--danger); }
 .usage-day b { font-size: 11px; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* 見出しの左に小さなアイコンを付ける（例: SK Hub Systems） */
+.with-mark { display: flex; align-items: center; gap: 8px; }
+.with-mark img { width: 20px; height: 20px; flex: none; }
