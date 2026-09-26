@@ -27,13 +27,21 @@ export const db = getFirestore(app);
 // ヘッダーに出す名前とアイコン（このブラウザの中だけに保存。site.js が読む）
 const HINT_KEY = "skhub_account";
 
+// 変えたら、同じページのヘッダー（site.js）に知らせて表示を更新してもらう
 function saveHint(user) {
   try {
     localStorage.setItem(HINT_KEY, JSON.stringify({ name: user.displayName || "", photo: user.photoURL || "" }));
   } catch (e) { /* 保存できなくても動く */ }
+  document.dispatchEvent(new CustomEvent("skhub:account"));
 }
 function clearHint() {
   try { localStorage.removeItem(HINT_KEY); } catch (e) { /* 同上 */ }
+  document.dispatchEvent(new CustomEvent("skhub:account"));
+}
+
+// サービスのページで、アカウントが使える（ready）と確かめたときに呼ぶ（ヘッダーにログイン中と出す）
+export function rememberAccount(user) {
+  saveHint(user);
 }
 
 function provider() {

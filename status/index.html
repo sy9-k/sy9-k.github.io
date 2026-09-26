@@ -6,11 +6,24 @@
   <title>システム稼働状況 | SK</title>
   <meta name="description" content="SK のサイトとプロダクト（SK Hub Systems・Y-FILTER.・MALU）のシステム稼働状況。">
   <meta name="theme-color" content="#ffffff">
+  <link rel="canonical" href="https://sy9-k.github.io/status/">
+  <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SK">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:title" content="システム稼働状況 | SK">
+  <meta property="og:description" content="SK のサイトとプロダクト（SK Hub Systems・Y-FILTER.・MALU）のシステム稼働状況。">
+  <meta property="og:url" content="https://sy9-k.github.io/status/">
+  <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+  <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
   <script src="/status/status.js" defer></script>
 </head>
@@ -42,7 +55,15 @@
     <section class="section" style="padding-top:0">
       <div class="wrap">
         <div class="status-summary" data-status-summary data-state="checking">
-          <span class="status-summary-icon" aria-hidden="true"></span>
+          <span class="status-orb" aria-hidden="true">
+            <span class="status-orb-ripple"></span><span class="status-orb-ripple"></span>
+            <span class="status-orb-ring"></span>
+            <span class="status-orb-core">
+              <svg class="orb-ok" viewBox="0 0 24 24"><path d="m5.5 12.5 4.2 4.2 8.8-9.4"/></svg>
+              <svg class="orb-slow" viewBox="0 0 24 24"><path d="M12 6.5v7M12 17.6v.1"/></svg>
+              <svg class="orb-down" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg>
+            </span>
+          </span>
           <div>
             <strong data-status-summary-text>確認しています…</strong>
             <small>最終確認: <span data-status-checked>-</span></small>
@@ -84,6 +105,14 @@
             </div>
             <div class="status-row" data-check="accesscheck">
               <div class="status-name"><strong>アクセスチェック</strong><small>サイト・MALU・管理コンソールの利用規約の同意とアクセス制限</small></div>
+              <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
+            </div>
+            <div class="status-row" data-check="login">
+              <div class="status-name"><strong>アカウントのログイン</strong><small>SK Hub Systems アカウント（Google ログイン・Firebase Authentication）</small></div>
+              <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
+            </div>
+            <div class="status-row" data-check="contact">
+              <div class="status-name"><strong>お問い合わせ</strong><small>お問い合わせフォームの受け付け</small></div>
               <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
             </div>
           </div>
@@ -137,7 +166,7 @@
         </div>
         <div>
           <h2>サポートと情報</h2>
-          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/credits/">Link &amp; Credit</a></li></ul>
+          <ul><li><a href="/support/">サポート記事</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/credits/">Link &amp; Credit</a></li><li><a href="/about/">私について</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li></ul>
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">SK</div>

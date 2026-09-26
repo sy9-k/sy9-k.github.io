@@ -85,8 +85,18 @@ table.devices tr.selected td { background: var(--primary-soft); }
 .ed-field select, .ed-field input[type="text"], .ed-field input[type="time"] { width: auto; min-width: 200px; }
 .ed-field textarea { min-height: 90px; }
 
-.topbar { flex-wrap: wrap; }
-.topbar-actions { align-items: center; }
+/* ヘッダー（サイト共通の見た目・高さ 52px で固定）。中身は管理コンソール用（console-header.js） */
+body { padding-top: 52px; }
+.gate { min-height: calc(100vh - 52px); }
+.site-header > a.hd-console-name { font-weight: 700; padding-right: 20px; margin-right: 8px; position: relative; }
+.site-header > a.hd-console-name::after { content: ""; position: absolute; right: 0; top: 50%; width: 1px; height: 16px; margin-top: -8px; background: rgba(0, 0, 0, .14); }
+.console-header .hd-logo-image img { width: 24px; height: 24px; }
+
+/* ページの見出し（どの管理コンソールかを小さく添える） */
+.console-kicker { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--primary); letter-spacing: 0.02em; }
+.console-kicker img { width: 14px; height: 14px; }
+.page-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.page-actions .btn, .page-actions .btn-select { border-radius: 999px; }
 .page { max-width: 1180px; }
 
 .signin-terms { margin-top: 14px; font-size: 12px; }

@@ -3,17 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>サポート | SK</title>
-  <meta name="description" content="SK からのお知らせと、Y-FILTER.・MALU・SK Hub Systems・SK's Lab の使い方や困ったときの記事。">
+  <title>お問い合わせの受信箱 | SK</title>
+  <meta name="description" content="SK へのお問い合わせの受信箱（開発者用）。">
+  <meta name="robots" content="noindex">
   <meta name="theme-color" content="#ffffff">
-  <link rel="canonical" href="https://sy9-k.github.io/support/">
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SK">
   <meta property="og:locale" content="ja_JP">
-  <meta property="og:title" content="サポート | SK">
-  <meta property="og:description" content="SK からのお知らせと、Y-FILTER.・MALU・SK Hub Systems・SK's Lab の使い方や困ったときの記事。">
-  <meta property="og:url" content="https://sy9-k.github.io/support/">
+  <meta property="og:title" content="お問い合わせの受信箱 | SK">
+  <meta property="og:description" content="SK へのお問い合わせの受信箱（開発者用）。">
   <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -25,7 +24,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
   <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
-  <script src="/support/help.js" defer></script>
+  <script type="module" src="/inbox/inbox.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">本文へ移動</a>
@@ -44,62 +43,44 @@
   <div class="hd-backdrop" id="hd-backdrop"></div>
 
   <main id="main">
-    <section class="p-hero band band--plain help-hero">
+    <section class="p-hero band band--plain inbox-hero">
       <div class="wrap">
-        <span class="eyebrow">Support</span>
-        <h1>サポート</h1>
-        <p class="lead">お知らせと、使い方・困ったときの記事をまとめています。</p>
-        <label class="faq-search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input type="search" placeholder="記事を検索（例: ポップアップ、ペアリング、同意）" data-help-search aria-label="記事を検索">
-        </label>
+        <span class="eyebrow">Inbox</span>
+        <h1>お問い合わせの受信箱</h1>
+        <p class="lead">お問い合わせフォームから届いた内容です。開発者の SK Hub Systems アカウントだけが読めます。</p>
       </div>
     </section>
 
-    <section class="section help" style="padding-top:0" data-help>
+    <section class="section" style="padding-top:0" data-inbox>
       <div class="wrap">
-        <!-- 記事一覧 -->
-        <div data-help-list-view>
-          <div class="help-toolbar">
-            <div class="help-tabs" role="tablist" aria-label="記事の種類">
-              <button type="button" role="tab" data-help-type="" aria-selected="true">すべて</button>
-              <button type="button" role="tab" data-help-type="news" aria-selected="false">お知らせ</button>
-              <button type="button" role="tab" data-help-type="guide" aria-selected="false">サポート記事</button>
-            </div>
-            <div class="help-cats" data-help-cats aria-label="カテゴリ"></div>
-          </div>
-          <p class="help-count" data-help-count aria-live="polite"></p>
-          <div class="help-list" data-help-list>
-            <p class="update-empty">読み込み中…</p>
-          </div>
-          <noscript><p>記事の一覧は <a href="/support/articles.json">articles.json</a> でも読めます。</p></noscript>
+        <div class="card acct-loading" data-inbox-view="loading">読み込み中…</div>
+
+        <div class="card inbox-gate" data-inbox-view="signed-out" hidden>
+          <h2>ログインしてください</h2>
+          <p>開発者の SK Hub Systems アカウントでログインすると、お問い合わせを読めます。</p>
+          <button class="acct-google" type="button" data-inbox-signin>
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+            Google でログイン
+          </button>
+          <p class="acct-msg" data-inbox-msg role="alert"></p>
         </div>
 
-        <!-- 記事 -->
-        <article class="help-article" data-help-article hidden></article>
-      </div>
-    </section>
+        <div class="card inbox-gate" data-inbox-view="denied" hidden>
+          <h2>このページは開発者専用です</h2>
+          <p>ログインしているアカウント（<span data-inbox-email></span>）には、お問い合わせを読む権限がありません。</p>
+          <div class="btn-row"><button class="btn btn-tonal" type="button" data-inbox-signout>別のアカウントでログイン</button></div>
+        </div>
 
-    <section class="section">
-      <div class="wrap">
-        <div class="grid-2 support-bottom">
-          <div class="card id-card" id="support-id">
-            <h2 style="font-size:20px;font-weight:800">あなたのサポートID</h2>
-            <p style="color:var(--muted);margin-top:8px;font-size:15px">お問い合わせのときに伝えていただくと、調査がスムーズになります。</p>
-            <div class="id-box">
-              <code data-support-id>読み込み中…</code>
-              <button class="btn btn-tonal" type="button" data-copy-id hidden>コピー</button>
+        <div data-inbox-view="ready" hidden>
+          <div class="inbox-toolbar">
+            <div class="help-tabs" role="tablist" aria-label="表示するお問い合わせ">
+              <button type="button" role="tab" data-inbox-filter="new" aria-selected="true">未対応 <span data-inbox-count="new"></span></button>
+              <button type="button" role="tab" data-inbox-filter="done" aria-selected="false">対応済み <span data-inbox-count="done"></span></button>
+              <button type="button" role="tab" data-inbox-filter="" aria-selected="false">すべて</button>
             </div>
+            <p class="inbox-hint">対応済みにしたものは 1 年後に、アクセスチェックの記録は 1 年を過ぎると、このページを開いたときに削除されます。</p>
           </div>
-          <div class="card support-contact">
-            <h2 style="font-size:20px;font-weight:800">解決しないときは</h2>
-            <ol>
-              <li><a href="/status/">システム稼働状況</a>と<a href="/support/?type=news">お知らせ</a>で、障害や変更がないか確認する</li>
-              <li>使っている端末・ブラウザと、起きたことをメモする</li>
-              <li>サポートIDを添えてお問い合わせする</li>
-            </ol>
-            <a class="btn btn-primary" href="/contact/">お問い合わせ</a>
-          </div>
+          <div class="inbox-list" data-inbox-list aria-live="polite"></div>
         </div>
       </div>
     </section>

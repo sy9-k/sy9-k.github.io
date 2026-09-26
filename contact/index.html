@@ -4,14 +4,28 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>お問い合わせ | SK</title>
-  <meta name="description" content="SK へのお問い合わせ。">
+  <meta name="description" content="SK への不具合の報告・ご質問・ご要望はこちらから。">
   <meta name="theme-color" content="#ffffff">
+  <link rel="canonical" href="https://sy9-k.github.io/contact/">
+  <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SK">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:title" content="お問い合わせ | SK">
+  <meta property="og:description" content="SK への不具合の報告・ご質問・ご要望はこちらから。">
+  <meta property="og:url" content="https://sy9-k.github.io/contact/">
+  <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+  <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
+  <script src="/contact/contact.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">本文へ移動</a>
@@ -34,35 +48,87 @@
       <div class="wrap">
         <span class="eyebrow">Contact</span>
         <h1>お問い合わせ</h1>
-        <p class="lead">不具合の報告、ご要望、ご質問は Google フォームから受け付けています。先に<a href="/support/">サポート</a>のよくある質問もご覧ください。</p>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="#" data-contact-form>お問い合わせフォームを開く</a>
-        </div>
+        <p class="lead">不具合の報告、ご質問、ご要望を受け付けています。送る前に、<a href="/support/">サポート</a>の記事で解決しないかもご覧ください。</p>
       </div>
     </section>
 
     <section class="section" style="padding-top:0">
-      <div class="wrap">
-        <div class="grid-2">
+      <div class="wrap contact-layout">
+        <form class="card contact-form" data-contact novalidate>
+          <fieldset class="contact-field">
+            <legend>お問い合わせの種類</legend>
+            <div class="contact-chips">
+              <label><input type="radio" name="kind" value="bug" checked><span>不具合の報告</span></label>
+              <label><input type="radio" name="kind" value="question"><span>質問</span></label>
+              <label><input type="radio" name="kind" value="request"><span>要望・アイデア</span></label>
+              <label><input type="radio" name="kind" value="data"><span>データの確認・削除</span></label>
+              <label><input type="radio" name="kind" value="other"><span>その他</span></label>
+            </div>
+          </fieldset>
+
+          <label class="contact-field">
+            <span class="contact-label">どれについてか</span>
+            <select name="product">
+              <option value="y-filter">Y-FILTER.</option>
+              <option value="malu">MALU</option>
+              <option value="hub">SK Hub Systems・管理コンソール</option>
+              <option value="account">SK Hub Systems アカウント</option>
+              <option value="lab">SK's Lab</option>
+              <option value="site">このサイト</option>
+              <option value="other">その他</option>
+            </select>
+          </label>
+
+          <label class="contact-field">
+            <span class="contact-label">内容 <small data-contact-count>0 / 2000</small></span>
+            <textarea name="message" rows="7" maxlength="2000" required placeholder="起きたこと、使っている端末とブラウザ（例: Chromebook の Chrome）、再現する手順などを書いてください。"></textarea>
+          </label>
+
+          <label class="contact-field">
+            <span class="contact-label">返信先のメールアドレス <small>（返信が必要なときだけ）</small></span>
+            <input type="email" name="email" maxlength="254" autocomplete="email" placeholder="example@example.com">
+          </label>
+
+          <!-- いたずら対策（人には見えない欄。入力されていたら送らない） -->
+          <label class="contact-trap" aria-hidden="true">ウェブサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+
+          <label class="contact-attach">
+            <input type="checkbox" name="attach" checked>
+            <span>サポートIDとブラウザの情報を添える <small>調査がスムーズになります（<code data-support-id>読み込み中…</code>）</small></span>
+          </label>
+
+          <p class="contact-note">送信した内容は SK Hub Systems に保存し、<a href="/policies/#sk-privacy">SK プライバシーポリシー</a>に従って、お問い合わせへの対応のためにだけ使います。</p>
+          <div class="btn-row">
+            <button class="btn btn-primary" type="submit" data-contact-submit>送信する</button>
+          </div>
+          <p class="acct-msg" data-contact-msg role="alert"></p>
+        </form>
+
+        <div class="card contact-done" data-contact-done hidden tabindex="-1">
+          <span class="tile-ico ti-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>
+          <h2>送信しました</h2>
+          <p>お問い合わせありがとうございます。内容を確認して、必要に応じてご連絡します。</p>
+          <p class="contact-receipt">受付番号 <code data-contact-receipt></code></p>
+          <div class="btn-row">
+            <a class="btn btn-tonal" href="/support/">サポートを見る</a>
+            <button class="btn btn-tonal" type="button" data-contact-again>別のお問い合わせを送る</button>
+          </div>
+        </div>
+
+        <aside class="contact-side">
           <div class="card">
-            <h2 style="font-size:18px;font-weight:800">送る前に</h2>
-            <ul style="color:var(--muted);margin:12px 0 0;padding-left:1.2em;font-size:15px">
-              <li>どのプロダクト（Y-FILTER. / MALU）についてか</li>
-              <li>使っている端末とブラウザ（例: Chromebook の Chrome）</li>
-              <li>起きたこと・再現する手順</li>
-              <li>返信が必要な場合は連絡先</li>
+            <h2 class="acct-h">先に確かめると早いこと</h2>
+            <ul class="contact-links">
+              <li><a href="/status/">システム稼働状況</a><small>障害が起きていないか</small></li>
+              <li><a href="/support/?type=news">お知らせ</a><small>変更や大切なお知らせ</small></li>
+              <li><a href="/support/">サポートの記事</a><small>使い方と困ったとき</small></li>
             </ul>
           </div>
           <div class="card">
-            <h2 style="font-size:18px;font-weight:800">サポートID</h2>
-            <p style="color:var(--muted);margin-top:8px;font-size:15px">フォームに貼り付けていただくと、調査がスムーズになります。</p>
-            <div class="id-box">
-              <code data-support-id>読み込み中…</code>
-              <button class="btn btn-tonal" type="button" data-copy-id hidden>コピー</button>
-            </div>
+            <h2 class="acct-h">データの削除</h2>
+            <p class="contact-side-text">SK Hub Systems アカウントのデータは、お問い合わせをしなくても<a href="/account/">アカウント</a>のページから削除できます。</p>
           </div>
-        </div>
-        <p style="color:var(--muted);font-size:13px;margin-top:20px">フォームは Google LLC のサービスです。送信された内容は <a href="/policies/#sk-privacy">プライバシーポリシー</a> に従って取り扱います。</p>
+        </aside>
       </div>
     </section>
   </main>
@@ -80,7 +146,7 @@
         </div>
         <div>
           <h2>サポートと情報</h2>
-          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/credits/">Link &amp; Credit</a></li></ul>
+          <ul><li><a href="/support/">サポート記事</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/credits/">Link &amp; Credit</a></li><li><a href="/about/">私について</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li></ul>
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">SK</div>

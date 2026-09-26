@@ -60,16 +60,35 @@
         }
     }
 
+    // 同じページ・同じ判定の記録は、ブラウザのタブを閉じるまで 1 回だけ送る（書き込みの回数を減らして、無料枠を守る）
+    const SENT_KEY = "skhub_logged";
+    function alreadySent(key) {
+        try {
+            const sent = JSON.parse(sessionStorage.getItem(SENT_KEY) || "[]");
+            if (sent.includes(key)) return true;
+            sent.push(key);
+            sessionStorage.setItem(SENT_KEY, JSON.stringify(sent.slice(-50)));
+        } catch (error) { /* 保存できないときは毎回送る */ }
+        return false;
+    }
+
+    // 記録を残す期間（SK プライバシーポリシー第七条: 1 年）。expireAt を過ぎると Firestore の TTL が自動で削除する
+    const LOG_RETENTION_MS = 365 * 24 * 60 * 60 * 1000;
+
     // hub_access_logs に 1 件追加する。クエリ文字列・ハッシュは送らない。IP アドレスは記録しない。
     async function writeLog(uuid, status, hub) {
+        const page = clip(location.origin + location.pathname, 512);
+        if (alreadySent(`${page}|${status}`)) return;
+        const now = Date.now();
         const fields = {
             uuid: { stringValue: uuid },
-            page: { stringValue: clip(location.origin + location.pathname, 512) },
+            page: { stringValue: page },
             referrer: { stringValue: clip(referrerOrigin(), 512) },
             userAgent: { stringValue: clip(navigator.userAgent, 512) },
             language: { stringValue: clip(navigator.language, 32) },
             status: { stringValue: status },
-            createdAt: { timestampValue: new Date().toISOString() }
+            createdAt: { timestampValue: new Date(now).toISOString() },
+            expireAt: { timestampValue: new Date(now + LOG_RETENTION_MS).toISOString() }
         };
         try {
             const res = await request(documentsUrl(hub, hub.LOG_COLLECTION), {

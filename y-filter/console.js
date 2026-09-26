@@ -18,7 +18,7 @@ import { NEWTAB_MODES, REMOTE_SETTING_KEYS, buildDefaultSettings, localDateKey, 
 import { hashAccessCode, validateNewAccessCode } from "./shared/access-code.js";
 import "./shared/time-rules.js"; // globalThis.YFilterTime（ルールの説明文に使う）
 // SK Hub Systems アカウント（未作成・規約が新しくなったときは /account/ で同意してから戻ってくる）
-import { ACCOUNT_TERMS_VERSION, accountPageUrl, signOutAccount } from "/assets/hub/account.js";
+import { ACCOUNT_TERMS_VERSION, accountPageUrl, rememberAccount, signOutAccount } from "/assets/hub/account.js";
 
 const ONLINE_WINDOW_MS = 15 * 60 * 1000; // 端末は最長 10 分ごとに報告する
 const PAIRING_TTL_MS = 30 * 60 * 1000;
@@ -146,8 +146,13 @@ $("signin-btn").addEventListener("click", async () => {
     $("signin-msg").textContent = `ログインできませんでした（${errText(e)}）`;
   }
 });
-// ヘッダーのログイン表示（このブラウザに保存した名前・アイコン）も一緒に消す
-$("signout-btn").addEventListener("click", () => signOutAccount());
+// ヘッダーのアカウントのメニューの「ログアウト」（console-header.js）。ヘッダーのログイン表示も一緒に消す
+document.addEventListener("skconsole:signout", () => signOutAccount());
+
+// ヘッダーの「端末」「管理グループ」は、管理画面を開いているときだけ出す
+function showConsoleMenus(visible) {
+  document.querySelectorAll("[data-console-only]").forEach((el) => { el.hidden = !visible; });
+}
 
 onAuthStateChanged(auth, async (user) => {
   state.userUnsubs.forEach((fn) => fn());
@@ -158,9 +163,10 @@ onAuthStateChanged(auth, async (user) => {
   state.teamId = "";
   show("signin", !user);
   show("app", !!user);
+  showConsoleMenus(false);
   if (!user) return;
   if (!(await hasAccount(user))) return;
-  $("user-email").textContent = user.email || "";
+  showConsoleMenus(true);
   await ensureOwnTeam();
   // まず自分のグループを開き、前回ほかのグループを表示していたら一覧が届いてから切り替える
   const saved = savedTeamId();
@@ -174,7 +180,10 @@ onAuthStateChanged(auth, async (user) => {
 async function hasAccount(user) {
   try {
     const snap = await getDoc(doc(db, "accounts", user.uid));
-    if (snap.exists() && snap.data().termsVersion === ACCOUNT_TERMS_VERSION) return true;
+    if (snap.exists() && snap.data().termsVersion === ACCOUNT_TERMS_VERSION) {
+      rememberAccount(user);
+      return true;
+    }
   } catch (err) {
     toast(`アカウントを確認できませんでした: ${errText(err)}`, true);
     return false;

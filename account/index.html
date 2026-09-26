@@ -6,11 +6,24 @@
   <title>SK Hub Systems アカウント | SK</title>
   <meta name="description" content="SK のサービスを 1 つの Google アカウントで使える「SK Hub Systems アカウント」。ログイン・アカウントの確認・削除。">
   <meta name="theme-color" content="#ffffff">
+  <link rel="canonical" href="https://sy9-k.github.io/account/">
+  <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SK">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:title" content="SK Hub Systems アカウント | SK">
+  <meta property="og:description" content="SK のサービスを 1 つの Google アカウントで使える「SK Hub Systems アカウント」。ログイン・アカウントの確認・削除。">
+  <meta property="og:url" content="https://sy9-k.github.io/account/">
+  <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+  <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
   <script type="module" src="/account/account-page.js"></script>
 </head>
@@ -133,6 +146,18 @@
                 </ul>
               </div>
 
+              <!-- 開発者（config/developers に登録された UID）だけに出す -->
+              <div class="card acct-dev" data-acct-dev hidden>
+                <h2 class="acct-h">開発者メニュー</h2>
+                <div class="acct-actions">
+                  <div>
+                    <strong>お問い合わせの受信箱</strong>
+                    <small>お問い合わせフォームから届いた内容を読めます。</small>
+                  </div>
+                  <a class="btn btn-primary" href="/inbox/">開く</a>
+                </div>
+              </div>
+
               <div class="card" id="privacy">
                 <h2 class="acct-h">データとプライバシー</h2>
                 <div class="acct-actions">
@@ -206,7 +231,7 @@
         </div>
         <div>
           <h2>サポートと情報</h2>
-          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/credits/">Link &amp; Credit</a></li></ul>
+          <ul><li><a href="/support/">サポート記事</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/credits/">Link &amp; Credit</a></li><li><a href="/about/">私について</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li></ul>
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">SK</div>

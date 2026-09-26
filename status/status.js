@@ -70,6 +70,20 @@
       if (res.status === 403) return { state: await isKeyRestricted(res) ? "unknown" : "setup", ms };
       return { state: "down", ms };
     },
+    // ログインの仕組み（Firebase Authentication）が応答するか。Firebase の SDK がログインの前に読むプロジェクトの設定を取得する
+    async login() {
+      const { res, ms } = await timed(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/getProjectConfig?key=${HUB.apiKey}`);
+      if (res.ok) return { state: speed(ms), ms };
+      if (res.status === 403 && await isKeyRestricted(res)) return { state: "unknown", ms, note: "この場所からは確認できません" };
+      return { state: res.status >= 500 ? "down" : "unknown", ms };
+    },
+    // お問い合わせの受け付け。中身は読めないルールなので、存在しないものを読んで 403（＝ルールどおり断られた）が返るか
+    async contact() {
+      const { res, ms } = await timed(`${FIRESTORE}/contacts/${crypto.randomUUID()}?key=${HUB.apiKey}`);
+      if (res.status === 403 && !(await isKeyRestricted(res))) return { state: speed(ms), ms };
+      if (res.status === 403) return { state: "unknown", ms };
+      return { state: res.status >= 500 ? "down" : speed(ms), ms };
+    },
     // 他のサイトなので中身は読めない（no-cors）。接続できたかだけを見る
     async newtab() {
       const { ms } = await timed("https://search3958.github.io/newtab/", { mode: "no-cors" });
@@ -117,6 +131,10 @@
     else if (has("slow")) { summary.dataset.state = "slow"; summaryText.textContent = "一部のシステムの応答が遅くなっています"; }
     else if (has("setup") || has("unknown")) { summary.dataset.state = "ok"; summaryText.textContent = "主なシステムは正常に動いています"; }
     else { summary.dataset.state = "ok"; summaryText.textContent = "すべてのシステムは正常に動いています"; }
+    // 結果の文字をふわっと入れ直す（CSS の .is-in）
+    summaryText.classList.remove("is-in");
+    void summaryText.offsetWidth;
+    summaryText.classList.add("is-in");
     checkedAt.textContent = new Date().toLocaleString("ja-JP");
     refreshBtn.disabled = false;
   }

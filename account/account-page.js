@@ -109,6 +109,10 @@ function render(state) {
   $("[data-acct-created]").textContent = formatDate(toDate(account.createdAt) || toDate(user.metadata?.creationTime));
   $("[data-acct-terms]").textContent = `SK Hub Systems アカウント規約（${account.termsVersion} 版）に ${formatDate(toDate(account.termsAgreedAt))} に同意しています。`;
   renderConsole(user);
+  // 開発者なら受信箱への入口を出す（config/developers は登録された本人だけが読める）
+  getDoc(doc(db, "config", "developers"))
+    .then(() => { $("[data-acct-dev]").hidden = false; })
+    .catch(() => { $("[data-acct-dev]").hidden = true; });
   // ヘッダーのメニューの「データのダウンロード・削除」（/account/#privacy）から来たとき
   if (location.hash === "#privacy") document.getElementById("privacy")?.scrollIntoView({ block: "start" });
 }

@@ -7,10 +7,27 @@
   <link rel="icon" type="image/png" sizes="32x32" href="shared/icon-32.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="shared/admin.css">
   <link rel="stylesheet" href="console.css">
 </head>
 <body>
+  <!-- ヘッダー（見た目と動きはサイト共通の assets/header.css・assets/site.js。メニューの中身は console-header.js） -->
+  <header class="site-header console-header">
+    <a class="hd-logo" href="/y-filter/" aria-label="管理コンソールのトップ">
+      <span class="hd-logo-image" aria-hidden="true"><img src="shared/icon.svg" alt="" width="26" height="26"></span>
+      <span class="hd-logo-back" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+    <a class="hd-item hd-console-name" href="/y-filter/">管理コンソール</a>
+    <a class="hd-item" href="/y-filter/" data-menu="devices" data-no-navigation="true" data-console-only hidden>端末</a>
+    <a class="hd-item" href="/y-filter/" data-menu="team" data-no-navigation="true" data-console-only hidden>管理グループ</a>
+    <a class="hd-item" href="/support/#hub" data-menu="help" data-no-navigation="true">ヘルプ</a>
+    <a class="hd-item hd-account" href="/account/" data-menu="account" data-account-link>アカウント</a>
+    <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
+  </header>
+  <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
+  <div class="hd-backdrop" id="hd-backdrop"></div>
+
   <!-- 読み込み中 -->
   <div id="loading" class="gate"><div class="hint">読み込み中…</div></div>
 
@@ -46,29 +63,23 @@
 
   <!-- 管理画面 -->
   <div id="app" hidden>
-    <header class="topbar">
-      <div class="brand">
-        <img class="brand-mark" src="shared/icon.svg" alt="">
-        <div><div class="brand-name">Y-FILTER.</div><div class="brand-sub brand-sk"><img src="shared/sk-icon.svg" alt="">SK Hub Systems</div></div>
-      </div>
-      <div class="topbar-actions">
-        <select id="team-select" class="btn-select" aria-label="管理グループ" hidden></select>
-        <button id="team-btn" class="btn btn-tonal" type="button">管理者</button>
-        <span class="user" id="user-email"></span>
-        <button id="signout-btn" class="btn btn-tonal" type="button">ログアウト</button>
-      </div>
-    </header>
-
     <!-- 端末 -->
     <main class="page" id="view-devices">
       <div class="page-head">
         <div class="section-head" style="margin:0;">
+          <div class="console-kicker"><img src="shared/sk-icon.svg" alt="">SK Hub Systems ・ Y-FILTER. 管理コンソール</div>
           <h1>端末</h1>
           <p id="devices-lead">このグループに接続している端末です。選んだ端末の設定をまとめて変更できます。</p>
         </div>
-        <button id="add-device" class="btn btn-primary" type="button">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>端末を追加
-        </button>
+        <div class="page-actions">
+          <select id="team-select" class="btn-select" aria-label="管理グループ" hidden></select>
+          <button id="team-btn" class="btn btn-tonal" type="button">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg>管理者
+          </button>
+          <button id="add-device" class="btn btn-primary" type="button">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>端末を追加
+          </button>
+        </div>
       </div>
 
       <div class="stats summary">
@@ -255,6 +266,8 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script type="module" src="console.js"></script>
+  <script src="console-header.js" defer></script>
+  <script src="/assets/site.js" defer></script>
   <!-- SK Hub Systems のアクセスチェック（利用規約の同意・アクセス制限） -->
   <script src="/frameworks/check.js" defer></script>
 </body>

@@ -1,9 +1,7 @@
-// SK — サイト共通スクリプト（ヘッダーメニュー・お問い合わせフォーム・サポートID）
+// SK — サイト共通スクリプト（ヘッダーメニュー・サポートID・規約・アップデート・お知らせ・トップのアニメーション）
+// お問い合わせフォームは contact/contact.js
 (function () {
   "use strict";
-
-  // お問い合わせ用 Google フォームの URL。空のあいだはボタンが「準備中」になります。
-  const CONTACT_FORM_URL = "";
 
   const UUID_KEY = "skhub_uuid"; // frameworks/check.js の CONFIG.UUID_KEY と同じ
 
@@ -11,8 +9,12 @@
   // SK Hub Systems アカウントでログイン中なら、アイコンを出す（名前とアイコンは assets/hub/account.js がこのブラウザに保存する。
   // ここでは Firebase を読み込まない）
   let accountHint = null;
-  try { accountHint = JSON.parse(localStorage.getItem("skhub_account") || "null"); } catch (e) { accountHint = null; }
-  const accountPhoto = accountHint && /^https:\/\//.test(accountHint.photo || "") ? accountHint.photo : "";
+  let accountPhoto = "";
+  function readAccountHint() {
+    try { accountHint = JSON.parse(localStorage.getItem("skhub_account") || "null"); } catch (e) { accountHint = null; }
+    accountPhoto = accountHint && /^https:\/\//.test(accountHint.photo || "") ? accountHint.photo : "";
+  }
+  readAccountHint();
 
   function accountAvatar(className) {
     const img = document.createElement("img");
@@ -25,9 +27,34 @@
   }
 
   const accountLink = document.querySelector("[data-account-link]");
-  if (accountLink) {
+  function renderAccountLink() {
+    if (!accountLink) return;
+    accountLink.querySelector(".hd-account-photo")?.remove();
     if (accountPhoto) accountLink.prepend(accountAvatar("hd-account-photo"));
     if (accountHint) accountLink.setAttribute("aria-label", `アカウント（${accountHint.name || "ログイン中"}）`);
+    else accountLink.removeAttribute("aria-label");
+  }
+  renderAccountLink();
+
+  // ヘッダーのアカウントのメニュー。ログイン中かどうかで中身を変える（profile があると、名前とアイコンを一覧の上に出す）
+  function accountMenu() {
+    return accountHint ? {
+      title: "SK Hub Systems アカウント",
+      profile: accountHint,
+      items: [
+        ["アカウント", "/account/"],
+        ["Y-FILTER. 管理コンソール", "/y-filter/"],
+        ["データのダウンロード・削除", "/account/#privacy"],
+        ["ログアウト", "/account/?signout=1"]
+      ]
+    } : {
+      title: "SK Hub Systems アカウント",
+      items: [
+        ["ログイン・アカウントを作成", "/account/"],
+        ["SK Hub Systems アカウントとは", "/support/?a=account-about"],
+        ["Y-FILTER. 管理コンソール", "/y-filter/"]
+      ]
+    };
   }
 
   // ---------- ヘッダーメニュー（search3958 の headerv2 と同じ動き） ----------
@@ -43,39 +70,48 @@
         ["SK's Lab", "/lab/"]
       ]
     },
+    // groups があると、見出しつきの列に分けて出す（スマホでは縦に並ぶ）
     support: {
       title: "サポートと情報",
-      items: [
-        ["サポート", "/support/"],
-        ["お知らせ", "/support/?type=news"],
-        ["私のGitHub", "https://github.com/sy9-k"],
-        ["お問い合わせ", "/contact/"],
-        ["利用規約とプライバシーポリシー", "/policies/"],
-        ["アップデート", "/updates/"],
-        ["システム稼働状況", "/status/"],
-        ["Link & Credit", "/credits/"]
+      groups: [
+        {
+          title: "困ったとき",
+          items: [
+            ["サポート記事", "/support/"],
+            ["お知らせ", "/support/?type=news"],
+            ["お問い合わせ", "/contact/"],
+            ["システム稼働状況", "/status/"]
+          ]
+        },
+        {
+          title: "情報",
+          items: [
+            ["アップデート", "/updates/"],
+            ["利用規約とプライバシーポリシー", "/policies/"],
+            ["Link & Credit", "/credits/"]
+          ]
+        }
       ]
     },
-    // ログイン中かどうかで中身を変える（profile があると、名前とアイコンを一覧の上に出す）
-    account: accountHint ? {
-      title: "SK Hub Systems アカウント",
-      profile: accountHint,
-      items: [
-        ["アカウント", "/account/"],
-        ["Y-FILTER. 管理コンソール", "/y-filter/"],
-        ["データのダウンロード・削除", "/account/#privacy"],
-        ["ログアウト", "/account/?signout=1"]
-      ]
-    } : {
-      title: "SK Hub Systems アカウント",
-      items: [
-        ["ログイン・アカウントを作成", "/account/"],
-        ["Y-FILTER. 管理コンソール", "/y-filter/"],
-        ["SK Hub Systems アカウントとは", "/support/?a=account-about"],
-        ["アカウント規約", "/policies/#sk-hub-account"]
-      ]
-    }
+    account: accountMenu()
   };
+  // ページごとのメニュー（管理コンソールなど）。site.js より先に window.SK_HEADER = { menus: { 名前: メニュー } } を置くと差し替わる
+  //   メニューはオブジェクトか、ログイン情報（名前・アイコン。未ログインなら null）を受け取って返す関数
+  //   項目は [文字, URL] か { label, href, action }（action があるとメニューを閉じてから実行する）
+  const customMenus = (window.SK_HEADER && window.SK_HEADER.menus) || {};
+  function applyCustomMenus() {
+    Object.entries(customMenus).forEach(([key, menu]) => {
+      MENUS[key] = typeof menu === "function" ? menu(accountHint) : menu;
+    });
+  }
+  applyCustomMenus();
+  // ログイン・ログアウトしたら（assets/hub/account.js が知らせる）ヘッダーを更新する
+  document.addEventListener("skhub:account", () => {
+    readAccountHint();
+    renderAccountLink();
+    MENUS.account = accountMenu();
+    applyCustomMenus();
+  });
   const MOBILE_BREAKPOINT = 680;
 
   const header = document.querySelector(".site-header");
@@ -100,12 +136,13 @@
     const fitHeight = () => { menu.style.height = `${inner.scrollHeight + 52}px`; };
     const setExpanded = active => triggers.forEach(t => t.setAttribute("aria-expanded", String(t === active)));
 
-    function makeList(entries) {
+    // start … 順番に出てくる動きの何番目から始めるか（列に分けたとき、前の列の続きから）
+    function makeList(entries, start = 0) {
       const list = document.createElement("ul");
       list.className = "hd-menu-list";
       entries.forEach(([label, href, onClick], i) => {
         const li = document.createElement("li");
-        li.style.setProperty("--i", String(i));
+        li.style.setProperty("--i", String(start + i));
         const a = document.createElement("a");
         a.className = "hd-menu-link";
         a.href = href;
@@ -118,12 +155,35 @@
       return list;
     }
 
-    function renderMenu(type) {
-      const data = MENUS[type];
+    const menuTitle = text => {
       const title = document.createElement("div");
       title.className = "hd-menu-title";
-      title.textContent = data.title;
-      const nodes = [title];
+      title.textContent = text;
+      return title;
+    };
+    const toEntries = items => items.map(item => {
+      if (Array.isArray(item)) return item;
+      if (!item.action) return [item.label, item.href];
+      return [item.label, item.href || "#", e => { e.preventDefault(); closeMenu(); item.action(); }];
+    });
+
+    function renderMenu(type) {
+      const data = MENUS[type];
+      if (data.groups) {
+        const groups = document.createElement("div");
+        groups.className = "hd-menu-groups";
+        let count = 0;
+        data.groups.forEach(group => {
+          const col = document.createElement("div");
+          col.className = "hd-menu-group";
+          col.append(menuTitle(group.title), makeList(toEntries(group.items), count));
+          count += group.items.length;
+          groups.appendChild(col);
+        });
+        content.replaceChildren(groups);
+        return;
+      }
+      const nodes = [menuTitle(data.title)];
       if (data.profile) {
         const profile = document.createElement("div");
         profile.className = "hd-menu-profile";
@@ -137,12 +197,13 @@
         profile.appendChild(text);
         nodes.push(profile);
       }
-      nodes.push(makeList(data.items));
+      nodes.push(makeList(toEntries(data.items)));
       content.replaceChildren(...nodes);
     }
 
     function renderMobileRoot() {
-      content.replaceChildren(makeList(navItems.map(item => {
+      // hidden の項目（管理コンソールでログイン前の「端末」など）は出さない
+      content.replaceChildren(makeList(navItems.filter(item => !item.hidden).map(item => {
         const type = item.dataset.menu;
         if (!type) return [item.textContent.trim(), item.getAttribute("href")];
         return [item.textContent.trim(), "#", e => { e.preventDefault(); openMobileSubmenu(type); }];
@@ -308,19 +369,6 @@
 
     setMobileState(false, false);
   }
-
-  // ---------- お問い合わせフォーム ----------
-  document.querySelectorAll("[data-contact-form]").forEach(el => {
-    if (CONTACT_FORM_URL) {
-      el.href = CONTACT_FORM_URL;
-      el.target = "_blank";
-      el.rel = "noopener";
-    } else {
-      el.removeAttribute("href");
-      el.setAttribute("aria-disabled", "true");
-      el.textContent = "フォーム準備中";
-    }
-  });
 
   // ---------- サポートID ----------
   const idEls = document.querySelectorAll("[data-support-id]");

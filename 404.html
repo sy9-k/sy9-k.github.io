@@ -3,17 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>サポート | SK</title>
-  <meta name="description" content="SK からのお知らせと、Y-FILTER.・MALU・SK Hub Systems・SK's Lab の使い方や困ったときの記事。">
+  <title>ページが見つかりません | SK</title>
+  <meta name="description" content="お探しのページは見つかりませんでした。">
+  <meta name="robots" content="noindex">
   <meta name="theme-color" content="#ffffff">
-  <link rel="canonical" href="https://sy9-k.github.io/support/">
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SK">
   <meta property="og:locale" content="ja_JP">
-  <meta property="og:title" content="サポート | SK">
-  <meta property="og:description" content="SK からのお知らせと、Y-FILTER.・MALU・SK Hub Systems・SK's Lab の使い方や困ったときの記事。">
-  <meta property="og:url" content="https://sy9-k.github.io/support/">
+  <meta property="og:title" content="ページが見つかりません | SK">
+  <meta property="og:description" content="お探しのページは見つかりませんでした。">
   <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -25,7 +24,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
   <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
-  <script src="/support/help.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">本文へ移動</a>
@@ -44,63 +42,23 @@
   <div class="hd-backdrop" id="hd-backdrop"></div>
 
   <main id="main">
-    <section class="p-hero band band--plain help-hero">
+    <section class="nf band band--plain">
       <div class="wrap">
-        <span class="eyebrow">Support</span>
-        <h1>サポート</h1>
-        <p class="lead">お知らせと、使い方・困ったときの記事をまとめています。</p>
-        <label class="faq-search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input type="search" placeholder="記事を検索（例: ポップアップ、ペアリング、同意）" data-help-search aria-label="記事を検索">
-        </label>
-      </div>
-    </section>
-
-    <section class="section help" style="padding-top:0" data-help>
-      <div class="wrap">
-        <!-- 記事一覧 -->
-        <div data-help-list-view>
-          <div class="help-toolbar">
-            <div class="help-tabs" role="tablist" aria-label="記事の種類">
-              <button type="button" role="tab" data-help-type="" aria-selected="true">すべて</button>
-              <button type="button" role="tab" data-help-type="news" aria-selected="false">お知らせ</button>
-              <button type="button" role="tab" data-help-type="guide" aria-selected="false">サポート記事</button>
-            </div>
-            <div class="help-cats" data-help-cats aria-label="カテゴリ"></div>
-          </div>
-          <p class="help-count" data-help-count aria-live="polite"></p>
-          <div class="help-list" data-help-list>
-            <p class="update-empty">読み込み中…</p>
-          </div>
-          <noscript><p>記事の一覧は <a href="/support/articles.json">articles.json</a> でも読めます。</p></noscript>
+        <div class="nf-code" aria-hidden="true">404</div>
+        <h1>ページが見つかりませんでした</h1>
+        <p>URL が間違っているか、ページが移動・削除された可能性があります。</p>
+        <div class="btn-row">
+          <a class="btn btn-ink" href="/">ホームへ戻る<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-tonal" href="/support/">サポート</a>
         </div>
-
-        <!-- 記事 -->
-        <article class="help-article" data-help-article hidden></article>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="wrap">
-        <div class="grid-2 support-bottom">
-          <div class="card id-card" id="support-id">
-            <h2 style="font-size:20px;font-weight:800">あなたのサポートID</h2>
-            <p style="color:var(--muted);margin-top:8px;font-size:15px">お問い合わせのときに伝えていただくと、調査がスムーズになります。</p>
-            <div class="id-box">
-              <code data-support-id>読み込み中…</code>
-              <button class="btn btn-tonal" type="button" data-copy-id hidden>コピー</button>
-            </div>
-          </div>
-          <div class="card support-contact">
-            <h2 style="font-size:20px;font-weight:800">解決しないときは</h2>
-            <ol>
-              <li><a href="/status/">システム稼働状況</a>と<a href="/support/?type=news">お知らせ</a>で、障害や変更がないか確認する</li>
-              <li>使っている端末・ブラウザと、起きたことをメモする</li>
-              <li>サポートIDを添えてお問い合わせする</li>
-            </ol>
-            <a class="btn btn-primary" href="/contact/">お問い合わせ</a>
-          </div>
-        </div>
+        <nav class="nf-links" aria-label="よく見られているページ">
+          <a href="/products/y-filter/">Y-FILTER.</a>
+          <a href="/products/malu/">MALU</a>
+          <a href="/sk-hub-systems/">SK Hub Systems</a>
+          <a href="/lab/">SK's Lab</a>
+          <a href="/y-filter/">管理コンソール</a>
+          <a href="/status/">システム稼働状況</a>
+        </nav>
       </div>
     </section>
   </main>
