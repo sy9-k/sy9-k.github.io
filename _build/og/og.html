@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@700;800&family=Noto+Sans+JP:wght@500;700;800&display=block">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    font-family: Inter, "Noto Sans JP", sans-serif; color: #0d1014; position: relative;
+    background:
+      radial-gradient(640px 380px at 88% 8%, rgba(47, 107, 255, .26), transparent 70%),
+      radial-gradient(560px 340px at 6% 100%, rgba(90, 95, 224, .18), transparent 70%),
+      linear-gradient(180deg, #fff, #f3f5f9);
+  }
+  body::after {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(13, 16, 20, .10) 1.4px, transparent 1.6px); background-size: 26px 26px;
+    -webkit-mask-image: linear-gradient(180deg, #000, transparent 80%);
+  }
+  .wrap { position: relative; z-index: 1; padding: 72px 80px; height: 100%; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .brand img { width: 72px; height: 72px; }
+  .brand span { font-size: 44px; font-weight: 800; letter-spacing: -.02em; }
+  h1 { margin-top: 44px; font-size: 76px; line-height: 1.18; font-weight: 800; letter-spacing: -.04em; }
+  .mark { background: linear-gradient(transparent 62%, #cfe0ff 62%, #cfe0ff 92%, transparent 92%); }
+  .chips { margin-top: auto; display: flex; gap: 14px; }
+  .chip { display: flex; align-items: center; gap: 12px; padding: 12px 22px 12px 12px; background: #fff; border-radius: 999px; box-shadow: 0 10px 30px rgba(13, 16, 20, .10), inset 0 0 0 1px #e1e4e9; font-size: 24px; font-weight: 700; }
+  .chip img, .chip .ico { width: 44px; height: 44px; border-radius: 13px; }
+  .yf { padding: 7px; background: radial-gradient(120% 120% at 30% 15%, #2a2f3a 0%, #12151b 70%); }
+  .ico { display: grid; place-items: center; background: #e0f0ff; color: #0b6bcb; }
+  .ico svg { width: 26px; height: 26px; }
+  .url { position: absolute; right: 80px; top: 88px; font-size: 22px; font-weight: 700; color: #5a6371; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand"><img src="REPO/assets/logo.svg" alt=""><span>SK</span></div>
+    <div class="url">sy9-k.github.io</div>
+    <h1>毎日のネットを、<br>もう少し<span class="mark">安心</span>で<span class="mark">便利</span>に。</h1>
+    <div class="chips">
+      <div class="chip"><img class="yf" src="REPO/y-filter/shared/icon.svg" alt="">Y-FILTER.</div>
+      <div class="chip"><img src="REPO/dictionary/ico/icon-192.png" alt="">MALU</div>
+      <div class="chip"><img src="REPO/assets/logo.svg" alt="" style="background:#fff;padding:4px">SK Hub Systems</div>
+      <div class="chip"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7 15h10"/></svg></span>SK's Lab</div>
+    </div>
+  </div>
+</body>
+</html>

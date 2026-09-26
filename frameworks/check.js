@@ -498,32 +498,32 @@
                 "RedCheckOSS-consent-card-title"
             );
 
+            // 多言語（assets/i18n.js があるページだけ。ないページは日本語）
+            const tx = (s) => (window.SKI18N ? window.SKI18N.t(s) : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+            const lx = (u) => (window.SKI18N ? window.SKI18N.path(u) : u);
             panel.innerHTML = `
                 <h2
                     id="RedCheckOSS-consent-card-title"
                     class="RedCheckOSS-consent-card__title"
-                >ようこそ！</h2>
-                <p class="RedCheckOSS-consent-card__text">
-                    次回のアクセス以降，利用規約と<br>
-                    プライバシーポリシーに同意したものとします
-                </p>
+                >${tx("ようこそ！")}</h2>
+                <p class="RedCheckOSS-consent-card__text">${tx("次回のアクセス以降、利用規約とプライバシーポリシーに同意したものとします")}</p>
                 <div class="RedCheckOSS-consent-card__actions">
                     <a
                         class="RedCheckOSS-consent-card__button RedCheckOSS-consent-card__button--document"
-                        href="${this.CONFIG.POLICIES_URL}"
+                        href="${lx(this.CONFIG.POLICIES_URL)}"
                         target="_blank"
                         rel="noopener noreferrer"
-                    >書類閲覧</a>
+                    >${tx("書類閲覧")}</a>
                     <button
                         type="button"
                         class="RedCheckOSS-consent-card__button RedCheckOSS-consent-card__button--deny"
                         data-RedCheckOSS-consent-action="deny"
-                    >同意しない</button>
+                    >${tx("同意しない")}</button>
                     <button
                         type="button"
                         class="RedCheckOSS-consent-card__button RedCheckOSS-consent-card__button--agree"
                         data-RedCheckOSS-consent-action="agree"
-                    >同意して閉じる</button>
+                    >${tx("同意して閉じる")}</button>
                 </div>
             `;
 
@@ -714,18 +714,17 @@
 
             const aboutLink = document.createElement("a");
             aboutLink.className = "RedCheckOSS-info-widget__link";
-            aboutLink.href = this.CONFIG.ABOUT_URL;
-            aboutLink.textContent = "SKについて";
-            aboutLink.setAttribute("aria-label", "SKについて");
+            const tw = (s) => (window.SKI18N ? window.SKI18N.t(s) : s);
+            const lw = (u) => (window.SKI18N ? window.SKI18N.path(u) : u);
+            aboutLink.href = lw(this.CONFIG.ABOUT_URL);
+            aboutLink.textContent = tw("SKについて");
+            aboutLink.setAttribute("aria-label", tw("SKについて"));
 
             const policyLink = document.createElement("a");
             policyLink.className = "RedCheckOSS-info-widget__link";
-            policyLink.href = this.CONFIG.POLICIES_URL;
-            policyLink.textContent = "利用規約・プライバシー";
-            policyLink.setAttribute(
-                "aria-label",
-                "利用規約・プライバシーポリシー"
-            );
+            policyLink.href = lw(this.CONFIG.POLICIES_URL);
+            policyLink.textContent = tw("利用規約・プライバシー");
+            policyLink.setAttribute("aria-label", tw("利用規約・プライバシーポリシー"));
 
             links.appendChild(aboutLink);
             links.appendChild(policyLink);
@@ -736,7 +735,7 @@
                 "data-RedCheckOSS-info-widget",
                 "true"
             );
-            widget.setAttribute("aria-label", "サイト情報");
+            widget.setAttribute("aria-label", tw("サイト情報"));
             widget.appendChild(toggle);
             widget.appendChild(links);
 

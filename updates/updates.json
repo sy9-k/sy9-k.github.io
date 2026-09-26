@@ -1,90 +1,373 @@
 {
-  "_note": "アップデート情報。新しいものを上に足していく。category は SK / Y-FILTER. / SK Hub Systems / MALU / Lab のどれか。トップ・ステータス・アップデートのページで表示される。",
+  "_note": "アップデート情報。新しいものを上に足していく。category は SK / Y-FILTER. / SK Hub Systems / MALU / Lab のどれか。トップ・ステータス・アップデートのページで表示される。 訳は各項目の i18n（en / zh-CN / zh-TW / ko の title・body・label）。ない言語は日本語で出る。",
   "items": [
     {
       "date": "2026-09-26",
       "category": "SK",
       "title": "お問い合わせフォームを新しくしました",
       "body": "お問い合わせを、このサイトのフォームから直接送れるようになりました。サポートIDを自動で添えられます。あわせて、見つからないページの案内と、SNS で共有したときの表示を整えました。",
-      "link": { "href": "/contact/", "label": "お問い合わせ" }
+      "link": {
+        "href": "/contact/",
+        "label": "お問い合わせ"
+      },
+      "i18n": {
+        "en": {
+          "title": "A new contact form",
+          "body": "Contact messages can now be sent straight from this site's form, with your support ID attached automatically. We also improved the page-not-found screen and how links look when shared on social media.",
+          "label": "Contact"
+        },
+        "zh-CN": {
+          "title": "全新的咨询表单",
+          "body": "现在可以直接通过本网站的表单发送咨询，并自动附上支持 ID。同时改进了找不到页面时的提示，以及在社交媒体分享时的显示效果。",
+          "label": "联系我们"
+        },
+        "zh-TW": {
+          "title": "全新的聯絡表單",
+          "body": "現在可以直接透過本網站的表單傳送聯絡內容，並自動附上支援 ID。同時改善了找不到頁面時的提示，以及在社群網站分享時的顯示效果。",
+          "label": "聯絡我們"
+        },
+        "ko": {
+          "title": "새로운 문의 양식",
+          "body": "이제 이 사이트의 양식에서 바로 문의를 보낼 수 있으며, 지원 ID도 자동으로 첨부됩니다. 아울러 페이지를 찾을 수 없을 때의 안내와 SNS에 공유했을 때의 표시도 개선했습니다.",
+          "label": "문의"
+        }
+      }
     },
     {
       "date": "2026-09-26",
       "category": "SK Hub Systems",
       "title": "SK Hub Systems アカウントを始めました",
       "body": "SK のサービスをひとつの Google アカウントで使えるようになりました。まずは Y-FILTER. の管理コンソールで使えます。アカウントのページから、データのダウンロードや削除もできます。",
-      "link": { "href": "/account/", "label": "アカウントのページ" }
+      "link": {
+        "href": "/account/",
+        "label": "アカウントのページ"
+      },
+      "i18n": {
+        "en": {
+          "title": "SK Hub Systems accounts are here",
+          "body": "You can now use SK services with a single Google account, starting with the Y-FILTER. management console. You can also download or delete your data from the Account page.",
+          "label": "Account page"
+        },
+        "zh-CN": {
+          "title": "推出 SK Hub Systems 账户",
+          "body": "现在可以用一个 Google 账号使用 SK 的各项服务，首先支持 Y-FILTER. 管理控制台。还可以在账户页面下载或删除数据。",
+          "label": "账户页面"
+        },
+        "zh-TW": {
+          "title": "推出 SK Hub Systems 帳戶",
+          "body": "現在可以用一個 Google 帳戶使用 SK 的各項服務，首先支援 Y-FILTER. 管理主控台。也可以在帳戶頁面下載或刪除資料。",
+          "label": "帳戶頁面"
+        },
+        "ko": {
+          "title": "SK Hub Systems 계정을 시작했습니다",
+          "body": "이제 하나의 Google 계정으로 SK 서비스를 이용할 수 있습니다. 우선 Y-FILTER. 관리 콘솔에서 사용할 수 있으며, 계정 페이지에서 데이터를 다운로드하거나 삭제할 수도 있습니다.",
+          "label": "계정 페이지"
+        }
+      }
     },
     {
       "date": "2026-09-26",
       "category": "Lab",
       "title": "QR Drop とスマートダッシュボードが、アクセスチェックに対応しました",
-      "body": "SK's Lab のツールでも、SK 利用規約・SK プライバシーポリシーのお知らせと同意を表示するようになりました。"
+      "body": "SK's Lab のツールでも、SK 利用規約・SK プライバシーポリシーのお知らせと同意を表示するようになりました。",
+      "i18n": {
+        "en": {
+          "title": "QR Drop and Smart Dashboard now support access checks",
+          "body": "SK's Lab tools now also show the SK Terms of Service and Privacy Policy notice and ask for consent."
+        },
+        "zh-CN": {
+          "title": "QR Drop 和智能仪表板支持访问检查",
+          "body": "SK's Lab 的工具现在也会显示 SK 使用条款和隐私政策的通知并征求同意。"
+        },
+        "zh-TW": {
+          "title": "QR Drop 與智慧儀表板支援存取檢查",
+          "body": "SK's Lab 的工具現在也會顯示 SK 使用條款與隱私權政策的通知並徵求同意。"
+        },
+        "ko": {
+          "title": "QR Drop과 스마트 대시보드가 접근 확인을 지원합니다",
+          "body": "SK's Lab의 도구에서도 SK 이용약관·SK 개인정보 처리방침 안내와 동의를 표시하게 되었습니다."
+        }
+      }
     },
     {
       "date": "2026-09-26",
       "category": "SK",
       "title": "SK's Lab・システム稼働状況・Link & Credit のページを公開しました",
       "body": "実験的なツールを置く SK's Lab、システムが動いているかを確認できる稼働状況、使わせてもらっているものを紹介する Link & Credit を追加しました。",
-      "link": { "href": "/lab/", "label": "SK's Lab を見る" }
+      "link": {
+        "href": "/lab/",
+        "label": "SK's Lab を見る"
+      },
+      "i18n": {
+        "en": {
+          "title": "New pages: SK's Lab, System status, and Link & Credit",
+          "body": "We added SK's Lab for experimental tools, a status page to check that systems are running, and Link & Credit to introduce the things we use.",
+          "label": "Explore SK's Lab"
+        },
+        "zh-CN": {
+          "title": "新增 SK's Lab、系统运行状态和 Link & Credit 页面",
+          "body": "新增了存放实验性工具的 SK's Lab、确认系统是否正常运行的运行状态页面，以及介绍我们所使用内容的 Link & Credit。",
+          "label": "查看 SK's Lab"
+        },
+        "zh-TW": {
+          "title": "新增 SK's Lab、系統運作狀態與 Link & Credit 頁面",
+          "body": "新增了存放實驗性工具的 SK's Lab、確認系統是否正常運作的運作狀態頁面，以及介紹我們所使用內容的 Link & Credit。",
+          "label": "查看 SK's Lab"
+        },
+        "ko": {
+          "title": "SK's Lab·시스템 가동 상태·Link & Credit 페이지를 공개했습니다",
+          "body": "실험적인 도구를 두는 SK's Lab, 시스템이 동작하는지 확인할 수 있는 가동 상태, 사용하고 있는 것을 소개하는 Link & Credit를 추가했습니다.",
+          "label": "SK's Lab 보기"
+        }
+      }
     },
     {
       "date": "2026-09-26",
       "category": "SK",
       "title": "SK と Y-FILTER. のアイコンを新しくしました",
       "body": "サイトの配色も、新しい SK のアイコンにあわせて青を基本にしました。Y-FILTER. の紹介ページは、機能ごとの画面を載せたページに作り直しました。",
-      "link": { "href": "/products/y-filter/", "label": "Y-FILTER. のページ" }
+      "link": {
+        "href": "/products/y-filter/",
+        "label": "Y-FILTER. のページ"
+      },
+      "i18n": {
+        "en": {
+          "title": "New icons for SK and Y-FILTER.",
+          "body": "The site's colors are now based on blue to match the new SK icon. The Y-FILTER. page was rebuilt with screenshots of each feature.",
+          "label": "Y-FILTER. page"
+        },
+        "zh-CN": {
+          "title": "SK 和 Y-FILTER. 启用新图标",
+          "body": "网站配色也配合新的 SK 图标改为以蓝色为主。Y-FILTER. 介绍页重新制作，展示了各项功能的界面。",
+          "label": "Y-FILTER. 页面"
+        },
+        "zh-TW": {
+          "title": "SK 與 Y-FILTER. 啟用新圖示",
+          "body": "網站配色也配合新的 SK 圖示改為以藍色為主。Y-FILTER. 介紹頁重新製作，展示了各項功能的畫面。",
+          "label": "Y-FILTER. 頁面"
+        },
+        "ko": {
+          "title": "SK와 Y-FILTER.의 아이콘을 새로 바꾸었습니다",
+          "body": "사이트 색상도 새 SK 아이콘에 맞춰 파란색을 기본으로 했습니다. Y-FILTER. 소개 페이지는 기능별 화면을 담은 페이지로 새로 만들었습니다.",
+          "label": "Y-FILTER. 페이지"
+        }
+      }
     },
     {
       "date": "2026-09-26",
       "category": "Y-FILTER.",
       "title": "Y-FILTER. で SK 利用規約への同意が必要になりました",
-      "body": "これまで Y-FILTER. の規約にだけ同意していた場合も、SK 利用規約と SK プライバシーポリシーに同意するまでフィルタリングを停止します。同意すると自動で再開します。"
+      "body": "これまで Y-FILTER. の規約にだけ同意していた場合も、SK 利用規約と SK プライバシーポリシーに同意するまでフィルタリングを停止します。同意すると自動で再開します。",
+      "i18n": {
+        "en": {
+          "title": "Y-FILTER. now requires agreeing to the SK Terms of Service",
+          "body": "Even if you had only agreed to Y-FILTER.'s own terms, filtering pauses until you agree to the SK Terms of Service and Privacy Policy. It resumes automatically once you agree."
+        },
+        "zh-CN": {
+          "title": "Y-FILTER. 现在需要同意 SK 使用条款",
+          "body": "即使此前只同意了 Y-FILTER. 的条款，在同意 SK 使用条款和 SK 隐私政策之前也会暂停过滤。同意后会自动恢复。"
+        },
+        "zh-TW": {
+          "title": "Y-FILTER. 現在需要同意 SK 使用條款",
+          "body": "即使先前只同意了 Y-FILTER. 的條款，在同意 SK 使用條款與 SK 隱私權政策之前也會暫停過濾。同意後會自動恢復。"
+        },
+        "ko": {
+          "title": "Y-FILTER.에서 SK 이용약관 동의가 필요해졌습니다",
+          "body": "지금까지 Y-FILTER. 약관에만 동의했더라도 SK 이용약관과 SK 개인정보 처리방침에 동의할 때까지 필터링을 멈춥니다. 동의하면 자동으로 다시 시작합니다."
+        }
+      }
     },
     {
       "date": "2026-09-25",
       "category": "SK Hub Systems",
       "title": "Y-FILTER. Systems を SK Hub Systems に名前を変えました",
-      "body": "名前の変更のみで、しくみや取り扱う情報は変わりません。"
+      "body": "名前の変更のみで、しくみや取り扱う情報は変わりません。",
+      "i18n": {
+        "en": {
+          "title": "Y-FILTER. Systems is now SK Hub Systems",
+          "body": "Only the name has changed. How it works and the information it handles stay the same."
+        },
+        "zh-CN": {
+          "title": "Y-FILTER. Systems 更名为 SK Hub Systems",
+          "body": "仅更改了名称，工作原理和处理的信息均未改变。"
+        },
+        "zh-TW": {
+          "title": "Y-FILTER. Systems 更名為 SK Hub Systems",
+          "body": "僅變更了名稱，運作方式和處理的資訊皆未改變。"
+        },
+        "ko": {
+          "title": "Y-FILTER. Systems의 이름을 SK Hub Systems로 바꾸었습니다",
+          "body": "이름만 바뀌었으며, 구조나 다루는 정보는 달라지지 않습니다."
+        }
+      }
     },
     {
       "date": "2026-09-25",
       "category": "SK",
       "title": "SK のサイトを公開し、SK 利用規約・SK プライバシーポリシーを制定しました",
       "body": "プロダクトの紹介やサポートをこのサイトにまとめました。規約は、すべてのサービスに共通の SK の規約と、Y-FILTER. の個別の規約に整理しました。",
-      "link": { "href": "/policies/", "label": "利用規約を読む" }
+      "link": {
+        "href": "/policies/",
+        "label": "利用規約を読む"
+      },
+      "i18n": {
+        "en": {
+          "title": "SK's site launched, with the SK Terms of Service and Privacy Policy",
+          "body": "Product info and support are now in one place on this site. The terms were reorganized into SK terms shared by all services and Y-FILTER.'s own terms.",
+          "label": "Read the terms"
+        },
+        "zh-CN": {
+          "title": "SK 网站上线，并制定 SK 使用条款和 SK 隐私政策",
+          "body": "产品介绍和支持都汇集在本网站。条款整理为适用于所有服务的 SK 条款和 Y-FILTER. 的单独条款。",
+          "label": "阅读使用条款"
+        },
+        "zh-TW": {
+          "title": "SK 網站上線，並制定 SK 使用條款與 SK 隱私權政策",
+          "body": "產品介紹與支援都彙整在本網站。條款整理為適用於所有服務的 SK 條款和 Y-FILTER. 的個別條款。",
+          "label": "閱讀使用條款"
+        },
+        "ko": {
+          "title": "SK 사이트를 공개하고 SK 이용약관·SK 개인정보 처리방침을 제정했습니다",
+          "body": "제품 소개와 지원을 이 사이트에 모았습니다. 약관은 모든 서비스에 공통인 SK 약관과 Y-FILTER.의 개별 약관으로 정리했습니다.",
+          "label": "이용약관 읽기"
+        }
+      }
     },
     {
       "date": "2026-09-25",
       "category": "Y-FILTER.",
       "title": "Y-FILTER. v7（開発中）",
-      "body": "シークレットモードで Y-FILTER. が動いていないときに知らせるようにしました。利用規約を書き直し、ブロックリストの予備の取得先（GitHub）を廃止しました。"
+      "body": "シークレットモードで Y-FILTER. が動いていないときに知らせるようにしました。利用規約を書き直し、ブロックリストの予備の取得先（GitHub）を廃止しました。",
+      "i18n": {
+        "en": {
+          "title": "Y-FILTER. v7 (in development)",
+          "body": "Y-FILTER. now lets you know when it isn't running in Incognito mode. We rewrote the terms and dropped the backup blocklist source (GitHub)."
+        },
+        "zh-CN": {
+          "title": "Y-FILTER. v7（开发中）",
+          "body": "当 Y-FILTER. 未在无痕模式下运行时会发出提示。重写了使用条款，并废除了拦截列表的备用获取来源（GitHub）。"
+        },
+        "zh-TW": {
+          "title": "Y-FILTER. v7（開發中）",
+          "body": "當 Y-FILTER. 未在無痕模式下運作時會發出通知。重寫了使用條款，並廢除封鎖清單的備用取得來源（GitHub）。"
+        },
+        "ko": {
+          "title": "Y-FILTER. v7(개발 중)",
+          "body": "시크릿 모드에서 Y-FILTER.가 동작하지 않을 때 알려 주도록 했습니다. 이용약관을 새로 쓰고, 차단 목록의 예비 가져오기 경로(GitHub)를 폐지했습니다."
+        }
+      }
     },
     {
       "date": "2026-09-25",
       "category": "Y-FILTER.",
       "title": "ブロックリストの編集を、開発者専用のツールに移しました",
-      "body": "ブロックリストは開発者の PC で動く専用ツールからだけ編集できるようにし、管理コンソールでは読むだけにしました。"
+      "body": "ブロックリストは開発者の PC で動く専用ツールからだけ編集できるようにし、管理コンソールでは読むだけにしました。",
+      "i18n": {
+        "en": {
+          "title": "Blocklist editing moved to a developer-only tool",
+          "body": "The blocklist can now be edited only from a dedicated tool on the developer's PC; the management console can only read it."
+        },
+        "zh-CN": {
+          "title": "拦截列表的编辑移至开发者专用工具",
+          "body": "拦截列表现在只能通过开发者电脑上运行的专用工具编辑，管理控制台中仅可查看。"
+        },
+        "zh-TW": {
+          "title": "封鎖清單的編輯移至開發者專用工具",
+          "body": "封鎖清單現在只能透過開發者電腦上執行的專用工具編輯，管理主控台中僅可查看。"
+        },
+        "ko": {
+          "title": "차단 목록 편집을 개발자 전용 도구로 옮겼습니다",
+          "body": "차단 목록은 개발자 PC에서 동작하는 전용 도구로만 편집할 수 있게 하고, 관리 콘솔에서는 읽기만 가능하게 했습니다."
+        }
+      }
     },
     {
       "date": "2026-09-25",
       "category": "Y-FILTER.",
       "title": "遠隔管理に、リクエスト・共同管理者・1日の利用時間の上限を追加しました",
-      "body": "ブロック画面から「サイトを開きたい」とお願いできるリクエスト、保護者どうし・先生どうしで管理できる共同管理者、1日の利用時間の上限を追加しました。ブロックリストは Firebase から配信するようになりました。"
+      "body": "ブロック画面から「サイトを開きたい」とお願いできるリクエスト、保護者どうし・先生どうしで管理できる共同管理者、1日の利用時間の上限を追加しました。ブロックリストは Firebase から配信するようになりました。",
+      "i18n": {
+        "en": {
+          "title": "Remote management adds requests, co-admins, and daily limits",
+          "body": "We added requests (asking from the block screen to open a site), co-admins so parents or teachers can manage together, and a daily usage limit. The blocklist is now delivered from Firebase."
+        },
+        "zh-CN": {
+          "title": "远程管理新增请求、共同管理员和每日使用时长上限",
+          "body": "新增了可从拦截界面申请“想打开网站”的请求功能、家长或老师之间可共同管理的共同管理员，以及每日使用时长上限。拦截列表改为从 Firebase 分发。"
+        },
+        "zh-TW": {
+          "title": "遠端管理新增請求、共同管理員與每日使用時間上限",
+          "body": "新增了可從封鎖畫面申請「想開啟網站」的請求功能、家長或老師之間可共同管理的共同管理員，以及每日使用時間上限。封鎖清單改為從 Firebase 發布。"
+        },
+        "ko": {
+          "title": "원격 관리에 요청·공동 관리자·하루 사용 시간 상한을 추가했습니다",
+          "body": "차단 화면에서 '사이트를 열고 싶어요'라고 부탁할 수 있는 요청, 보호자끼리·선생님끼리 관리할 수 있는 공동 관리자, 하루 사용 시간 상한을 추가했습니다. 차단 목록은 Firebase에서 배포하게 되었습니다."
+        }
+      }
     },
     {
       "date": "2026-09-25",
       "category": "SK Hub Systems",
       "title": "Search3958 のシステムから、独自の Y-FILTER. Systems に移行しました",
       "body": "Y-FILTER. の遠隔設定は、これまで Search3958 のシステムを使わせてもらっていました。開発者が運営する独自の「Y-FILTER. Systems」（Google Firebase）に移行し、管理コンソール（Web）を公開しました。以前の仕組みで端末に保存されていた情報は、Y-FILTER. の更新時に削除されます。以前の仕組みで Search3958 のサーバーに保存された情報の取り扱いは、Search3958 の定めに従います。",
-      "link": { "href": "/policies/#sk-hub-systems", "label": "SK Hub Systems 利用規約" }
+      "link": {
+        "href": "/policies/#sk-hub-systems",
+        "label": "SK Hub Systems 利用規約"
+      },
+      "i18n": {
+        "en": {
+          "title": "Moved from Search3958's system to our own Y-FILTER. Systems",
+          "body": "Y-FILTER.'s remote settings had been using Search3958's system. They moved to our own Y-FILTER. Systems (Google Firebase), run by the developer, and the management console (web) went live. Data stored on devices by the old system is deleted when Y-FILTER. updates. Data stored on Search3958's servers by the old system is handled under Search3958's policies.",
+          "label": "SK Hub Systems Terms of Service"
+        },
+        "zh-CN": {
+          "title": "从 Search3958 的系统迁移到自有的 Y-FILTER. Systems",
+          "body": "Y-FILTER. 的远程设置此前使用 Search3958 的系统，现已迁移到由开发者运营的自有“Y-FILTER. Systems”（Google Firebase），并公开了管理控制台（网页）。旧系统保存在设备上的信息会在 Y-FILTER. 更新时删除。旧系统保存在 Search3958 服务器上的信息，按 Search3958 的规定处理。",
+          "label": "SK Hub Systems 使用条款"
+        },
+        "zh-TW": {
+          "title": "從 Search3958 的系統轉移至自有的 Y-FILTER. Systems",
+          "body": "Y-FILTER. 的遠端設定先前使用 Search3958 的系統，現已轉移到由開發者營運的自有「Y-FILTER. Systems」（Google Firebase），並公開了管理主控台（網頁）。舊系統儲存在裝置上的資訊會在 Y-FILTER. 更新時刪除。舊系統儲存在 Search3958 伺服器上的資訊，依 Search3958 的規定處理。",
+          "label": "SK Hub Systems 使用條款"
+        },
+        "ko": {
+          "title": "Search3958의 시스템에서 자체 Y-FILTER. Systems로 이전했습니다",
+          "body": "Y-FILTER.의 원격 설정은 그동안 Search3958의 시스템을 사용했습니다. 개발자가 운영하는 자체 'Y-FILTER. Systems'(Google Firebase)로 이전하고 관리 콘솔(웹)을 공개했습니다. 이전 방식으로 기기에 저장된 정보는 Y-FILTER. 업데이트 시 삭제됩니다. 이전 방식으로 Search3958의 서버에 저장된 정보는 Search3958의 규정에 따라 처리됩니다.",
+          "label": "SK Hub Systems 이용약관"
+        }
+      }
     },
     {
       "date": "2026-08-30",
       "category": "Lab",
       "title": "スマートダッシュボードを公開しました",
       "body": "時計・カレンダー・天気・ニュース・メモ・ToDo などを、ひとつの画面にまとめて表示するダッシュボードです。",
-      "link": { "href": "/smart-dash/", "label": "開く" }
+      "link": {
+        "href": "/smart-dash/",
+        "label": "開く"
+      },
+      "i18n": {
+        "en": {
+          "title": "Smart Dashboard released",
+          "body": "A dashboard that shows a clock, calendar, weather, news, notes, to-dos and more on one screen.",
+          "label": "Open"
+        },
+        "zh-CN": {
+          "title": "发布智能仪表板",
+          "body": "这是一个把时钟、日历、天气、新闻、备忘录、待办事项等汇集在一个屏幕上显示的仪表板。",
+          "label": "打开"
+        },
+        "zh-TW": {
+          "title": "發布智慧儀表板",
+          "body": "這是一個把時鐘、行事曆、天氣、新聞、備忘錄、待辦事項等彙整在一個畫面上顯示的儀表板。",
+          "label": "開啟"
+        },
+        "ko": {
+          "title": "스마트 대시보드를 공개했습니다",
+          "body": "시계·캘린더·날씨·뉴스·메모·할 일 등을 한 화면에 모아 표시하는 대시보드입니다.",
+          "label": "열기"
+        }
+      }
     }
   ]
 }

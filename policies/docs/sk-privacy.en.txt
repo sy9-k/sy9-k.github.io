@@ -1,0 +1,70 @@
+SK Privacy Policy
+Established: September 25, 2026
+
+Article 1 Basic Policy
+1. SK (the "Developer") handles Users' information in the Services defined in the SK Terms of Service in accordance with this Policy.
+2. The Developer handles information only to the extent necessary to provide the Services. Information is never used for advertising, sale, provision to third parties, or tracking behavior.
+3. Details of how information is handled in Y-FILTER., SK Hub Systems, and the SK Hub Systems account are set out in the "Y-FILTER. Terms of Service and Privacy Policy," the "SK Hub Systems Terms of Service," and the "SK Hub Systems Account Terms." Where they differ from this Policy, their provisions prevail for that service.
+
+Article 2 Overview by Service
+(a) The Site (including SK's Lab tools), MALU, and the Y-FILTER. management console: handle the access check information in Article 3. MALU's search terms, search history, and settings are stored only in the browser and never sent.
+(b) Y-FILTER.: filtering happens inside the browser, and browsing history and search terms are never sent to the Developer.
+(c) SK Hub Systems: stores settings, device status, and the like only when Y-FILTER.'s remote management is used.
+(d) Contact: stores what is entered in the contact form in SK Hub Systems.
+(e) SK Hub Systems account: only when an account is created, stores the Google account information used to sign in (ID, name, email address, profile picture) and the date the terms were agreed to, among other things.
+
+Article 3 Information Handled by the Access Check
+1. The Site (including SK's Lab tools), MALU, and the Y-FILTER. management console perform an access check to respond to abuse and understand usage.
+2. Stored in the browser: a support ID (a random identifier created for each browser), the terms consent status, and whether notices have been shown
+3. Sent to and stored in SK Hub Systems: the support ID, the URL of the page accessed (excluding anything after "?"), the domain of the referring site, the browser type (user agent), language setting, date and time of access, and the result of the access restriction check
+4. The access check does not record names, email addresses, or IP addresses.
+5. If "Decline" is chosen or consent is withdrawn, nothing is sent to the server.
+
+Article 4 Information Handled for Inquiries
+1. The following information sent from the contact form (https://sy9-k.github.io/contact/) is stored in SK Hub Systems:
+(a) The type of inquiry, the service concerned, and the message
+(b) The reply-to email address (only if entered)
+(c) The support ID, browser type (user agent), and language setting (only if "Include my support ID and browser info" is chosen)
+(d) The date and time sent
+2. This information is used only to respond to inquiries. Only the Developer can read it.
+
+Article 5 Purposes of Use
+1. Providing, maintaining, and improving the Services
+2. Responding to abuse and nuisance behavior (including access restrictions)
+3. Responding to inquiries
+4. Important notices
+
+Article 6 Storage Location and Security
+1. Information stored in SK Hub Systems is stored in Firebase (Cloud Firestore and Firebase Authentication) by Google LLC. Cloud Firestore data is stored in the Tokyo region.
+2. Communications are encrypted with HTTPS. Only the Developer can read access check logs and the content of inquiries.
+
+Article 7 Retention Period
+1. Access check logs are deleted progressively once more than one year has passed since they were stored.
+2. Access restriction information is deleted when the restriction is lifted.
+3. The content of inquiries is deleted about one year after they have been handled.
+4. Where Service Terms specify a retention period, that period applies.
+
+Article 8 Provision to Third Parties
+The Developer does not provide the information it handles to third parties, except as required by law.
+
+Article 9 External Services
+The Services use the following external services. These services may receive IP addresses and the like when accessed. Their handling follows each company's privacy policy.
+(a) GitHub Pages (hosting the Site; GitHub, Inc.)
+(b) Firebase (SK Hub Systems; Google LLC)
+(c) Google Fonts (displaying text; Google LLC)
+
+Article 10 Information of Minors
+The Services are expected to be used by minors as well. The Developer strives not to handle more information than necessary.
+
+Article 11 Viewing and Deleting Information
+1. Clearing the browser's site data deletes the information stored in the browser.
+2. SK Hub Systems account information can be downloaded and deleted on the account page (https://sy9-k.github.io/account/).
+3. To request viewing or deletion of any other information stored on the server, please contact us through the contact page (https://sy9-k.github.io/contact/), including your support ID (shown on the Site's support page).
+
+Article 12 Changes
+If this Policy is changed, notice will be posted on the Site. For important changes, such as increasing the information handled, consent will be requested again.
+
+Supplementary Provisions
+1. This Policy takes effect on September 25, 2026.
+2. On September 26, 2026, Articles 1, 2, 6, and 11 were revised for the launch of the SK Hub Systems account.
+3. On September 26, 2026, inquiries moved from Google Forms to the SK Hub Systems contact form, and Articles 2, 4, 6, and 9 were revised.

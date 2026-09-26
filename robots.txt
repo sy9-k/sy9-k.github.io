@@ -4,5 +4,6 @@ Allow: /
 # 利用規約の同意・アクセス制限の画面と、開発者用のページは検索に載せない
 Disallow: /usercheck/
 Disallow: /inbox/
+Disallow: /studio/
 
 Sitemap: https://sy9-k.github.io/sitemap.xml

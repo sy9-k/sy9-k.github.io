@@ -74,6 +74,12 @@
   .hd-menu-list li { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
 
+/* 言語の切り替え（PC は地球のアイコンだけ。スマホの一覧では「言語」と出る） */
+.site-header > a.hd-lang { display: inline-flex; align-items: center; padding-left: 10px; padding-right: 10px; }
+.hd-lang svg { width: 17px; height: 17px; }
+.hd-lang-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 680px) { .site-header > a.hd-lang { display: none; } }
+
 /* 列に分けたメニュー（サポートと情報） */
 .hd-menu-groups { display: flex; flex-wrap: wrap; gap: 8px 72px; }
 .hd-menu-group { min-width: 200px; }

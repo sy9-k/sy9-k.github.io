@@ -1,0 +1,78 @@
+SK Terms of Service
+Established: September 25, 2026
+
+Article 1 Purpose and Scope
+1. These Terms set out the conditions of use that apply in common to the website, web apps, browser extension, and server platform provided by SK (the "Developer") (collectively, the "Services").
+2. The Services include the following:
+(a) The website "sy9-k.github.io" (including SK's Lab tools; the "Site")
+(b) The dictionary search app "MALU"
+(c) The browser extension "Y-FILTER." and its management console
+(d) The server platform "SK Hub Systems" and the "SK Hub Systems account"
+3. How information is handled in the Services is set out in the "SK Privacy Policy."
+4. The Developer may establish separate terms for individual services ("Service Terms"). Service Terms apply together with these Terms, and where they differ from these Terms, the Service Terms prevail for that service. The current Service Terms are:
+(a) Y-FILTER. Terms of Service and Privacy Policy
+(b) SK Hub Systems Terms of Service (Y-FILTER. remote management)
+(c) Newtab in Y-FILTER. Terms of Service
+(d) SK Hub Systems Account Terms
+
+Article 2 Consent
+1. Anyone who uses the Services ("Users") shall do so after agreeing to these Terms and the SK Privacy Policy.
+2. On the Site and MALU, a notice about these Terms and the SK Privacy Policy is shown on the first visit. Users are deemed to have agreed when they choose "Agree and close" or on their next visit.
+3. In Y-FILTER., consent is formed when the User agrees to these Terms, the SK Privacy Policy, and the Y-FILTER. Terms of Service and Privacy Policy on the consent screen at first launch.
+4. For the SK Hub Systems account, consent is formed when the User agrees to these Terms, the SK Privacy Policy, and the SK Hub Systems Account Terms when creating an account.
+5. Users who do not agree may be unable to use all or part of the Services.
+
+Article 3 Use by Minors
+1. Minors shall use the Services with the consent of a parent or guardian.
+2. For services that parents, schools, and others configure on behalf of users, such as Y-FILTER., consent to these Terms shall be given by a parent or an administrator entrusted by a parent.
+
+Article 4 Prohibited Conduct
+Users shall not engage in the following when using the Services:
+1. Unauthorized access to the Services or SK Hub Systems, excessive traffic, attacks, or attempts to circumvent access restrictions
+2. Interfering with the operation of the Services
+3. Impersonating others or infringing the rights of others
+4. Distributing or publishing modified versions of the Services, or anything made to look like the Services
+5. Acts that violate laws or public order and morals
+
+Article 5 Access Restrictions
+If a User violates, or the Developer determines that a User may violate, these Terms or any Service Terms, the Developer may, without prior notice, restrict that User's browser or device from using the Services and delete related information.
+
+Article 6 Intellectual Property
+1. Copyrights and other intellectual property rights in the Services (programs, designs, icons, logos, text, blocklists, and so on) belong to the Developer or the rightful owners.
+2. Users shall not redistribute all or part of the Services, or distribute or publish modified versions, without the Developer's permission. This does not apply to uses permitted by law.
+
+Article 7 External Services and Sites
+1. The Services use external services such as GitHub Pages and Google's Firebase and Google Fonts. The terms of each provider may apply to their use.
+2. External sites that the Services link to or display — such as the dictionary and translation sites opened from MALU, or Search3958's page shown by Newtab in Y-FILTER. — are provided by their respective operators. Please follow each operator's terms regarding their content and use.
+
+Article 8 Disclaimer of Warranties
+The Services are provided free of charge and as is. The Developer does not guarantee the accuracy or usefulness of the Services, their fitness for a particular purpose, or that they will be free of interruptions or defects.
+
+Article 9 Limitation of Liability
+1. The Developer is not liable for damages to Users arising from the use of, or inability to use, the Services, except in cases of the Developer's intent or gross negligence.
+2. The preceding paragraph does not apply where the Consumer Contract Act or other laws do not permit limiting the Developer's liability.
+
+Article 10 Changes, Suspension, and Termination of the Services
+The Developer may change the content of the Services or suspend or end them. Important changes and terminations will be announced in advance on the Site or within each service whenever possible.
+
+Article 11 Changes to the Terms
+1. The Developer may change these Terms and any Service Terms as needed. Changed terms take effect when posted on the Site or within each service.
+2. For important changes that are disadvantageous to Users, the Developer will give notice in advance on the Site or within each service and ask for consent again as needed.
+
+Article 12 Severability
+Even if part of these Terms is held invalid under law, the remaining parts remain in effect.
+
+Article 13 Governing Law and Jurisdiction
+1. These Terms and all Service Terms are governed by and construed in accordance with the laws of Japan.
+2. Any dispute concerning the Services shall be subject to the jurisdiction, in the first instance, of the district court or summary court with jurisdiction over the Developer's address. However, Users who are consumers may bring an action in the court with jurisdiction over their own address, as provided by law.
+
+Article 14 Language
+The official text of these Terms and all Service Terms is in Japanese.
+
+Article 15 Notices and Inquiries
+1. The Developer gives notices to Users by posting them on the Site or displaying them within each service.
+2. Inquiries about the Services and these Terms, and requests to view or delete information, are accepted on the Site's contact page (https://sy9-k.github.io/contact/).
+
+Supplementary Provisions
+1. These Terms take effect on September 25, 2026.
+2. On September 26, 2026, Articles 1 and 2 were revised for the launch of the SK Hub Systems account, and Article 7 was revised for the change in how inquiries are received.

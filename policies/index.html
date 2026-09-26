@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 多言語: /lang/ で選んだ言語で表示する（URL は変わらない）。ページの最後の translatePage() で訳す -->
+  <script src="/assets/i18n.js"></script>
   <title>利用規約・プライバシーポリシー | SK</title>
   <meta name="description" content="SK 利用規約・SK プライバシーポリシーと、SK Hub Systems アカウント・Y-FILTER. の利用規約。">
   <meta name="theme-color" content="#ffffff">
@@ -37,6 +39,7 @@
     <a class="hd-item" href="/#products" data-menu="products">プロダクト</a>
     <a class="hd-item" href="/support/" data-menu="support" data-no-navigation="true">サポートと情報</a>
     <a class="hd-item hd-account" href="/account/" data-menu="account" data-account-link>アカウント</a>
+    <a class="hd-item hd-lang" href="/lang/" data-lang-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg><span class="hd-lang-label">言語</span></a>
     <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
   </header>
   <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
@@ -148,10 +151,14 @@
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">SK</div>
+      <nav class="footer-langs" aria-label="Language" data-footer-langs></nav>
       <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
     </div>
   </footer>
 
+  <!-- ページを選んだ言語に訳す（ほかのスクリプトが動く前に。assets/i18n.js） -->
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <script src="/support/articles.js" defer></script>
   <script src="/assets/site.js" defer></script>
   <script src="/frameworks/check.js?check=none" defer></script>
 </body>

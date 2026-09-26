@@ -12,6 +12,7 @@
   const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
+  const t = window.SKI18N ? window.SKI18N.t : (s, v) => (v ? s.replace(/\{(\w+)\}/g, (m, k) => (v[k] != null ? v[k] : m)) : s);
   const form = document.querySelector("[data-contact]");
   if (!form) return;
   const done = document.querySelector("[data-contact-done]");
@@ -35,10 +36,10 @@
     const text = message.value.trim();
     const email = form.elements.email.value.trim();
     if (form.elements.website.value) return; // 人には見えない欄に入力がある = 機械的な送信
-    if (text.length < 5) { msg.textContent = "内容を 5 文字以上書いてください。"; message.focus(); return; }
-    if (email && !EMAIL_PATTERN.test(email)) { msg.textContent = "メールアドレスの形を確認してください。"; form.elements.email.focus(); return; }
+    if (text.length < 5) { msg.textContent = t("内容を 5 文字以上書いてください。"); message.focus(); return; }
+    if (email && !EMAIL_PATTERN.test(email)) { msg.textContent = t("メールアドレスの形を確認してください。"); form.elements.email.focus(); return; }
     const wait = COOLDOWN_MS - (Date.now() - lastSent());
-    if (wait > 0) { msg.textContent = `続けて送るには、あと ${Math.ceil(wait / 1000)} 秒お待ちください。`; return; }
+    if (wait > 0) { msg.textContent = t("続けて送るには、あと {n} 秒お待ちください。", { n: Math.ceil(wait / 1000) }); return; }
 
     const attach = form.elements.attach.checked;
     const id = supportId();
@@ -55,7 +56,7 @@
     };
 
     submit.disabled = true;
-    submit.textContent = "送信しています…";
+    submit.textContent = t("送信しています…");
     try {
       const res = await fetch(URL_, {
         method: "POST",
@@ -74,10 +75,10 @@
       form.reset();
       count.textContent = `0 / ${MAX}`;
     } catch (err) {
-      msg.textContent = "送信できませんでした。時間をおいてもう一度お試しください。続くときは、システム稼働状況をご確認ください。";
+      msg.textContent = t("送信できませんでした。時間をおいてもう一度お試しください。続くときは、システム稼働状況をご確認ください。");
     } finally {
       submit.disabled = false;
-      submit.textContent = "送信する";
+      submit.textContent = t("送信する");
     }
   });
 

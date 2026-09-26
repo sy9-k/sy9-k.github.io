@@ -116,7 +116,9 @@ export async function agreeLatestTerms(user) {
 
 // サービスのページから、ログイン・アカウントの作成を頼むときの URL（終わったら戻ってくる）
 export function accountPageUrl(next = location.pathname + location.search + location.hash) {
-  return `/account/?next=${encodeURIComponent(next)}`;
+  // いまの言語のアカウントのページ（assets/i18n.js があれば）
+  const base = window.SKI18N ? window.SKI18N.path("/account/") : "/account/";
+  return `${base}?next=${encodeURIComponent(next)}`;
 }
 
 // ?next= で受け取った戻り先。このサイトの中のページだけ許可する

@@ -13,20 +13,23 @@ const root = document.querySelector("[data-acct]");
 const $ = (sel) => root.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
 const next = safeNext(new URLSearchParams(location.search).get("next"));
+// 多言語（assets/i18n.js）
+const I18N = window.SKI18N;
+const t = I18N.t;
 
 let current = { status: "loading", user: null, account: null };
 let busy = false;
 
 const errText = (err) => {
   const code = err?.code || "";
-  if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return "ログインの画面が閉じられました。";
-  if (code === "auth/popup-blocked") return "ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。";
-  if (code === "auth/network-request-failed" || code === "unavailable") return "通信できませんでした。インターネットの接続を確認してください。";
-  if (code === "permission-denied") return "SK Hub Systems がこの操作を受け付けませんでした。時間をおいて再度お試しください。";
-  return `うまくいきませんでした（${code || err?.message || err}）`;
+  if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return t("ログインの画面が閉じられました。");
+  if (code === "auth/popup-blocked") return t("ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。");
+  if (code === "auth/network-request-failed" || code === "unavailable") return t("通信できませんでした。インターネットの接続を確認してください。");
+  if (code === "permission-denied") return t("SK Hub Systems がこの操作を受け付けませんでした。時間をおいて再度お試しください。");
+  return t("うまくいきませんでした（{code}）", { code: code || err?.message || err });
 };
 const toDate = (v) => (v && typeof v.toDate === "function" ? v.toDate() : v ? new Date(v) : null);
-const formatDate = (d) => (d ? `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日` : "-");
+const formatDate = (d) => (d ? I18N.date(d) : "-");
 
 function showView(name) {
   root.querySelectorAll("[data-acct-view]").forEach((el) => { el.hidden = el.dataset.acctView !== name; });
@@ -58,7 +61,7 @@ function userChip(user) {
   }
   const text = document.createElement("div");
   const name = document.createElement("strong");
-  name.textContent = user.displayName || "（名前なし）";
+  name.textContent = user.displayName || t("（名前なし）");
   const mail = document.createElement("small");
   mail.textContent = user.email || "";
   text.append(name, mail);
@@ -81,11 +84,11 @@ function render(state) {
     showView("register");
     $("[data-acct-user]").replaceChildren(userChip(user));
     const outdated = status === "outdated";
-    $("[data-acct-register-title]").textContent = outdated ? "規約が新しくなりました" : "アカウントを作成";
+    $("[data-acct-register-title]").textContent = outdated ? t("規約が新しくなりました") : t("アカウントを作成");
     $("[data-acct-register-lead]").textContent = outdated
-      ? "SK Hub Systems アカウント規約が新しくなりました。引き続き使うには、内容を確認して同意してください。"
-      : "この Google アカウントで SK Hub Systems アカウントを作成します。内容を確認して、同意してください。";
-    $("[data-acct-register]").textContent = outdated ? "同意して続ける" : "アカウントを作成";
+      ? t("SK Hub Systems アカウント規約が新しくなりました。引き続き使うには、内容を確認して同意してください。")
+      : t("この Google アカウントで SK Hub Systems アカウントを作成します。内容を確認して、同意してください。");
+    $("[data-acct-register]").textContent = outdated ? t("同意して続ける") : t("アカウントを作成");
     $("[data-acct-agree]").checked = false;
     $("[data-acct-register]").disabled = true;
     return;
@@ -103,11 +106,11 @@ function render(state) {
   letter.hidden = !!user.photoURL;
   if (user.photoURL) photo.src = user.photoURL;
   letter.textContent = (user.displayName || user.email || "?").trim().charAt(0).toUpperCase();
-  $("[data-acct-name]").textContent = user.displayName || "（名前なし）";
+  $("[data-acct-name]").textContent = user.displayName || t("（名前なし）");
   $("[data-acct-email]").textContent = user.email || "";
   $("[data-acct-uid]").textContent = user.uid;
   $("[data-acct-created]").textContent = formatDate(toDate(account.createdAt) || toDate(user.metadata?.creationTime));
-  $("[data-acct-terms]").textContent = `SK Hub Systems アカウント規約（${account.termsVersion} 版）に ${formatDate(toDate(account.termsAgreedAt))} に同意しています。`;
+  $("[data-acct-terms]").textContent = t("SK Hub Systems アカウント規約（{version} 版）に {date} に同意しています。", { version: account.termsVersion, date: formatDate(toDate(account.termsAgreedAt)) });
   renderConsole(user);
   // 開発者なら受信箱への入口を出す（config/developers は登録された本人だけが読める）
   getDoc(doc(db, "config", "developers"))
@@ -128,11 +131,11 @@ async function renderConsole(user) {
     const devices = own.data().count;
     const others = joined.docs.filter((d) => d.id !== user.uid).length;
     const parts = [];
-    if (devices) parts.push(`端末 ${devices} 台を管理中`);
-    if (others) parts.push(`ほかの ${others} グループの共同管理者`);
-    el.textContent = parts.length ? parts.join("・") : "端末の設定をまとめて管理できます";
+    if (devices) parts.push(t("端末 {n} 台を管理中", { n: devices }));
+    if (others) parts.push(t("ほかの {n} グループの共同管理者", { n: others }));
+    el.textContent = parts.length ? parts.join(" · ") : t("端末の設定をまとめて管理できます");
   } catch (e) {
-    el.textContent = "端末の設定をまとめて管理できます";
+    el.textContent = t("端末の設定をまとめて管理できます");
   }
 }
 
@@ -233,7 +236,7 @@ dialog.addEventListener("close", async () => {
   const btn = $("[data-acct-delete]");
   const user = current.user;
   setBusy(true, btn);
-  btn.textContent = "削除しています…";
+  btn.textContent = t("削除しています…");
   try {
     // 途中で止まらないように、データを消す前に Google で本人を確認する
     await confirmWithGoogle(user);
@@ -241,11 +244,11 @@ dialog.addEventListener("close", async () => {
     await deleteDoc(doc(db, "accounts", user.uid));
     await deleteLogin(user);
     showView("signed-out");
-    message("アカウントを削除しました。ご利用ありがとうございました。");
+    message(t("アカウントを削除しました。ご利用ありがとうございました。"));
   } catch (err) {
-    message(`削除できませんでした。${errText(err)}`);
+    message(t("削除できませんでした。{reason}", { reason: errText(err) }));
   } finally {
-    btn.textContent = "アカウントを削除する";
+    btn.textContent = t("アカウントを削除する");
     setBusy(false, btn);
   }
 });
@@ -276,7 +279,7 @@ async function deleteServiceData(uid) {
 
 // ヘッダーのメニューの「ログアウト」（/account/?signout=1）
 if (new URLSearchParams(location.search).has("signout")) {
-  history.replaceState(null, "", "/account/");
+  history.replaceState(null, "", I18N.path("/account/"));
   signOutAccount().finally(() => watchAccount(render));
 } else {
   watchAccount(render);

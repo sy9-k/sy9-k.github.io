@@ -13,7 +13,8 @@
   const SLOW_MS = 2500;
   const INTERVAL_MS = 5 * 60 * 1000;
 
-  const LABELS = { checking: "確認中", ok: "正常", slow: "遅延", down: "停止", setup: "準備中", unknown: "確認できません" };
+  const t = window.SKI18N ? window.SKI18N.t : (s) => s;
+  const LABELS = { checking: t("確認中"), ok: t("正常"), slow: t("遅延"), down: t("停止"), setup: t("準備中"), unknown: t("確認できません") };
 
   async function timed(url, options = {}) {
     const controller = new AbortController();
@@ -49,7 +50,7 @@
     async database() {
       const { res, ms } = await timed(`${FIRESTORE}/config/categories?mask.fieldPaths=version&key=${HUB.apiKey}`);
       if (res.status >= 500) return { state: "down", ms };
-      if (res.status === 403 && await isKeyRestricted(res)) return { state: "unknown", ms, note: "この場所からは確認できません" };
+      if (res.status === 403 && await isKeyRestricted(res)) return { state: "unknown", ms, note: t("この場所からは確認できません") };
       return { state: speed(ms), ms };
     },
     async blocklist() {
@@ -57,7 +58,7 @@
       if (res.ok) {
         const doc = await res.json();
         const version = doc.fields?.version?.integerValue;
-        return { state: speed(ms), ms, note: version ? `ブロックリスト 第 ${version} 版を配信中` : null };
+        return { state: speed(ms), ms, note: version ? t("ブロックリスト 第 {n} 版を配信中", { n: version }) : null };
       }
       if (res.status === 403 && await isKeyRestricted(res)) return { state: "unknown", ms };
       return { state: res.status === 404 ? "setup" : "down", ms };
@@ -74,7 +75,7 @@
     async login() {
       const { res, ms } = await timed(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/getProjectConfig?key=${HUB.apiKey}`);
       if (res.ok) return { state: speed(ms), ms };
-      if (res.status === 403 && await isKeyRestricted(res)) return { state: "unknown", ms, note: "この場所からは確認できません" };
+      if (res.status === 403 && await isKeyRestricted(res)) return { state: "unknown", ms, note: t("この場所からは確認できません") };
       return { state: res.status >= 500 ? "down" : "unknown", ms };
     },
     // お問い合わせの受け付け。中身は読めないルールなので、存在しないものを読んで 403（＝ルールどおり断られた）が返るか
@@ -112,7 +113,7 @@
   async function runAll() {
     refreshBtn.disabled = true;
     summary.dataset.state = "checking";
-    summaryText.textContent = "確認しています…";
+    summaryText.textContent = t("確認しています…");
     rows.forEach((row) => setRow(row, { state: "checking" }));
 
     const results = await Promise.all(rows.map(async (row) => {
@@ -127,15 +128,15 @@
     }));
 
     const has = (s) => results.includes(s);
-    if (has("down")) { summary.dataset.state = "down"; summaryText.textContent = "一部のシステムで問題が起きています"; }
-    else if (has("slow")) { summary.dataset.state = "slow"; summaryText.textContent = "一部のシステムの応答が遅くなっています"; }
-    else if (has("setup") || has("unknown")) { summary.dataset.state = "ok"; summaryText.textContent = "主なシステムは正常に動いています"; }
-    else { summary.dataset.state = "ok"; summaryText.textContent = "すべてのシステムは正常に動いています"; }
+    if (has("down")) { summary.dataset.state = "down"; summaryText.textContent = t("一部のシステムで問題が起きています"); }
+    else if (has("slow")) { summary.dataset.state = "slow"; summaryText.textContent = t("一部のシステムの応答が遅くなっています"); }
+    else if (has("setup") || has("unknown")) { summary.dataset.state = "ok"; summaryText.textContent = t("主なシステムは正常に動いています"); }
+    else { summary.dataset.state = "ok"; summaryText.textContent = t("すべてのシステムは正常に動いています"); }
     // 結果の文字をふわっと入れ直す（CSS の .is-in）
     summaryText.classList.remove("is-in");
     void summaryText.offsetWidth;
     summaryText.classList.add("is-in");
-    checkedAt.textContent = new Date().toLocaleString("ja-JP");
+    checkedAt.textContent = new Date().toLocaleString(window.SKI18N ? window.SKI18N.locale : "ja-JP");
     refreshBtn.disabled = false;
   }
 

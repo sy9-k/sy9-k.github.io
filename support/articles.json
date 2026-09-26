@@ -1,6 +1,14 @@
 {
-  "_note": "サポートの記事（お知らせとサポート記事）。type は news（お知らせ）か guide（サポート記事）。news で重要なものは important: true。本文 body は段落のリストで、{\"p\"} 段落 / {\"h\"} 小見出し / {\"steps\"} 手順 / {\"list\"} 箇条書き / {\"note\"} 補足。文中の [文字](URL) はリンクになる。id は URL（/support/?a=id）になるので英数字とハイフンで。",
-  "categories": ["MALU", "Y-FILTER.", "SK Hub Systems", "アカウント", "SK's Lab", "このサイト", "情報と規約"],
+  "_note": "サポートの記事の予備。記事は記事エディター（/studio/）で書き、SK Hub Systems に保存する。このファイルは SK Hub Systems に記事がない・届かないときだけ使われる（記事エディターの「バックアップを書き出す」で作り直せる）。type は news（お知らせ）か guide（サポート記事）。news で重要なものは important: true。本文 body は段落のリストで、{\"p\"} 段落 / {\"h\"} 小見出し / {\"steps\"} 手順 / {\"list\"} 箇条書き / {\"note\"} 補足。文中の [文字](URL) はリンクになる。id は URL（/support/?a=id）になるので英数字とハイフンで。 訳は各記事の i18n（en / zh-CN / zh-TW / ko の title・summary・body）。",
+  "categories": [
+    "MALU",
+    "Y-FILTER.",
+    "SK Hub Systems",
+    "アカウント",
+    "SK's Lab",
+    "このサイト",
+    "情報と規約"
+  ],
   "articles": [
     {
       "id": "sk-hub-account-launch",
@@ -10,12 +18,108 @@
       "title": "SK Hub Systems アカウントを始めました",
       "summary": "SK のサービスを、ひとつの Google アカウントで使えるようになります。",
       "body": [
-        { "p": "SK のサービスを、ひとつのアカウントで使えるように「SK Hub Systems アカウント」を始めました。ログインは Google アカウントだけで、パスワードを新しく作る必要はありません。" },
-        { "p": "まずは Y-FILTER. の管理コンソールがこのアカウントで使えます。これから増えるサービスも、同じアカウントで使えるようになります。" },
-        { "h": "管理コンソールをお使いの方へ" },
-        { "p": "次に管理コンソールにログインしたとき、アカウントの作成（規約への同意）の画面が開きます。同意すると、これまでどおり管理コンソールに戻ります。管理グループや端末はそのまま使えます。" },
-        { "note": "アカウントの確認・データのダウンロード・削除は [アカウント](/account/) のページからできます。規約は [SK Hub Systems アカウント規約](/policies/#sk-hub-account) で読めます。" }
-      ]
+        {
+          "p": "SK のサービスを、ひとつのアカウントで使えるように「SK Hub Systems アカウント」を始めました。ログインは Google アカウントだけで、パスワードを新しく作る必要はありません。"
+        },
+        {
+          "p": "まずは Y-FILTER. の管理コンソールがこのアカウントで使えます。これから増えるサービスも、同じアカウントで使えるようになります。"
+        },
+        {
+          "h": "管理コンソールをお使いの方へ"
+        },
+        {
+          "p": "次に管理コンソールにログインしたとき、アカウントの作成（規約への同意）の画面が開きます。同意すると、これまでどおり管理コンソールに戻ります。管理グループや端末はそのまま使えます。"
+        },
+        {
+          "note": "アカウントの確認・データのダウンロード・削除は [アカウント](/account/) のページからできます。規約は [SK Hub Systems アカウント規約](/policies/#sk-hub-account) で読めます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "SK Hub Systems accounts are here",
+          "summary": "Use SK services with a single Google account.",
+          "body": [
+            {
+              "p": "We launched the SK Hub Systems account so you can use SK services with one account. You sign in with a Google account only — no new password needed."
+            },
+            {
+              "p": "The Y-FILTER. management console works with this account first. Services we add later will use the same account too."
+            },
+            {
+              "h": "For management console users"
+            },
+            {
+              "p": "The next time you sign in to the management console, a screen to create your account (agree to the terms) opens. Once you agree, you're taken back to the console as usual. Your management groups and devices stay as they are."
+            },
+            {
+              "note": "You can view your account and download or delete your data on the [Account](/account/) page. The terms are in the [SK Hub Systems Account Terms](/policies/#sk-hub-account)."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "推出 SK Hub Systems 账户",
+          "summary": "可以用一个 Google 账号使用 SK 的各项服务。",
+          "body": [
+            {
+              "p": "为了让你用一个账户使用 SK 的各项服务，我们推出了“SK Hub Systems 账户”。仅使用 Google 账号登录，无需创建新密码。"
+            },
+            {
+              "p": "首先，Y-FILTER. 管理控制台可以使用此账户。今后新增的服务也可以使用同一个账户。"
+            },
+            {
+              "h": "致管理控制台的用户"
+            },
+            {
+              "p": "下次登录管理控制台时，会打开创建账户（同意条款）的界面。同意后会像以前一样返回管理控制台。管理群组和设备可以照常使用。"
+            },
+            {
+              "note": "可以在[账户](/account/)页面查看账户、下载或删除数据。条款可在[SK Hub Systems 账户条款](/policies/#sk-hub-account)中阅读。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "推出 SK Hub Systems 帳戶",
+          "summary": "可以用一個 Google 帳戶使用 SK 的各項服務。",
+          "body": [
+            {
+              "p": "為了讓你用一個帳戶使用 SK 的各項服務，我們推出了「SK Hub Systems 帳戶」。僅使用 Google 帳戶登入，不需要建立新密碼。"
+            },
+            {
+              "p": "首先，Y-FILTER. 管理主控台可以使用此帳戶。今後新增的服務也能使用同一個帳戶。"
+            },
+            {
+              "h": "致管理主控台的使用者"
+            },
+            {
+              "p": "下次登入管理主控台時，會開啟建立帳戶（同意條款）的畫面。同意後會像以往一樣回到管理主控台。管理群組和裝置可以照常使用。"
+            },
+            {
+              "note": "可以在[帳戶](/account/)頁面查看帳戶、下載或刪除資料。條款可在[SK Hub Systems 帳戶條款](/policies/#sk-hub-account)中閱讀。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "SK Hub Systems 계정을 시작했습니다",
+          "summary": "하나의 Google 계정으로 SK 서비스를 이용할 수 있게 됩니다.",
+          "body": [
+            {
+              "p": "SK의 서비스를 하나의 계정으로 이용할 수 있도록 'SK Hub Systems 계정'을 시작했습니다. 로그인은 Google 계정으로만 하며, 비밀번호를 새로 만들 필요가 없습니다."
+            },
+            {
+              "p": "우선 Y-FILTER. 관리 콘솔에서 이 계정을 사용할 수 있습니다. 앞으로 늘어날 서비스도 같은 계정으로 이용할 수 있게 됩니다."
+            },
+            {
+              "h": "관리 콘솔을 사용하시는 분께"
+            },
+            {
+              "p": "다음에 관리 콘솔에 로그인하면 계정 만들기(약관 동의) 화면이 열립니다. 동의하면 지금까지처럼 관리 콘솔로 돌아갑니다. 관리 그룹과 기기는 그대로 사용할 수 있습니다."
+            },
+            {
+              "note": "계정 확인·데이터 다운로드·삭제는 [계정](/account/) 페이지에서 할 수 있습니다. 약관은 [SK Hub Systems 계정 약관](/policies/#sk-hub-account)에서 볼 수 있습니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "yfilter-sk-terms-required",
@@ -26,11 +130,93 @@
       "title": "Y-FILTER. をお使いの方へ：SK 利用規約への同意をお願いします",
       "summary": "Y-FILTER. では、SK 利用規約と SK プライバシーポリシーへの同意が必要になりました。",
       "body": [
-        { "p": "Y-FILTER. では、SK 利用規約と SK プライバシーポリシーへの同意が必要になりました。" },
-        { "p": "これまで Y-FILTER. の規約にだけ同意していた場合は、更新後に同意の画面が開き、同意するまでフィルタリングを停止します。同意すると自動で再開します。" },
-        { "note": "同意の手順は [更新後に同意の画面が開き、フィルタリングが止まったとき](/support/?a=yfilter-consent-after-update) をご覧ください。" },
-        { "p": "規約の内容は [SK 利用規約](/policies/#sk-terms) と [SK プライバシーポリシー](/policies/#sk-privacy) で読めます。" }
-      ]
+        {
+          "p": "Y-FILTER. では、SK 利用規約と SK プライバシーポリシーへの同意が必要になりました。"
+        },
+        {
+          "p": "これまで Y-FILTER. の規約にだけ同意していた場合は、更新後に同意の画面が開き、同意するまでフィルタリングを停止します。同意すると自動で再開します。"
+        },
+        {
+          "note": "同意の手順は [更新後に同意の画面が開き、フィルタリングが止まったとき](/support/?a=yfilter-consent-after-update) をご覧ください。"
+        },
+        {
+          "p": "規約の内容は [SK 利用規約](/policies/#sk-terms) と [SK プライバシーポリシー](/policies/#sk-privacy) で読めます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "For Y-FILTER. users: please agree to the SK Terms of Service",
+          "summary": "Y-FILTER. now requires agreeing to the SK Terms of Service and the SK Privacy Policy.",
+          "body": [
+            {
+              "p": "Y-FILTER. now requires agreeing to the SK Terms of Service and the SK Privacy Policy."
+            },
+            {
+              "p": "If you had only agreed to Y-FILTER.'s own terms, a consent screen opens after the update and filtering pauses until you agree. It resumes automatically once you agree."
+            },
+            {
+              "note": "For the steps, see [A consent screen opened after an update and filtering stopped](/support/?a=yfilter-consent-after-update)."
+            },
+            {
+              "p": "You can read the [SK Terms of Service](/policies/#sk-terms) and the [SK Privacy Policy](/policies/#sk-privacy)."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "致 Y-FILTER. 用户：请同意 SK 使用条款",
+          "summary": "Y-FILTER. 现在需要同意 SK 使用条款和 SK 隐私政策。",
+          "body": [
+            {
+              "p": "Y-FILTER. 现在需要同意 SK 使用条款和 SK 隐私政策。"
+            },
+            {
+              "p": "如果此前只同意了 Y-FILTER. 的条款，更新后会打开同意界面，在同意之前将暂停过滤。同意后会自动恢复。"
+            },
+            {
+              "note": "同意步骤请参阅[更新后打开同意界面、过滤停止时](/support/?a=yfilter-consent-after-update)。"
+            },
+            {
+              "p": "条款内容可在[SK 使用条款](/policies/#sk-terms)和[SK 隐私政策](/policies/#sk-privacy)中阅读。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "致 Y-FILTER. 使用者：請同意 SK 使用條款",
+          "summary": "Y-FILTER. 現在需要同意 SK 使用條款與 SK 隱私權政策。",
+          "body": [
+            {
+              "p": "Y-FILTER. 現在需要同意 SK 使用條款與 SK 隱私權政策。"
+            },
+            {
+              "p": "如果先前只同意了 Y-FILTER. 的條款，更新後會開啟同意畫面，在同意之前將暫停過濾。同意後會自動恢復。"
+            },
+            {
+              "note": "同意步驟請參閱[更新後開啟同意畫面、過濾停止時](/support/?a=yfilter-consent-after-update)。"
+            },
+            {
+              "p": "條款內容可在[SK 使用條款](/policies/#sk-terms)和[SK 隱私權政策](/policies/#sk-privacy)中閱讀。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "Y-FILTER. 사용자분께: SK 이용약관에 동의해 주세요",
+          "summary": "Y-FILTER.에서 SK 이용약관과 SK 개인정보 처리방침에 대한 동의가 필요해졌습니다.",
+          "body": [
+            {
+              "p": "Y-FILTER.에서 SK 이용약관과 SK 개인정보 처리방침에 대한 동의가 필요해졌습니다."
+            },
+            {
+              "p": "지금까지 Y-FILTER. 약관에만 동의했다면, 업데이트 후 동의 화면이 열리고 동의할 때까지 필터링을 멈춥니다. 동의하면 자동으로 다시 시작합니다."
+            },
+            {
+              "note": "동의 방법은 [업데이트 후 동의 화면이 열리고 필터링이 멈췄을 때](/support/?a=yfilter-consent-after-update)를 확인해 주세요."
+            },
+            {
+              "p": "약관 내용은 [SK 이용약관](/policies/#sk-terms)과 [SK 개인정보 처리방침](/policies/#sk-privacy)에서 볼 수 있습니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "sk-terms-established",
@@ -41,10 +227,78 @@
       "title": "SK 利用規約・SK プライバシーポリシーを制定しました",
       "summary": "このサイト・MALU・SK's Lab・Y-FILTER.・SK Hub Systems に共通の規約です。",
       "body": [
-        { "p": "このサイト・MALU・SK's Lab・Y-FILTER.・SK Hub Systems に共通の規約として、SK 利用規約と SK プライバシーポリシーを制定しました。" },
-        { "p": "このサイトと MALU では、初めてアクセスしたときに右下にお知らせを表示します。Y-FILTER. では、初回起動時の同意の画面で同意します。" },
-        { "p": "Y-FILTER. には、これに加えて Y-FILTER. の個別の規約が適用されます。すべての規約は [利用規約・プライバシーポリシー](/policies/) のページにまとめています。" }
-      ]
+        {
+          "p": "このサイト・MALU・SK's Lab・Y-FILTER.・SK Hub Systems に共通の規約として、SK 利用規約と SK プライバシーポリシーを制定しました。"
+        },
+        {
+          "p": "このサイトと MALU では、初めてアクセスしたときに右下にお知らせを表示します。Y-FILTER. では、初回起動時の同意の画面で同意します。"
+        },
+        {
+          "p": "Y-FILTER. には、これに加えて Y-FILTER. の個別の規約が適用されます。すべての規約は [利用規約・プライバシーポリシー](/policies/) のページにまとめています。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "The SK Terms of Service and SK Privacy Policy are now in effect",
+          "summary": "Common terms for this site, MALU, SK's Lab, Y-FILTER., and SK Hub Systems.",
+          "body": [
+            {
+              "p": "We established the SK Terms of Service and the SK Privacy Policy as common terms for this site, MALU, SK's Lab, Y-FILTER., and SK Hub Systems."
+            },
+            {
+              "p": "On this site and MALU, a notice appears in the bottom right on your first visit. In Y-FILTER., you agree on the consent screen when it first starts."
+            },
+            {
+              "p": "Y-FILTER. also has its own additional terms. All terms are collected on the [Terms of Service & Privacy Policy](/policies/) page."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "制定 SK 使用条款和 SK 隐私政策",
+          "summary": "适用于本网站、MALU、SK's Lab、Y-FILTER. 和 SK Hub Systems 的通用条款。",
+          "body": [
+            {
+              "p": "我们制定了 SK 使用条款和 SK 隐私政策，作为本网站、MALU、SK's Lab、Y-FILTER. 和 SK Hub Systems 的通用条款。"
+            },
+            {
+              "p": "在本网站和 MALU 中，首次访问时会在右下角显示通知。在 Y-FILTER. 中，首次启动时在同意界面中同意。"
+            },
+            {
+              "p": "Y-FILTER. 另外还适用 Y-FILTER. 的单独条款。所有条款都汇集在[使用条款、隐私政策](/policies/)页面。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "制定 SK 使用條款與 SK 隱私權政策",
+          "summary": "適用於本網站、MALU、SK's Lab、Y-FILTER. 和 SK Hub Systems 的共通條款。",
+          "body": [
+            {
+              "p": "我們制定了 SK 使用條款與 SK 隱私權政策，作為本網站、MALU、SK's Lab、Y-FILTER. 和 SK Hub Systems 的共通條款。"
+            },
+            {
+              "p": "在本網站和 MALU 中，第一次造訪時會在右下角顯示通知。在 Y-FILTER. 中，首次啟動時在同意畫面中同意。"
+            },
+            {
+              "p": "Y-FILTER. 另外還適用 Y-FILTER. 的個別條款。所有條款都彙整在[使用條款、隱私權政策](/policies/)頁面。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "SK 이용약관·SK 개인정보 처리방침을 제정했습니다",
+          "summary": "이 사이트·MALU·SK's Lab·Y-FILTER.·SK Hub Systems에 공통인 약관입니다.",
+          "body": [
+            {
+              "p": "이 사이트·MALU·SK's Lab·Y-FILTER.·SK Hub Systems에 공통인 약관으로 SK 이용약관과 SK 개인정보 처리방침을 제정했습니다."
+            },
+            {
+              "p": "이 사이트와 MALU에서는 처음 접속했을 때 오른쪽 아래에 안내를 표시합니다. Y-FILTER.에서는 처음 실행할 때 동의 화면에서 동의합니다."
+            },
+            {
+              "p": "Y-FILTER.에는 이에 더해 Y-FILTER.의 개별 약관이 적용됩니다. 모든 약관은 [이용약관·개인정보 처리방침](/policies/) 페이지에 모아 두었습니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "search3958-remote-migration",
@@ -54,14 +308,98 @@
       "title": "Search3958 の遠隔設定をお使いだった方へ",
       "summary": "Y-FILTER. の遠隔設定は、Search3958 のシステムから SK が運営する独自のシステムに移行しました。",
       "body": [
-        { "p": "Y-FILTER. の遠隔設定は、これまで Search3958 のシステムを使わせてもらっていました。SK が運営する独自のシステム（現在の SK Hub Systems）に移行しました。" },
-        { "list": [
-          "以前の仕組みで端末に保存されていた情報は、Y-FILTER. の更新時に削除されます。",
-          "以前の仕組みで Search3958 のサーバーに保存された情報の取り扱いは、Search3958 の定めに従います。",
-          "遠隔管理を続けるには、管理コンソールでペアリングコードを発行して、端末を接続し直してください。"
-        ] },
-        { "p": "新しいしくみについては [SK Hub Systems](/sk-hub-systems/) のページをご覧ください。" }
-      ]
+        {
+          "p": "Y-FILTER. の遠隔設定は、これまで Search3958 のシステムを使わせてもらっていました。SK が運営する独自のシステム（現在の SK Hub Systems）に移行しました。"
+        },
+        {
+          "list": [
+            "以前の仕組みで端末に保存されていた情報は、Y-FILTER. の更新時に削除されます。",
+            "以前の仕組みで Search3958 のサーバーに保存された情報の取り扱いは、Search3958 の定めに従います。",
+            "遠隔管理を続けるには、管理コンソールでペアリングコードを発行して、端末を接続し直してください。"
+          ]
+        },
+        {
+          "p": "新しいしくみについては [SK Hub Systems](/sk-hub-systems/) のページをご覧ください。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "For users of Search3958's remote settings",
+          "summary": "Y-FILTER.'s remote settings moved from Search3958's system to SK's own system.",
+          "body": [
+            {
+              "p": "Y-FILTER.'s remote settings had been using Search3958's system. They have moved to SK's own system (now SK Hub Systems)."
+            },
+            {
+              "list": [
+                "Data stored on devices by the old system is deleted when Y-FILTER. updates.",
+                "Data stored on Search3958's servers by the old system is handled under Search3958's policies.",
+                "To keep using remote management, issue a pairing code in the management console and reconnect your devices."
+              ]
+            },
+            {
+              "p": "For the new setup, see the [SK Hub Systems](/sk-hub-systems/) page."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "致曾使用 Search3958 远程设置的用户",
+          "summary": "Y-FILTER. 的远程设置已从 Search3958 的系统迁移到由 SK 运营的自有系统。",
+          "body": [
+            {
+              "p": "Y-FILTER. 的远程设置此前使用 Search3958 的系统，现已迁移到由 SK 运营的自有系统（即现在的 SK Hub Systems）。"
+            },
+            {
+              "list": [
+                "旧系统保存在设备上的信息会在 Y-FILTER. 更新时删除。",
+                "旧系统保存在 Search3958 服务器上的信息，按 Search3958 的规定处理。",
+                "如需继续使用远程管理，请在管理控制台发放配对码并重新连接设备。"
+              ]
+            },
+            {
+              "p": "关于新的工作原理，请参阅 [SK Hub Systems](/sk-hub-systems/) 页面。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "致曾使用 Search3958 遠端設定的使用者",
+          "summary": "Y-FILTER. 的遠端設定已從 Search3958 的系統轉移到由 SK 營運的自有系統。",
+          "body": [
+            {
+              "p": "Y-FILTER. 的遠端設定先前使用 Search3958 的系統，現已轉移到由 SK 營運的自有系統（即現在的 SK Hub Systems）。"
+            },
+            {
+              "list": [
+                "舊系統儲存在裝置上的資訊會在 Y-FILTER. 更新時刪除。",
+                "舊系統儲存在 Search3958 伺服器上的資訊，依 Search3958 的規定處理。",
+                "若要繼續使用遠端管理，請在管理主控台發放配對碼並重新連線裝置。"
+              ]
+            },
+            {
+              "p": "關於新的運作方式，請參閱 [SK Hub Systems](/sk-hub-systems/) 頁面。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "Search3958의 원격 설정을 사용하시던 분께",
+          "summary": "Y-FILTER.의 원격 설정은 Search3958의 시스템에서 SK가 운영하는 자체 시스템으로 이전했습니다.",
+          "body": [
+            {
+              "p": "Y-FILTER.의 원격 설정은 그동안 Search3958의 시스템을 사용했습니다. SK가 운영하는 자체 시스템(현재의 SK Hub Systems)으로 이전했습니다."
+            },
+            {
+              "list": [
+                "이전 방식으로 기기에 저장된 정보는 Y-FILTER. 업데이트 시 삭제됩니다.",
+                "이전 방식으로 Search3958의 서버에 저장된 정보는 Search3958의 규정에 따라 처리됩니다.",
+                "원격 관리를 계속하려면 관리 콘솔에서 페어링 코드를 발급해 기기를 다시 연결해 주세요."
+              ]
+            },
+            {
+              "p": "새로운 구조는 [SK Hub Systems](/sk-hub-systems/) 페이지를 확인해 주세요."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "renamed-sk-hub-systems",
@@ -71,11 +409,64 @@
       "title": "Y-FILTER. Systems は SK Hub Systems に名前が変わりました",
       "summary": "名前の変更のみで、しくみや取り扱う情報は変わりません。",
       "body": [
-        { "p": "Y-FILTER. の遠隔管理を支えるサーバー基盤「Y-FILTER. Systems」は、このサイトのアクセスチェックも担うようになり、名前を「SK Hub Systems」に変えました。" },
-        { "p": "名前の変更のみで、しくみや取り扱う情報は変わりません。管理コンソールや Y-FILTER. の設定画面の表示も、順次新しい名前になります。" }
-      ]
+        {
+          "p": "Y-FILTER. の遠隔管理を支えるサーバー基盤「Y-FILTER. Systems」は、このサイトのアクセスチェックも担うようになり、名前を「SK Hub Systems」に変えました。"
+        },
+        {
+          "p": "名前の変更のみで、しくみや取り扱う情報は変わりません。管理コンソールや Y-FILTER. の設定画面の表示も、順次新しい名前になります。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Y-FILTER. Systems is now called SK Hub Systems",
+          "summary": "Only the name has changed. How it works and the information it handles stay the same.",
+          "body": [
+            {
+              "p": "Y-FILTER. Systems, the server platform behind Y-FILTER. remote management, now also handles this site's access checks, so it was renamed SK Hub Systems."
+            },
+            {
+              "p": "Only the name has changed. How it works and the information it handles stay the same. The management console and Y-FILTER.'s settings will gradually show the new name."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "Y-FILTER. Systems 更名为 SK Hub Systems",
+          "summary": "仅更改了名称，工作原理和处理的信息均未改变。",
+          "body": [
+            {
+              "p": "支撑 Y-FILTER. 远程管理的服务器平台“Y-FILTER. Systems”开始负责本网站的访问检查，因此更名为“SK Hub Systems”。"
+            },
+            {
+              "p": "仅更改了名称，工作原理和处理的信息均未改变。管理控制台和 Y-FILTER. 设置界面的显示也会逐步改为新名称。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "Y-FILTER. Systems 更名為 SK Hub Systems",
+          "summary": "僅變更了名稱，運作方式和處理的資訊皆未改變。",
+          "body": [
+            {
+              "p": "支撐 Y-FILTER. 遠端管理的伺服器平台「Y-FILTER. Systems」開始負責本網站的存取檢查，因此更名為「SK Hub Systems」。"
+            },
+            {
+              "p": "僅變更了名稱，運作方式和處理的資訊皆未改變。管理主控台和 Y-FILTER. 設定畫面的顯示也會陸續改為新名稱。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "Y-FILTER. Systems의 이름이 SK Hub Systems로 바뀌었습니다",
+          "summary": "이름만 바뀌었으며, 구조나 다루는 정보는 달라지지 않습니다.",
+          "body": [
+            {
+              "p": "Y-FILTER.의 원격 관리를 지탱하는 서버 기반 'Y-FILTER. Systems'가 이 사이트의 접근 확인도 맡게 되면서 이름을 'SK Hub Systems'로 바꾸었습니다."
+            },
+            {
+              "p": "이름만 바뀌었으며, 구조나 다루는 정보는 달라지지 않습니다. 관리 콘솔과 Y-FILTER. 설정 화면의 표시도 차례로 새 이름으로 바뀝니다."
+            }
+          ]
+        }
+      }
     },
-
     {
       "id": "malu-add-to-home",
       "type": "guide",
@@ -84,12 +475,138 @@
       "title": "MALU をホーム画面に追加する",
       "summary": "ホーム画面に追加すると、アプリのようにすぐ開けます。",
       "body": [
-        { "h": "パソコン（Chrome・Edge）" },
-        { "steps": ["MALU を開きます。", "アドレスバーの右側にあるインストールのボタンを押すか、画面に出る「ホーム画面に追加できます」の「追加」を押します。"] },
-        { "h": "iPhone・iPad（Safari）" },
-        { "steps": ["Safari で MALU を開きます。", "共有ボタンを押し、「ホーム画面に追加」を選びます。"] },
-        { "p": "スマートフォンやタブレットでも、ブラウザで開けばそのまま使えます。" }
-      ]
+        {
+          "h": "パソコン（Chrome・Edge）"
+        },
+        {
+          "steps": [
+            "MALU を開きます。",
+            "アドレスバーの右側にあるインストールのボタンを押すか、画面に出る「ホーム画面に追加できます」の「追加」を押します。"
+          ]
+        },
+        {
+          "h": "iPhone・iPad（Safari）"
+        },
+        {
+          "steps": [
+            "Safari で MALU を開きます。",
+            "共有ボタンを押し、「ホーム画面に追加」を選びます。"
+          ]
+        },
+        {
+          "p": "スマートフォンやタブレットでも、ブラウザで開けばそのまま使えます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Add MALU to your home screen",
+          "summary": "Add it to your home screen to open it instantly, like an app.",
+          "body": [
+            {
+              "h": "Computer (Chrome, Edge)"
+            },
+            {
+              "steps": [
+                "Open MALU.",
+                "Click the install button on the right side of the address bar, or click \"Add\" on the \"You can add this to your home screen\" prompt."
+              ]
+            },
+            {
+              "h": "iPhone, iPad (Safari)"
+            },
+            {
+              "steps": [
+                "Open MALU in Safari.",
+                "Tap the Share button and choose \"Add to Home Screen.\""
+              ]
+            },
+            {
+              "p": "On phones and tablets, you can also just open it in the browser and use it right away."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "将 MALU 添加到主屏幕",
+          "summary": "添加到主屏幕后，可以像应用一样快速打开。",
+          "body": [
+            {
+              "h": "电脑（Chrome、Edge）"
+            },
+            {
+              "steps": [
+                "打开 MALU。",
+                "点击地址栏右侧的安装按钮，或点击界面上“可以添加到主屏幕”提示中的“添加”。"
+              ]
+            },
+            {
+              "h": "iPhone、iPad（Safari）"
+            },
+            {
+              "steps": [
+                "在 Safari 中打开 MALU。",
+                "点击分享按钮，选择“添加到主屏幕”。"
+              ]
+            },
+            {
+              "p": "在手机和平板上，直接用浏览器打开也能使用。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "將 MALU 加入主畫面",
+          "summary": "加入主畫面後，可以像應用程式一樣快速開啟。",
+          "body": [
+            {
+              "h": "電腦（Chrome、Edge）"
+            },
+            {
+              "steps": [
+                "開啟 MALU。",
+                "點選網址列右側的安裝按鈕，或點選畫面上「可以加入主畫面」提示中的「新增」。"
+              ]
+            },
+            {
+              "h": "iPhone、iPad（Safari）"
+            },
+            {
+              "steps": [
+                "在 Safari 中開啟 MALU。",
+                "點選分享按鈕，選擇「加入主畫面」。"
+              ]
+            },
+            {
+              "p": "在手機和平板上，直接用瀏覽器開啟也能使用。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "MALU를 홈 화면에 추가하기",
+          "summary": "홈 화면에 추가하면 앱처럼 바로 열 수 있습니다.",
+          "body": [
+            {
+              "h": "컴퓨터(Chrome·Edge)"
+            },
+            {
+              "steps": [
+                "MALU를 엽니다.",
+                "주소창 오른쪽의 설치 버튼을 누르거나, 화면에 나오는 '홈 화면에 추가할 수 있습니다'의 '추가'를 누릅니다."
+              ]
+            },
+            {
+              "h": "iPhone·iPad(Safari)"
+            },
+            {
+              "steps": [
+                "Safari에서 MALU를 엽니다.",
+                "공유 버튼을 누르고 '홈 화면에 추가'를 선택합니다."
+              ]
+            },
+            {
+              "p": "스마트폰이나 태블릿에서도 브라우저로 열면 그대로 쓸 수 있습니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "malu-popup-blocked",
@@ -99,9 +616,83 @@
       "title": "MALU で検索しても辞書のページが開かないとき",
       "summary": "ブラウザのポップアップブロックを確認してください。",
       "body": [
-        { "p": "MALU は、選んだ辞書のサイトを新しいタブで開きます。ブラウザのポップアップブロックが有効だと、開かないことがあります。" },
-        { "steps": ["アドレスバーの右側に出る「ポップアップがブロックされました」のアイコンを押します。", "sy9-k.github.io のポップアップを「常に許可」にします。", "もう一度検索します。"] }
-      ]
+        {
+          "p": "MALU は、選んだ辞書のサイトを新しいタブで開きます。ブラウザのポップアップブロックが有効だと、開かないことがあります。"
+        },
+        {
+          "steps": [
+            "アドレスバーの右側に出る「ポップアップがブロックされました」のアイコンを押します。",
+            "sy9-k.github.io のポップアップを「常に許可」にします。",
+            "もう一度検索します。"
+          ]
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "When searching in MALU doesn't open the dictionary page",
+          "summary": "Check your browser's pop-up blocker.",
+          "body": [
+            {
+              "p": "MALU opens the chosen dictionary's site in a new tab. If your browser's pop-up blocker is on, it may not open."
+            },
+            {
+              "steps": [
+                "Click the \"Pop-up blocked\" icon on the right side of the address bar.",
+                "Set pop-ups for sy9-k.github.io to \"Always allow.\"",
+                "Search again."
+              ]
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "在 MALU 中搜索后词典页面没有打开时",
+          "summary": "请检查浏览器的弹出窗口拦截设置。",
+          "body": [
+            {
+              "p": "MALU 会在新标签页中打开所选词典的网站。如果浏览器开启了弹出窗口拦截，可能无法打开。"
+            },
+            {
+              "steps": [
+                "点击地址栏右侧出现的“已拦截弹出窗口”图标。",
+                "将 sy9-k.github.io 的弹出窗口设为“始终允许”。",
+                "再次搜索。"
+              ]
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "在 MALU 搜尋後字典頁面沒有開啟時",
+          "summary": "請檢查瀏覽器的彈出式視窗封鎖設定。",
+          "body": [
+            {
+              "p": "MALU 會在新分頁中開啟所選字典的網站。如果瀏覽器開啟了彈出式視窗封鎖，可能無法開啟。"
+            },
+            {
+              "steps": [
+                "點選網址列右側出現的「已封鎖彈出式視窗」圖示。",
+                "將 sy9-k.github.io 的彈出式視窗設為「一律允許」。",
+                "再搜尋一次。"
+              ]
+            }
+          ]
+        },
+        "ko": {
+          "title": "MALU에서 검색해도 사전 페이지가 열리지 않을 때",
+          "summary": "브라우저의 팝업 차단을 확인해 주세요.",
+          "body": [
+            {
+              "p": "MALU는 선택한 사전의 사이트를 새 탭에서 엽니다. 브라우저의 팝업 차단이 켜져 있으면 열리지 않을 수 있습니다."
+            },
+            {
+              "steps": [
+                "주소창 오른쪽에 나오는 '팝업이 차단됨' 아이콘을 누릅니다.",
+                "sy9-k.github.io의 팝업을 '항상 허용'으로 설정합니다.",
+                "다시 검색합니다."
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "id": "malu-history-data",
@@ -111,15 +702,139 @@
       "title": "MALU の検索履歴と、保存される情報",
       "summary": "検索語・履歴・設定はブラウザの中だけに保存され、送信されません。",
       "body": [
-        { "p": "MALU の検索語・検索履歴・設定は、お使いのブラウザの中だけに保存されます。サーバーに送ったり、ほかの端末と同期したりはしません。" },
-        { "h": "検索履歴を消す" },
-        { "steps": ["MALU の右上の設定ボタンを押します。", "「検索履歴」の「履歴を消去」を押します。"] },
-        { "h": "オフラインのとき" },
-        { "p": "MALU の画面自体は開けますが、辞書はそれぞれの外部サイトを開くため、検索にはインターネット接続が必要です。" },
-        { "note": "ほしい辞書があれば、サイトの名前と URL を添えて [お問い合わせ](/contact/) ください。" }
-      ]
+        {
+          "p": "MALU の検索語・検索履歴・設定は、お使いのブラウザの中だけに保存されます。サーバーに送ったり、ほかの端末と同期したりはしません。"
+        },
+        {
+          "h": "検索履歴を消す"
+        },
+        {
+          "steps": [
+            "MALU の右上の設定ボタンを押します。",
+            "「検索履歴」の「履歴を消去」を押します。"
+          ]
+        },
+        {
+          "h": "オフラインのとき"
+        },
+        {
+          "p": "MALU の画面自体は開けますが、辞書はそれぞれの外部サイトを開くため、検索にはインターネット接続が必要です。"
+        },
+        {
+          "note": "ほしい辞書があれば、サイトの名前と URL を添えて [お問い合わせ](/contact/) ください。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "MALU's search history and what's stored",
+          "summary": "Search terms, history, and settings are stored only in your browser and never sent.",
+          "body": [
+            {
+              "p": "MALU's search terms, search history, and settings are stored only in your browser. They're never sent to a server or synced to other devices."
+            },
+            {
+              "h": "Clearing your search history"
+            },
+            {
+              "steps": [
+                "Tap the settings button in the top right of MALU.",
+                "Under \"Search history,\" tap \"Clear history.\""
+              ]
+            },
+            {
+              "h": "When you're offline"
+            },
+            {
+              "p": "MALU itself opens offline, but searching needs an internet connection because each dictionary is an external site."
+            },
+            {
+              "note": "If there's a dictionary you'd like added, [contact us](/contact/) with its name and URL."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "MALU 的搜索记录与保存的信息",
+          "summary": "搜索词、记录和设置只保存在浏览器中，不会发送。",
+          "body": [
+            {
+              "p": "MALU 的搜索词、搜索记录和设置只保存在你使用的浏览器中，不会发送到服务器，也不会与其他设备同步。"
+            },
+            {
+              "h": "清除搜索记录"
+            },
+            {
+              "steps": [
+                "点击 MALU 右上角的设置按钮。",
+                "在“搜索记录”中点击“清除记录”。"
+              ]
+            },
+            {
+              "h": "离线时"
+            },
+            {
+              "p": "MALU 界面本身可以打开，但词典需要打开各外部网站，因此搜索需要联网。"
+            },
+            {
+              "note": "如果有想添加的词典，请附上网站名称和网址[联系我们](/contact/)。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "MALU 的搜尋紀錄與儲存的資訊",
+          "summary": "搜尋字詞、紀錄和設定只儲存在瀏覽器中，不會傳送。",
+          "body": [
+            {
+              "p": "MALU 的搜尋字詞、搜尋紀錄和設定只儲存在你使用的瀏覽器中，不會傳送到伺服器，也不會與其他裝置同步。"
+            },
+            {
+              "h": "清除搜尋紀錄"
+            },
+            {
+              "steps": [
+                "點選 MALU 右上角的設定按鈕。",
+                "在「搜尋紀錄」中點選「清除紀錄」。"
+              ]
+            },
+            {
+              "h": "離線時"
+            },
+            {
+              "p": "MALU 畫面本身可以開啟，但字典需要開啟各外部網站，因此搜尋需要連上網路。"
+            },
+            {
+              "note": "如果有想新增的字典，請附上網站名稱和網址[聯絡我們](/contact/)。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "MALU의 검색 기록과 저장되는 정보",
+          "summary": "검색어·기록·설정은 브라우저 안에만 저장되며 전송되지 않습니다.",
+          "body": [
+            {
+              "p": "MALU의 검색어·검색 기록·설정은 사용 중인 브라우저 안에만 저장됩니다. 서버로 보내거나 다른 기기와 동기화하지 않습니다."
+            },
+            {
+              "h": "검색 기록 지우기"
+            },
+            {
+              "steps": [
+                "MALU 오른쪽 위의 설정 버튼을 누릅니다.",
+                "'검색 기록'의 '기록 지우기'를 누릅니다."
+              ]
+            },
+            {
+              "h": "오프라인일 때"
+            },
+            {
+              "p": "MALU 화면 자체는 열리지만, 사전은 각각의 외부 사이트를 열기 때문에 검색하려면 인터넷 연결이 필요합니다."
+            },
+            {
+              "note": "원하는 사전이 있으면 사이트 이름과 URL을 첨부해 [문의](/contact/)해 주세요."
+            }
+          ]
+        }
+      }
     },
-
     {
       "id": "yfilter-release",
       "type": "guide",
@@ -128,9 +843,63 @@
       "title": "Y-FILTER. はいつから使えますか？",
       "summary": "現在開発中で、一般向けの配布はまだ行っていません。",
       "body": [
-        { "p": "Y-FILTER. は現在開発中で、一般向けの配布はまだ行っていません。公開日は未定です。" },
-        { "p": "準備ができたら、[Y-FILTER. のページ](/products/y-filter/) とこのサポートのお知らせでお伝えします。" }
-      ]
+        {
+          "p": "Y-FILTER. は現在開発中で、一般向けの配布はまだ行っていません。公開日は未定です。"
+        },
+        {
+          "p": "準備ができたら、[Y-FILTER. のページ](/products/y-filter/) とこのサポートのお知らせでお伝えします。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "When will Y-FILTER. be available?",
+          "summary": "It's currently in development and not yet publicly available.",
+          "body": [
+            {
+              "p": "Y-FILTER. is currently in development and not yet publicly available. The release date hasn't been decided."
+            },
+            {
+              "p": "When it's ready, we'll announce it on the [Y-FILTER. page](/products/y-filter/) and in Support news."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "Y-FILTER. 什么时候可以使用？",
+          "summary": "目前正在开发中，尚未面向公众发布。",
+          "body": [
+            {
+              "p": "Y-FILTER. 目前正在开发中，尚未面向公众发布，发布日期未定。"
+            },
+            {
+              "p": "准备就绪后，会在 [Y-FILTER. 页面](/products/y-filter/) 和支持公告中通知。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "Y-FILTER. 什麼時候可以使用？",
+          "summary": "目前正在開發中，尚未對一般大眾發布。",
+          "body": [
+            {
+              "p": "Y-FILTER. 目前正在開發中，尚未對一般大眾發布，發布日期未定。"
+            },
+            {
+              "p": "準備就緒後，會在 [Y-FILTER. 頁面](/products/y-filter/) 和支援公告中通知。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "Y-FILTER.는 언제부터 쓸 수 있나요?",
+          "summary": "현재 개발 중이며, 아직 일반에 배포하지 않았습니다.",
+          "body": [
+            {
+              "p": "Y-FILTER.는 현재 개발 중이며, 아직 일반에 배포하지 않았습니다. 공개일은 정해지지 않았습니다."
+            },
+            {
+              "p": "준비가 되면 [Y-FILTER. 페이지](/products/y-filter/)와 지원 공지사항에서 알려 드리겠습니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "yfilter-consent-after-update",
@@ -140,14 +909,98 @@
       "title": "更新後に同意の画面が開き、フィルタリングが止まったとき",
       "summary": "SK 利用規約への同意が必要になりました。同意すると自動で再開します。",
       "body": [
-        { "p": "Y-FILTER. では、SK 利用規約と SK プライバシーポリシーへの同意が必要になりました。同意するまで、フィルタリングは停止します。" },
-        { "steps": [
-          "開いた同意の画面で、「SK 利用規約と SK プライバシーポリシーに同意する」にチェックを入れます。",
-          "「Y-FILTER. 利用規約およびプライバシーポリシーに同意する」にもチェックを入れます。",
-          "「同意して利用開始」を押します。フィルタリングが自動で再開します。"
-        ] },
-        { "note": "同意は、保護者または保護者から任された管理者が行ってください。" }
-      ]
+        {
+          "p": "Y-FILTER. では、SK 利用規約と SK プライバシーポリシーへの同意が必要になりました。同意するまで、フィルタリングは停止します。"
+        },
+        {
+          "steps": [
+            "開いた同意の画面で、「SK 利用規約と SK プライバシーポリシーに同意する」にチェックを入れます。",
+            "「Y-FILTER. 利用規約およびプライバシーポリシーに同意する」にもチェックを入れます。",
+            "「同意して利用開始」を押します。フィルタリングが自動で再開します。"
+          ]
+        },
+        {
+          "note": "同意は、保護者または保護者から任された管理者が行ってください。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "A consent screen opened after an update and filtering stopped",
+          "summary": "Agreeing to the SK Terms of Service is now required. Filtering resumes automatically once you agree.",
+          "body": [
+            {
+              "p": "Y-FILTER. now requires agreeing to the SK Terms of Service and the SK Privacy Policy. Filtering is paused until you agree."
+            },
+            {
+              "steps": [
+                "On the consent screen, check \"I agree to the SK Terms of Service and SK Privacy Policy.\"",
+                "Also check \"I agree to the Y-FILTER. Terms of Service and Privacy Policy.\"",
+                "Click \"Agree and start.\" Filtering resumes automatically."
+              ]
+            },
+            {
+              "note": "Consent should be given by a parent or an admin entrusted by a parent."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "更新后打开同意界面、过滤停止时",
+          "summary": "现在需要同意 SK 使用条款。同意后会自动恢复。",
+          "body": [
+            {
+              "p": "Y-FILTER. 现在需要同意 SK 使用条款和 SK 隐私政策。在同意之前，过滤将暂停。"
+            },
+            {
+              "steps": [
+                "在打开的同意界面中，勾选“同意 SK 使用条款和 SK 隐私政策”。",
+                "同时勾选“同意 Y-FILTER. 使用条款及隐私政策”。",
+                "点击“同意并开始使用”。过滤将自动恢复。"
+              ]
+            },
+            {
+              "note": "请由家长或受家长委托的管理员进行同意。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "更新後開啟同意畫面、過濾停止時",
+          "summary": "現在需要同意 SK 使用條款。同意後會自動恢復。",
+          "body": [
+            {
+              "p": "Y-FILTER. 現在需要同意 SK 使用條款與 SK 隱私權政策。在同意之前，過濾將暫停。"
+            },
+            {
+              "steps": [
+                "在開啟的同意畫面中，勾選「同意 SK 使用條款與 SK 隱私權政策」。",
+                "同時勾選「同意 Y-FILTER. 使用條款及隱私權政策」。",
+                "點選「同意並開始使用」。過濾將自動恢復。"
+              ]
+            },
+            {
+              "note": "請由家長或受家長委託的管理員進行同意。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "업데이트 후 동의 화면이 열리고 필터링이 멈췄을 때",
+          "summary": "SK 이용약관에 대한 동의가 필요해졌습니다. 동의하면 자동으로 다시 시작합니다.",
+          "body": [
+            {
+              "p": "Y-FILTER.에서 SK 이용약관과 SK 개인정보 처리방침에 대한 동의가 필요해졌습니다. 동의할 때까지 필터링은 멈춥니다."
+            },
+            {
+              "steps": [
+                "열린 동의 화면에서 'SK 이용약관과 SK 개인정보 처리방침에 동의합니다'에 체크합니다.",
+                "'Y-FILTER. 이용약관 및 개인정보 처리방침에 동의합니다'에도 체크합니다.",
+                "'동의하고 이용 시작'을 누릅니다. 필터링이 자동으로 다시 시작됩니다."
+              ]
+            },
+            {
+              "note": "동의는 보호자 또는 보호자에게 위임받은 관리자가 해 주세요."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "yfilter-access-code",
@@ -157,13 +1010,83 @@
       "title": "設定画面を開くとアクセスコードを聞かれる",
       "summary": "子供が勝手に設定を変えられないように、設定はアクセスコードで守られています。",
       "body": [
-        { "p": "Y-FILTER. の設定画面・初期設定・診断を開くときや、ツールバーのボタンから許可・ブロックするときは、管理者が決めたアクセスコードが必要です。" },
-        { "list": [
-          "一度入力すると、15 分間は入力し直さなくても開けます（ブラウザを閉じると元に戻ります）。",
-          "5 回続けて間違えると、1 分間は入力できなくなります。",
-          "コードそのものは保存せず、元に戻せない形（ハッシュ）だけを保存しています。"
-        ] }
-      ]
+        {
+          "p": "Y-FILTER. の設定画面・初期設定・診断を開くときや、ツールバーのボタンから許可・ブロックするときは、管理者が決めたアクセスコードが必要です。"
+        },
+        {
+          "list": [
+            "一度入力すると、15 分間は入力し直さなくても開けます（ブラウザを閉じると元に戻ります）。",
+            "5 回続けて間違えると、1 分間は入力できなくなります。",
+            "コードそのものは保存せず、元に戻せない形（ハッシュ）だけを保存しています。"
+          ]
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Opening the settings asks for an access code",
+          "summary": "Settings are protected by an access code so kids can't change them on their own.",
+          "body": [
+            {
+              "p": "The access code set by the admin is required to open Y-FILTER.'s settings, initial setup, or diagnostics, and to allow or block sites from the toolbar button."
+            },
+            {
+              "list": [
+                "Once entered, you won't need to enter it again for 15 minutes (it resets when the browser closes).",
+                "After 5 wrong attempts in a row, you can't enter it for 1 minute.",
+                "The code itself is never stored — only an irreversible form (a hash)."
+              ]
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "打开设置界面时要求输入访问码",
+          "summary": "为防止孩子擅自更改设置，设置受访问码保护。",
+          "body": [
+            {
+              "p": "打开 Y-FILTER. 的设置界面、初始设置、诊断，或通过工具栏按钮允许或拦截网站时，需要输入管理员设置的访问码。"
+            },
+            {
+              "list": [
+                "输入一次后，15 分钟内无需再次输入即可打开（关闭浏览器后恢复）。",
+                "连续输错 5 次，将 1 分钟内无法输入。",
+                "访问码本身不会被保存，只保存不可还原的形式（哈希值）。"
+              ]
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "開啟設定畫面時要求輸入存取碼",
+          "summary": "為避免孩子擅自變更設定，設定受存取碼保護。",
+          "body": [
+            {
+              "p": "開啟 Y-FILTER. 的設定畫面、初始設定、診斷，或透過工具列按鈕允許或封鎖網站時，需要輸入管理員設定的存取碼。"
+            },
+            {
+              "list": [
+                "輸入一次後，15 分鐘內不必再次輸入即可開啟（關閉瀏覽器後恢復）。",
+                "連續輸入錯誤 5 次，將 1 分鐘內無法輸入。",
+                "存取碼本身不會儲存，只儲存無法還原的形式（雜湊值）。"
+              ]
+            }
+          ]
+        },
+        "ko": {
+          "title": "설정 화면을 열면 접근 코드를 묻는다",
+          "summary": "아이가 마음대로 설정을 바꾸지 못하도록 설정은 접근 코드로 보호됩니다.",
+          "body": [
+            {
+              "p": "Y-FILTER.의 설정 화면·초기 설정·진단을 열 때나, 툴바 버튼으로 허용·차단할 때는 관리자가 정한 접근 코드가 필요합니다."
+            },
+            {
+              "list": [
+                "한 번 입력하면 15분 동안은 다시 입력하지 않아도 열 수 있습니다(브라우저를 닫으면 원래대로 돌아갑니다).",
+                "5회 연속 틀리면 1분 동안 입력할 수 없습니다.",
+                "코드 자체는 저장하지 않고, 되돌릴 수 없는 형태(해시)만 저장합니다."
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "id": "yfilter-incognito",
@@ -173,9 +1096,83 @@
       "title": "シークレットモードでフィルターがかからないとき",
       "summary": "拡張機能の設定で、シークレットモードでの実行を許可してください。",
       "body": [
-        { "p": "ブラウザの初期設定では、拡張機能はシークレットモードで動きません。Y-FILTER. の設定画面や管理コンソールに「シークレットモードで Y-FILTER. が動いていません」と表示されたら、次の手順で許可してください。" },
-        { "steps": ["ブラウザの拡張機能の管理画面を開きます。", "Y-FILTER. の「詳細」を開きます。", "「シークレットモードでの実行を許可する」をオンにします。"] }
-      ]
+        {
+          "p": "ブラウザの初期設定では、拡張機能はシークレットモードで動きません。Y-FILTER. の設定画面や管理コンソールに「シークレットモードで Y-FILTER. が動いていません」と表示されたら、次の手順で許可してください。"
+        },
+        {
+          "steps": [
+            "ブラウザの拡張機能の管理画面を開きます。",
+            "Y-FILTER. の「詳細」を開きます。",
+            "「シークレットモードでの実行を許可する」をオンにします。"
+          ]
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Filtering doesn't work in Incognito mode",
+          "summary": "Allow the extension to run in Incognito mode in your extension settings.",
+          "body": [
+            {
+              "p": "By default, browsers don't run extensions in Incognito mode. If Y-FILTER.'s settings or the management console shows \"Y-FILTER. isn't running in Incognito mode,\" allow it with these steps."
+            },
+            {
+              "steps": [
+                "Open your browser's extension management page.",
+                "Open \"Details\" for Y-FILTER.",
+                "Turn on \"Allow in Incognito.\""
+              ]
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "无痕模式下过滤不生效时",
+          "summary": "请在扩展程序设置中允许在无痕模式下运行。",
+          "body": [
+            {
+              "p": "浏览器默认不会在无痕模式下运行扩展程序。如果 Y-FILTER. 的设置界面或管理控制台显示“Y-FILTER. 未在无痕模式下运行”，请按以下步骤允许。"
+            },
+            {
+              "steps": [
+                "打开浏览器的扩展程序管理页面。",
+                "打开 Y-FILTER. 的“详情”。",
+                "开启“在无痕模式下启用”。"
+              ]
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "無痕模式下過濾沒有作用時",
+          "summary": "請在擴充功能設定中允許在無痕模式下執行。",
+          "body": [
+            {
+              "p": "瀏覽器預設不會在無痕模式下執行擴充功能。如果 Y-FILTER. 的設定畫面或管理主控台顯示「Y-FILTER. 未在無痕模式下運作」，請依以下步驟允許。"
+            },
+            {
+              "steps": [
+                "開啟瀏覽器的擴充功能管理頁面。",
+                "開啟 Y-FILTER. 的「詳細資料」。",
+                "開啟「允許在無痕模式下執行」。"
+              ]
+            }
+          ]
+        },
+        "ko": {
+          "title": "시크릿 모드에서 필터가 적용되지 않을 때",
+          "summary": "확장 프로그램 설정에서 시크릿 모드 실행을 허용해 주세요.",
+          "body": [
+            {
+              "p": "브라우저의 기본 설정에서는 확장 프로그램이 시크릿 모드에서 동작하지 않습니다. Y-FILTER.의 설정 화면이나 관리 콘솔에 '시크릿 모드에서 Y-FILTER.가 동작하지 않습니다'라고 표시되면 다음 방법으로 허용해 주세요."
+            },
+            {
+              "steps": [
+                "브라우저의 확장 프로그램 관리 화면을 엽니다.",
+                "Y-FILTER.의 '세부정보'를 엽니다.",
+                "'시크릿 모드에서 허용'을 켭니다."
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "id": "yfilter-adjust-blocking",
@@ -185,18 +1182,129 @@
       "title": "必要なサイトがブロックされる・ブロックしたいサイトが開けてしまう",
       "summary": "許可リストや個別のブロック、学習モードで調整できます。",
       "body": [
-        { "h": "管理者の方" },
-        { "list": [
-          "設定画面の「ブロック設定」の許可リスト（ホワイトリスト）に入れると、そのサイトはブロックされません。",
-          "「個別URLブロック」に入れると、カテゴリに関係なくブロックします。",
-          "調べものなどで一時的に使いたいときは、「基本設定」の学習モードで、時間を決めて制限を解除できます。"
-        ] },
-        { "p": "ブロックリストの間違いは、サイトの URL を添えて [お問い合わせ](/contact/) から教えてください。" },
-        { "h": "子供・生徒の方" },
-        { "p": "管理者（保護者や先生）に相談してください。遠隔管理を使っている端末では、ブロック画面から「このサイトを開きたい」というリクエストを送れます。" }
-      ]
+        {
+          "h": "管理者の方"
+        },
+        {
+          "list": [
+            "設定画面の「ブロック設定」の許可リスト（ホワイトリスト）に入れると、そのサイトはブロックされません。",
+            "「個別URLブロック」に入れると、カテゴリに関係なくブロックします。",
+            "調べものなどで一時的に使いたいときは、「基本設定」の学習モードで、時間を決めて制限を解除できます。"
+          ]
+        },
+        {
+          "p": "ブロックリストの間違いは、サイトの URL を添えて [お問い合わせ](/contact/) から教えてください。"
+        },
+        {
+          "h": "子供・生徒の方"
+        },
+        {
+          "p": "管理者（保護者や先生）に相談してください。遠隔管理を使っている端末では、ブロック画面から「このサイトを開きたい」というリクエストを送れます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "A site you need is blocked, or a site you want blocked opens",
+          "summary": "Adjust with the allow list, individual blocks, or Learning Mode.",
+          "body": [
+            {
+              "h": "For admins"
+            },
+            {
+              "list": [
+                "Add a site to the allow list (whitelist) under \"Blocking\" in settings, and it won't be blocked.",
+                "Add it to \"Block individual URLs\" to block it regardless of category.",
+                "For temporary use like research, Learning Mode under \"Basic settings\" lifts restrictions for a set time."
+              ]
+            },
+            {
+              "p": "If the blocklist has a mistake, let us know through [Contact](/contact/) with the site's URL."
+            },
+            {
+              "h": "For kids and students"
+            },
+            {
+              "p": "Talk to your admin (a parent or teacher). On remotely managed devices, you can send an \"I want to open this site\" request from the block screen."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "需要的网站被拦截、想拦截的网站却能打开",
+          "summary": "可以通过允许列表、单独拦截和学习模式进行调整。",
+          "body": [
+            {
+              "h": "管理员"
+            },
+            {
+              "list": [
+                "加入设置界面“拦截设置”中的允许列表（白名单）后，该网站将不会被拦截。",
+                "加入“单独拦截网址”后，无论分类如何都会拦截。",
+                "查资料等需要临时使用时，可以用“基本设置”中的学习模式限定时间解除限制。"
+              ]
+            },
+            {
+              "p": "如果拦截列表有误，请附上网站网址通过[联系我们](/contact/)告诉我们。"
+            },
+            {
+              "h": "孩子、学生"
+            },
+            {
+              "p": "请与管理员（家长或老师）商量。在使用远程管理的设备上，可以从拦截界面发送“想打开这个网站”的请求。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "需要的網站被封鎖、想封鎖的網站卻能開啟",
+          "summary": "可以透過允許清單、個別封鎖和學習模式調整。",
+          "body": [
+            {
+              "h": "管理員"
+            },
+            {
+              "list": [
+                "加入設定畫面「封鎖設定」中的允許清單（白名單）後，該網站將不會被封鎖。",
+                "加入「個別封鎖網址」後，無論類別都會封鎖。",
+                "查資料等需要暫時使用時，可以用「基本設定」中的學習模式限定時間解除限制。"
+              ]
+            },
+            {
+              "p": "如果封鎖清單有誤，請附上網站網址透過[聯絡我們](/contact/)告訴我們。"
+            },
+            {
+              "h": "孩子、學生"
+            },
+            {
+              "p": "請與管理員（家長或老師）商量。在使用遠端管理的裝置上，可以從封鎖畫面傳送「想開啟這個網站」的請求。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "필요한 사이트가 차단된다·차단하고 싶은 사이트가 열린다",
+          "summary": "허용 목록과 개별 차단, 학습 모드로 조정할 수 있습니다.",
+          "body": [
+            {
+              "h": "관리자분"
+            },
+            {
+              "list": [
+                "설정 화면 '차단 설정'의 허용 목록(화이트리스트)에 넣으면 그 사이트는 차단되지 않습니다.",
+                "'개별 URL 차단'에 넣으면 카테고리와 관계없이 차단합니다.",
+                "조사 등으로 잠시 쓰고 싶을 때는 '기본 설정'의 학습 모드로 시간을 정해 제한을 해제할 수 있습니다."
+              ]
+            },
+            {
+              "p": "차단 목록의 오류는 사이트 URL을 첨부해 [문의](/contact/)로 알려 주세요."
+            },
+            {
+              "h": "아이·학생분"
+            },
+            {
+              "p": "관리자(보호자나 선생님)와 상의해 주세요. 원격 관리를 사용하는 기기에서는 차단 화면에서 '이 사이트를 열고 싶어요'라는 요청을 보낼 수 있습니다."
+            }
+          ]
+        }
+      }
     },
-
     {
       "id": "hub-add-device",
       "type": "guide",
@@ -205,14 +1313,98 @@
       "title": "管理コンソールに端末を追加する（ペアリングコード）",
       "summary": "8 文字のペアリングコードで、子供の端末を管理コンソールにつなぎます。",
       "body": [
-        { "note": "管理コンソールは、現在テストに協力いただいている関係者向けに公開しています。ログインには [SK Hub Systems アカウント](/support/?a=account-about) を使います。管理コンソールを使うと、SK Hub Systems 利用規約に同意したことになります。" },
-        { "steps": [
-          "管理コンソールの「端末を追加」を押し、8 文字のペアリングコードを発行します。",
-          "子供の端末の Y-FILTER. で「設定 → セキュリティ → SK Hub Systems」（または最初の同意の画面）を開きます。",
-          "SK Hub Systems 利用規約に同意し、ペアリングコードを入力して「接続」を押します。"
-        ] },
-        { "p": "コードの有効期限は 30 分で、期限内なら何台でも登録できます。" }
-      ]
+        {
+          "note": "管理コンソールは、現在テストに協力いただいている関係者向けに公開しています。ログインには [SK Hub Systems アカウント](/support/?a=account-about) を使います。管理コンソールを使うと、SK Hub Systems 利用規約に同意したことになります。"
+        },
+        {
+          "steps": [
+            "管理コンソールの「端末を追加」を押し、8 文字のペアリングコードを発行します。",
+            "子供の端末の Y-FILTER. で「設定 → セキュリティ → SK Hub Systems」（または最初の同意の画面）を開きます。",
+            "SK Hub Systems 利用規約に同意し、ペアリングコードを入力して「接続」を押します。"
+          ]
+        },
+        {
+          "p": "コードの有効期限は 30 分で、期限内なら何台でも登録できます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Add a device to the management console (pairing code)",
+          "summary": "Connect a child's device to the management console with an 8-character pairing code.",
+          "body": [
+            {
+              "note": "The management console is currently available to people helping with testing. You sign in with an [SK Hub Systems account](/support/?a=account-about). Using the management console means you agree to the SK Hub Systems Terms of Service."
+            },
+            {
+              "steps": [
+                "Click \"Add device\" in the management console to issue an 8-character pairing code.",
+                "In Y-FILTER. on the child's device, open \"Settings → Security → SK Hub Systems\" (or the first consent screen).",
+                "Agree to the SK Hub Systems Terms of Service, enter the pairing code, and click \"Connect.\""
+              ]
+            },
+            {
+              "p": "The code is valid for 30 minutes, and any number of devices can be registered in that time."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "向管理控制台添加设备（配对码）",
+          "summary": "用 8 位配对码把孩子的设备连接到管理控制台。",
+          "body": [
+            {
+              "note": "管理控制台目前面向协助测试的相关人员公开。登录使用 [SK Hub Systems 账户](/support/?a=account-about)。使用管理控制台即表示同意 SK Hub Systems 使用条款。"
+            },
+            {
+              "steps": [
+                "在管理控制台点击“添加设备”，发放 8 位配对码。",
+                "在孩子设备的 Y-FILTER. 中打开“设置 → 安全 → SK Hub Systems”（或首次的同意界面）。",
+                "同意 SK Hub Systems 使用条款，输入配对码后点击“连接”。"
+              ]
+            },
+            {
+              "p": "配对码有效期 30 分钟，期限内可登记任意数量的设备。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "在管理主控台新增裝置（配對碼）",
+          "summary": "用 8 碼配對碼把孩子的裝置連線到管理主控台。",
+          "body": [
+            {
+              "note": "管理主控台目前開放給協助測試的相關人員使用。登入使用 [SK Hub Systems 帳戶](/support/?a=account-about)。使用管理主控台即表示同意 SK Hub Systems 使用條款。"
+            },
+            {
+              "steps": [
+                "在管理主控台點選「新增裝置」，發放 8 碼配對碼。",
+                "在孩子裝置的 Y-FILTER. 中開啟「設定 → 安全性 → SK Hub Systems」（或第一次的同意畫面）。",
+                "同意 SK Hub Systems 使用條款，輸入配對碼後點選「連線」。"
+              ]
+            },
+            {
+              "p": "配對碼有效期限 30 分鐘，期限內可登錄任意數量的裝置。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "관리 콘솔에 기기 추가하기(페어링 코드)",
+          "summary": "8자리 페어링 코드로 아이의 기기를 관리 콘솔에 연결합니다.",
+          "body": [
+            {
+              "note": "관리 콘솔은 현재 테스트에 협조해 주시는 관계자용으로 공개하고 있습니다. 로그인에는 [SK Hub Systems 계정](/support/?a=account-about)을 사용합니다. 관리 콘솔을 사용하면 SK Hub Systems 이용약관에 동의한 것이 됩니다."
+            },
+            {
+              "steps": [
+                "관리 콘솔의 '기기 추가'를 눌러 8자리 페어링 코드를 발급합니다.",
+                "아이 기기의 Y-FILTER.에서 '설정 → 보안 → SK Hub Systems'(또는 처음의 동의 화면)를 엽니다.",
+                "SK Hub Systems 이용약관에 동의하고, 페어링 코드를 입력한 뒤 '연결'을 누릅니다."
+              ]
+            },
+            {
+              "p": "코드의 유효 기간은 30분이며, 기간 안이라면 몇 대든 등록할 수 있습니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "hub-settings-not-applied",
@@ -222,13 +1414,83 @@
       "title": "配信した設定が端末に反映されないとき",
       "summary": "端末はおおむね 2 分ごとに新しい設定を確認します。",
       "body": [
-        { "p": "端末は、おおむね 2 分ごとに新しい設定がないかを確認し、あれば反映します。状態の報告は、設定が変わったときと、おおむね 10 分ごとです。" },
-        { "list": [
-          "端末の電源が切れている・スリープしている・インターネットにつながっていないときは、つながった後に反映されます。",
-          "管理コンソールの「反映待ち」の台数で、まだ反映していない端末の数を確認できます。",
-          "SK Hub Systems が動いているかは [システム稼働状況](/status/) で確認できます。"
-        ] }
-      ]
+        {
+          "p": "端末は、おおむね 2 分ごとに新しい設定がないかを確認し、あれば反映します。状態の報告は、設定が変わったときと、おおむね 10 分ごとです。"
+        },
+        {
+          "list": [
+            "端末の電源が切れている・スリープしている・インターネットにつながっていないときは、つながった後に反映されます。",
+            "管理コンソールの「反映待ち」の台数で、まだ反映していない端末の数を確認できます。",
+            "SK Hub Systems が動いているかは [システム稼働状況](/status/) で確認できます。"
+          ]
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Pushed settings aren't applied on a device",
+          "summary": "Devices check for new settings about every 2 minutes.",
+          "body": [
+            {
+              "p": "Devices check for new settings about every 2 minutes and apply any they find. Status reports are sent when settings change and about every 10 minutes."
+            },
+            {
+              "list": [
+                "If a device is off, asleep, or offline, settings are applied once it reconnects.",
+                "The \"Pending\" count in the management console shows how many devices haven't applied settings yet.",
+                "You can check whether SK Hub Systems is running on [System status](/status/)."
+              ]
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "推送的设置没有应用到设备时",
+          "summary": "设备大约每 2 分钟检查一次新设置。",
+          "body": [
+            {
+              "p": "设备大约每 2 分钟检查一次是否有新设置，如有则应用。状态报告在设置变更时以及大约每 10 分钟发送一次。"
+            },
+            {
+              "list": [
+                "设备关机、休眠或未联网时，会在重新联网后应用。",
+                "可以在管理控制台的“待应用”数量中查看尚未应用设置的设备数。",
+                "可以在[系统运行状态](/status/)中确认 SK Hub Systems 是否正常运行。"
+              ]
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "推送的設定沒有套用到裝置時",
+          "summary": "裝置大約每 2 分鐘檢查一次新設定。",
+          "body": [
+            {
+              "p": "裝置大約每 2 分鐘檢查一次是否有新設定，若有則套用。狀態回報在設定變更時以及大約每 10 分鐘傳送一次。"
+            },
+            {
+              "list": [
+                "裝置關機、休眠或未連上網路時，會在重新連線後套用。",
+                "可以在管理主控台的「等待套用」數量中查看尚未套用設定的裝置數。",
+                "可以在[系統運作狀態](/status/)中確認 SK Hub Systems 是否正常運作。"
+              ]
+            }
+          ]
+        },
+        "ko": {
+          "title": "배포한 설정이 기기에 반영되지 않을 때",
+          "summary": "기기는 약 2분마다 새 설정을 확인합니다.",
+          "body": [
+            {
+              "p": "기기는 약 2분마다 새 설정이 있는지 확인하고, 있으면 반영합니다. 상태 보고는 설정이 바뀌었을 때와 약 10분마다 이루어집니다."
+            },
+            {
+              "list": [
+                "기기의 전원이 꺼져 있거나 절전 중이거나 인터넷에 연결되어 있지 않으면, 연결된 뒤에 반영됩니다.",
+                "관리 콘솔의 '반영 대기' 대수로 아직 반영되지 않은 기기 수를 확인할 수 있습니다.",
+                "SK Hub Systems가 동작하는지는 [시스템 가동 상태](/status/)에서 확인할 수 있습니다."
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "id": "hub-co-admins",
@@ -238,14 +1500,113 @@
       "title": "ほかの保護者や先生と一緒に管理する（共同管理者）",
       "summary": "招待コードで、共同管理者を招待できます。",
       "body": [
-        { "steps": [
-          "管理コンソールの「管理者」を開き、「招待コードを発行」を押します。",
-          "表示された招待コードを相手に伝えます。",
-          "相手が管理コンソールに SK Hub Systems アカウントでログインし、「招待コードで参加」に入力します。"
-        ] },
-        { "list": ["招待コードは 24 時間有効で、1 回だけ使えます。", "共同管理者は、持ち主と同じように、すべての端末の設定の配信やリクエストへの返事ができます。"] },
-        { "note": "招待は、信頼できる人（保護者どうし、同じ学校・団体の担当者など）だけにしてください。" }
-      ]
+        {
+          "steps": [
+            "管理コンソールの「管理者」を開き、「招待コードを発行」を押します。",
+            "表示された招待コードを相手に伝えます。",
+            "相手が管理コンソールに SK Hub Systems アカウントでログインし、「招待コードで参加」に入力します。"
+          ]
+        },
+        {
+          "list": [
+            "招待コードは 24 時間有効で、1 回だけ使えます。",
+            "共同管理者は、持ち主と同じように、すべての端末の設定の配信やリクエストへの返事ができます。"
+          ]
+        },
+        {
+          "note": "招待は、信頼できる人（保護者どうし、同じ学校・団体の担当者など）だけにしてください。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Manage together with other parents or teachers (co-admins)",
+          "summary": "Invite co-admins with an invite code.",
+          "body": [
+            {
+              "steps": [
+                "Open \"Admins\" in the management console and click \"Issue invite code.\"",
+                "Share the invite code with the other person.",
+                "They sign in to the management console with an SK Hub Systems account and enter it under \"Join with an invite code.\""
+              ]
+            },
+            {
+              "list": [
+                "Invite codes are valid for 24 hours and can be used once.",
+                "Co-admins can push settings to all devices and respond to requests, just like the owner."
+              ]
+            },
+            {
+              "note": "Only invite people you trust (other parents, staff at the same school or organization, and so on)."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "与其他家长或老师一起管理（共同管理员）",
+          "summary": "可以用邀请码邀请共同管理员。",
+          "body": [
+            {
+              "steps": [
+                "在管理控制台打开“管理员”，点击“发放邀请码”。",
+                "把显示的邀请码告诉对方。",
+                "对方使用 SK Hub Systems 账户登录管理控制台，在“使用邀请码加入”中输入。"
+              ]
+            },
+            {
+              "list": [
+                "邀请码有效期 24 小时，只能使用一次。",
+                "共同管理员与所有者一样，可以向所有设备推送设置并回复请求。"
+              ]
+            },
+            {
+              "note": "请只邀请可以信任的人（家长之间、同一学校或团体的负责人等）。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "與其他家長或老師一起管理（共同管理員）",
+          "summary": "可以用邀請碼邀請共同管理員。",
+          "body": [
+            {
+              "steps": [
+                "在管理主控台開啟「管理員」，點選「發放邀請碼」。",
+                "把顯示的邀請碼告訴對方。",
+                "對方使用 SK Hub Systems 帳戶登入管理主控台，在「使用邀請碼加入」中輸入。"
+              ]
+            },
+            {
+              "list": [
+                "邀請碼有效期限 24 小時，只能使用一次。",
+                "共同管理員與擁有者一樣，可以向所有裝置推送設定並回覆請求。"
+              ]
+            },
+            {
+              "note": "請只邀請可以信任的人（家長之間、同一學校或團體的負責人等）。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "다른 보호자나 선생님과 함께 관리하기(공동 관리자)",
+          "summary": "초대 코드로 공동 관리자를 초대할 수 있습니다.",
+          "body": [
+            {
+              "steps": [
+                "관리 콘솔의 '관리자'를 열고 '초대 코드 발급'을 누릅니다.",
+                "표시된 초대 코드를 상대에게 알려 줍니다.",
+                "상대가 SK Hub Systems 계정으로 관리 콘솔에 로그인해 '초대 코드로 참여'에 입력합니다."
+              ]
+            },
+            {
+              "list": [
+                "초대 코드는 24시간 유효하며, 한 번만 사용할 수 있습니다.",
+                "공동 관리자는 소유자와 마찬가지로 모든 기기에 설정을 배포하고 요청에 답할 수 있습니다."
+              ]
+            },
+            {
+              "note": "초대는 믿을 수 있는 사람(보호자끼리, 같은 학교·단체의 담당자 등)에게만 해 주세요."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "hub-disconnect",
@@ -255,11 +1616,64 @@
       "title": "端末の接続を解除する・情報を削除する",
       "summary": "接続を解除した時点で、その端末の情報は SK Hub Systems から削除されます。",
       "body": [
-        { "p": "端末の接続は、管理コンソールの「接続を解除」か、端末の Y-FILTER. の設定画面から解除できます。解除した時点で、その端末の情報は SK Hub Systems から削除されます。端末の設定は、その端末に残ります。" },
-        { "p": "管理者のログイン情報や、管理しているすべての情報をまとめて削除したい場合は、[アカウントを削除する](/support/?a=account-delete) をご覧ください。" }
-      ]
+        {
+          "p": "端末の接続は、管理コンソールの「接続を解除」か、端末の Y-FILTER. の設定画面から解除できます。解除した時点で、その端末の情報は SK Hub Systems から削除されます。端末の設定は、その端末に残ります。"
+        },
+        {
+          "p": "管理者のログイン情報や、管理しているすべての情報をまとめて削除したい場合は、[アカウントを削除する](/support/?a=account-delete) をご覧ください。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Disconnect a device and delete its data",
+          "summary": "When a device is disconnected, its data is deleted from SK Hub Systems.",
+          "body": [
+            {
+              "p": "You can disconnect a device with \"Disconnect\" in the management console or from Y-FILTER.'s settings on the device. Once disconnected, the device's data is deleted from SK Hub Systems. The device keeps its own settings."
+            },
+            {
+              "p": "To delete an admin's sign-in info and everything they manage at once, see [Delete your account](/support/?a=account-delete)."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "解除设备连接、删除信息",
+          "summary": "解除连接后，该设备的信息会从 SK Hub Systems 中删除。",
+          "body": [
+            {
+              "p": "可以通过管理控制台的“解除连接”，或在设备上的 Y-FILTER. 设置界面解除连接。解除后，该设备的信息会从 SK Hub Systems 中删除。设备的设置会保留在该设备上。"
+            },
+            {
+              "p": "如需一并删除管理员的登录信息及其管理的所有信息，请参阅[删除账户](/support/?a=account-delete)。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "解除裝置連線、刪除資訊",
+          "summary": "解除連線後，該裝置的資訊會從 SK Hub Systems 中刪除。",
+          "body": [
+            {
+              "p": "可以透過管理主控台的「解除連線」，或在裝置上的 Y-FILTER. 設定畫面解除連線。解除後，該裝置的資訊會從 SK Hub Systems 中刪除。裝置的設定會保留在該裝置上。"
+            },
+            {
+              "p": "如需一併刪除管理員的登入資訊及其管理的所有資訊，請參閱[刪除帳戶](/support/?a=account-delete)。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "기기 연결을 해제하기·정보를 삭제하기",
+          "summary": "연결을 해제한 시점에 그 기기의 정보는 SK Hub Systems에서 삭제됩니다.",
+          "body": [
+            {
+              "p": "기기 연결은 관리 콘솔의 '연결 해제'나 기기의 Y-FILTER. 설정 화면에서 해제할 수 있습니다. 해제한 시점에 그 기기의 정보는 SK Hub Systems에서 삭제됩니다. 기기의 설정은 그 기기에 남습니다."
+            },
+            {
+              "p": "관리자의 로그인 정보와 관리하는 모든 정보를 한꺼번에 삭제하려면 [계정 삭제하기](/support/?a=account-delete)를 확인해 주세요."
+            }
+          ]
+        }
+      }
     },
-
     {
       "id": "account-about",
       "type": "guide",
@@ -268,21 +1682,163 @@
       "title": "SK Hub Systems アカウントとは",
       "summary": "SK のサービスで共通のアカウントです。ログインは Google アカウントだけです。",
       "body": [
-        { "p": "SK Hub Systems アカウントは、SK のサービス（Y-FILTER. の管理コンソールや、これからのサービス）をひとつのアカウントで使うための仕組みです。" },
-        { "h": "作り方" },
-        { "steps": [
-          "[アカウント](/account/) のページを開き、「Google でログイン」を押します。",
-          "使う Google アカウントを選びます。",
-          "保存する情報を確認し、規約に同意して「アカウントを作成」を押します。"
-        ] },
-        { "h": "保存する情報" },
-        { "list": [
-          "Google アカウントの識別子・名前・メールアドレス・アイコン（ログインに使います）",
-          "アカウントの作成日と、規約に同意した日",
-          "使ったサービスのデータ（例: 管理コンソールの管理グループ）"
-        ] },
-        { "p": "Google アカウントのパスワードや、Gmail・Google ドライブなどの中身、閲覧履歴・検索語は取得しません。" }
-      ]
+        {
+          "p": "SK Hub Systems アカウントは、SK のサービス（Y-FILTER. の管理コンソールや、これからのサービス）をひとつのアカウントで使うための仕組みです。"
+        },
+        {
+          "h": "作り方"
+        },
+        {
+          "steps": [
+            "[アカウント](/account/) のページを開き、「Google でログイン」を押します。",
+            "使う Google アカウントを選びます。",
+            "保存する情報を確認し、規約に同意して「アカウントを作成」を押します。"
+          ]
+        },
+        {
+          "h": "保存する情報"
+        },
+        {
+          "list": [
+            "Google アカウントの識別子・名前・メールアドレス・アイコン（ログインに使います）",
+            "アカウントの作成日と、規約に同意した日",
+            "使ったサービスのデータ（例: 管理コンソールの管理グループ）"
+          ]
+        },
+        {
+          "p": "Google アカウントのパスワードや、Gmail・Google ドライブなどの中身、閲覧履歴・検索語は取得しません。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "What is an SK Hub Systems account?",
+          "summary": "One account for SK services. You sign in with a Google account only.",
+          "body": [
+            {
+              "p": "An SK Hub Systems account lets you use SK services (the Y-FILTER. management console and upcoming services) with one account."
+            },
+            {
+              "h": "How to create one"
+            },
+            {
+              "steps": [
+                "Open the [Account](/account/) page and click \"Sign in with Google.\"",
+                "Choose the Google account to use.",
+                "Review what's stored, agree to the terms, and click \"Create account.\""
+              ]
+            },
+            {
+              "h": "What's stored"
+            },
+            {
+              "list": [
+                "Your Google account ID, name, email address, and profile picture (used for sign-in)",
+                "When you created your account and when you agreed to the terms",
+                "Data from the services you use (e.g. your management group in the console)"
+              ]
+            },
+            {
+              "p": "We never access your Google account password, the contents of Gmail or Google Drive, or your browsing history or search terms."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "什么是 SK Hub Systems 账户",
+          "summary": "SK 各项服务通用的账户，仅使用 Google 账号登录。",
+          "body": [
+            {
+              "p": "SK Hub Systems 账户是用一个账户使用 SK 各项服务（Y-FILTER. 管理控制台及今后的服务）的机制。"
+            },
+            {
+              "h": "创建方法"
+            },
+            {
+              "steps": [
+                "打开[账户](/account/)页面，点击“使用 Google 登录”。",
+                "选择要使用的 Google 账号。",
+                "确认保存的信息并同意条款，然后点击“创建账户”。"
+              ]
+            },
+            {
+              "h": "保存的信息"
+            },
+            {
+              "list": [
+                "Google 账号的标识符、姓名、邮箱地址和头像（用于登录）",
+                "账户创建日期及同意条款的日期",
+                "所使用服务的数据（例：管理控制台的管理群组）"
+              ]
+            },
+            {
+              "p": "不会获取 Google 账号密码、Gmail 和 Google 云端硬盘等的内容，以及浏览记录和搜索词。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "什麼是 SK Hub Systems 帳戶",
+          "summary": "SK 各項服務共用的帳戶，僅使用 Google 帳戶登入。",
+          "body": [
+            {
+              "p": "SK Hub Systems 帳戶是用一個帳戶使用 SK 各項服務（Y-FILTER. 管理主控台及今後的服務）的機制。"
+            },
+            {
+              "h": "建立方式"
+            },
+            {
+              "steps": [
+                "開啟[帳戶](/account/)頁面，點選「使用 Google 登入」。",
+                "選擇要使用的 Google 帳戶。",
+                "確認儲存的資訊並同意條款，然後點選「建立帳戶」。"
+              ]
+            },
+            {
+              "h": "儲存的資訊"
+            },
+            {
+              "list": [
+                "Google 帳戶的識別碼、姓名、電子郵件地址和大頭貼（用於登入）",
+                "帳戶建立日期及同意條款的日期",
+                "所使用服務的資料（例：管理主控台的管理群組）"
+              ]
+            },
+            {
+              "p": "不會取得 Google 帳戶密碼、Gmail 和 Google 雲端硬碟等的內容，以及瀏覽紀錄和搜尋字詞。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "SK Hub Systems 계정이란",
+          "summary": "SK 서비스 공통 계정입니다. 로그인은 Google 계정으로만 합니다.",
+          "body": [
+            {
+              "p": "SK Hub Systems 계정은 SK의 서비스(Y-FILTER. 관리 콘솔과 앞으로의 서비스)를 하나의 계정으로 이용하기 위한 구조입니다."
+            },
+            {
+              "h": "만드는 방법"
+            },
+            {
+              "steps": [
+                "[계정](/account/) 페이지를 열고 'Google로 로그인'을 누릅니다.",
+                "사용할 Google 계정을 선택합니다.",
+                "저장하는 정보를 확인하고 약관에 동의한 뒤 '계정 만들기'를 누릅니다."
+              ]
+            },
+            {
+              "h": "저장하는 정보"
+            },
+            {
+              "list": [
+                "Google 계정의 식별자·이름·이메일 주소·프로필 사진(로그인에 사용)",
+                "계정 생성일과 약관 동의일",
+                "사용한 서비스의 데이터(예: 관리 콘솔의 관리 그룹)"
+              ]
+            },
+            {
+              "p": "Google 계정 비밀번호, Gmail·Google 드라이브 등의 내용, 열람 기록·검색어는 가져오지 않습니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "account-console-login",
@@ -292,15 +1848,113 @@
       "title": "管理コンソールにログインしたら、アカウントの作成の画面が開いた",
       "summary": "管理コンソールは SK Hub Systems アカウントで使うようになりました。同意すると戻ります。",
       "body": [
-        { "p": "Y-FILTER. の管理コンソールは、SK Hub Systems アカウントで使うようになりました。アカウントをまだ作っていない場合や、アカウント規約が新しくなった場合は、ログインのあとにアカウントのページが開きます。" },
-        { "steps": [
-          "表示された内容と規約を確認します。",
-          "「同意します」にチェックを入れ、「アカウントを作成」を押します。",
-          "自動で管理コンソールに戻ります。"
-        ] },
-        { "p": "これまでの管理グループ・端末・共同管理者は、そのまま使えます。" },
-        { "note": "別の Google アカウントでログインしたいときは、アカウントのページの「別のアカウントでログイン」を押してください。" }
-      ]
+        {
+          "p": "Y-FILTER. の管理コンソールは、SK Hub Systems アカウントで使うようになりました。アカウントをまだ作っていない場合や、アカウント規約が新しくなった場合は、ログインのあとにアカウントのページが開きます。"
+        },
+        {
+          "steps": [
+            "表示された内容と規約を確認します。",
+            "「同意します」にチェックを入れ、「アカウントを作成」を押します。",
+            "自動で管理コンソールに戻ります。"
+          ]
+        },
+        {
+          "p": "これまでの管理グループ・端末・共同管理者は、そのまま使えます。"
+        },
+        {
+          "note": "別の Google アカウントでログインしたいときは、アカウントのページの「別のアカウントでログイン」を押してください。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Signing in to the management console opened an account creation screen",
+          "summary": "The management console now uses SK Hub Systems accounts. Agree and you'll be taken back.",
+          "body": [
+            {
+              "p": "The Y-FILTER. management console now uses SK Hub Systems accounts. If you haven't created an account yet, or the account terms have been updated, the Account page opens after you sign in."
+            },
+            {
+              "steps": [
+                "Review the details and the terms.",
+                "Check \"I agree\" and click \"Create account.\"",
+                "You're taken back to the management console automatically."
+              ]
+            },
+            {
+              "p": "Your existing management groups, devices, and co-admins keep working as before."
+            },
+            {
+              "note": "To sign in with a different Google account, click \"Use a different account\" on the Account page."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "登录管理控制台后打开了创建账户的界面",
+          "summary": "管理控制台现在使用 SK Hub Systems 账户。同意后即可返回。",
+          "body": [
+            {
+              "p": "Y-FILTER. 管理控制台现在使用 SK Hub Systems 账户。如果尚未创建账户，或账户条款已更新，登录后会打开账户页面。"
+            },
+            {
+              "steps": [
+                "确认显示的内容和条款。",
+                "勾选“我同意”，点击“创建账户”。",
+                "会自动返回管理控制台。"
+              ]
+            },
+            {
+              "p": "原有的管理群组、设备和共同管理员可以照常使用。"
+            },
+            {
+              "note": "如需使用其他 Google 账号登录，请点击账户页面上的“使用其他账户登录”。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "登入管理主控台後開啟了建立帳戶的畫面",
+          "summary": "管理主控台現在使用 SK Hub Systems 帳戶。同意後即可返回。",
+          "body": [
+            {
+              "p": "Y-FILTER. 管理主控台現在使用 SK Hub Systems 帳戶。如果尚未建立帳戶，或帳戶條款已更新，登入後會開啟帳戶頁面。"
+            },
+            {
+              "steps": [
+                "確認顯示的內容和條款。",
+                "勾選「我同意」，點選「建立帳戶」。",
+                "會自動回到管理主控台。"
+              ]
+            },
+            {
+              "p": "原有的管理群組、裝置和共同管理員可以照常使用。"
+            },
+            {
+              "note": "如需使用其他 Google 帳戶登入，請點選帳戶頁面上的「使用其他帳戶登入」。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "관리 콘솔에 로그인했더니 계정 만들기 화면이 열렸다",
+          "summary": "관리 콘솔은 SK Hub Systems 계정으로 쓰게 되었습니다. 동의하면 돌아갑니다.",
+          "body": [
+            {
+              "p": "Y-FILTER. 관리 콘솔은 SK Hub Systems 계정으로 쓰게 되었습니다. 계정을 아직 만들지 않았거나 계정 약관이 새로워진 경우에는 로그인 후 계정 페이지가 열립니다."
+            },
+            {
+              "steps": [
+                "표시된 내용과 약관을 확인합니다.",
+                "'동의합니다'에 체크하고 '계정 만들기'를 누릅니다.",
+                "자동으로 관리 콘솔로 돌아갑니다."
+              ]
+            },
+            {
+              "p": "지금까지의 관리 그룹·기기·공동 관리자는 그대로 쓸 수 있습니다."
+            },
+            {
+              "note": "다른 Google 계정으로 로그인하고 싶을 때는 계정 페이지의 '다른 계정으로 로그인'을 눌러 주세요."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "account-delete",
@@ -310,32 +1964,214 @@
       "title": "アカウントを削除する・データをダウンロードする",
       "summary": "アカウントのページから、いつでもダウンロード・削除できます。",
       "body": [
-        { "h": "データをダウンロードする" },
-        { "p": "[アカウント](/account/) のページの「データとプライバシー」で「ダウンロード」を押すと、このアカウントについて保存されている情報をファイル（JSON）で受け取れます。" },
-        { "h": "アカウントを削除する" },
-        { "steps": [
-          "[アカウント](/account/) のページを開き、いちばん下の「アカウントを削除する」を押します。",
-          "確認のチェックを入れて「削除する」を押します。",
-          "確認のために Google のログイン画面が開くので、同じアカウントを選びます。"
-        ] },
-        { "p": "アカウントと一緒に、管理コンソールの管理グループ・接続している端末の情報・リクエスト・ペアリングコードも削除され、元に戻せません。共同管理者として参加しているグループからは抜けます。" },
-        { "note": "接続していた端末の Y-FILTER. は遠隔管理が外れ、最後に配信された設定のままフィルタリングを続けます。" }
-      ]
+        {
+          "h": "データをダウンロードする"
+        },
+        {
+          "p": "[アカウント](/account/) のページの「データとプライバシー」で「ダウンロード」を押すと、このアカウントについて保存されている情報をファイル（JSON）で受け取れます。"
+        },
+        {
+          "h": "アカウントを削除する"
+        },
+        {
+          "steps": [
+            "[アカウント](/account/) のページを開き、いちばん下の「アカウントを削除する」を押します。",
+            "確認のチェックを入れて「削除する」を押します。",
+            "確認のために Google のログイン画面が開くので、同じアカウントを選びます。"
+          ]
+        },
+        {
+          "p": "アカウントと一緒に、管理コンソールの管理グループ・接続している端末の情報・リクエスト・ペアリングコードも削除され、元に戻せません。共同管理者として参加しているグループからは抜けます。"
+        },
+        {
+          "note": "接続していた端末の Y-FILTER. は遠隔管理が外れ、最後に配信された設定のままフィルタリングを続けます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Delete your account or download your data",
+          "summary": "Download or delete any time from the Account page.",
+          "body": [
+            {
+              "h": "Download your data"
+            },
+            {
+              "p": "On the [Account](/account/) page, click \"Download\" under \"Data & privacy\" to get the information stored about your account as a file (JSON)."
+            },
+            {
+              "h": "Delete your account"
+            },
+            {
+              "steps": [
+                "Open the [Account](/account/) page and click \"Delete account\" at the bottom.",
+                "Check the confirmation box and click \"Delete.\"",
+                "The Google sign-in screen opens to confirm — choose the same account."
+              ]
+            },
+            {
+              "p": "Your management group, connected devices, requests, and pairing codes in the management console are deleted along with your account, and this can't be undone. You'll leave any groups you've joined as a co-admin."
+            },
+            {
+              "note": "Y-FILTER. on connected devices will stop being remotely managed and keep filtering with the last settings it received."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "删除账户、下载数据",
+          "summary": "可随时在账户页面下载或删除。",
+          "body": [
+            {
+              "h": "下载数据"
+            },
+            {
+              "p": "在[账户](/account/)页面的“数据与隐私”中点击“下载”，即可以文件（JSON）形式获取此账户的已保存信息。"
+            },
+            {
+              "h": "删除账户"
+            },
+            {
+              "steps": [
+                "打开[账户](/account/)页面，点击最下方的“删除账户”。",
+                "勾选确认后点击“删除”。",
+                "会打开 Google 登录界面进行确认，请选择同一个账号。"
+              ]
+            },
+            {
+              "p": "管理控制台中的管理群组、已连接设备的信息、请求和配对码会随账户一并删除，且无法恢复。你将退出以共同管理员身份加入的群组。"
+            },
+            {
+              "note": "已连接设备上的 Y-FILTER. 将脱离远程管理，并按最后收到的设置继续过滤。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "刪除帳戶、下載資料",
+          "summary": "可隨時在帳戶頁面下載或刪除。",
+          "body": [
+            {
+              "h": "下載資料"
+            },
+            {
+              "p": "在[帳戶](/account/)頁面的「資料與隱私」中點選「下載」，即可以檔案（JSON）形式取得此帳戶已儲存的資訊。"
+            },
+            {
+              "h": "刪除帳戶"
+            },
+            {
+              "steps": [
+                "開啟[帳戶](/account/)頁面，點選最下方的「刪除帳戶」。",
+                "勾選確認後點選「刪除」。",
+                "會開啟 Google 登入畫面進行確認，請選擇同一個帳戶。"
+              ]
+            },
+            {
+              "p": "管理主控台中的管理群組、已連線裝置的資訊、請求和配對碼會隨帳戶一併刪除，且無法復原。你將退出以共同管理員身分加入的群組。"
+            },
+            {
+              "note": "已連線裝置上的 Y-FILTER. 將脫離遠端管理，並依最後收到的設定繼續過濾。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "계정 삭제하기·데이터 다운로드하기",
+          "summary": "계정 페이지에서 언제든 다운로드·삭제할 수 있습니다.",
+          "body": [
+            {
+              "h": "데이터 다운로드하기"
+            },
+            {
+              "p": "[계정](/account/) 페이지의 '데이터와 개인정보'에서 '다운로드'를 누르면, 이 계정에 대해 저장된 정보를 파일(JSON)로 받을 수 있습니다."
+            },
+            {
+              "h": "계정 삭제하기"
+            },
+            {
+              "steps": [
+                "[계정](/account/) 페이지를 열고 맨 아래의 '계정 삭제하기'를 누릅니다.",
+                "확인 체크를 하고 '삭제'를 누릅니다.",
+                "확인을 위해 Google 로그인 화면이 열리면 같은 계정을 선택합니다."
+              ]
+            },
+            {
+              "p": "계정과 함께 관리 콘솔의 관리 그룹·연결된 기기의 정보·요청·페어링 코드도 삭제되며, 되돌릴 수 없습니다. 공동 관리자로 참여 중인 그룹에서는 탈퇴합니다."
+            },
+            {
+              "note": "연결되어 있던 기기의 Y-FILTER.는 원격 관리가 해제되고, 마지막으로 배포된 설정 그대로 필터링을 계속합니다."
+            }
+          ]
+        }
+      }
     },
-
     {
-      "id": "lab-qr-drop-reading",      "type": "guide",
+      "id": "lab-qr-drop-reading",
+      "type": "guide",
       "date": "2026-09-26",
       "category": "SK's Lab",
       "title": "QR Drop で QR コードが読み取れないとき",
       "summary": "カメラの許可、明るさ、送信速度を見直してください。",
       "body": [
-        { "list": [
-          "受信する側で、カメラの使用を許可してください。",
-          "送信する側の画面の明るさを上げ、カメラとの距離を調整してください。",
-          "設定で「送信速度（FPS）」を下げたり、「分割サイズ」を小さくしたりすると読み取りやすくなります。"
-        ] }
-      ]
+        {
+          "list": [
+            "受信する側で、カメラの使用を許可してください。",
+            "送信する側の画面の明るさを上げ、カメラとの距離を調整してください。",
+            "設定で「送信速度（FPS）」を下げたり、「分割サイズ」を小さくしたりすると読み取りやすくなります。"
+          ]
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "QR Drop can't read the QR codes",
+          "summary": "Check camera permission, brightness, and sending speed.",
+          "body": [
+            {
+              "list": [
+                "On the receiving device, allow camera access.",
+                "Turn up the brightness on the sending screen and adjust the distance to the camera.",
+                "Lowering \"Sending speed (FPS)\" or reducing \"Chunk size\" in settings makes codes easier to read."
+              ]
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "QR Drop 无法读取二维码时",
+          "summary": "请检查摄像头权限、亮度和发送速度。",
+          "body": [
+            {
+              "list": [
+                "请在接收端允许使用摄像头。",
+                "请调高发送端屏幕的亮度，并调整与摄像头的距离。",
+                "在设置中降低“发送速度（FPS）”或减小“分块大小”，会更容易读取。"
+              ]
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "QR Drop 無法讀取 QR 碼時",
+          "summary": "請檢查相機權限、亮度和傳送速度。",
+          "body": [
+            {
+              "list": [
+                "請在接收端允許使用相機。",
+                "請調高傳送端螢幕的亮度，並調整與相機的距離。",
+                "在設定中降低「傳送速度（FPS）」或縮小「分割大小」，會更容易讀取。"
+              ]
+            }
+          ]
+        },
+        "ko": {
+          "title": "QR Drop에서 QR 코드를 읽지 못할 때",
+          "summary": "카메라 권한, 밝기, 전송 속도를 확인해 주세요.",
+          "body": [
+            {
+              "list": [
+                "받는 쪽에서 카메라 사용을 허용해 주세요.",
+                "보내는 쪽 화면의 밝기를 높이고, 카메라와의 거리를 조정해 주세요.",
+                "설정에서 '전송 속도(FPS)'를 낮추거나 '분할 크기'를 줄이면 읽기 쉬워집니다."
+              ]
+            }
+          ]
+        }
+      }
     },
     {
       "id": "lab-dashboard-weather",
@@ -345,9 +2181,78 @@
       "title": "スマートダッシュボードの天気が「デモ」のまま",
       "summary": "設定から天気の API キーと都市を入力してください。",
       "body": [
-        { "steps": ["右上の設定ボタンを押します。", "天気の API キーと都市（例: Kyoto,JP）を入力します。"] },
-        { "p": "API キーを入れるまでは、デモの表示になります。" }
-      ]
+        {
+          "steps": [
+            "右上の設定ボタンを押します。",
+            "天気の API キーと都市（例: Kyoto,JP）を入力します。"
+          ]
+        },
+        {
+          "p": "API キーを入れるまでは、デモの表示になります。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Smart Dashboard's weather stays in \"demo\" mode",
+          "summary": "Enter a weather API key and city in settings.",
+          "body": [
+            {
+              "steps": [
+                "Tap the settings button in the top right.",
+                "Enter a weather API key and a city (e.g. Kyoto,JP)."
+              ]
+            },
+            {
+              "p": "It shows demo data until you add an API key."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "智能仪表板的天气一直显示“演示”",
+          "summary": "请在设置中输入天气 API 密钥和城市。",
+          "body": [
+            {
+              "steps": [
+                "点击右上角的设置按钮。",
+                "输入天气 API 密钥和城市（例：Kyoto,JP）。"
+              ]
+            },
+            {
+              "p": "填入 API 密钥之前会显示演示数据。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "智慧儀表板的天氣一直顯示「示範」",
+          "summary": "請在設定中輸入天氣 API 金鑰和城市。",
+          "body": [
+            {
+              "steps": [
+                "點選右上角的設定按鈕。",
+                "輸入天氣 API 金鑰和城市（例：Kyoto,JP）。"
+              ]
+            },
+            {
+              "p": "填入 API 金鑰之前會顯示示範資料。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "스마트 대시보드의 날씨가 '데모' 그대로일 때",
+          "summary": "설정에서 날씨 API 키와 도시를 입력해 주세요.",
+          "body": [
+            {
+              "steps": [
+                "오른쪽 위의 설정 버튼을 누릅니다.",
+                "날씨 API 키와 도시(예: Kyoto,JP)를 입력합니다."
+              ]
+            },
+            {
+              "p": "API 키를 넣기 전까지는 데모 표시가 됩니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "lab-support",
@@ -357,10 +2262,49 @@
       "title": "SK's Lab のツールのサポートについて",
       "summary": "Lab のツールは実験中です。",
       "body": [
-        { "p": "SK's Lab のツールは実験中のため、予告なく内容が変わったり、公開をやめたりすることがあります。不具合はすぐに直せない場合がありますが、[お問い合わせ](/contact/) から教えていただけると助かります。" }
-      ]
+        {
+          "p": "SK's Lab のツールは実験中のため、予告なく内容が変わったり、公開をやめたりすることがあります。不具合はすぐに直せない場合がありますが、[お問い合わせ](/contact/) から教えていただけると助かります。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "About support for SK's Lab tools",
+          "summary": "Lab tools are experimental.",
+          "body": [
+            {
+              "p": "SK's Lab tools are experimental, so they may change or be taken down without notice. Bugs may not be fixed right away, but it helps a lot if you let us know through [Contact](/contact/)."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "关于 SK's Lab 工具的支持",
+          "summary": "Lab 中的工具仍在实验阶段。",
+          "body": [
+            {
+              "p": "SK's Lab 的工具仍在实验阶段，内容可能会在不预先通知的情况下变更或停止公开。问题可能无法立即修复，但如果能通过[联系我们](/contact/)告诉我们，将对我们很有帮助。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "關於 SK's Lab 工具的支援",
+          "summary": "Lab 的工具仍在實驗階段。",
+          "body": [
+            {
+              "p": "SK's Lab 的工具仍在實驗階段，內容可能會在未事先通知的情況下變更或停止公開。問題可能無法立即修正，但如果能透過[聯絡我們](/contact/)告訴我們，將對我們很有幫助。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "SK's Lab 도구의 지원에 대해",
+          "summary": "Lab의 도구는 실험 중입니다.",
+          "body": [
+            {
+              "p": "SK's Lab의 도구는 실험 중이기 때문에 예고 없이 내용이 바뀌거나 공개를 중단할 수 있습니다. 오류는 바로 고치지 못할 수도 있지만, [문의](/contact/)로 알려 주시면 큰 도움이 됩니다."
+            }
+          ]
+        }
+      }
     },
-
     {
       "id": "site-consent-card",
       "type": "guide",
@@ -369,11 +2313,93 @@
       "title": "右下に出る「ようこそ！」のカードとアイコン",
       "summary": "利用規約とプライバシーポリシーのお知らせです。",
       "body": [
-        { "p": "初めてアクセスしたとき、右下に利用規約とプライバシーポリシーのお知らせが出ます。「同意して閉じる」を押すか、次にアクセスした時点で同意したものとして扱います。" },
-        { "p": "同意したあとは、右下に小さい SK のアイコンが出ます。マウスを乗せると「SKについて」と「利用規約・プライバシー」へのリンクが出ます。" },
-        { "h": "「同意しない」を押してしまったとき" },
-        { "p": "[こちらのページ](/usercheck/terms_not_accepted.html) から、あらためて同意できます。" }
-      ]
+        {
+          "p": "初めてアクセスしたとき、右下に利用規約とプライバシーポリシーのお知らせが出ます。「同意して閉じる」を押すか、次にアクセスした時点で同意したものとして扱います。"
+        },
+        {
+          "p": "同意したあとは、右下に小さい SK のアイコンが出ます。マウスを乗せると「SKについて」と「利用規約・プライバシー」へのリンクが出ます。"
+        },
+        {
+          "h": "「同意しない」を押してしまったとき"
+        },
+        {
+          "p": "[こちらのページ](/usercheck/terms_not_accepted.html) から、あらためて同意できます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "The \"Welcome!\" card and icon in the bottom right",
+          "summary": "A notice about the Terms of Service and Privacy Policy.",
+          "body": [
+            {
+              "p": "On your first visit, a notice about the Terms of Service and Privacy Policy appears in the bottom right. You're treated as agreeing when you click \"Agree and close\" or on your next visit."
+            },
+            {
+              "p": "After you agree, a small SK icon appears in the bottom right. Hover over it to see links to \"About SK\" and \"Terms & Privacy.\""
+            },
+            {
+              "h": "If you clicked \"Decline\""
+            },
+            {
+              "p": "You can agree again from [this page](/usercheck/terms_not_accepted.html)."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "右下角出现的“欢迎！”卡片和图标",
+          "summary": "这是关于使用条款和隐私政策的通知。",
+          "body": [
+            {
+              "p": "首次访问时，右下角会出现关于使用条款和隐私政策的通知。点击“同意并关闭”或下次访问时，即视为同意。"
+            },
+            {
+              "p": "同意后，右下角会出现一个小的 SK 图标。鼠标悬停时会显示“关于 SK”和“使用条款、隐私”的链接。"
+            },
+            {
+              "h": "不小心点击了“不同意”时"
+            },
+            {
+              "p": "可以在[此页面](/usercheck/terms_not_accepted.html)重新同意。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "右下角出現的「歡迎！」卡片和圖示",
+          "summary": "這是關於使用條款與隱私權政策的通知。",
+          "body": [
+            {
+              "p": "第一次造訪時，右下角會出現關於使用條款與隱私權政策的通知。點選「同意並關閉」或下次造訪時，即視為同意。"
+            },
+            {
+              "p": "同意後，右下角會出現一個小的 SK 圖示。滑鼠移過時會顯示「關於 SK」和「使用條款、隱私」的連結。"
+            },
+            {
+              "h": "不小心點選了「不同意」時"
+            },
+            {
+              "p": "可以在[此頁面](/usercheck/terms_not_accepted.html)重新同意。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "오른쪽 아래에 나오는 '환영합니다!' 카드와 아이콘",
+          "summary": "이용약관과 개인정보 처리방침에 대한 안내입니다.",
+          "body": [
+            {
+              "p": "처음 접속했을 때 오른쪽 아래에 이용약관과 개인정보 처리방침에 대한 안내가 나옵니다. '동의하고 닫기'를 누르거나 다음에 접속한 시점에 동의한 것으로 봅니다."
+            },
+            {
+              "p": "동의한 뒤에는 오른쪽 아래에 작은 SK 아이콘이 나옵니다. 마우스를 올리면 'SK 소개'와 '이용약관·개인정보'로 가는 링크가 나옵니다."
+            },
+            {
+              "h": "'동의하지 않음'을 눌러 버렸을 때"
+            },
+            {
+              "p": "[이 페이지](/usercheck/terms_not_accepted.html)에서 다시 동의할 수 있습니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "site-access-restricted",
@@ -383,9 +2409,63 @@
       "title": "「アクセスが制限されています」と表示されるとき",
       "summary": "心当たりがない場合は、サポートIDを添えてお問い合わせください。",
       "body": [
-        { "p": "利用規約に反する使い方が確認された場合などに、アクセスを制限することがあります。" },
-        { "p": "心当たりがない場合は、制限の画面に表示されるサポートIDを添えて [お問い合わせ](/contact/) ください。" }
-      ]
+        {
+          "p": "利用規約に反する使い方が確認された場合などに、アクセスを制限することがあります。"
+        },
+        {
+          "p": "心当たりがない場合は、制限の画面に表示されるサポートIDを添えて [お問い合わせ](/contact/) ください。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "When \"Access is restricted\" appears",
+          "summary": "If you think it's a mistake, contact us with your support ID.",
+          "body": [
+            {
+              "p": "Access may be restricted when use that violates the Terms of Service is found, for example."
+            },
+            {
+              "p": "If you think it's a mistake, [contact us](/contact/) with the support ID shown on the restriction screen."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "显示“访问受到限制”时",
+          "summary": "如果你认为有误，请附上支持 ID 联系我们。",
+          "body": [
+            {
+              "p": "在确认存在违反使用条款的使用方式等情况下，我们可能会限制访问。"
+            },
+            {
+              "p": "如果你认为有误，请附上限制界面上显示的支持 ID [联系我们](/contact/)。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "顯示「存取受到限制」時",
+          "summary": "如果你認為有誤，請附上支援 ID 聯絡我們。",
+          "body": [
+            {
+              "p": "在確認有違反使用條款的使用方式等情況下，我們可能會限制存取。"
+            },
+            {
+              "p": "如果你認為有誤，請附上限制畫面上顯示的支援 ID [聯絡我們](/contact/)。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "'접근이 제한되어 있습니다'라고 표시될 때",
+          "summary": "짐작 가는 바가 없다면 지원 ID를 첨부해 문의해 주세요.",
+          "body": [
+            {
+              "p": "이용약관에 어긋나는 사용이 확인된 경우 등에 접근을 제한할 수 있습니다."
+            },
+            {
+              "p": "짐작 가는 바가 없다면 제한 화면에 표시된 지원 ID를 첨부해 [문의](/contact/)해 주세요."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "site-support-id",
@@ -395,11 +2475,93 @@
       "title": "サポートIDの確認とリセット",
       "summary": "ブラウザごとにランダムに作る ID です。名前やメールアドレスとは結び付いていません。",
       "body": [
-        { "p": "サポートIDは、このサイトがブラウザごとにランダムに作る ID です。名前やメールアドレスとは結び付いていません。お問い合わせのときに伝えていただくと、調査がスムーズになります。" },
-        { "p": "あなたのサポートIDは、このサポートのページの下で確認・コピーできます。" },
-        { "h": "リセットしたいとき" },
-        { "p": "ブラウザの設定で sy9-k.github.io のサイトデータ（Cookie とサイトデータ）を消去すると、次にアクセスしたときに新しいサポートIDが作られます。利用規約のお知らせも、もう一度表示されます。" }
-      ]
+        {
+          "p": "サポートIDは、このサイトがブラウザごとにランダムに作る ID です。名前やメールアドレスとは結び付いていません。お問い合わせのときに伝えていただくと、調査がスムーズになります。"
+        },
+        {
+          "p": "あなたのサポートIDは、このサポートのページの下で確認・コピーできます。"
+        },
+        {
+          "h": "リセットしたいとき"
+        },
+        {
+          "p": "ブラウザの設定で sy9-k.github.io のサイトデータ（Cookie とサイトデータ）を消去すると、次にアクセスしたときに新しいサポートIDが作られます。利用規約のお知らせも、もう一度表示されます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Checking and resetting your support ID",
+          "summary": "A random ID created for each browser. It isn't linked to your name or email address.",
+          "body": [
+            {
+              "p": "Your support ID is a random ID this site creates for each browser. It isn't linked to your name or email address. Including it when you contact us helps us look into things faster."
+            },
+            {
+              "p": "You can view and copy your support ID at the bottom of this Support page."
+            },
+            {
+              "h": "To reset it"
+            },
+            {
+              "p": "Clear the site data (cookies and site data) for sy9-k.github.io in your browser settings, and a new support ID is created on your next visit. The terms notice appears again too."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "查看和重置支持 ID",
+          "summary": "为每个浏览器随机生成的 ID，与姓名和邮箱地址无关。",
+          "body": [
+            {
+              "p": "支持 ID 是本网站为每个浏览器随机生成的 ID，与姓名和邮箱地址无关。联系我们时提供此 ID，可以加快调查。"
+            },
+            {
+              "p": "你的支持 ID 可以在本支持页面的下方查看和复制。"
+            },
+            {
+              "h": "想要重置时"
+            },
+            {
+              "p": "在浏览器设置中清除 sy9-k.github.io 的网站数据（Cookie 和网站数据）后，下次访问时会生成新的支持 ID。使用条款的通知也会再次显示。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "查看與重設支援 ID",
+          "summary": "為每個瀏覽器隨機產生的 ID，與姓名和電子郵件地址無關。",
+          "body": [
+            {
+              "p": "支援 ID 是本網站為每個瀏覽器隨機產生的 ID，與姓名和電子郵件地址無關。聯絡我們時提供此 ID，可以加快調查。"
+            },
+            {
+              "p": "你的支援 ID 可以在本支援頁面的下方查看和複製。"
+            },
+            {
+              "h": "想要重設時"
+            },
+            {
+              "p": "在瀏覽器設定中清除 sy9-k.github.io 的網站資料（Cookie 和網站資料）後，下次造訪時會產生新的支援 ID。使用條款的通知也會再次顯示。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "지원 ID 확인과 초기화",
+          "summary": "브라우저마다 무작위로 만드는 ID입니다. 이름이나 이메일 주소와는 연결되어 있지 않습니다.",
+          "body": [
+            {
+              "p": "지원 ID는 이 사이트가 브라우저마다 무작위로 만드는 ID입니다. 이름이나 이메일 주소와는 연결되어 있지 않습니다. 문의할 때 알려 주시면 조사가 빨라집니다."
+            },
+            {
+              "p": "내 지원 ID는 이 지원 페이지 아래쪽에서 확인·복사할 수 있습니다."
+            },
+            {
+              "h": "초기화하고 싶을 때"
+            },
+            {
+              "p": "브라우저 설정에서 sy9-k.github.io의 사이트 데이터(쿠키와 사이트 데이터)를 지우면, 다음에 접속할 때 새 지원 ID가 만들어집니다. 이용약관 안내도 다시 표시됩니다."
+            }
+          ]
+        }
+      }
     },
     {
       "id": "site-delete-data",
@@ -409,13 +2571,83 @@
       "title": "保存されている情報の削除を依頼する",
       "summary": "お問い合わせフォームで「データの確認・削除」を選んで送ってください。",
       "body": [
-        { "steps": [
-          "[お問い合わせ](/contact/) を開き、種類で「データの確認・削除」を選びます。",
-          "「サポートIDとブラウザの情報を添える」にチェックが入ったまま、削除してほしい旨を書いて送ります。",
-          "SK Hub Systems アカウントの情報は、お問い合わせをしなくても [アカウント](/account/) のページから削除できます。"
-        ] },
-        { "p": "取り扱う情報は [SK プライバシーポリシー](/policies/#sk-privacy) と [SK Hub Systems 利用規約](/policies/#sk-hub-systems) にまとめています。" }
-      ]
+        {
+          "steps": [
+            "[お問い合わせ](/contact/) を開き、種類で「データの確認・削除」を選びます。",
+            "「サポートIDとブラウザの情報を添える」にチェックが入ったまま、削除してほしい旨を書いて送ります。",
+            "SK Hub Systems アカウントの情報は、お問い合わせをしなくても [アカウント](/account/) のページから削除できます。"
+          ]
+        },
+        {
+          "p": "取り扱う情報は [SK プライバシーポリシー](/policies/#sk-privacy) と [SK Hub Systems 利用規約](/policies/#sk-hub-systems) にまとめています。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Request deletion of stored information",
+          "summary": "Choose \"Viewing or deleting data\" in the contact form and send it.",
+          "body": [
+            {
+              "steps": [
+                "Open [Contact](/contact/) and choose \"Viewing or deleting data\" as the type.",
+                "Leave \"Include my support ID and browser info\" checked, write that you'd like your data deleted, and send.",
+                "You can delete your SK Hub Systems account data from the [Account](/account/) page without contacting us."
+              ]
+            },
+            {
+              "p": "The information we handle is described in the [SK Privacy Policy](/policies/#sk-privacy) and the [SK Hub Systems Terms of Service](/policies/#sk-hub-systems)."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "申请删除已保存的信息",
+          "summary": "请在咨询表单中选择“查看或删除数据”后发送。",
+          "body": [
+            {
+              "steps": [
+                "打开[联系我们](/contact/)，在类型中选择“查看或删除数据”。",
+                "保持勾选“附上支持 ID 和浏览器信息”，写明希望删除后发送。",
+                "SK Hub Systems 账户的信息无需联系我们，可直接在[账户](/account/)页面删除。"
+              ]
+            },
+            {
+              "p": "处理的信息汇总在[SK 隐私政策](/policies/#sk-privacy)和[SK Hub Systems 使用条款](/policies/#sk-hub-systems)中。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "申請刪除已儲存的資訊",
+          "summary": "請在聯絡表單中選擇「查看或刪除資料」後傳送。",
+          "body": [
+            {
+              "steps": [
+                "開啟[聯絡我們](/contact/)，在類型中選擇「查看或刪除資料」。",
+                "保持勾選「附上支援 ID 和瀏覽器資訊」，寫明希望刪除後傳送。",
+                "SK Hub Systems 帳戶的資訊不必聯絡我們，可直接在[帳戶](/account/)頁面刪除。"
+              ]
+            },
+            {
+              "p": "處理的資訊彙整在[SK 隱私權政策](/policies/#sk-privacy)和[SK Hub Systems 使用條款](/policies/#sk-hub-systems)中。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "저장된 정보의 삭제 요청하기",
+          "summary": "문의 양식에서 '데이터 확인·삭제'를 선택해 보내 주세요.",
+          "body": [
+            {
+              "steps": [
+                "[문의](/contact/)를 열고 종류에서 '데이터 확인·삭제'를 선택합니다.",
+                "'지원 ID와 브라우저 정보 첨부'에 체크한 채로 삭제를 원한다는 내용을 써서 보냅니다.",
+                "SK Hub Systems 계정의 정보는 문의하지 않아도 [계정](/account/) 페이지에서 삭제할 수 있습니다."
+              ]
+            },
+            {
+              "p": "다루는 정보는 [SK 개인정보 처리방침](/policies/#sk-privacy)과 [SK Hub Systems 이용약관](/policies/#sk-hub-systems)에 정리해 두었습니다."
+            }
+          ]
+        }
+      }
     }
   ]
 }

@@ -5,6 +5,11 @@
 
   const UUID_KEY = "skhub_uuid"; // frameworks/check.js の CONFIG.UUID_KEY と同じ
 
+  // 多言語（assets/i18n.js）。t("日本語") で訳、lp("/support/") で同じ言語のページの URL
+  const I18N = window.SKI18N || { lang: "ja", LANGS: [], t: (s, v) => (v ? s.replace(/\{(\w+)\}/g, (m, k) => (v[k] != null ? v[k] : m)) : s), path: (u) => u, date: (s) => s };
+  const t = I18N.t;
+  const lp = I18N.path;
+
   // ---------- ヘッダーのアカウント ----------
   // SK Hub Systems アカウントでログイン中なら、アイコンを出す（名前とアイコンは assets/hub/account.js がこのブラウザに保存する。
   // ここでは Firebase を読み込まない）
@@ -31,7 +36,7 @@
     if (!accountLink) return;
     accountLink.querySelector(".hd-account-photo")?.remove();
     if (accountPhoto) accountLink.prepend(accountAvatar("hd-account-photo"));
-    if (accountHint) accountLink.setAttribute("aria-label", `アカウント（${accountHint.name || "ログイン中"}）`);
+    if (accountHint) accountLink.setAttribute("aria-label", t("アカウント（{name}）", { name: accountHint.name || t("ログイン中") }));
     else accountLink.removeAttribute("aria-label");
   }
   renderAccountLink();
@@ -39,20 +44,20 @@
   // ヘッダーのアカウントのメニュー。ログイン中かどうかで中身を変える（profile があると、名前とアイコンを一覧の上に出す）
   function accountMenu() {
     return accountHint ? {
-      title: "SK Hub Systems アカウント",
+      title: t("SK Hub Systems アカウント"),
       profile: accountHint,
       items: [
-        ["アカウント", "/account/"],
-        ["Y-FILTER. 管理コンソール", "/y-filter/"],
-        ["データのダウンロード・削除", "/account/#privacy"],
-        ["ログアウト", "/account/?signout=1"]
+        [t("アカウント"), lp("/account/")],
+        [t("Y-FILTER. 管理コンソール"), "/y-filter/"],
+        [t("データのダウンロード・削除"), lp("/account/#privacy")],
+        [t("ログアウト"), lp("/account/?signout=1")]
       ]
     } : {
-      title: "SK Hub Systems アカウント",
+      title: t("SK Hub Systems アカウント"),
       items: [
-        ["ログイン・アカウントを作成", "/account/"],
-        ["SK Hub Systems アカウントとは", "/support/?a=account-about"],
-        ["Y-FILTER. 管理コンソール", "/y-filter/"]
+        [t("ログイン・アカウントを作成"), lp("/account/")],
+        [t("SK Hub Systems アカウントとは"), lp("/support/?a=account-about")],
+        [t("Y-FILTER. 管理コンソール"), "/y-filter/"]
       ]
     };
   }
@@ -61,34 +66,34 @@
   // PC: 項目にマウスを乗せると白いパネルが下に開く。スマホ: 2 本線ボタン → 一覧 → 項目を選ぶとロゴが「戻る」になる。
   const MENUS = {
     products: {
-      title: "プロダクト",
+      title: t("プロダクト"),
       items: [
-        ["プロダクト一覧", "/#products"],
-        ["Y-FILTER.", "/products/y-filter/"],
-        ["MALU", "/products/malu/"],
-        ["SK Hub Systems", "/sk-hub-systems/"],
-        ["SK's Lab", "/lab/"]
+        [t("プロダクト一覧"), lp("/#products")],
+        ["Y-FILTER.", lp("/products/y-filter/")],
+        ["MALU", lp("/products/malu/")],
+        ["SK Hub Systems", lp("/sk-hub-systems/")],
+        ["SK's Lab", lp("/lab/")]
       ]
     },
     // groups があると、見出しつきの列に分けて出す（スマホでは縦に並ぶ）
     support: {
-      title: "サポートと情報",
+      title: t("サポートと情報"),
       groups: [
         {
-          title: "困ったとき",
+          title: t("困ったとき"),
           items: [
-            ["サポート記事", "/support/"],
-            ["お知らせ", "/support/?type=news"],
-            ["お問い合わせ", "/contact/"],
-            ["システム稼働状況", "/status/"]
+            [t("サポート記事"), lp("/support/")],
+            [t("お知らせ"), lp("/support/?type=news")],
+            [t("お問い合わせ"), lp("/contact/")],
+            [t("システム稼働状況"), lp("/status/")]
           ]
         },
         {
-          title: "情報",
+          title: t("情報"),
           items: [
-            ["アップデート", "/updates/"],
-            ["利用規約とプライバシーポリシー", "/policies/"],
-            ["Link & Credit", "/credits/"]
+            [t("アップデート"), lp("/updates/")],
+            [t("利用規約とプライバシーポリシー"), lp("/policies/")],
+            ["Link & Credit", lp("/credits/")]
           ]
         }
       ]
@@ -190,9 +195,9 @@
         if (accountPhoto) profile.appendChild(accountAvatar("hd-menu-profile-photo"));
         const text = document.createElement("div");
         const name = document.createElement("strong");
-        name.textContent = data.profile.name || "ログイン中";
+        name.textContent = data.profile.name || t("ログイン中");
         const sub = document.createElement("small");
-        sub.textContent = "ログイン中";
+        sub.textContent = t("ログイン中");
         text.append(name, sub);
         profile.appendChild(text);
         nodes.push(profile);
@@ -231,10 +236,10 @@
       if (menuBtn) {
         menuBtn.classList.toggle("is-open", open);
         menuBtn.setAttribute("aria-expanded", String(open));
-        menuBtn.setAttribute("aria-label", open ? "閉じる" : "メニュー");
+        menuBtn.setAttribute("aria-label", open ? t("閉じる") : t("メニュー"));
       }
       logo.classList.toggle("is-back", submenu);
-      logo.setAttribute("aria-label", submenu ? "戻る" : "ホーム");
+      logo.setAttribute("aria-label", submenu ? t("戻る") : t("ホーム"));
     }
 
     function openMenu(type, trigger) {
@@ -370,6 +375,25 @@
     setMobileState(false, false);
   }
 
+  // ---------- 言語の切り替え ----------
+  // ヘッダーの地球のアイコン → /lang/（戻り先つき）。フッター → 各言語の同じページ
+  const here = location.pathname + location.search + location.hash;
+  document.querySelectorAll("[data-lang-link]").forEach((a) => { a.href = `/lang/?next=${encodeURIComponent(here)}`; });
+  const footerLangs = document.querySelector("[data-footer-langs]");
+  if (footerLangs && I18N.LANGS.length) {
+    footerLangs.replaceChildren(...I18N.LANGS.map((l) => {
+      const a = document.createElement("a");
+      a.href = I18N.path(here, l.code);
+      a.lang = l.code;
+      a.hreflang = l.code;
+      a.textContent = l.name;
+      if (l.code === I18N.lang) a.setAttribute("aria-current", "true");
+      // 選んだ言語を覚えてから移る（日本語のページは、覚えている言語のページへ移るため）
+      a.addEventListener("click", (e) => { e.preventDefault(); I18N.setLang(l.code, here); });
+      return a;
+    }));
+  }
+
   // ---------- サポートID ----------
   const idEls = document.querySelectorAll("[data-support-id]");
   const copyBtns = document.querySelectorAll("[data-copy-id]");
@@ -380,7 +404,7 @@
 
   function renderId() {
     const id = readId();
-    idEls.forEach(el => { el.textContent = id || "まだ発行されていません（利用規約に同意すると発行されます）"; });
+    idEls.forEach(el => { el.textContent = id || t("まだ発行されていません（利用規約に同意すると発行されます）"); });
     copyBtns.forEach(btn => { btn.hidden = !id; });
   }
 
@@ -390,11 +414,11 @@
       if (!id) return;
       try {
         await navigator.clipboard.writeText(id);
-        btn.textContent = "コピーしました";
+        btn.textContent = t("コピーしました");
       } catch (e) {
-        btn.textContent = "コピーできませんでした";
+        btn.textContent = t("コピーできませんでした");
       }
-      setTimeout(() => { btn.textContent = "コピー"; }, 1800);
+      setTimeout(() => { btn.textContent = t("コピー"); }, 1800);
     });
   });
 
@@ -405,16 +429,20 @@
 
   // ---------- 利用規約ページ ----------
   // 本文は /policies/docs/*.txt（Y-FILTER. の個別規約は拡張機能のリポジトリから systems/sync-console.mjs でコピーされる）
+  // 訳文は /policies/docs/<名前>.<言語>.txt（参考訳。正文は日本語）。Y-FILTER. の規約はまだ訳していないので日本語で出す
   const viewer = document.querySelector("[data-policy-viewer]");
   if (viewer) {
     const DOCS = {
-      "sk-terms": "sk-terms.txt",
-      "sk-privacy": "sk-privacy.txt",
-      "sk-hub-account": "sk-hub-account.txt",
-      "y-filter": "y-filter.txt",
-      "sk-hub-systems": "sk-hub-systems.txt",
-      "newtab": "newtab.txt"
+      "sk-terms": "sk-terms",
+      "sk-privacy": "sk-privacy",
+      "sk-hub-account": "sk-hub-account",
+      "y-filter": "y-filter",
+      "sk-hub-systems": "sk-hub-systems",
+      "newtab": "newtab"
     };
+    // 訳文がある規約（sk-hub-systems はまだ。訳したら足す）
+    const TRANSLATED = ["sk-terms", "sk-privacy", "sk-hub-account"];
+    const fileOf = (id) => (I18N.lang !== "ja" && TRANSLATED.includes(id) ? `${DOCS[id]}.${I18N.lang}.txt` : `${DOCS[id]}.txt`);
     // 以前のページ内リンク
     const ALIASES = { terms: "sk-terms", privacy: "sk-privacy", products: "y-filter" };
     const links = document.querySelectorAll("[data-policy-link]");
@@ -439,9 +467,18 @@
       return p;
     }
 
-    function render(text, file) {
+    function render(text, file, id) {
       const nodes = [];
       let titled = false;
+      if (I18N.lang !== "ja") {
+        // 訳文は参考。まだ訳していない規約は日本語のまま出す
+        const note = document.createElement("p");
+        note.className = "doc-lang-note";
+        note.textContent = TRANSLATED.includes(id)
+          ? t("この訳文は参考です。内容に違いがある場合は、日本語版が正式なものになります。")
+          : t("この規約は、まだ日本語でのみ提供しています。");
+        nodes.push(note);
+      }
       text.split(/\r?\n/).forEach(raw => {
         const line = raw.trim();
         if (!line) return;
@@ -451,9 +488,9 @@
           h.textContent = line;
           nodes.push(h);
           titled = true;
-        } else if (/^制定日/.test(line)) {
+        } else if (/^(制定日|Established|制定日期|제정일)/.test(line)) {
           nodes.push(paragraph(line, "meta"));
-        } else if (/^(第[一二三四五六七八九十]+条|附則)/.test(line)) {
+        } else if (/^(第[一二三四五六七八九十]+[条條]|附則|附则|Article \d+|Supplementary Provisions|제\d+조|부칙)/.test(line)) {
           const h = document.createElement("h3");
           h.textContent = line;
           nodes.push(h);
@@ -467,7 +504,7 @@
       raw.className = "raw-link";
       const a = document.createElement("a");
       a.href = `/policies/docs/${file}`;
-      a.textContent = "テキストファイルで見る";
+      a.textContent = t("テキストファイルで見る");
       raw.appendChild(a);
       nodes.push(raw);
       viewer.replaceChildren(...nodes);
@@ -479,11 +516,11 @@
       links.forEach(l => l.classList.toggle("active", l.dataset.policyLink === id));
       viewer.setAttribute("aria-busy", "true");
       try {
-        const res = await fetch(`/policies/docs/${DOCS[id]}`, { cache: "no-cache" });
+        const res = await fetch(`/policies/docs/${fileOf(id)}`, { cache: "no-cache" });
         if (!res.ok) throw new Error(String(res.status));
-        render(await res.text(), DOCS[id]);
+        render(await res.text(), fileOf(id), id);
       } catch (e) {
-        viewer.replaceChildren(paragraph("規約を読み込めませんでした。時間をおいて再度お試しください。"));
+        viewer.replaceChildren(paragraph(t("規約を読み込めませんでした。時間をおいて再度お試しください。")));
         current = null;
       } finally {
         viewer.removeAttribute("aria-busy");
@@ -507,9 +544,16 @@
   const updateLists = document.querySelectorAll("[data-updates]");
   if (updateLists.length) {
     const CATEGORY_CLASS = { "SK": "cat-sk", "Y-FILTER.": "cat-yf", "SK Hub Systems": "cat-hub", "MALU": "cat-malu", "Lab": "cat-lab" };
-    const formatDate = (s) => {
-      const [y, m, d] = s.split("-").map(Number);
-      return `${y}年${m}月${d}日`;
+    const formatDate = (s) => I18N.date(s);
+    // 訳は各項目の i18n: { "en": { title, body, label } }（なければ日本語）
+    const localize = (it) => {
+      const tr = (it.i18n && it.i18n[I18N.lang]) || {};
+      return {
+        ...it,
+        title: tr.title || it.title,
+        body: tr.body || it.body,
+        link: it.link ? { href: lp(it.link.href), label: tr.label || it.link.label } : null
+      };
     };
     const renderUpdates = (list, items) => {
       const limit = Number(list.dataset.limit || 0);
@@ -539,12 +583,17 @@
         li.append(time, body);
         return li;
       }));
-      if (!shown.length) list.innerHTML = "<li class=\"update-empty\">このカテゴリのアップデートはまだありません。</li>";
+      if (!shown.length) {
+        const li = document.createElement("li");
+        li.className = "update-empty";
+        li.textContent = t("このカテゴリのアップデートはまだありません。");
+        list.replaceChildren(li);
+      }
     };
     fetch("/updates/updates.json", { cache: "no-cache" })
       .then((res) => res.json())
       .then((data) => {
-        const items = (data.items || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+        const items = (data.items || []).map(localize).sort((a, b) => b.date.localeCompare(a.date));
         updateLists.forEach((list) => renderUpdates(list, items));
         // カテゴリで絞り込むボタン（アップデートのページ）
         document.querySelectorAll("[data-updates-filter]").forEach((btn) => {
@@ -555,22 +604,26 @@
         });
       })
       .catch(() => {
-        updateLists.forEach((list) => { list.innerHTML = "<li class=\"update-empty\">アップデート情報を読み込めませんでした。</li>"; });
+        updateLists.forEach((list) => {
+          const li = document.createElement("li");
+          li.className = "update-empty";
+          li.textContent = t("アップデート情報を読み込めませんでした。");
+          list.replaceChildren(li);
+        });
       });
   }
 
   // ---------- 最新のお知らせ（トップの帯） ----------
-  // お知らせはサポートの記事（/support/articles.json の type: "news"）。いちばん新しいものを <a data-news-latest> に入れる
+  // お知らせはサポートの記事（type: "news"。読み込みは support/articles.js）。いちばん新しいものを <a data-news-latest> に入れる
   const newsLatest = document.querySelector("[data-news-latest]");
-  if (newsLatest) {
-    fetch("/support/articles.json", { cache: "no-cache" })
-      .then((res) => res.json())
+  if (newsLatest && window.SKArticles) {
+    window.SKArticles.load()
       .then((data) => {
         const latest = (data.articles || []).filter((a) => a.type === "news").sort((a, b) => b.date.localeCompare(a.date))[0];
         if (!latest) return;
         const text = newsLatest.querySelector("[data-news-latest-text]");
         if (text) text.textContent = latest.title;
-        newsLatest.href = `/support/?a=${encodeURIComponent(latest.id)}`;
+        newsLatest.href = lp(`/support/?a=${encodeURIComponent(latest.id)}`);
         newsLatest.classList.toggle("is-important", !!latest.important);
         newsLatest.hidden = false;
       })
