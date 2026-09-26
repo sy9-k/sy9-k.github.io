@@ -1,0 +1,83 @@
+{
+  "_note": "アップデート情報。新しいものを上に足していく。category は SK / Y-FILTER. / SK Hub Systems / MALU / Lab のどれか。トップ・ステータス・アップデートのページで表示される。",
+  "items": [
+    {
+      "date": "2026-09-26",
+      "category": "SK Hub Systems",
+      "title": "SK Hub Systems アカウントを始めました",
+      "body": "SK のサービスをひとつの Google アカウントで使えるようになりました。まずは Y-FILTER. の管理コンソールで使えます。アカウントのページから、データのダウンロードや削除もできます。",
+      "link": { "href": "/account/", "label": "アカウントのページ" }
+    },
+    {
+      "date": "2026-09-26",
+      "category": "Lab",
+      "title": "QR Drop とスマートダッシュボードが、アクセスチェックに対応しました",
+      "body": "SK's Lab のツールでも、SK 利用規約・SK プライバシーポリシーのお知らせと同意を表示するようになりました。"
+    },
+    {
+      "date": "2026-09-26",
+      "category": "SK",
+      "title": "SK's Lab・システム稼働状況・Link & Credit のページを公開しました",
+      "body": "実験的なツールを置く SK's Lab、システムが動いているかを確認できる稼働状況、使わせてもらっているものを紹介する Link & Credit を追加しました。",
+      "link": { "href": "/lab/", "label": "SK's Lab を見る" }
+    },
+    {
+      "date": "2026-09-26",
+      "category": "SK",
+      "title": "SK と Y-FILTER. のアイコンを新しくしました",
+      "body": "サイトの配色も、新しい SK のアイコンにあわせて青を基本にしました。Y-FILTER. の紹介ページは、機能ごとの画面を載せたページに作り直しました。",
+      "link": { "href": "/products/y-filter/", "label": "Y-FILTER. のページ" }
+    },
+    {
+      "date": "2026-09-26",
+      "category": "Y-FILTER.",
+      "title": "Y-FILTER. で SK 利用規約への同意が必要になりました",
+      "body": "これまで Y-FILTER. の規約にだけ同意していた場合も、SK 利用規約と SK プライバシーポリシーに同意するまでフィルタリングを停止します。同意すると自動で再開します。"
+    },
+    {
+      "date": "2026-09-25",
+      "category": "SK Hub Systems",
+      "title": "Y-FILTER. Systems を SK Hub Systems に名前を変えました",
+      "body": "名前の変更のみで、しくみや取り扱う情報は変わりません。"
+    },
+    {
+      "date": "2026-09-25",
+      "category": "SK",
+      "title": "SK のサイトを公開し、SK 利用規約・SK プライバシーポリシーを制定しました",
+      "body": "プロダクトの紹介やサポートをこのサイトにまとめました。規約は、すべてのサービスに共通の SK の規約と、Y-FILTER. の個別の規約に整理しました。",
+      "link": { "href": "/policies/", "label": "利用規約を読む" }
+    },
+    {
+      "date": "2026-09-25",
+      "category": "Y-FILTER.",
+      "title": "Y-FILTER. v7（開発中）",
+      "body": "シークレットモードで Y-FILTER. が動いていないときに知らせるようにしました。利用規約を書き直し、ブロックリストの予備の取得先（GitHub）を廃止しました。"
+    },
+    {
+      "date": "2026-09-25",
+      "category": "Y-FILTER.",
+      "title": "ブロックリストの編集を、開発者専用のツールに移しました",
+      "body": "ブロックリストは開発者の PC で動く専用ツールからだけ編集できるようにし、管理コンソールでは読むだけにしました。"
+    },
+    {
+      "date": "2026-09-25",
+      "category": "Y-FILTER.",
+      "title": "遠隔管理に、リクエスト・共同管理者・1日の利用時間の上限を追加しました",
+      "body": "ブロック画面から「サイトを開きたい」とお願いできるリクエスト、保護者どうし・先生どうしで管理できる共同管理者、1日の利用時間の上限を追加しました。ブロックリストは Firebase から配信するようになりました。"
+    },
+    {
+      "date": "2026-09-25",
+      "category": "SK Hub Systems",
+      "title": "Search3958 のシステムから、独自の Y-FILTER. Systems に移行しました",
+      "body": "Y-FILTER. の遠隔設定は、これまで Search3958 のシステムを使わせてもらっていました。開発者が運営する独自の「Y-FILTER. Systems」（Google Firebase）に移行し、管理コンソール（Web）を公開しました。以前の仕組みで端末に保存されていた情報は、Y-FILTER. の更新時に削除されます。以前の仕組みで Search3958 のサーバーに保存された情報の取り扱いは、Search3958 の定めに従います。",
+      "link": { "href": "/policies/#sk-hub-systems", "label": "SK Hub Systems 利用規約" }
+    },
+    {
+      "date": "2026-08-30",
+      "category": "Lab",
+      "title": "スマートダッシュボードを公開しました",
+      "body": "時計・カレンダー・天気・ニュース・メモ・ToDo などを、ひとつの画面にまとめて表示するダッシュボードです。",
+      "link": { "href": "/smart-dash/", "label": "開く" }
+    }
+  ]
+}

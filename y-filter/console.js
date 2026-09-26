@@ -7,7 +7,7 @@
 // データ構造・権限は y-filter リポジトリの systems/firestore.rules を参照。
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut
+  getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   Timestamp, arrayRemove, arrayUnion, collection, deleteDoc, deleteField, doc, getDoc, getFirestore,
@@ -17,6 +17,8 @@ import { firebaseConfig } from "./firebase-config.js";
 import { NEWTAB_MODES, REMOTE_SETTING_KEYS, buildDefaultSettings, localDateKey, normalizeSettings } from "./shared/settings-schema.js";
 import { hashAccessCode, validateNewAccessCode } from "./shared/access-code.js";
 import "./shared/time-rules.js"; // globalThis.YFilterTime（ルールの説明文に使う）
+// SK Hub Systems アカウント（未作成・規約が新しくなったときは /account/ で同意してから戻ってくる）
+import { ACCOUNT_TERMS_VERSION, accountPageUrl, signOutAccount } from "/assets/hub/account.js";
 
 const ONLINE_WINDOW_MS = 15 * 60 * 1000; // 端末は最長 10 分ごとに報告する
 const PAIRING_TTL_MS = 30 * 60 * 1000;
@@ -144,7 +146,8 @@ $("signin-btn").addEventListener("click", async () => {
     $("signin-msg").textContent = `ログインできませんでした（${errText(e)}）`;
   }
 });
-$("signout-btn").addEventListener("click", () => signOut(auth));
+// ヘッダーのログイン表示（このブラウザに保存した名前・アイコン）も一緒に消す
+$("signout-btn").addEventListener("click", () => signOutAccount());
 
 onAuthStateChanged(auth, async (user) => {
   state.userUnsubs.forEach((fn) => fn());
@@ -156,6 +159,7 @@ onAuthStateChanged(auth, async (user) => {
   show("signin", !user);
   show("app", !!user);
   if (!user) return;
+  if (!(await hasAccount(user))) return;
   $("user-email").textContent = user.email || "";
   await ensureOwnTeam();
   // まず自分のグループを開き、前回ほかのグループを表示していたら一覧が届いてから切り替える
@@ -165,6 +169,20 @@ onAuthStateChanged(auth, async (user) => {
   subscribeTeams();
   loadCategories();
 });
+
+// SK Hub Systems アカウントを作っていない（規約に同意していない）ときは、アカウントのページで同意してもらう
+async function hasAccount(user) {
+  try {
+    const snap = await getDoc(doc(db, "accounts", user.uid));
+    if (snap.exists() && snap.data().termsVersion === ACCOUNT_TERMS_VERSION) return true;
+  } catch (err) {
+    toast(`アカウントを確認できませんでした: ${errText(err)}`, true);
+    return false;
+  }
+  show("app", false);
+  location.replace(accountPageUrl("/y-filter/"));
+  return false;
+}
 
 // ---------- 管理グループ（共同管理者） ----------
 

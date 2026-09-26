@@ -23,6 +23,7 @@
     <a class="hd-item" href="/about/">私について</a>
     <a class="hd-item" href="/#products" data-menu="products">プロダクト</a>
     <a class="hd-item" href="/support/" data-menu="support" data-no-navigation="true">サポートと情報</a>
+    <a class="hd-item hd-account" href="/account/" data-menu="account" data-account-link>アカウント</a>
     <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
   </header>
   <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
@@ -32,8 +33,8 @@
     <section class="hero band">
       <div class="wrap hero-inner">
         <div class="hero-text">
-          <a class="hero-pill" href="/about/"><img src="/assets/logo.svg" alt="" width="22" height="22">SK のサイトへようこそ</a>
-          <h1>毎日のネットを、<br>もう少し<span class="mark">安心</span>で<br><span class="mark">便利</span>に。</h1>
+          <a class="hero-pill news-pill" href="/support/?type=news" data-news-latest hidden><span class="news-pill-tag">お知らせ</span><span class="news-pill-text" data-news-latest-text></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <h1><span class="hl">毎日のネットを、</span><span class="hl">もう少し<span class="mark">安心</span>で</span><span class="hl"><span class="mark">便利</span>に。</span></h1>
           <p class="lead">ブラウザ向けフィルタ「Y-FILTER.」と、辞書検索アプリ「MALU」を開発しています。プロダクトの情報とサポートは、このサイトにまとめています。</p>
           <div class="btn-row">
             <a class="btn btn-ink" href="#products">プロダクトを見る<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
@@ -106,6 +107,23 @@
           </a>
         </div>
 
+        <a class="card lab-card hub-card" href="/sk-hub-systems/">
+          <div class="lab-card-text">
+            <div class="lab-card-head">
+              <img class="hub-card-icon" src="/assets/logo.svg" alt="" width="44" height="44">
+              <div><h3>SK Hub Systems</h3><div class="kind">サーバー基盤</div></div>
+              <span class="badge badge-live"><span class="dot"></span>提供中</span>
+            </div>
+            <p>Y-FILTER. の遠隔管理やアクセスチェックを支える、SK が自分で運営するサーバー基盤。閲覧履歴や検索語は集めません。</p>
+            <span class="more">詳しく見る<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+          <ul class="hub-card-items">
+            <li><span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span><div><strong>遠隔管理</strong><small>管理コンソールから端末の設定を配信</small></div></li>
+            <li><span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>ブロックリストの配信</strong><small>Y-FILTER. のリストを最新に保つ</small></div></li>
+            <li><span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></span><div><strong>アクセスチェック</strong><small>サイトやアプリの同意・利用の確認</small></div></li>
+          </ul>
+        </a>
+
         <a class="card lab-card" href="/lab/">
           <div class="lab-card-text">
             <div class="lab-card-head">
@@ -130,6 +148,33 @@
       </div>
     </section>
 
+    <section class="section" id="updates">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Updates</span>
+          <h2>最近のアップデート</h2>
+          <p>新しい機能や変更をお知らせしています。</p>
+        </div>
+        <div class="home-updates">
+          <div class="card home-updates-list">
+            <ol class="updates-list" data-updates data-limit="3" aria-live="polite">
+              <li class="update-empty">読み込み中…</li>
+            </ol>
+            <a class="update-more" href="/updates/">すべてのアップデートを見る<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+          <div class="home-updates-side">
+            <a class="link-tile" href="/status/">
+              <span class="tile-ico ti-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span>
+              <strong>システム稼働状況<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong><span>SK Hub Systems やサイトが動いているかを、いつでも確認できます。</span>
+            </a>
+            <a class="link-tile" href="/sk-hub-systems/">
+              <span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span>
+              <strong>SK Hub Systems<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong><span>SK が自分で運営するサーバー基盤。閲覧履歴や検索語は集めません。</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
     <section class="section">
       <div class="wrap">
         <div class="about-teaser">
@@ -153,7 +198,7 @@
         <div class="grid-4">
           <a class="link-tile" href="/support/">
             <span class="tile-ico ti-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.4M12 17h.01"/></svg></span>
-            <strong>サポート<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong><span>よくある質問と使い方</span>
+            <strong>サポート<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong><span>お知らせと使い方の記事</span>
           </a>
           <a class="link-tile" href="/contact/">
             <span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
@@ -181,11 +226,11 @@
         </div>
         <div>
           <h2>プロダクト</h2>
-          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
         </div>
         <div>
           <h2>サポートと情報</h2>
-          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/credits/">Link &amp; Credit</a></li></ul>
+          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/credits/">Link &amp; Credit</a></li></ul>
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">SK</div>

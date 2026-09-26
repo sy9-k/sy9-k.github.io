@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>サポート | SK</title>
-  <meta name="description" content="SK からのお知らせと、Y-FILTER.・MALU・SK Hub Systems・SK's Lab の使い方や困ったときの記事。">
+  <title>アップデート | SK</title>
+  <meta name="description" content="SK のサイトとプロダクト（Y-FILTER.・SK Hub Systems・SK's Lab）のアップデート情報。">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -12,7 +12,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
   <link rel="stylesheet" href="/assets/site.css">
-  <script src="/support/help.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">本文へ移動</a>
@@ -31,63 +30,27 @@
   <div class="hd-backdrop" id="hd-backdrop"></div>
 
   <main id="main">
-    <section class="p-hero band band--plain help-hero">
+    <section class="p-hero band band--plain">
       <div class="wrap">
-        <span class="eyebrow">Support</span>
-        <h1>サポート</h1>
-        <p class="lead">お知らせと、使い方・困ったときの記事をまとめています。</p>
-        <label class="faq-search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input type="search" placeholder="記事を検索（例: ポップアップ、ペアリング、同意）" data-help-search aria-label="記事を検索">
-        </label>
+        <span class="eyebrow">Updates</span>
+        <h1>アップデート</h1>
+        <p class="lead">SK のサイトとプロダクトの、新しい機能や変更をお知らせします。</p>
       </div>
     </section>
 
-    <section class="section help" style="padding-top:0" data-help>
+    <section class="section" style="padding-top:0">
       <div class="wrap">
-        <!-- 記事一覧 -->
-        <div data-help-list-view>
-          <div class="help-toolbar">
-            <div class="help-tabs" role="tablist" aria-label="記事の種類">
-              <button type="button" role="tab" data-help-type="" aria-selected="true">すべて</button>
-              <button type="button" role="tab" data-help-type="news" aria-selected="false">お知らせ</button>
-              <button type="button" role="tab" data-help-type="guide" aria-selected="false">サポート記事</button>
-            </div>
-            <div class="help-cats" data-help-cats aria-label="カテゴリ"></div>
-          </div>
-          <p class="help-count" data-help-count aria-live="polite"></p>
-          <div class="help-list" data-help-list>
-            <p class="update-empty">読み込み中…</p>
-          </div>
-          <noscript><p>記事の一覧は <a href="/support/articles.json">articles.json</a> でも読めます。</p></noscript>
+        <div class="update-filters" role="group" aria-label="カテゴリで絞り込む">
+          <button type="button" data-updates-filter="" aria-pressed="true">すべて</button>
+          <button type="button" data-updates-filter="SK" aria-pressed="false">SK</button>
+          <button type="button" data-updates-filter="Y-FILTER." aria-pressed="false">Y-FILTER.</button>
+          <button type="button" data-updates-filter="SK Hub Systems" aria-pressed="false">SK Hub Systems</button>
+          <button type="button" data-updates-filter="Lab" aria-pressed="false">SK's Lab</button>
         </div>
-
-        <!-- 記事 -->
-        <article class="help-article" data-help-article hidden></article>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="wrap">
-        <div class="grid-2 support-bottom">
-          <div class="card id-card" id="support-id">
-            <h2 style="font-size:20px;font-weight:800">あなたのサポートID</h2>
-            <p style="color:var(--muted);margin-top:8px;font-size:15px">お問い合わせのときに伝えていただくと、調査がスムーズになります。</p>
-            <div class="id-box">
-              <code data-support-id>読み込み中…</code>
-              <button class="btn btn-tonal" type="button" data-copy-id hidden>コピー</button>
-            </div>
-          </div>
-          <div class="card support-contact">
-            <h2 style="font-size:20px;font-weight:800">解決しないときは</h2>
-            <ol>
-              <li><a href="/status/">システム稼働状況</a>と<a href="/support/?type=news">お知らせ</a>で、障害や変更がないか確認する</li>
-              <li>使っている端末・ブラウザと、起きたことをメモする</li>
-              <li>サポートIDを添えてお問い合わせする</li>
-            </ol>
-            <a class="btn btn-primary" href="/contact/">お問い合わせ</a>
-          </div>
-        </div>
+        <ol class="updates-list" data-updates aria-live="polite">
+          <li class="update-empty">読み込み中…</li>
+        </ol>
+        <noscript><p>アップデート情報は <a href="/updates/updates.json">updates.json</a> でも読めます。</p></noscript>
       </div>
     </section>
   </main>

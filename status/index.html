@@ -24,6 +24,7 @@
     <a class="hd-item" href="/about/">私について</a>
     <a class="hd-item" href="/#products" data-menu="products">プロダクト</a>
     <a class="hd-item" href="/support/" data-menu="support" data-no-navigation="true">サポートと情報</a>
+    <a class="hd-item hd-account" href="/account/" data-menu="account" data-account-link>アカウント</a>
     <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
   </header>
   <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
@@ -112,15 +113,13 @@
     <section class="section">
       <div class="wrap">
         <div class="section-head">
-          <span class="eyebrow">News</span>
-          <h2>お知らせ</h2>
+          <span class="eyebrow">Updates</span>
+          <h2>最近のアップデート</h2>
         </div>
-        <ol class="status-news">
-          <li><time datetime="2026-09-26">2026年9月26日</time><div><strong>SK と Y-FILTER. のアイコンを新しくしました</strong><p>サイトの配色も、新しい SK のアイコンにあわせて青を基本にしました。</p></div></li>
-          <li><time datetime="2026-09-25">2026年9月25日</time><div><strong>SK 利用規約・SK プライバシーポリシーを制定しました</strong><p>すべてのサービスに共通の規約です。Y-FILTER. では、SK の規約への同意が必要になりました。</p></div></li>
-          <li><time datetime="2026-09-25">2026年9月25日</time><div><strong>Y-FILTER. Systems を SK Hub Systems に名前を変えました</strong><p>名前の変更のみで、しくみや取り扱う情報は変わりません。</p></div></li>
-          <li><time datetime="2026-09-25">2026年9月25日</time><div><strong>SK のサイトを公開しました</strong><p>プロダクトの紹介やサポートを、このサイトにまとめました。</p></div></li>
+        <ol class="updates-list" data-updates data-limit="3" aria-live="polite">
+          <li class="update-empty">読み込み中…</li>
         </ol>
+        <a class="update-more" href="/updates/">すべてのアップデートを見る<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
     </section>
   </main>
@@ -134,11 +133,11 @@
         </div>
         <div>
           <h2>プロダクト</h2>
-          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
         </div>
         <div>
           <h2>サポートと情報</h2>
-          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/credits/">Link &amp; Credit</a></li></ul>
+          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/credits/">Link &amp; Credit</a></li></ul>
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">SK</div>

@@ -7,6 +7,29 @@
 
   const UUID_KEY = "skhub_uuid"; // frameworks/check.js の CONFIG.UUID_KEY と同じ
 
+  // ---------- ヘッダーのアカウント ----------
+  // SK Hub Systems アカウントでログイン中なら、アイコンを出す（名前とアイコンは assets/hub/account.js がこのブラウザに保存する。
+  // ここでは Firebase を読み込まない）
+  let accountHint = null;
+  try { accountHint = JSON.parse(localStorage.getItem("skhub_account") || "null"); } catch (e) { accountHint = null; }
+  const accountPhoto = accountHint && /^https:\/\//.test(accountHint.photo || "") ? accountHint.photo : "";
+
+  function accountAvatar(className) {
+    const img = document.createElement("img");
+    img.className = className;
+    img.src = accountPhoto;
+    img.alt = "";
+    img.referrerPolicy = "no-referrer";
+    img.addEventListener("error", () => img.remove());
+    return img;
+  }
+
+  const accountLink = document.querySelector("[data-account-link]");
+  if (accountLink) {
+    if (accountPhoto) accountLink.prepend(accountAvatar("hd-account-photo"));
+    if (accountHint) accountLink.setAttribute("aria-label", `アカウント（${accountHint.name || "ログイン中"}）`);
+  }
+
   // ---------- ヘッダーメニュー（search3958 の headerv2 と同じ動き） ----------
   // PC: 項目にマウスを乗せると白いパネルが下に開く。スマホ: 2 本線ボタン → 一覧 → 項目を選ぶとロゴが「戻る」になる。
   const MENUS = {
@@ -16,6 +39,7 @@
         ["プロダクト一覧", "/#products"],
         ["Y-FILTER.", "/products/y-filter/"],
         ["MALU", "/products/malu/"],
+        ["SK Hub Systems", "/sk-hub-systems/"],
         ["SK's Lab", "/lab/"]
       ]
     },
@@ -23,11 +47,32 @@
       title: "サポートと情報",
       items: [
         ["サポート", "/support/"],
+        ["お知らせ", "/support/?type=news"],
         ["私のGitHub", "https://github.com/sy9-k"],
         ["お問い合わせ", "/contact/"],
         ["利用規約とプライバシーポリシー", "/policies/"],
+        ["アップデート", "/updates/"],
         ["システム稼働状況", "/status/"],
         ["Link & Credit", "/credits/"]
+      ]
+    },
+    // ログイン中かどうかで中身を変える（profile があると、名前とアイコンを一覧の上に出す）
+    account: accountHint ? {
+      title: "SK Hub Systems アカウント",
+      profile: accountHint,
+      items: [
+        ["アカウント", "/account/"],
+        ["Y-FILTER. 管理コンソール", "/y-filter/"],
+        ["データのダウンロード・削除", "/account/#privacy"],
+        ["ログアウト", "/account/?signout=1"]
+      ]
+    } : {
+      title: "SK Hub Systems アカウント",
+      items: [
+        ["ログイン・アカウントを作成", "/account/"],
+        ["Y-FILTER. 管理コンソール", "/y-filter/"],
+        ["SK Hub Systems アカウントとは", "/support/?a=account-about"],
+        ["アカウント規約", "/policies/#sk-hub-account"]
       ]
     }
   };
@@ -78,7 +123,22 @@
       const title = document.createElement("div");
       title.className = "hd-menu-title";
       title.textContent = data.title;
-      content.replaceChildren(title, makeList(data.items));
+      const nodes = [title];
+      if (data.profile) {
+        const profile = document.createElement("div");
+        profile.className = "hd-menu-profile";
+        if (accountPhoto) profile.appendChild(accountAvatar("hd-menu-profile-photo"));
+        const text = document.createElement("div");
+        const name = document.createElement("strong");
+        name.textContent = data.profile.name || "ログイン中";
+        const sub = document.createElement("small");
+        sub.textContent = "ログイン中";
+        text.append(name, sub);
+        profile.appendChild(text);
+        nodes.push(profile);
+      }
+      nodes.push(makeList(data.items));
+      content.replaceChildren(...nodes);
     }
 
     function renderMobileRoot() {
@@ -302,6 +362,7 @@
     const DOCS = {
       "sk-terms": "sk-terms.txt",
       "sk-privacy": "sk-privacy.txt",
+      "sk-hub-account": "sk-hub-account.txt",
       "y-filter": "y-filter.txt",
       "sk-hub-systems": "sk-hub-systems.txt",
       "newtab": "newtab.txt"
@@ -391,5 +452,130 @@
 
     window.addEventListener("hashchange", () => route(true));
     route(!!location.hash);
+  }
+
+  // ---------- アップデート情報（/updates/updates.json） ----------
+  // <ol data-updates data-limit="3"> … 新しい順に表示する（data-limit がなければすべて）
+  const updateLists = document.querySelectorAll("[data-updates]");
+  if (updateLists.length) {
+    const CATEGORY_CLASS = { "SK": "cat-sk", "Y-FILTER.": "cat-yf", "SK Hub Systems": "cat-hub", "MALU": "cat-malu", "Lab": "cat-lab" };
+    const formatDate = (s) => {
+      const [y, m, d] = s.split("-").map(Number);
+      return `${y}年${m}月${d}日`;
+    };
+    const renderUpdates = (list, items) => {
+      const limit = Number(list.dataset.limit || 0);
+      const filter = list.dataset.category || "";
+      const shown = items.filter((it) => !filter || it.category === filter).slice(0, limit || undefined);
+      list.replaceChildren(...shown.map((it) => {
+        const li = document.createElement("li");
+        const time = document.createElement("time");
+        time.dateTime = it.date;
+        time.textContent = formatDate(it.date);
+        const body = document.createElement("div");
+        const cat = document.createElement("span");
+        cat.className = `update-cat ${CATEGORY_CLASS[it.category] || ""}`;
+        cat.textContent = it.category;
+        const title = document.createElement("strong");
+        title.textContent = it.title;
+        const text = document.createElement("p");
+        text.textContent = it.body;
+        body.append(cat, title, text);
+        if (it.link) {
+          const a = document.createElement("a");
+          a.className = "update-link";
+          a.href = it.link.href;
+          a.textContent = it.link.label;
+          body.appendChild(a);
+        }
+        li.append(time, body);
+        return li;
+      }));
+      if (!shown.length) list.innerHTML = "<li class=\"update-empty\">このカテゴリのアップデートはまだありません。</li>";
+    };
+    fetch("/updates/updates.json", { cache: "no-cache" })
+      .then((res) => res.json())
+      .then((data) => {
+        const items = (data.items || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+        updateLists.forEach((list) => renderUpdates(list, items));
+        // カテゴリで絞り込むボタン（アップデートのページ）
+        document.querySelectorAll("[data-updates-filter]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll("[data-updates-filter]").forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+            updateLists.forEach((list) => { list.dataset.category = btn.dataset.updatesFilter; renderUpdates(list, items); });
+          });
+        });
+      })
+      .catch(() => {
+        updateLists.forEach((list) => { list.innerHTML = "<li class=\"update-empty\">アップデート情報を読み込めませんでした。</li>"; });
+      });
+  }
+
+  // ---------- 最新のお知らせ（トップの帯） ----------
+  // お知らせはサポートの記事（/support/articles.json の type: "news"）。いちばん新しいものを <a data-news-latest> に入れる
+  const newsLatest = document.querySelector("[data-news-latest]");
+  if (newsLatest) {
+    fetch("/support/articles.json", { cache: "no-cache" })
+      .then((res) => res.json())
+      .then((data) => {
+        const latest = (data.articles || []).filter((a) => a.type === "news").sort((a, b) => b.date.localeCompare(a.date))[0];
+        if (!latest) return;
+        const text = newsLatest.querySelector("[data-news-latest-text]");
+        if (text) text.textContent = latest.title;
+        newsLatest.href = `/support/?a=${encodeURIComponent(latest.id)}`;
+        newsLatest.classList.toggle("is-important", !!latest.important);
+        newsLatest.hidden = false;
+      })
+      .catch(() => { /* 帯は出さない */ });
+  }
+
+  // ---------- トップのアニメーション ----------
+  // 最初の出てくる動きは CSS だけ。ここではスクロールで出てくる動きと、マウスに合わせて少し動くのをつける
+  const hero = document.querySelector(".hero");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (hero && !reduceMotion) {
+    const targets = [...document.querySelectorAll(
+      "main > .section .section-head, #products .product-card, #products .lab-card, .home-updates-list, .home-updates-side .link-tile, .about-teaser, main > .section .grid-4 .link-tile"
+    )];
+    if ("IntersectionObserver" in window) {
+      // 同じ親の中で並んでいるものは、少しずつずらして出す
+      const order = new Map();
+      targets.forEach((el) => {
+        const i = order.get(el.parentElement) || 0;
+        order.set(el.parentElement, i + 1);
+        el.style.setProperty("--d", `${Math.min(i, 4) * 90}ms`);
+        el.classList.add("reveal");
+      });
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          io.unobserve(el);
+          el.classList.add("is-in");
+          // 出終わったら外して、ホバーなどの動きを元に戻す
+          setTimeout(() => { el.classList.remove("reveal", "is-in"); el.style.removeProperty("--d"); }, 1800);
+        });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+      targets.forEach((el) => io.observe(el));
+    }
+
+    const visual = hero.querySelector(".hero-visual");
+    if (visual && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      let frame = 0;
+      hero.addEventListener("pointermove", (e) => {
+        if (frame) return;
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          const r = hero.getBoundingClientRect();
+          visual.classList.add("is-tracking");
+          visual.style.setProperty("--px", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+          visual.style.setProperty("--py", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+        });
+      });
+      hero.addEventListener("pointerleave", () => {
+        visual.style.setProperty("--px", "0");
+        visual.style.setProperty("--py", "0");
+      });
+    }
   }
 })();
