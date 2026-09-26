@@ -15,7 +15,8 @@
       items: [
         ["プロダクト一覧", "/#products"],
         ["Y-FILTER.", "/products/y-filter/"],
-        ["MALU", "/products/malu/"]
+        ["MALU", "/products/malu/"],
+        ["SK's Lab", "/lab/"]
       ]
     },
     support: {
@@ -24,7 +25,9 @@
         ["サポート", "/support/"],
         ["私のGitHub", "https://github.com/sy9-k"],
         ["お問い合わせ", "/contact/"],
-        ["利用規約とプライバシーポリシー", "/policies/"]
+        ["利用規約とプライバシーポリシー", "/policies/"],
+        ["システム稼働状況", "/status/"],
+        ["Link & Credit", "/credits/"]
       ]
     }
   };

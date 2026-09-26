@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qr-airdrop-v1';
+const CACHE_NAME = 'qr-airdrop-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -32,6 +32,11 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  // SK Hub Systems のアクセスチェック（/frameworks/ と Firestore）はキャッシュしない。
+  // キャッシュすると、ブロックの解除や check.js の更新が反映されなくなるため。
+  const url = new URL(e.request.url);
+  if (e.request.method !== 'GET' || url.pathname.startsWith('/frameworks/') || url.hostname === 'firestore.googleapis.com') return;
+
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;

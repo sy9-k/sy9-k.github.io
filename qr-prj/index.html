@@ -388,6 +388,9 @@
     }
     .file-open-link.visible { display: inline-flex; }
 
+    /* 右下のアクセスチェックの表示・同意カードは、下のナビゲーションの上に出す */
+    .RedCheckOSS-info-widget, .RedCheckOSS-consent-card { bottom: calc(88px + env(safe-area-inset-bottom)) !important; }
+
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
       height: auto;
@@ -2077,5 +2080,7 @@
       readNextChunk();
     });
   </script>
+  <!-- SK Hub Systems のアクセスチェック（利用規約の同意・アクセス制限） -->
+  <script src="/frameworks/check.js" defer></script>
 </body>
 </html>

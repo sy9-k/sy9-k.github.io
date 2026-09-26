@@ -88,9 +88,9 @@
                 "/about/",
             POLICIES_URL:
                 "/policies/",
-            // 右下に出すアイコン
+            // 右下に出すアイコン（暗い背景のボタンなので、白〜水色の SK アイコン。64px を 22px で表示）
             ICON_URL:
-                "/assets/sk-32.png",
+                "/assets/sk-dark.png",
             UUID_KEY:
                 "skhub_uuid",
             TERMS_ACCEPTED_KEY:

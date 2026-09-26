@@ -12,6 +12,9 @@
   --primary-ring: rgba(26, 86, 219, 0.22);
 }
 .notice { border-color: #cddcff; }
+/* 名前（Y-FILTER.）の下に、提供元の SK Hub Systems を小さく添える */
+.brand-sk { display: flex; align-items: center; gap: 4px; text-transform: none; letter-spacing: 0.02em; }
+.brand-sk img { width: 12px; height: 12px; flex: none; }
 
 [hidden] { display: none !important; }
 .btn svg { width: 16px; height: 16px; }

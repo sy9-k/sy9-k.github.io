@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>システム稼働状況 | SK</title>
+  <meta name="description" content="SK のサイトとプロダクト（SK Hub Systems・Y-FILTER.・MALU）のシステム稼働状況。">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/status/status.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <a class="hd-logo" href="/" aria-label="ホーム">
+      <span class="hd-logo-image" aria-hidden="true"><img src="/assets/logo.svg" alt="" width="26" height="26"></span>
+      <span class="hd-logo-back" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+    <a class="hd-item" href="/about/">私について</a>
+    <a class="hd-item" href="/#products" data-menu="products">プロダクト</a>
+    <a class="hd-item" href="/support/" data-menu="support" data-no-navigation="true">サポートと情報</a>
+    <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
+  </header>
+  <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
+  <div class="hd-backdrop" id="hd-backdrop"></div>
+
+  <main id="main">
+    <section class="p-hero band band--plain">
+      <div class="wrap">
+        <span class="eyebrow">Status</span>
+        <h1>システム稼働状況</h1>
+        <p class="lead">SK のサイトとプロダクトを支えるシステムが、いま動いているかを確認できます。</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="status-summary" data-status-summary data-state="checking">
+          <span class="status-summary-icon" aria-hidden="true"></span>
+          <div>
+            <strong data-status-summary-text>確認しています…</strong>
+            <small>最終確認: <span data-status-checked>-</span></small>
+          </div>
+          <button class="btn btn-tonal" type="button" data-status-refresh>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>
+            再チェック
+          </button>
+        </div>
+
+        <div class="status-group">
+          <h2>サイト</h2>
+          <div class="status-list">
+            <div class="status-row" data-check="site">
+              <div class="status-name"><strong>ウェブサイト</strong><small>sy9-k.github.io（GitHub Pages）</small></div>
+              <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
+            </div>
+            <div class="status-row" data-check="malu">
+              <div class="status-name"><strong>MALU</strong><small>辞書検索アプリ</small></div>
+              <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
+            </div>
+            <div class="status-row" data-check="console">
+              <div class="status-name"><strong>管理コンソール</strong><small>Y-FILTER. の遠隔管理（Web）</small></div>
+              <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="status-group">
+          <h2>SK Hub Systems</h2>
+          <div class="status-list">
+            <div class="status-row" data-check="database">
+              <div class="status-name"><strong>データベース</strong><small>Google Firebase（Cloud Firestore・東京リージョン）</small></div>
+              <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
+            </div>
+            <div class="status-row" data-check="blocklist">
+              <div class="status-name"><strong>ブロックリストの配信</strong><small data-note>Y-FILTER. が約 30 分ごとに取得</small></div>
+              <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
+            </div>
+            <div class="status-row" data-check="accesscheck">
+              <div class="status-name"><strong>アクセスチェック</strong><small>サイト・MALU・管理コンソールの利用規約の同意とアクセス制限</small></div>
+              <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="status-group">
+          <h2>外部サービス</h2>
+          <div class="status-list">
+            <div class="status-row" data-check="newtab">
+              <div class="status-name"><strong>Newtab（Search3958）</strong><small>Newtab in Y-FILTER. で表示する新しいタブページ</small></div>
+              <span class="status-ms" data-ms></span><span class="status-pill" data-pill>確認中</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="status-note">この結果は、このページを開いているブラウザから各システムに接続して確かめたものです。お使いのネットワークの状態によって、正しく表示されないことがあります。5 分ごとに自動で確認し直します。</p>
+
+        <div class="status-legend" aria-label="表示の意味">
+          <span><i class="st-ok"></i>正常</span>
+          <span><i class="st-slow"></i>遅延（応答に時間がかかっている）</span>
+          <span><i class="st-down"></i>停止（接続できない）</span>
+          <span><i class="st-setup"></i>準備中</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">News</span>
+          <h2>お知らせ</h2>
+        </div>
+        <ol class="status-news">
+          <li><time datetime="2026-09-26">2026年9月26日</time><div><strong>SK と Y-FILTER. のアイコンを新しくしました</strong><p>サイトの配色も、新しい SK のアイコンにあわせて青を基本にしました。</p></div></li>
+          <li><time datetime="2026-09-25">2026年9月25日</time><div><strong>SK 利用規約・SK プライバシーポリシーを制定しました</strong><p>すべてのサービスに共通の規約です。Y-FILTER. では、SK の規約への同意が必要になりました。</p></div></li>
+          <li><time datetime="2026-09-25">2026年9月25日</time><div><strong>Y-FILTER. Systems を SK Hub Systems に名前を変えました</strong><p>名前の変更のみで、しくみや取り扱う情報は変わりません。</p></div></li>
+          <li><time datetime="2026-09-25">2026年9月25日</time><div><strong>SK のサイトを公開しました</strong><p>プロダクトの紹介やサポートを、このサイトにまとめました。</p></div></li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <div>
+          <a class="logo" href="/" aria-label="SK ホーム"><img src="/assets/logo.svg" alt="" width="36" height="36">SK</a>
+          <p class="about">毎日のネットを、もう少し安心で便利に。Y-FILTER. と MALU を開発しています。</p>
+        </div>
+        <div>
+          <h2>プロダクト</h2>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
+        </div>
+        <div>
+          <h2>サポートと情報</h2>
+          <ul><li><a href="/about/">私について</a></li><li><a href="/support/">サポート</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/credits/">Link &amp; Credit</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">SK</div>
+      <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
+    </div>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
+  <script src="/frameworks/check.js?check=none" defer></script>
+</body>
+</html>
