@@ -5,6 +5,7 @@ Article 1 Purpose and Scope
 1. These Terms set out the conditions for using "SK Hub Systems" (the "Feature"), the remote management feature of the browser extension "Y-FILTER." (the "Software").
 2. These Terms are Service Terms under the SK Terms of Service. Matters not covered by these Terms are governed by the Y-FILTER. Terms of Service and Privacy Policy, the SK Terms of Service, and the SK Privacy Policy (together, the "Related Terms"). Where these Terms differ from the Related Terms with respect to the Feature, these Terms prevail.
 3. The Feature uses only servers operated by the Developer (Article 6) and works entirely independently of the services, servers, and accounts of Search3958 and Newtab.
+4. The Feature is intended for use in Japan. Use in the European Economic Area (EEA), the United Kingdom, and Switzerland is currently being prepared, and the Feature is not offered to residents of these regions.
 
 Article 2 Definitions
 1. "Administrator" means a person (such as a parent or guardian, or a person in charge at a school or organization) who signs in to the management console with an SK Hub Systems account (an account signed in with a Google account, as set out in the SK Hub Systems Account Terms) and registers and manages devices. Administrators include the "Owner," who created the management group, and "Co-admins" invited by the Owner.
@@ -16,12 +17,15 @@ Article 2 Definitions
 7. "Management group" means a set of devices managed jointly by an Owner and Co-admins.
 8. "Request" means a request a User sends to Administrators from the block page, asking that a blocked site be made accessible.
 9. "Blocklist" means the lists of domains and keywords by category that the Software uses to judge sites.
+10. "Personal device" means a device that a User has connected to their own SK Hub Systems account from the settings screen of Y-FILTER.; the owner of the account also acts as its Administrator. In contrast, a device connected to a management group with a pairing code is called a "managed device."
+11. "Backup" means a copy of a personal device's settings saved by that device.
 
 Article 3 Starting Use and Agreement
 1. The Feature is disabled by default. It becomes enabled when these Terms are agreed to on the device and the device is connected by entering a pairing code.
 2. Administrators shall review and agree to these Terms before using the management console. Administrators are deemed to have agreed to these Terms when they choose "Continue" on the confirmation, shown the first time they use the management console, asking whether to connect their SK Hub Systems account to the management console.
 3. If the User is a minor, the device shall be connected and these Terms agreed to by a parent or guardian, or by an Administrator entrusted by a parent or guardian.
 4. Administrators shall inform Users in advance that the device is managed by the Feature and that the information set out in Article 5 is reported to Administrators.
+5. A personal device is connected when, after these Terms have been agreed to on the device, the User chooses "Connect as my device" on the settings screen of the Software, signs in to the SK Hub Systems account on the page that opens, and chooses "Connect."
 
 Article 4 How the Feature Works
 1. From the management console, Administrators can send settings to one or more devices, start learning mode, copy another device's settings, disconnect devices, and so on.
@@ -31,6 +35,7 @@ Article 4 How the Feature Works
 5. If a daily usage limit is set, the device counts the time spent viewing web pages in 1-minute units (time with no activity and no sound for a certain period is not counted) and restricts access for the rest of the day once the limit is reached.
 6. Like the Owner, Co-admins can send settings to, reply to requests from, and disconnect all devices in the management group.
 7. Applying sent settings or reporting may be delayed or may not happen depending on the network, the device's power and sleep state, the state of the browser, and the like.
+8. A personal device saves a backup when its settings change (at most once every 10 minutes) and when the User chooses to. The User can restore the device's settings from backups in the same account. Requests under paragraph 4 cannot be sent from a personal device.
 
 Article 5 Information Handled
 1. The information sent from devices and stored is as follows:
@@ -40,6 +45,7 @@ Article 5 Information Handled
 (d) Only on Chromebooks where the "Send device information to the administrator" setting is enabled: memory usage, the device's asset ID (only for devices managed by an organization), and the email address of the account signed in to the browser
 (e) Connection information (device name, date and time of connection, the pairing code used, and an anonymous device ID issued automatically for each device)
 (f) Only when a User sends a request: the URL and domain of the page, the blocked category, the message entered by the User, and the date and time sent (for usage time extension requests, the desired number of minutes and the date)
+(g) Only for personal devices: backups (the settings in (a) of this paragraph, the device name, the version of the Software, and the date and time saved)
 2. The information stored about Administrators is the Google account identifier, email address, and display name (used for sign-in), the pairing codes and invite codes issued, and the email address of the Administrator who replied to a request. The email addresses and display names of management group members are shown to the Administrators of the same management group.
 3. The Feature does not send or store browsing history, search terms, the contents of pages viewed, records of blocked pages, input, or location information (except content a User sends themselves in a request under paragraph 1 (f) of this Article).
 4. This information is used only to provide the Feature (sending settings, reports, requests, and device management). It is never used for advertising, sale, provision to third parties, or analysis of Users' behavior.
@@ -48,7 +54,7 @@ Article 5 Information Handled
 Article 6 Storage Location and Management
 1. The information in the preceding Article is stored in Firebase (Cloud Firestore and Firebase Authentication) of Google LLC, operated by the Developer. Cloud Firestore data is stored in the Tokyo region. Sign-in information is managed on Google's infrastructure and may be processed outside Japan.
 2. All communications are encrypted with HTTPS.
-3. Each device can read only its own information and can write only reports and requests. Each Administrator can read and change only the information of devices and requests in the management groups they belong to. People who are not signed in and Administrators of other management groups cannot access this information.
+3. Each device can read only its own information and can write only reports and requests. Each Administrator can read and change only the information of devices and requests in the management groups they belong to. People who are not signed in and Administrators of other management groups cannot access this information. However, only the Owner of the management group can read, change, or delete information on personal devices and backups; Co-admins cannot access it. Backups can also be read by personal devices in the same management group.
 4. As the operator of Firebase, the Developer is technically able to access this information, but does not view or use it except to respond to outages, abuse, or legal requests, or at the request of an Administrator or User.
 5. Google's terms and privacy policy may apply to the use of Firebase.
 
@@ -59,7 +65,8 @@ Article 7 Retention Period and Deletion
 4. A request is deleted when the device receives the Administrator's reply. Requests not received 7 days after the reply, requests with no reply after 30 days, and requests from disconnected devices are automatically deleted when an Administrator opens the management console.
 5. When a Co-admin leaves a management group, or the Owner removes a Co-admin, that Co-admin's information is deleted from the management group.
 6. The Developer may delete the information of devices that have not connected for one year or more.
-7. Administrators can delete their own sign-in information and all information they manage as Owner (management groups, device information, requests, pairing codes, and invite codes) by deleting their account on the SK Hub Systems account page (https://sy9-k.github.io/account/). If deletion is not possible by this method, they may contact the Developer by the method set out in Article 15 of the SK Terms of Service to request deletion.
+7. Administrators can delete their own sign-in information and all information they manage as Owner (management groups, device information, requests, pairing codes, and invite codes) by deleting their account on the SK Hub Systems account page (https://sy9-k.github.io/account/). If deletion is not possible by this method, they may contact the Developer by the method set out in Article 15 of the SK Terms of Service to request deletion. This deletion includes backups of personal devices.
+8. Backups are not deleted when a device is disconnected. They are deleted when the Owner deletes them in the management console, when the account is deleted, or, for disconnected devices, when more than 1 year has passed since they were saved (deleted when the Owner opens the management console).
 
 Article 8 Administrators' Responsibilities
 1. Administrators shall connect to the Feature only devices they have the authority to manage (such as their own children's devices, or devices of a school or organization they are in charge of).
@@ -103,3 +110,5 @@ Supplementary Provisions
 4. On September 25, 2026, the Feature was renamed from "Y-FILTER. Systems" to "SK Hub Systems," and references were reorganized with the establishment of the SK Terms of Service and the SK Privacy Policy. The renaming does not change the content.
 5. On September 26, 2026, with the launch of the SK Hub Systems account, sign-in to the management console was changed to the SK Hub Systems account, and Articles 2, 3, and 7 were revised.
 6. On September 27, 2026, Article 3 was revised to reflect the confirmation, shown the first time the management console is used, asking whether to connect the SK Hub Systems account.
+7. On September 27, 2026, Article 1 was revised to state that use in the EEA, the UK, and Switzerland is being prepared.
+8. On September 27, 2026, Articles 2 through 7 were revised with the addition of personal devices and backups.

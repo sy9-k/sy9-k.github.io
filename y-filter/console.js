@@ -53,6 +53,7 @@ const state = {
   selected: new Set(),
   pairingCodes: [],
   invites: [],
+  backups: [],          // 自分の端末の設定のバックアップ（持ち主だけ。teams/{UID}/backups）
   categories: {},       // ブロックリスト（読むだけ）
   userUnsubs: [],       // ログイン中ずっと使う購読
   teamUnsubs: []        // 管理グループごとの購読
@@ -122,6 +123,22 @@ function deviceStatus(d) {
   const pending = Number(d.reported?.appliedRev || 0) < Number(d.settingsRev || 0);
   const changed = !pending && d.reported?.settings && diffKeys(d.settings, d.reported.settings).length > 0;
   return { lastSeen, online, pending, changed };
+}
+
+// 自分の端末（Y-FILTER. の設定画面の「自分の端末としてつなぐ」でつないだ端末。持ち主にだけ見える）
+const isPersonal = (d) => d?.mode === "personal";
+
+// 種類（mode）のない以前の端末に mode: managed を付ける（共同管理者の一覧は mode == managed で取るため）。持ち主が開いたときに 1 回
+const backfilledTeams = new Set();
+async function backfillDeviceModes(teamId) {
+  if (backfilledTeams.has(teamId) || teamId !== state.teamId) return;
+  backfilledTeams.add(teamId);
+  const legacy = state.devices.filter((d) => !d.mode);
+  for (let i = 0; i < legacy.length; i += 400) {
+    const batch = writeBatch(db);
+    legacy.slice(i, i + 400).forEach((d) => batch.update(doc(db, "devices", d.id), { mode: "managed" }));
+    await batch.commit();
+  }
 }
 
 // 今日の利用時間（端末の報告から）。今日の報告がなければ null
@@ -307,8 +324,10 @@ function selectTeam(teamId) {
   state.allRequests = [];
   state.pairingCodes = [];
   state.invites = [];
+  state.backups = [];
   state.selected.clear();
   renderDevices();
+  renderBackups();
   renderRequests();
   renderTeamSelect();
   subscribeTeam();
@@ -321,22 +340,43 @@ function subscribeTeam() {
   const markLoaded = (name) => {
     loaded.add(name);
     // 必要な一覧がそろったら、古いデータを片付ける
-    if (["devices", "codes", "requests", ...(isOwner ? ["invites"] : [])].every((n) => loaded.has(n))) {
+    if (["devices", "codes", "requests", ...(isOwner ? ["invites", "backups"] : [])].every((n) => loaded.has(n))) {
       cleanupStaleData(teamId).catch(() => {});
     }
   };
+  // 自分の端末（mode: personal）は持ち主にだけ見える。共同管理者は管理する端末だけを一覧する（rules もそうなっている）
+  const devicesQuery = isOwner
+    ? query(collection(db, "devices"), where("ownerUid", "==", teamId))
+    : query(collection(db, "devices"), where("ownerUid", "==", teamId), where("mode", "==", "managed"));
   state.teamUnsubs.push(onSnapshot(
-    query(collection(db, "devices"), where("ownerUid", "==", teamId)),
+    devicesQuery,
     (snap) => {
       state.devices = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "ja"));
+        .sort((a, b) => (isPersonal(b) - isPersonal(a)) || String(a.name || "").localeCompare(String(b.name || ""), "ja"));
       for (const id of [...state.selected]) if (!state.devices.some((d) => d.id === id)) state.selected.delete(id);
       renderDevices();
       renderRequests();
-      if (!snap.metadata?.fromCache) markLoaded("devices");
+      renderBackups();
+      if (!snap.metadata?.fromCache) {
+        markLoaded("devices");
+        if (isOwner) backfillDeviceModes(teamId).catch(() => {});
+      }
     },
     (err) => toast(`端末一覧を読み込めません: ${errText(err)}`, true)
   ));
+  // 自分の端末の設定のバックアップ（持ち主だけ）
+  if (isOwner) {
+    state.teamUnsubs.push(onSnapshot(
+      collection(db, "teams", teamId, "backups"),
+      (snap) => {
+        state.backups = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => toMillis(b.savedAt) - toMillis(a.savedAt));
+        renderBackups();
+        if (!snap.metadata?.fromCache) markLoaded("backups");
+      },
+      () => {}
+    ));
+  }
   state.teamUnsubs.push(onSnapshot(
     query(collection(db, "pairingCodes"), where("ownerUid", "==", teamId)),
     (snap) => {
@@ -387,6 +427,8 @@ async function cleanupStaleData(teamId) {
   lastCleanupAt.set(teamId, now);
   const deviceIds = new Set(state.devices.map((d) => d.id));
   const refs = [
+    // 接続を解除した自分の端末のバックアップで、1 年以上前のもの（持ち主だけが読めるので、持ち主のときだけ入る）
+    ...state.backups.filter((b) => !deviceIds.has(b.id) && toMillis(b.savedAt) < now - 365 * DAY_MS).map((b) => doc(db, "teams", teamId, "backups", b.id)),
     ...state.pairingCodes.filter((p) => toMillis(p.expiresAt) < now - 60 * 60 * 1000).map((p) => doc(db, "pairingCodes", p.code)),
     ...state.invites.filter((i) => toMillis(i.expiresAt) < now - 60 * 60 * 1000).map((i) => doc(db, "teamInvites", i.code)),
     ...(state.allRequests || []).filter((r) => {
@@ -581,7 +623,17 @@ function renderDevices() {
   rows.replaceChildren();
   let online = 0, pending = 0;
   const noIncognito = [];
+  // 自分の端末と管理している端末の両方があるときは、見出しの行で分ける（自分の端末が先）
+  const bothKinds = state.devices.some(isPersonal) && state.devices.some((d) => !isPersonal(d));
+  let lastKind = null;
   for (const d of state.devices) {
+    if (bothKinds && isPersonal(d) !== lastKind) {
+      lastKind = isPersonal(d);
+      const head = document.createElement("tr");
+      head.className = "group-row";
+      head.innerHTML = `<td colspan="8">${lastKind ? "自分の端末（あなたにだけ見えます）" : "管理している端末"}</td>`;
+      rows.appendChild(head);
+    }
     const st = deviceStatus(d);
     if (st.online) online++;
     if (st.pending) pending++;
@@ -592,7 +644,7 @@ function renderDevices() {
     tr.classList.toggle("selected", state.selected.has(d.id));
     tr.innerHTML = `
       <td class="cb"><input type="checkbox" ${state.selected.has(d.id) ? "checked" : ""} aria-label="選択"></td>
-      <td><div class="dev-name">${escapeHtml(d.name || "名前なし")}</div><div class="dev-sub">${escapeHtml(d.id.slice(0, 10))}…</div></td>
+      <td><div class="dev-name">${escapeHtml(d.name || "名前なし")}${isPersonal(d) ? ' <span class="pill info" title="Y-FILTER. の設定画面から、SK Hub Systems アカウントにつないだ端末です">自分の端末</span>' : ""}</div><div class="dev-sub">${escapeHtml(d.id.slice(0, 10))}…</div></td>
       <td><span class="pill ${st.online ? "on" : "off"}">${st.online ? "オンライン" : "オフライン"}</span>${info.incognitoAllowed === false ? ' <span class="pill danger" title="シークレットウィンドウではフィルターがかかりません">シークレット未対策</span>' : ""}</td>
       <td>${st.pending ? '<span class="pill warn">反映待ち</span>' : st.changed ? '<span class="pill info">端末側で変更あり</span>' : '<span class="pill on">最新</span>'}</td>
       <td class="usage">${usage ? escapeHtml(usage) : '<span class="hint">-</span>'}</td>
@@ -632,6 +684,35 @@ $("select-all").addEventListener("change", (e) => {
 });
 
 const selectedDevices = () => state.devices.filter((d) => state.selected.has(d.id));
+
+// ---------- 自分の端末のバックアップ（持ち主だけ） ----------
+// 自分の端末が保存した設定。接続を解除しても残る。配信は「ほかの端末の設定をコピー」から（コピー元に出る）
+
+function renderBackups() {
+  const list = $("backup-rows");
+  const isOwner = state.user && state.teamId === state.user.uid;
+  show("backups-card", !!isOwner && state.backups.length > 0);
+  if (!isOwner) return;
+  const deviceIds = new Set(state.devices.map((d) => d.id));
+  list.replaceChildren(...state.backups.map((b) => {
+    const row = document.createElement("div");
+    row.className = "pair-row";
+    const when = toMillis(b.savedAt) ? new Date(toMillis(b.savedAt)).toLocaleString() : "-";
+    row.innerHTML = `<b>${escapeHtml(b.deviceName || "名前なし")}</b>`
+      + `<span class="hint">${escapeHtml(when)}${b.extensionVersion ? ` · v${escapeHtml(b.extensionVersion)}` : ""}${deviceIds.has(b.id) ? "" : " · 接続を解除した端末"}</span>`
+      + '<button class="link-btn danger-text" type="button">削除</button>';
+    row.querySelector("button").addEventListener("click", async () => {
+      if (!confirm(`「${b.deviceName || "名前なし"}」のバックアップを削除します。よろしいですか？`)) return;
+      try {
+        await deleteDoc(doc(db, "teams", state.teamId, "backups", b.id));
+        toast("バックアップを削除しました");
+      } catch (err) {
+        toast(`削除できませんでした: ${errText(err)}`, true);
+      }
+    });
+    return row;
+  }));
+}
 
 // 端末へ設定を配信する書き込みを batch に追加する（端末ごとの設定に patch を重ねて、配信番号を 1 つ進める）
 function addDeliveries(batch, devices, makeSettings) {
@@ -1126,20 +1207,38 @@ $("bulk-edit").addEventListener("click", openEditor);
 
 // ---------- ほかの端末の設定をコピー ----------
 
-function updateCopyNote() {
-  const src = state.devices.find((d) => d.id === $("copy-source").value);
-  const targets = selectedDevices().filter((d) => d.id !== src?.id);
+// コピー元: 端末（value = 端末 ID）と、自分の端末のバックアップ（value = backup:端末 ID。持ち主だけ）
+function copySource() {
+  const value = $("copy-source").value;
+  if (value.startsWith("backup:")) {
+    const b = state.backups.find((x) => x.id === value.slice(7));
+    return b ? { id: "", name: `${b.deviceName || "名前なし"} のバックアップ`, settings: b.settings, backup: true } : null;
+  }
+  const d = state.devices.find((x) => x.id === value);
+  if (!d) return null;
   const kind = document.querySelector('input[name="copy-kind"]:checked').value;
-  const has = kind === "reported" ? !!src?.reported?.settings : !!src?.settings;
+  return { id: d.id, name: d.name || "名前なし", settings: kind === "reported" ? d.reported?.settings : d.settings, backup: false };
+}
+
+function updateCopyNote() {
+  const src = copySource();
+  const targets = selectedDevices().filter((d) => d.id !== src?.id);
+  // バックアップには「今の設定 / 配信した設定」の区別がないので、選べなくする
+  document.querySelectorAll('input[name="copy-kind"]').forEach((r) => { r.disabled = !!src?.backup; });
+  const has = !!src?.settings;
   $("copy-note").textContent = !src ? "" : !has
     ? "この端末にはまだその設定がありません。"
-    : `「${src.name || "名前なし"}」の設定をまるごと、選んだ ${targets.length} 台に適用します（アクセスコードなども含めてすべて上書きします）。`;
+    : `「${src.name}」の設定をまるごと、選んだ ${targets.length} 台に適用します（アクセスコードなども含めてすべて上書きします）。`;
   $("copy-apply").disabled = !src || !has || targets.length === 0;
 }
 
 $("bulk-copy").addEventListener("click", () => {
   const select = $("copy-source");
-  select.innerHTML = state.devices.map((d) => `<option value="${escapeHtml(d.id)}">${escapeHtml(d.name || "名前なし")}</option>`).join("");
+  const backups = state.teamId === state.user.uid ? state.backups : [];
+  select.innerHTML = state.devices.map((d) => `<option value="${escapeHtml(d.id)}">${escapeHtml(d.name || "名前なし")}${isPersonal(d) ? "（自分の端末）" : ""}</option>`).join("")
+    + (backups.length
+      ? `<optgroup label="自分の端末のバックアップ">${backups.map((b) => `<option value="backup:${escapeHtml(b.id)}">${escapeHtml(b.deviceName || "名前なし")}（${escapeHtml(toMillis(b.savedAt) ? new Date(toMillis(b.savedAt)).toLocaleString() : "-")}）</option>`).join("")}</optgroup>`
+      : "");
   const firstUnselected = state.devices.find((d) => !state.selected.has(d.id));
   if (firstUnselected) select.value = firstUnselected.id;
   updateCopyNote();
@@ -1149,14 +1248,14 @@ $("copy-source").addEventListener("change", updateCopyNote);
 document.querySelectorAll('input[name="copy-kind"]').forEach((r) => r.addEventListener("change", updateCopyNote));
 
 $("copy-apply").addEventListener("click", async () => {
-  const src = state.devices.find((d) => d.id === $("copy-source").value);
-  const kind = document.querySelector('input[name="copy-kind"]:checked').value;
-  const settings = kind === "reported" ? src.reported.settings : src.settings;
+  const src = copySource();
+  if (!src?.settings) return;
+  const settings = src.settings;
   const targets = selectedDevices().filter((d) => d.id !== src.id);
   try {
     await deliver(targets, () => ({ ...settings }));
     $("dlg-copy").close();
-    toast(`「${src.name || "名前なし"}」の設定を ${targets.length} 台に配信しました`);
+    toast(`「${src.name}」の設定を ${targets.length} 台に配信しました`);
   } catch (err) {
     toast(`配信に失敗しました: ${errText(err)}`, true);
   }
@@ -1174,6 +1273,7 @@ function openDetail(id) {
   $("detail-name").value = d.name || "";
   const rows = [
     ["端末 ID", `<span class="mono">${escapeHtml(d.id)}</span>`],
+    ["種類", isPersonal(d) ? "自分の端末（SK Hub Systems アカウント。あなたにだけ見えます）" : "管理している端末"],
     ["状態", st.online ? "オンライン" : "オフライン"],
     ["最終接続", escapeHtml(timeAgo(st.lastSeen))],
     ["今日の利用時間", escapeHtml(usageText(d) || "-")],

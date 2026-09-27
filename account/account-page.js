@@ -34,6 +34,31 @@ const errText = (err) => {
 const toDate = (v) => (v && typeof v.toDate === "function" ? v.toDate() : v ? new Date(v) : null);
 const formatDate = (d) => (d ? I18N.date(d) : "-");
 
+// 保護者の同意なしでアカウントを作れる年齢（SK Hub Systems アカウント規約 第六条4）。
+// サーバーでは国が分からない（GitHub Pages）ので、ブラウザのタイムゾーンで地域を判断する。載っていない地域（日本を含む）は 18 歳
+const CONSENT_AGES = [
+  // EU の国ごとの年齢（GDPR 第8条）・英国・スイス
+  [13, ["Europe/Brussels", "Europe/Copenhagen", "Europe/Tallinn", "Europe/Helsinki", "Europe/Mariehamn", "Europe/Riga", "Europe/Malta",
+    "Europe/Lisbon", "Atlantic/Madeira", "Atlantic/Azores", "Europe/Stockholm", "Europe/Oslo", "Arctic/Longyearbyen", "Atlantic/Reykjavik",
+    "Europe/London", "Europe/Belfast"]],
+  [14, ["Europe/Vienna", "Europe/Sofia", "Asia/Nicosia", "Asia/Famagusta", "Europe/Nicosia", "Europe/Rome", "Europe/Vilnius",
+    "Europe/Madrid", "Atlantic/Canary", "Africa/Ceuta"]],
+  [15, ["Europe/Prague", "Europe/Paris", "Europe/Athens", "Europe/Ljubljana"]],
+  [16, ["Europe/Berlin", "Europe/Busingen", "Europe/Zagreb", "Europe/Budapest", "Europe/Dublin", "Europe/Luxembourg", "Europe/Amsterdam",
+    "Europe/Warsaw", "Europe/Bucharest", "Europe/Bratislava", "Europe/Vaduz", "Europe/Zurich"]],
+  // 韓国（個人情報保護法）・中国（個人情報保護法）
+  [14, ["Asia/Seoul", "ROK", "Asia/Shanghai", "Asia/Urumqi", "Asia/Chongqing", "Asia/Harbin", "PRC"]]
+];
+// 米国（COPPA）
+const US_ZONE = /^(America\/(New_York|Chicago|Denver|Los_Angeles|Phoenix|Anchorage|Juneau|Sitka|Metlakatla|Yakutat|Nome|Adak|Boise|Detroit|Menominee|Puerto_Rico|Indiana\/.+|Kentucky\/.+|North_Dakota\/.+)|Pacific\/(Honolulu|Guam|Saipan|Pago_Pago)|US\/.+)$/;
+function consentAge() {
+  let zone = "";
+  try { zone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { /* 分からなければ 18 歳 */ }
+  if (US_ZONE.test(zone)) return 13;
+  const hit = CONSENT_AGES.find(([, zones]) => zones.includes(zone));
+  return hit ? hit[0] : 18;
+}
+
 function showView(name) {
   root.querySelectorAll("[data-acct-view]").forEach((el) => { el.hidden = el.dataset.acctView !== name; });
   // ログイン後だけ、ページの見出しの帯（ログアウトつき）を出す
@@ -126,6 +151,10 @@ function render(state) {
       : t("この Google アカウントで SK Hub Systems アカウントを作成します。内容を確認して、同意してください。");
     $("[data-acct-register]").textContent = outdated ? t("同意して続ける") : t("アカウントを作成");
     $("[data-acct-agree]").checked = false;
+    // 年齢の確認は、アカウントを作るときだけ
+    $("[data-acct-age-row]").hidden = outdated;
+    $("[data-acct-age]").checked = false;
+    $("[data-acct-age-text]").textContent = t("{age}歳以上です。または、保護者の同意を得ています。", { age: consentAge() });
     $("[data-acct-register]").disabled = true;
     return;
   }
@@ -633,11 +662,15 @@ root.querySelectorAll("[data-acct-signin]").forEach((btn) => btn.addEventListene
 $$("[data-acct-signout], [data-acct-cancel]").forEach((btn) => btn.addEventListener("click", () => signOutAccount()));
 $("[data-acct-retry]").addEventListener("click", () => location.reload());
 
-$("[data-acct-agree]").addEventListener("change", (e) => { $("[data-acct-register]").disabled = !e.target.checked || busy; });
+// 規約への同意と（アカウントを作るときは）年齢の確認の両方がそろったら押せる
+const canRegister = () => $("[data-acct-agree]").checked && ($("[data-acct-age-row]").hidden || $("[data-acct-age]").checked);
+$$("[data-acct-agree], [data-acct-age]").forEach((box) => box.addEventListener("change", () => {
+  $("[data-acct-register]").disabled = !canRegister() || busy;
+}));
 
 $("[data-acct-register]").addEventListener("click", async (e) => {
   const btn = e.currentTarget;
-  if (busy || !$("[data-acct-agree]").checked || !current.user) return;
+  if (busy || !canRegister() || !current.user) return;
   setBusy(true, btn);
   try {
     if (current.status === "outdated") await agreeLatestTerms(current.user);
@@ -658,12 +691,13 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
   if (busy || !user) return;
   setBusy(true, btn);
   try {
-    const [teams, devices, notices, maluWords, maluHistory] = await Promise.all([
+    const [teams, devices, notices, maluWords, maluHistory, backups] = await Promise.all([
       getDocs(query(collection(db, "teams"), where("members", "array-contains", user.uid))),
       getDocs(query(collection(db, "devices"), where("ownerUid", "==", user.uid))),
       getDocs(collection(db, "accounts", user.uid, "notices")),
       getDocs(collection(db, "accounts", user.uid, "maluWords")),
-      getDoc(doc(db, "accounts", user.uid, "malu", "history"))
+      getDoc(doc(db, "accounts", user.uid, "malu", "history")),
+      getDocs(collection(db, "teams", user.uid, "backups"))
     ]);
     const plain = (v) => JSON.parse(JSON.stringify(v, (k, x) => (x && typeof x.toDate === "function" ? x.toDate().toISOString() : x)));
     const data = {
@@ -687,7 +721,9 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
       },
       yFilterConsole: {
         teams: teams.docs.map((d) => ({ id: d.id, role: d.id === user.uid ? "owner" : "co-admin", ...plain(d.data()) })),
-        devices: devices.docs.map((d) => ({ id: d.id, ...plain(d.data()) }))
+        devices: devices.docs.map((d) => ({ id: d.id, ...plain(d.data()) })),
+        // 自分の端末の設定のバックアップ（ID = 端末の ID）
+        backups: backups.docs.map((d) => ({ id: d.id, ...plain(d.data()) }))
       }
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -762,13 +798,14 @@ async function deleteRefs(refs) {
   }
 }
 
-// 管理コンソールのデータ: 自分の管理グループ（端末・リクエスト・コード）を消し、ほかのグループからは抜ける
+// 管理コンソールのデータ: 自分の管理グループ（端末・リクエスト・コード・自分の端末のバックアップ）を消し、ほかのグループからは抜ける
 async function deleteConsoleData(uid) {
   const owned = await Promise.all([
     getDocs(query(collection(db, "devices"), where("ownerUid", "==", uid))),
     getDocs(query(collection(db, "requests"), where("ownerUid", "==", uid))),
     getDocs(query(collection(db, "pairingCodes"), where("ownerUid", "==", uid))),
-    getDocs(query(collection(db, "teamInvites"), where("teamId", "==", uid)))
+    getDocs(query(collection(db, "teamInvites"), where("teamId", "==", uid))),
+    getDocs(collection(db, "teams", uid, "backups"))
   ]);
   await deleteRefs(owned.flatMap((snap) => snap.docs.map((d) => d.ref)));
 

@@ -9,7 +9,7 @@ Article 1 Basic Policy
 Article 2 Overview by Service
 (a) The Site (including SK's Lab tools), MALU, and the Y-FILTER. management console: handle the access check information in Article 3. MALU's search terms, search history, and settings are stored only in the browser and never sent. However, when signed in with an SK Hub Systems account, as set out in the SK Hub Systems Account Terms, MALU settings are synced, words saved to the wordbook are stored in the user's own account when connected to MALU, and search history is stored there when search history sync is turned on.
 (b) Y-FILTER.: filtering happens inside the browser, and browsing history and search terms are never sent to the Developer.
-(c) SK Hub Systems: stores settings, device status, and the like only when Y-FILTER.'s remote management is used.
+(c) SK Hub Systems: stores settings, device status, settings backups, and the like only when Y-FILTER.'s remote management is used or Y-FILTER. is connected to an SK Hub Systems account as a personal device.
 (d) Contact: stores what is entered in the contact form in SK Hub Systems.
 (e) SK Hub Systems account: only when an account is created, stores the Google account information used to sign in (ID, name, email address, profile picture) and the date the terms were agreed to, among other things.
 
@@ -29,7 +29,7 @@ Article 4 Information Handled for Inquiries
 2. This information is used only to respond to inquiries. Only the Developer can read it.
 
 Article 4-2 Access Analytics (Google Analytics)
-1. On the Site (including SK's Lab tools) and MALU, access analytics using Google Analytics by Google LLC is performed to understand how the Services are used and improve them. It is performed only if you turn on analytics and agree in the notice shown on your first visit, or choose "Allow" in the notice shown. Until you choose, or if you don't allow it, Google Analytics is not loaded.
+1. On the Site (including SK's Lab tools) and MALU, access analytics using Google Analytics by Google LLC is performed to understand how the Services are used and improve them. It is performed only if you agree with analytics left on in the notice shown on your first visit (the switch in that notice is on by default if your browser's time zone is Japan, and off by default otherwise), or choose "Allow" in the notice shown. Until you choose, or if you don't allow it, Google Analytics is not loaded.
 2. If you allow it, Google Analytics uses cookies and sends Google information such as the URL and title of pages viewed, the referring page, time spent, screen size, browser and OS type, language, and approximate region (country or region level). IP addresses are anonymized by Google Analytics, and the Developer does not receive this information in a form that identifies individuals.
 3. The Developer does not use Google signals or advertising features. The SK Hub Systems account page, developer pages, and consent screens are not included in access analytics. MALU search terms are not sent.
 4. You can withdraw your permission at any time from "Analytics settings" at the bottom of the Site. After withdrawal, no further measurement is made, and Google Analytics cookies in the browser are deleted.
@@ -70,6 +70,16 @@ Article 11 Viewing and Deleting Information
 2. SK Hub Systems account information can be downloaded and deleted on the account page (https://sy9-k.github.io/account/).
 3. To request viewing or deletion of any other information stored on the server, please contact us through the contact page (https://sy9-k.github.io/contact/), including your support ID (shown on the Site's support page).
 
+Article 11-2 Residents of the EEA, the UK, and Similar Regions
+1. For residents of regions where the GDPR (EU General Data Protection Regulation) or similar laws apply, such as the European Economic Area (EEA), the United Kingdom, and Switzerland, the Developer (contact: https://sy9-k.github.io/contact/) is the controller of the information and handles it on the following legal bases.
+(a) Access check (Article 3): the Developer's legitimate interest in providing the Services securely and preventing misuse
+(b) Access analytics (Article 4-2): your consent
+(c) Inquiries (Article 4): the Developer's legitimate interest in responding to your request
+(d) SK Hub Systems account and SK Hub Systems: providing the services under their respective terms
+2. In accordance with applicable law, these users may request access to, rectification, erasure, restriction of processing, and portability of their information, and may object to its processing. Where processing is based on consent, you may withdraw consent at any time (this does not affect processing before withdrawal). Requests are accepted by the method in Article 11.
+3. These users may lodge a complaint with the data protection supervisory authority in their region.
+4. Information in SK Hub Systems is stored in Japan (the Tokyo region of Cloud Firestore). Japan is recognized by the European Commission and the United Kingdom as ensuring an adequate level of protection for personal data. With Firebase Authentication, Google Analytics, and the external services in Article 9, information may be processed outside Japan, such as in the United States, and each company takes safeguards such as the EU-U.S. Data Privacy Framework and standard contractual clauses.
+
 Article 12 Changes
 If this Policy is changed, notice will be posted on the Site. For important changes, such as increasing the information handled, consent will be requested again.
 
@@ -80,3 +90,5 @@ Supplementary Provisions
 4. On September 27, 2026, Article 2 was revised for SK Hub Systems account settings sync and MALU integration.
 5. On September 27, 2026, Articles 1, 7, and 9 were revised and Article 4-2 was added with the introduction of access analytics using Google Analytics (only if allowed).
 6. On September 27, 2026, Article 3 was revised along with the change to how agreement to the SK Terms of Service is given.
+7. On September 27, 2026, Article 4-2 was revised as the default state of the analytics switch now depends on the region, and Article 11-2 for residents of the EEA, the UK, and similar regions was added.
+8. On September 27, 2026, Article 2 was revised with the addition of Y-FILTER.'s personal device feature (settings backups).

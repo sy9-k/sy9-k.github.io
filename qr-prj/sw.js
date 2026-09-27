@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qr-airdrop-v5';
+const CACHE_NAME = 'qr-airdrop-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -6,7 +6,8 @@ const ASSETS = [
   // 多言語（QR Drop は日本語と英語。オフラインでも選んだ言語で表示できるように）
   '/assets/i18n.js',
   '/assets/i18n/en.js',
-  'https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700&display=swap',
+  // 文字のフォントは、EU などでは読み込まないので先に取りに行かない（/assets/fonts.js が地域で判断する）
+  '/assets/fonts.js',
   'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0',
   'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
   'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js'

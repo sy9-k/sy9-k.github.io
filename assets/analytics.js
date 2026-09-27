@@ -111,8 +111,17 @@
     document.dispatchEvent(new CustomEvent("sk:analytics", { detail: value }));
   }
 
+  // EU・英国・韓国などでは、最初からオンにした同意は認められないので、日本以外では最初はオフにする。
+  // サーバーでは国を判定できない（GitHub Pages）ので、外部に何も送らずに済むブラウザのタイムゾーンで見分ける
+  function defaultOn() {
+    try {
+      var zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return zone === "Asia/Tokyo" || zone === "Japan";
+    } catch (e) { return false; }
+  }
+
   // ---------- 最初の同意カード（frameworks/check.js）に、アクセス解析のチェックを入れる ----------
-  // カードで「同意して閉じる」を押したときに、チェックの状態で許可・不許可を決める（チェックは最初は外しておく）。
+  // カードで「同意して閉じる」を押したときに、スイッチの状態で許可・不許可を決める（日本のタイムゾーンでは最初はオン）。
   // 「同意しない」を押したときは許可しない。カードで選ばずに離れた人には、あとで左下のカード（ask）で聞く
   function attachToTermsCard(card) {
     if (!card || card.querySelector(".sk-analytics-opt")) return;
@@ -139,6 +148,8 @@
     var input = document.createElement("input");
     input.type = "checkbox";
     input.setAttribute("role", "switch");
+    // 最初からオンにするのは、日本のタイムゾーンのときだけ（SK プライバシーポリシー 第四条の二）
+    input.checked = defaultOn();
     var knob = document.createElement("span");
     knob.className = "sw";
     knob.setAttribute("aria-hidden", "true");

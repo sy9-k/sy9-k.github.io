@@ -50,9 +50,9 @@ EXTRA = {
     "support.html": ('  <script src="/support/help.js" defer></script>\n', None),
     "status.html": ('  <script src="/status/status.js" defer></script>\n', None),
     "lang.html": ('  <script src="/lang/lang.js" defer></script>\n', "lang-page"),
-    "credits.html": ('  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap">\n', None),
+    "credits.html": ('  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap"></script>\n', None),
     "y-filter.html": (
-        '  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@900&display=swap">\n'
+        '  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@900&display=swap"></script>\n'
         '  <link rel="stylesheet" href="/products/y-filter/yf.css">\n',
         "yf-page",
     ),

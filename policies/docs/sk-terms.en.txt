@@ -63,7 +63,7 @@ Article 12 Severability
 Even if part of these Terms is held invalid under law, the remaining parts remain in effect.
 
 Article 13 Governing Law and Jurisdiction
-1. These Terms and all Service Terms are governed by and construed in accordance with the laws of Japan.
+1. These Terms and all Service Terms are governed by and construed in accordance with the laws of Japan. However, this does not deprive a user who is a consumer of the protection afforded by provisions of the laws of their country or region of residence that cannot be derogated from by agreement.
 2. Any dispute concerning the Services shall be subject to the jurisdiction, in the first instance, of the district court or summary court with jurisdiction over the Developer's address. However, Users who are consumers may bring an action in the court with jurisdiction over their own address, as provided by law.
 
 Article 14 Language
@@ -77,3 +77,4 @@ Supplementary Provisions
 1. These Terms take effect on September 25, 2026.
 2. On September 26, 2026, Articles 1 and 2 were revised for the launch of the SK Hub Systems account, and Article 7 was revised for the change in how inquiries are received.
 3. On September 27, 2026, Article 2 was revised so that agreement is given when "Agree and close" is chosen (agreement is no longer deemed given on the next visit).
+4. On September 27, 2026, Article 13 was revised to state the protection of consumers living outside Japan.

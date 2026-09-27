@@ -22,7 +22,9 @@
   --warn-ink: #6b4a00;
   --shadow: 0 1px 2px rgba(13, 16, 20, .04), 0 8px 24px rgba(13, 16, 20, .06);
   --radius: 28px;
-  --font: Inter, "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Google Fonts を読み込まない地域（assets/fonts.js）では、端末にある日本語の文字を使う
+     （Windows 11 は Noto Sans JP 入り。Android は Noto Sans CJK JP、Mac・iPhone はヒラギノ） */
+  --font: Inter, "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color-scheme: light;
 }
 
@@ -792,6 +794,7 @@ img.yf-tile.yf-tile {
 .acct-agree:has(input:checked) { border-color: #99c7ff; background: #f2f8ff; }
 .acct-agree a { color: var(--acct-link); }
 .acct-agree small { display: block; margin-top: 2px; color: #6e6e73; font-size: 12.5px; line-height: 1.6; }
+.acct-agree + .acct-agree { margin-top: 10px; }
 
 /* ---------- ログイン後（左に項目の一覧、右にタイル） ---------- */
 .acct-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 56px; align-items: start; padding-top: 48px; }

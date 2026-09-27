@@ -3375,7 +3375,7 @@
           "p": "利用規約とプライバシーポリシーに同意するまで、画面の下に「ようこそ！」のお知らせが出ます。ほかのページに移っても表示され、「同意して閉じる」を押した時点で同意したものとして扱います。同意するまでは、アクセスチェックの記録は送りません。"
         },
         {
-          "p": "お知らせでは、アクセス解析（Google アナリティクス）を許可するかどうかも選べます。最初はオフで、オンにして同意した場合だけ許可します。"
+          "p": "お知らせでは、アクセス解析（Google アナリティクス）を許可するかどうかも選べます。日本のタイムゾーンでは最初からオン、それ以外では最初はオフで、スイッチがオンのまま同意した場合だけ許可します。"
         },
         {
           "p": "同意したあとは、右下に小さい SK のアイコンが出ます。マウスを乗せると「SKについて」と「利用規約・プライバシー」へのリンクが出ます。"
@@ -3396,7 +3396,7 @@
               "p": "Until you agree to the Terms of Service and Privacy Policy, a \"Welcome!\" notice appears at the bottom of the screen. It stays on other pages too, and you're treated as agreeing when you click \"Agree and close.\" Access check logs aren't sent until you agree."
             },
             {
-              "p": "In the notice, you can also choose whether to allow access analytics (Google Analytics). It's off by default and is allowed only if you turn it on and agree."
+              "p": "In the notice, you can also choose whether to allow access analytics (Google Analytics). It's on by default if your time zone is Japan and off otherwise, and analytics is allowed only if you agree with it on."
             },
             {
               "p": "After you agree, a small SK icon appears in the bottom right. Hover over it to see links to \"About SK\" and \"Terms & Privacy.\""
@@ -3417,7 +3417,7 @@
               "p": "在同意使用条款和隐私政策之前，画面下方会显示“欢迎！”通知。移动到其他页面也会显示，点按“同意并关闭”时即视为同意。在同意之前，不会发送访问检查的记录。"
             },
             {
-              "p": "在通知中，还可以选择是否允许访问分析（Google Analytics）。默认为关闭，仅在开启并同意时才允许。"
+              "p": "在通知中，还可以选择是否允许访问分析（Google Analytics）。时区为日本时默认开启，否则默认关闭；仅在开关开启的状态下同意时才允许。"
             },
             {
               "p": "同意后，右下角会显示一个小小的 SK 图标。将鼠标移到上面，会显示“关于 SK”和“使用条款与隐私”的链接。"
@@ -3438,7 +3438,7 @@
               "p": "在同意使用條款和隱私權政策之前，畫面下方會顯示「歡迎！」通知。移動到其他頁面也會顯示，點按「同意並關閉」時即視為同意。在同意之前，不會傳送存取檢查的紀錄。"
             },
             {
-              "p": "在通知中，還可以選擇是否允許存取分析（Google Analytics）。預設為關閉，僅在開啟並同意時才允許。"
+              "p": "在通知中，還可以選擇是否允許存取分析（Google Analytics）。時區為日本時預設開啟，否則預設關閉；僅在開關開啟的狀態下同意時才允許。"
             },
             {
               "p": "同意後，右下角會顯示一個小小的 SK 圖示。將滑鼠移到上面，會顯示「關於 SK」和「使用條款與隱私權」的連結。"
@@ -3459,7 +3459,7 @@
               "p": "이용약관과 개인정보 처리방침에 동의할 때까지 화면 아래에 '환영합니다!' 안내가 나옵니다. 다른 페이지로 옮겨도 표시되며, '동의하고 닫기'를 누른 시점에 동의한 것으로 봅니다. 동의하기 전까지는 접근 확인 기록을 보내지 않습니다."
             },
             {
-              "p": "안내에서 접속 분석(Google 애널리틱스)을 허용할지도 고를 수 있습니다. 처음에는 꺼져 있으며, 켜고 동의한 경우에만 허용합니다."
+              "p": "안내에서 접속 분석(Google 애널리틱스)을 허용할지도 고를 수 있습니다. 시간대가 일본이면 처음부터 켜져 있고 그 밖에는 꺼져 있으며, 켜진 채로 동의한 경우에만 허용합니다."
             },
             {
               "p": "동의한 뒤에는 오른쪽 아래에 작은 SK 아이콘이 나옵니다. 마우스를 올리면 'SK에 대하여'와 '이용약관·개인정보' 링크가 나옵니다."
@@ -3731,7 +3731,7 @@
       "summary": "許可した人だけ、見られたページなどを Google アナリティクスで集計します。いつでも取り消せます。",
       "body": [
         {
-          "p": "サイトをよりよくするため、このサイト・MALU・SK's Lab のツールでは、Google アナリティクスによるアクセス解析を行っています。はじめて開いたときに出る案内で「アクセス解析も許可」をオンにして同意した人と、あとから出る案内で「許可する」を選んだ人だけが対象です。オンにしなければ、Google アナリティクスは読み込みません。"
+          "p": "サイトをよりよくするため、このサイト・MALU・SK's Lab のツールでは、Google アナリティクスによるアクセス解析を行っています。はじめて開いたときに出る案内で「アクセス解析も許可」をオンにしたまま同意した人（日本のタイムゾーンでは最初からオン、それ以外では最初はオフです）と、あとから出る案内で「許可する」を選んだ人だけが対象です。オフにしてから同意すれば、Google アナリティクスは読み込みません。"
         },
         {
           "h": "集計すること"
@@ -3769,7 +3769,7 @@
           "summary": "Only for people who allow it, we use Google Analytics to count things like which pages are viewed. You can withdraw at any time.",
           "body": [
             {
-              "p": "To improve the site, this site, MALU, and SK's Lab tools use access analytics with Google Analytics. It applies only to people who turn on \"Also allow analytics\" and agree in the notice shown on their first visit, or choose \"Allow\" in the notice shown later. If you don't turn it on, Google Analytics isn't loaded."
+              "p": "To improve the site, this site, MALU, and SK's Lab tools use access analytics with Google Analytics. It applies only to people who agree with \"Also allow analytics\" left on (it's on by default if your time zone is Japan, and off otherwise) in the notice shown on their first visit, or choose \"Allow\" in the notice shown later. If you turn it off before agreeing, Google Analytics isn't loaded."
             },
             {
               "h": "What's counted"
@@ -3807,7 +3807,7 @@
           "summary": "仅针对允许的人，使用 Google Analytics 统计浏览了哪些页面等信息。可以随时撤回。",
           "body": [
             {
-              "p": "为了改进网站，本网站、MALU 和 SK's Lab 的工具使用 Google Analytics 进行访问分析。仅针对在首次打开时显示的提示中开启“同时允许访问分析”并同意的人，以及在之后显示的提示中选择“允许”的人。不开启时，不会加载 Google Analytics。"
+              "p": "为了改进网站，本网站、MALU 和 SK's Lab 的工具使用 Google Analytics 进行访问分析。仅针对在首次打开时显示的提示中保持“同时允许访问分析”开启并同意的人（时区为日本时默认开启，否则默认关闭），以及在之后显示的提示中选择“允许”的人。如在同意前关闭，则不会加载 Google Analytics。"
             },
             {
               "h": "统计的内容"
@@ -3845,7 +3845,7 @@
           "summary": "僅針對允許的人，使用 Google Analytics 統計瀏覽了哪些頁面等資訊。可以隨時撤回。",
           "body": [
             {
-              "p": "為了改進網站，本網站、MALU 和 SK's Lab 的工具使用 Google Analytics 進行存取分析。僅針對在首次開啟時顯示的提示中開啟「同時允許存取分析」並同意的人，以及在之後顯示的提示中選擇「允許」的人。不開啟時，不會載入 Google Analytics。"
+              "p": "為了改進網站，本網站、MALU 和 SK's Lab 的工具使用 Google Analytics 進行存取分析。僅針對在首次開啟時顯示的提示中保持「同時允許存取分析」開啟並同意的人（時區為日本時預設開啟，否則預設關閉），以及在之後顯示的提示中選擇「允許」的人。如在同意前關閉，則不會載入 Google Analytics。"
             },
             {
               "h": "統計的內容"
@@ -3883,7 +3883,7 @@
           "summary": "허용한 사람만 Google 애널리틱스로 어떤 페이지가 열람되었는지 등을 집계합니다. 언제든 취소할 수 있습니다.",
           "body": [
             {
-              "p": "사이트를 더 좋게 만들기 위해 이 사이트·MALU·SK's Lab의 도구에서는 Google 애널리틱스로 접속 분석을 하고 있습니다. 처음 열 때 나오는 안내에서 '접속 분석도 허용'을 켜고 동의한 사람과, 나중에 나오는 안내에서 '허용'을 선택한 사람만 대상입니다. 켜지 않으면 Google 애널리틱스를 불러오지 않습니다."
+              "p": "사이트를 더 좋게 만들기 위해 이 사이트·MALU·SK's Lab의 도구에서는 Google 애널리틱스로 접속 분석을 하고 있습니다. 처음 열 때 나오는 안내에서 '접속 분석도 허용'을 켠 채로 동의한 사람(시간대가 일본이면 처음부터 켜져 있고, 그 밖에는 꺼져 있습니다)과, 나중에 나오는 안내에서 '허용'을 선택한 사람만 대상입니다. 동의하기 전에 끄면 Google 애널리틱스를 불러오지 않습니다."
             },
             {
               "h": "집계하는 것"

@@ -19,7 +19,7 @@
   --yf-danger-soft: #fde8e5;
   --yf-grid-glow: rgba(255, 200, 61, .45);
   --yf-shadow-lg: 0 24px 60px rgba(20, 28, 45, .12);
-  --yf-display: "Space Grotesk", "Noto Sans JP", system-ui, sans-serif;
+  --yf-display: "Space Grotesk", "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
   background: var(--yf-ink);
 }
 .yf-page::before {
@@ -48,6 +48,7 @@
 .yf h1 em { font-style: normal; color: var(--yf-accent-text); }
 .yf-lead { font-size: 16px; color: var(--yf-muted); max-width: 520px; }
 .yf-cta { display: flex; gap: 12px; margin-top: 34px; flex-wrap: wrap; }
+.yf-region-note { margin: 14px 0 0; font-size: 13px; line-height: 1.6; color: var(--yf-faint); }
 
 .yf-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid transparent; border-radius: 12px; padding: 13px 22px; font: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer; text-decoration: none; color: var(--yf-text); transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease; }
 .yf-btn:active { transform: translateY(1px); }

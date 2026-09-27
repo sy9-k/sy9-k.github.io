@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Y-FILTER. 管理コンソール</title>
   <link rel="icon" type="image/png" sizes="32x32" href="shared/icon-32.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap"></script>
   <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="shared/admin.css">
   <link rel="stylesheet" href="console.css">
@@ -144,8 +143,17 @@
         </div>
         <div id="empty" class="empty" hidden>
           <p>まだ端末が接続されていません。</p>
-          <p class="hint">「端末を追加」でペアリングコードを発行し、管理したい端末（子供・生徒・社員の端末など）の Y-FILTER. で入力してください。</p>
+          <p class="hint">「端末を追加」でペアリングコードを発行し、管理したい端末（子供・生徒・社員の端末など）の Y-FILTER. で入力してください。自分のブラウザをつなぐときは、そのブラウザの Y-FILTER. の設定画面で「自分の端末としてつなぐ」を押してください。</p>
         </div>
+      </div>
+
+      <!-- 自分の端末のバックアップ（持ち主だけ。console.js の renderBackups） -->
+      <div class="card" id="backups-card" hidden>
+        <div class="card-head">
+          <h3>自分の端末のバックアップ</h3>
+          <p>自分の端末が保存した設定です。接続を解除しても残ります。ほかの端末に配信するときは、端末を選んで「ほかの端末の設定をコピー」を使います。あなたにだけ見えます。</p>
+        </div>
+        <div class="card-body"><div id="backup-rows" class="log"></div></div>
       </div>
     </main>
 
@@ -155,7 +163,7 @@
   <dialog id="dlg-pair" class="dlg">
     <div class="dlg-head"><h2>端末を追加</h2><button class="dlg-x" data-close type="button" aria-label="閉じる">×</button></div>
     <div class="dlg-body">
-      <p class="hint">管理したい端末の Y-FILTER. で「設定 → セキュリティ → SK Hub Systems」（または最初の welcome 画面）を開き、このコードを入力してください。有効期限内なら何台でも登録できます。</p>
+      <p class="hint">管理したい端末の Y-FILTER. で「設定 → セキュリティ → SK Hub Systems」（または最初の welcome 画面）を開き、このコードを入力してください。有効期限内なら何台でも登録できます。自分のブラウザをつなぐときは、コードではなく、そのブラウザの Y-FILTER. の設定画面の「自分の端末としてつなぐ」を使ってください（自分の端末は、あなたにだけ見えます）。</p>
       <div class="pair-code" id="pair-code">----</div>
       <div class="pair-exp hint" id="pair-exp"></div>
       <div id="pair-msg" class="gate-msg"></div>

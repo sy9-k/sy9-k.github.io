@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>自分の端末としてつなぐ | Y-FILTER.</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../shared/icon-32.png">
+  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap"></script>
+  <link rel="stylesheet" href="/assets/header.css">
+  <link rel="stylesheet" href="../shared/admin.css">
+  <link rel="stylesheet" href="../console.css">
+</head>
+<body>
+  <!-- Y-FILTER. の設定画面の「自分の端末としてつなぐ」から開くページ（?n=合言葉）。
+       SK Hub Systems アカウントでログインして「つなぐ」を押すと、自分の端末のペアリングコードを発行して、
+       拡張機能の site-bridge.js に渡す（y-filter リポジトリの docs/PERSONAL_USE_DESIGN_JA.md） -->
+  <header class="site-header console-header">
+    <a class="hd-logo" href="/y-filter/" aria-label="管理コンソールのトップ">
+      <span class="hd-logo-image" aria-hidden="true"><img src="../shared/icon.svg" alt="" width="26" height="26"></span>
+      <span class="hd-logo-back" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+    <a class="hd-item hd-console-name" href="/y-filter/">管理コンソール</a>
+    <a class="hd-item" href="/support/#hub" data-menu="help" data-no-navigation="true">ヘルプ</a>
+    <a class="hd-item hd-account" href="/account/" data-menu="account" data-account-link>アカウント</a>
+    <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
+  </header>
+  <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
+  <div class="hd-backdrop" id="hd-backdrop"></div>
+
+  <div class="gate">
+    <div class="gate-card" style="max-width:520px;">
+      <div class="brand">
+        <img class="brand-mark" src="../shared/icon.svg" alt="">
+        <div><div class="brand-name">Y-FILTER.</div><div class="brand-sub brand-sk"><img src="../shared/sk-icon.svg" alt="">SK Hub Systems</div></div>
+      </div>
+
+      <div data-link-view="loading"><p class="hint">読み込み中…</p></div>
+
+      <!-- Y-FILTER. の設定画面から開いていない（合言葉がない） -->
+      <div data-link-view="start" hidden>
+        <h1>Y-FILTER. の設定画面から始めてください</h1>
+        <p>このブラウザの Y-FILTER. の設定画面で、「セキュリティ」→「SK Hub Systems」→「自分の端末としてつなぐ」を押してください。このページが開き直します。</p>
+      </div>
+
+      <!-- このブラウザに Y-FILTER. が入っていない -->
+      <div data-link-view="noext" hidden>
+        <h1>このブラウザに Y-FILTER. が見つかりません</h1>
+        <p>自分の端末としてつなぐのは、Y-FILTER. が入っているブラウザで、Y-FILTER. の設定画面から始めてください。</p>
+        <p class="hint"><a href="/products/y-filter/">Y-FILTER. について</a></p>
+      </div>
+
+      <!-- つなぐかの確認 -->
+      <div data-link-view="confirm" hidden>
+        <h1>このブラウザを、自分の端末としてつなぎますか？</h1>
+        <p>このブラウザの Y-FILTER. を、次の SK Hub Systems アカウントの「自分の端末」としてつなぎます。</p>
+        <div class="link-user" data-link-user></div>
+        <ul class="link-points">
+          <li>Y-FILTER. の設定を、アカウントにバックアップします。ほかのブラウザやパソコンに引き継げます。</li>
+          <li>管理コンソールで、自分の端末の状態を見たり、設定をまとめて変えたりできます。自分の端末は、あなたにだけ見えます（共同管理者には見えません）。</li>
+          <li>送るのは設定と接続の状況だけです。閲覧履歴は送りません。</li>
+        </ul>
+        <label class="field-label" for="link-name">端末名</label>
+        <input type="text" id="link-name" maxlength="60" autocomplete="off">
+        <p class="hint" style="margin:10px 0 0;">つなぐと、<a href="/policies/#sk-hub-systems" target="_blank" rel="noopener">SK Hub Systems 利用規約</a>が適用されます（Y-FILTER. の設定画面で同意したものです）。</p>
+        <div class="inline" style="margin-top:18px;">
+          <button id="link-go" class="btn btn-primary" type="button">つなぐ</button>
+          <a class="btn btn-tonal" href="/y-filter/">やめる</a>
+        </div>
+      </div>
+
+      <!-- つながった -->
+      <div data-link-view="done" hidden>
+        <h1>つながりました</h1>
+        <p>このブラウザは、SK Hub Systems アカウントの「自分の端末」になりました。Y-FILTER. の設定画面から、バックアップや、バックアップから戻すことができます。このタブは閉じてかまいません。</p>
+        <div class="inline" style="margin-top:18px;">
+          <a class="btn btn-primary" href="/y-filter/">管理コンソールで見る</a>
+        </div>
+      </div>
+
+      <div id="link-msg" class="gate-msg" role="alert"></div>
+    </div>
+  </div>
+
+  <style>
+    .link-user { display: flex; align-items: center; gap: 10px; margin: 14px 0; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); font-size: 14px; }
+    .link-user img, .link-user .link-letter { width: 32px; height: 32px; border-radius: 50%; flex: none; }
+    .link-user .link-letter { display: grid; place-items: center; color: #fff; font-weight: 700; }
+    .link-user small { display: block; color: var(--muted); font-size: 12px; }
+    .link-points { margin: 0 0 16px; padding-left: 1.2em; font-size: 13.5px; line-height: 1.7; color: var(--muted); }
+    #link-name { width: 100%; }
+  </style>
+
+  <script type="module" src="link.js"></script>
+  <script src="../console-header.js" defer></script>
+  <script src="/assets/site.js" defer></script>
+  <!-- SK Hub Systems のアクセスチェック（利用規約の同意・アクセス制限） -->
+  <script src="/frameworks/check.js" defer></script>
+</body>
+</html>

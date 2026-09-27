@@ -22,9 +22,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap">
+  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap"></script>
   <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
   <script type="module" src="/account/account-page.js"></script>
@@ -109,6 +107,11 @@
           <label class="acct-agree">
             <input type="checkbox" data-acct-agree>
             <span><a href="/policies/#sk-terms" target="_blank" rel="noopener">SK 利用規約</a>・<a href="/policies/#sk-privacy" target="_blank" rel="noopener">SK プライバシーポリシー</a>・<a href="/policies/#sk-hub-account" target="_blank" rel="noopener">SK Hub Systems アカウント規約</a>に同意します</span>
+          </label>
+          <!-- 年齢の確認（アカウントを作るときだけ。年齢は地域で変わる。SK Hub Systems アカウント規約 第六条4） -->
+          <label class="acct-agree" data-acct-age-row hidden>
+            <input type="checkbox" data-acct-age>
+            <span><span data-acct-age-text></span><small>保護者の同意が必要な年齢は、住んでいる地域によって異なります。ここでは、ブラウザのタイムゾーンから判断した地域の年齢を表示しています（SK Hub Systems アカウント規約 第六条）。</small></span>
           </label>
           <div class="acct-center-actions">
             <button class="acct-pill acct-pill--primary" type="button" data-acct-register disabled>アカウントを作成</button>

@@ -1124,5 +1124,8 @@
   "サイトの改善のため、アクセス解析（Google アナリティクス）も許可する（広告には使いません）": "Also allow access analytics (Google Analytics) to help improve the site (never used for ads)",
   "アクセス解析も許可": "Also allow analytics",
   "次回のアクセス以降、{terms}と{privacy}に同意したものとします。": "From your next visit on, you're deemed to agree to the {terms} and {privacy}.",
-  "使う前に、{terms}と{privacy}を確認して、同意してください。": "Before using the site, please review and agree to the {terms} and {privacy}."
+  "使う前に、{terms}と{privacy}を確認して、同意してください。": "Before using the site, please review and agree to the {terms} and {privacy}.",
+  "{age}歳以上です。または、保護者の同意を得ています。": "I am {age} or older, or I have the consent of a parent or guardian.",
+  "保護者の同意が必要な年齢は、住んでいる地域によって異なります。ここでは、ブラウザのタイムゾーンから判断した地域の年齢を表示しています（SK Hub Systems アカウント規約 第六条）。": "The age at which parental consent is required depends on where you live. This shows the age for the region estimated from your browser's time zone (SK Hub Systems Account Terms, Article 6).",
+  "日本国内での利用を想定しています。欧州経済領域（EEA）・英国・スイスでの利用は、現在調整中です。": "Intended for use in Japan. Use in the European Economic Area (EEA), the UK, and Switzerland is currently being prepared."
 }

@@ -42,7 +42,11 @@ Article 6 User Responsibilities
 1. Users shall manage the Google account used to sign in appropriately (setting up 2-Step Verification is recommended).
 2. Users who use the Account on a shared device shall sign out after use.
 3. The Account shall be used only by the owner of the Google account and shall not be used by others.
-4. Users who are minors shall create the Account with the consent of a parent or guardian.
+4. Users under the following ages shall create the Account with the consent of a parent or guardian. The Account creation screen shows the age for the region estimated from the user's browser time zone and asks the user to confirm that they are that age or older, or that they have the consent of a parent or guardian.
+(a) United States: 13
+(b) European Economic Area, United Kingdom, and Switzerland: the age set by the laws of the user's country (13 to 16)
+(c) South Korea and China: 14
+(d) Japan and other regions: 18
 
 Article 7 Prohibited Conduct
 1. Users shall not:
@@ -71,3 +75,4 @@ Supplementary Provisions
 1. These Terms take effect on September 26, 2026.
 2. Administrators who used the Y-FILTER. management console before these Terms took effect shall create an Account and agree to these Terms the next time they sign in to the management console.
 3. On September 27, 2026, Articles 3 and 4 were revised to add profiles, settings sync, notices, service connections, and MALU integration.
+4. On September 27, 2026, Article 6 was revised to set, by region, the age below which parental consent is required.
