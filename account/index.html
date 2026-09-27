@@ -47,182 +47,372 @@
   <div class="hd-backdrop" id="hd-backdrop"></div>
 
   <main id="main">
-    <section class="p-hero band band--plain acct-hero">
-      <div class="wrap">
-        <span class="eyebrow">Account</span>
-        <h1>SK Hub Systems アカウント</h1>
-        <p class="lead">SK のサービスを、ひとつの Google アカウントで。パスワードを新しく作る必要はありません。</p>
+    <!-- ログイン前・アカウントの作成: 中央にまとめた画面 / ログイン後: 左に項目の一覧、右にタイル（Apple Account のページの形） -->
+    <section class="acct" data-acct>
+      <!-- ログイン後だけ出す、ページの見出しの帯 -->
+      <div class="acct-localnav" data-acct-localnav hidden>
+        <div class="wrap">
+          <span class="acct-localnav-title">SK Hub Systems アカウント</span>
+          <button class="acct-localnav-link" type="button" data-acct-signout>ログアウト</button>
+        </div>
       </div>
-    </section>
 
-    <section class="section acct" style="padding-top:0" data-acct>
       <div class="wrap">
         <!-- 読み込み中 -->
-        <div class="card acct-loading" data-acct-view="loading" aria-live="polite">読み込み中…</div>
+        <div class="acct-loading" data-acct-view="loading" aria-live="polite">
+          <span class="acct-spinner" aria-hidden="true"></span>読み込み中…
+        </div>
 
         <!-- ログイン前 -->
-        <div data-acct-view="signed-out" hidden>
-          <div class="card acct-signin">
-            <div class="acct-signin-main">
-              <h2>ログイン</h2>
-              <p>SK Hub Systems アカウントのログインは、Google アカウントだけに対応しています。はじめての方も、このボタンからアカウントを作成できます。</p>
-              <button class="acct-google" type="button" data-acct-signin>
-                <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
-                Google でログイン
-              </button>
-              <p class="acct-msg" data-acct-msg role="alert"></p>
-            </div>
-            <ul class="acct-points">
-              <li><span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><div><strong>ひとつのアカウントで</strong><small>管理コンソールも、これからのサービスも同じアカウントで使えます。</small></div></li>
-              <li><span class="tile-ico ti-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><div><strong>保存するのは最小限</strong><small>ログインに必要な情報と、規約に同意した日だけ。閲覧履歴は集めません。</small></div></li>
-              <li><span class="tile-ico ti-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"/></svg></span><div><strong>いつでも削除できる</strong><small>このページから、アカウントとサービスのデータをまとめて削除できます。</small></div></li>
-            </ul>
-          </div>
+        <div class="acct-center" data-acct-view="signed-out" hidden>
+          <img class="acct-center-logo" src="/y-filter/shared/sk-icon.svg" alt="" width="72" height="72">
+          <h1 class="acct-center-title">SK Hub Systems アカウント</h1>
+          <p class="acct-center-lead">SK のサービスを、ひとつの Google アカウントで。パスワードを新しく作る必要はありません。</p>
+          <button class="acct-google" type="button" data-acct-signin>
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+            Google でログイン
+          </button>
+          <p class="acct-msg" data-acct-msg role="alert"></p>
+          <p class="acct-center-note">SK Hub Systems アカウントのログインは、Google アカウントだけに対応しています。はじめての方も、このボタンからアカウントを作成できます。</p>
+          <ul class="acct-points">
+            <li><span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><strong>ひとつのアカウントで</strong><small>管理コンソールも、これからのサービスも同じアカウントで使えます。</small></li>
+            <li><span class="tile-ico ti-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><strong>保存するのは最小限</strong><small>ログインに必要な情報と、規約に同意した日だけ。閲覧履歴は集めません。</small></li>
+            <li><span class="tile-ico ti-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"/></svg></span><strong>いつでも削除できる</strong><small>このページから、アカウントとサービスのデータをまとめて削除できます。</small></li>
+          </ul>
         </div>
 
         <!-- アカウントの作成（規約への同意） -->
-        <div data-acct-view="register" hidden>
-          <div class="card acct-consent">
-            <div class="acct-user" data-acct-user></div>
-            <h2 data-acct-register-title>アカウントを作成</h2>
-            <p class="acct-consent-lead" data-acct-register-lead>この Google アカウントで SK Hub Systems アカウントを作成します。内容を確認して、同意してください。</p>
-            <div class="acct-data">
-              <div>
-                <h3>保存する情報</h3>
-                <ul class="acct-list acct-list--yes">
-                  <li>Google アカウントの識別子・名前・メールアドレス・アイコン（ログインに使います）</li>
-                  <li>アカウントの作成日と、規約に同意した日</li>
-                  <li>使ったサービスのデータ（例: 管理コンソールの管理グループ）</li>
-                </ul>
-              </div>
-              <div>
-                <h3>保存しない情報</h3>
-                <ul class="acct-list acct-list--no">
-                  <li>Google アカウントのパスワード</li>
-                  <li>閲覧履歴・検索語</li>
-                  <li>Gmail・Google ドライブなどの中身</li>
-                </ul>
-              </div>
+        <div class="acct-center acct-center--wide" data-acct-view="register" hidden>
+          <div class="acct-user" data-acct-user></div>
+          <h1 class="acct-center-title" data-acct-register-title>アカウントを作成</h1>
+          <p class="acct-center-lead" data-acct-register-lead>この Google アカウントで SK Hub Systems アカウントを作成します。内容を確認して、同意してください。</p>
+          <div class="acct-data">
+            <div>
+              <h3>保存する情報</h3>
+              <ul class="acct-list acct-list--yes">
+                <li>Google アカウントの識別子・名前・メールアドレス・アイコン（ログインに使います）</li>
+                <li>アカウントの作成日と、規約に同意した日</li>
+                <li>プロフィール（決めた場合の表示名とアイコン）と、端末のあいだで同期する設定（表示言語・アプリの設定）</li>
+                <li>SK からのお知らせ（お問い合わせへの返事など）</li>
+                <li>使ったサービスのデータ（例: 管理コンソールの管理グループ）</li>
+              </ul>
             </div>
-            <label class="acct-agree">
-              <input type="checkbox" data-acct-agree>
-              <span><a href="/policies/#sk-terms" target="_blank" rel="noopener">SK 利用規約</a>・<a href="/policies/#sk-privacy" target="_blank" rel="noopener">SK プライバシーポリシー</a>・<a href="/policies/#sk-hub-account" target="_blank" rel="noopener">SK Hub Systems アカウント規約</a>に同意します</span>
-            </label>
-            <div class="btn-row">
-              <button class="btn btn-primary" type="button" data-acct-register disabled>アカウントを作成</button>
-              <button class="btn btn-tonal" type="button" data-acct-cancel>別のアカウントでログイン</button>
+            <div>
+              <h3>保存しない情報</h3>
+              <ul class="acct-list acct-list--no">
+                <li>Google アカウントのパスワード</li>
+                <li>閲覧履歴・検索語</li>
+                <li>Gmail・Google ドライブなどの中身</li>
+              </ul>
             </div>
-            <p class="acct-msg" data-acct-msg role="alert"></p>
           </div>
-        </div>
-
-        <!-- アカウント -->
-        <div data-acct-view="ready" hidden>
-          <div class="acct-next" data-acct-next hidden>ログインしました。元のページに戻ります…</div>
-          <div class="acct-grid">
-            <div class="card acct-profile">
-              <img class="acct-avatar" data-acct-photo alt="" width="72" height="72" referrerpolicy="no-referrer" hidden>
-              <span class="acct-avatar acct-avatar--letter" data-acct-letter aria-hidden="true"></span>
-              <h2 data-acct-name></h2>
-              <p class="acct-email" data-acct-email></p>
-              <dl class="acct-meta">
-                <div><dt>アカウント ID</dt><dd><code data-acct-uid></code></dd></div>
-                <div><dt>作成日</dt><dd data-acct-created>-</dd></div>
-                <div><dt>ログイン方法</dt><dd>Google</dd></div>
-              </dl>
-              <button class="btn btn-tonal" type="button" data-acct-signout>ログアウト</button>
-            </div>
-
-            <div class="acct-side">
-              <div class="card">
-                <h2 class="acct-h">使えるサービス</h2>
-                <ul class="acct-services">
-                  <li>
-                    <img class="yf-tile" src="/y-filter/shared/icon.svg" alt="" width="44" height="44">
-                    <div><strong>Y-FILTER. 管理コンソール</strong><small data-acct-console>確認中…</small></div>
-                    <a class="btn btn-tonal" href="/y-filter/">開く</a>
-                  </li>
-                  <li class="is-soon">
-                    <span class="tile-ico ti-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></span>
-                    <div><strong>これからのサービス</strong><small>新しいサービスも、このアカウントで使えるようになります。</small></div>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- 開発者（config/developers に登録された UID）だけに出す -->
-              <div class="card acct-dev" data-acct-dev hidden>
-                <h2 class="acct-h">開発者メニュー</h2>
-                <div class="acct-actions">
-                  <div>
-                    <strong>お問い合わせの受信箱</strong>
-                    <small>お問い合わせフォームから届いた内容を読めます。</small>
-                  </div>
-                  <a class="btn btn-primary" href="/inbox/">開く</a>
-                </div>
-                <div class="acct-actions">
-                  <div>
-                    <strong>記事エディター</strong>
-                    <small>サポートのお知らせと記事を書いて公開できます。</small>
-                  </div>
-                  <a class="btn btn-primary" href="/studio/">開く</a>
-                </div>
-              </div>
-
-              <div class="card" id="privacy">
-                <h2 class="acct-h">データとプライバシー</h2>
-                <div class="acct-actions">
-                  <div>
-                    <strong>データをダウンロード</strong>
-                    <small>このアカウントについて保存されている情報を、ファイル（JSON）で受け取れます。</small>
-                  </div>
-                  <button class="btn btn-tonal" type="button" data-acct-export>ダウンロード</button>
-                </div>
-                <div class="acct-actions">
-                  <div>
-                    <strong>規約</strong>
-                    <small data-acct-terms>-</small>
-                  </div>
-                  <a class="btn btn-tonal" href="/policies/#sk-hub-account">読む</a>
-                </div>
-              </div>
-
-              <div class="card acct-danger">
-                <h2 class="acct-h">アカウントを削除</h2>
-                <p>アカウントと、管理コンソールの管理グループ・接続している端末・リクエストをすべて削除します。共同管理者として参加しているグループからは抜けます。<strong>元に戻すことはできません。</strong></p>
-                <p>接続していた端末の Y-FILTER. は遠隔管理が外れ、最後に配信された設定のままフィルタリングを続けます。</p>
-                <button class="btn acct-danger-btn" type="button" data-acct-delete>アカウントを削除する</button>
-              </div>
-            </div>
+          <label class="acct-agree">
+            <input type="checkbox" data-acct-agree>
+            <span><a href="/policies/#sk-terms" target="_blank" rel="noopener">SK 利用規約</a>・<a href="/policies/#sk-privacy" target="_blank" rel="noopener">SK プライバシーポリシー</a>・<a href="/policies/#sk-hub-account" target="_blank" rel="noopener">SK Hub Systems アカウント規約</a>に同意します</span>
+          </label>
+          <div class="acct-center-actions">
+            <button class="acct-pill acct-pill--primary" type="button" data-acct-register disabled>アカウントを作成</button>
+            <button class="acct-pill" type="button" data-acct-cancel>別のアカウントでログイン</button>
           </div>
           <p class="acct-msg" data-acct-msg role="alert"></p>
         </div>
 
-        <!-- 読み込めない -->
-        <div class="card acct-error" data-acct-view="error" hidden>
-          <h2>アカウントを読み込めませんでした</h2>
-          <p data-acct-error>時間をおいて再度お試しください。</p>
-          <div class="btn-row">
-            <button class="btn btn-primary" type="button" data-acct-retry>もう一度読み込む</button>
-            <button class="btn btn-tonal" type="button" data-acct-signout>ログアウト</button>
+        <!-- サービスへの接続の確認（/account/?connect=yfilter&next=/y-filter/。サービスを最初に使うとき） -->
+        <div class="acct-center acct-connect" data-acct-view="connect" hidden>
+          <!-- 文言とアイコンはサービスごとに account-page.js が入れる -->
+          <div class="acct-connect-icons" aria-hidden="true">
+            <img src="/y-filter/shared/sk-icon.svg" alt="" width="64" height="64">
+            <span class="acct-connect-link"><i></i><i></i><i></i></span>
+            <img data-acct-connect-icon src="" alt="" width="64" height="64">
+          </div>
+          <h1 class="acct-center-title" data-acct-connect-title></h1>
+          <p class="acct-center-lead" data-acct-connect-lead></p>
+          <div class="acct-user" data-acct-connect-user></div>
+          <div class="acct-connect-box">
+            <h3 data-acct-connect-uses-title></h3>
+            <ul class="acct-list acct-list--yes" data-acct-connect-uses></ul>
+            <p data-acct-connect-note></p>
+          </div>
+          <div class="acct-center-actions">
+            <button class="acct-pill" type="button" data-acct-connect-cancel>キャンセル</button>
+            <button class="acct-pill acct-pill--primary" type="button" data-acct-connect>続ける</button>
+          </div>
+          <p class="acct-center-note" data-acct-connect-terms></p>
+          <p class="acct-msg" data-acct-msg role="alert"></p>
+        </div>
+
+        <!-- アカウント -->
+        <div class="acct-layout" data-acct-view="ready" hidden>
+          <div class="acct-next" data-acct-next hidden>ログインしました。元のページに戻ります…</div>
+
+          <aside class="acct-sidebar">
+            <div class="acct-me">
+              <img class="acct-avatar" data-acct-photo alt="" width="96" height="96" referrerpolicy="no-referrer" hidden>
+              <span class="acct-avatar acct-avatar--letter" data-acct-letter aria-hidden="true"></span>
+              <h2 class="acct-me-name" data-acct-name></h2>
+              <p class="acct-me-email" data-acct-email></p>
+            </div>
+            <nav class="acct-nav" aria-label="アカウントの項目">
+              <a href="#profile" data-acct-nav="profile">個人情報</a>
+              <a href="#security" data-acct-nav="security">サインインとセキュリティ</a>
+              <a href="#notices" data-acct-nav="notices">お知らせ<span class="acct-nav-count" data-acct-nav-unread hidden></span></a>
+              <a href="#services" data-acct-nav="services">サービス</a>
+              <a href="#settings" data-acct-nav="settings">設定の同期</a>
+              <a href="#privacy" data-acct-nav="privacy">プライバシー</a>
+              <a href="#developer" data-acct-nav="developer" data-acct-dev hidden>開発者</a>
+            </nav>
+          </aside>
+
+          <div class="acct-main">
+            <!-- 個人情報 -->
+            <section class="acct-section" data-acct-section="profile" aria-labelledby="acct-h-profile">
+              <h2 class="acct-section-title" id="acct-h-profile">個人情報</h2>
+              <p class="acct-section-lead">SK のサービスで表示される名前とアイコン、アカウントの基本情報です。</p>
+              <div class="acct-tiles">
+                <button class="acct-tile" type="button" data-acct-edit-profile>
+                  <span class="acct-tile-title">名前とアイコン</span>
+                  <span class="acct-tile-value" data-acct-profile-summary>-</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </button>
+                <div class="acct-tile is-static">
+                  <span class="acct-tile-title">メールアドレス</span>
+                  <span class="acct-tile-value" data-acct-email-tile>-</span>
+                  <span class="acct-tile-note">Google アカウントのもの</span>
+                </div>
+                <div class="acct-tile is-static">
+                  <span class="acct-tile-title">アカウント ID</span>
+                  <span class="acct-tile-value"><code data-acct-uid></code></span>
+                </div>
+                <div class="acct-tile is-static">
+                  <span class="acct-tile-title">作成日</span>
+                  <span class="acct-tile-value" data-acct-created>-</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- サインインとセキュリティ -->
+            <section class="acct-section" data-acct-section="security" aria-labelledby="acct-h-security" hidden>
+              <h2 class="acct-section-title" id="acct-h-security">サインインとセキュリティ</h2>
+              <p class="acct-section-lead">このアカウントには Google アカウントでログインします。SK がパスワードを発行・保存することはありません。</p>
+              <div class="acct-tiles">
+                <a class="acct-tile" href="https://myaccount.google.com/security" target="_blank" rel="noopener">
+                  <span class="acct-tile-title">ログイン方法</span>
+                  <span class="acct-tile-value">Google</span>
+                  <span class="acct-tile-note">2 段階認証などは Google アカウントで設定します</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16 16 8M9 8h7v7"/></svg>
+                </a>
+                <a class="acct-tile" href="/policies/#sk-hub-account">
+                  <span class="acct-tile-title">規約への同意</span>
+                  <span class="acct-tile-value" data-acct-terms>-</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <button class="acct-tile" type="button" data-acct-signout>
+                  <span class="acct-tile-title">ログアウト</span>
+                  <span class="acct-tile-value">このブラウザからログアウトします</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>
+                </button>
+              </div>
+            </section>
+
+            <!-- お知らせ: SK からの個別のお知らせ（お問い合わせへの返事など）と、サポートのお知らせ -->
+            <section class="acct-section" data-acct-section="notices" aria-labelledby="acct-h-notices" hidden>
+              <h2 class="acct-section-title" id="acct-h-notices">お知らせ <span class="acct-unread" data-acct-unread hidden></span></h2>
+              <p class="acct-section-lead">SK からのお知らせ（お問い合わせへの返事など）と、サポートのお知らせです。</p>
+              <ul class="acct-notice-list" data-acct-notices>
+                <li class="acct-notice-empty">読み込み中…</li>
+              </ul>
+              <a class="acct-more" href="/support/?type=news">サポートのお知らせをすべて見る</a>
+            </section>
+
+            <!-- サービス -->
+            <section class="acct-section" data-acct-section="services" aria-labelledby="acct-h-services" hidden>
+              <h2 class="acct-section-title" id="acct-h-services">サービス</h2>
+              <p class="acct-section-lead">このアカウントを接続している SK のサービスです。サービスは、最初に使うときに接続するか確認します。</p>
+              <!-- 接続しているサービス（account-page.js が data-acct-service を出し分ける） -->
+              <div class="acct-tiles" data-acct-connected>
+                <div class="acct-tile acct-tile--app is-static" data-acct-service="yfilter" hidden>
+                  <img class="yf-tile" src="/y-filter/shared/icon.svg" alt="" width="44" height="44">
+                  <span class="acct-tile-title">Y-FILTER. 管理コンソール</span>
+                  <span class="acct-tile-value" data-acct-console>確認中…</span>
+                  <span class="acct-tile-note" data-acct-connected-at="yfilter"></span>
+                  <span class="acct-tile-actions">
+                    <a class="acct-pill acct-pill--small acct-pill--primary" href="/y-filter/">開く</a>
+                    <button class="acct-pill acct-pill--small" type="button" data-acct-disconnect="yfilter">接続を解除</button>
+                  </span>
+                </div>
+                <div class="acct-tile acct-tile--app is-static" data-acct-service="malu" hidden>
+                  <img src="/dictionary/ico/icon-192.png" alt="" width="44" height="44">
+                  <span class="acct-tile-title">MALU</span>
+                  <span class="acct-tile-value" data-acct-malu>確認中…</span>
+                  <span class="acct-tile-note" data-acct-connected-at="malu"></span>
+                  <span class="acct-tile-actions">
+                    <a class="acct-pill acct-pill--small acct-pill--primary" href="/dictionary/">開く</a>
+                    <button class="acct-pill acct-pill--small" type="button" data-acct-disconnect="malu">接続を解除</button>
+                  </span>
+                </div>
+              </div>
+              <p class="acct-empty" data-acct-no-services hidden>まだ接続しているサービスはありません。</p>
+
+              <h3 class="acct-subtitle">使えるサービス</h3>
+              <div class="acct-tiles">
+                <a class="acct-tile acct-tile--app" href="/y-filter/" data-acct-available="yfilter" hidden>
+                  <img class="yf-tile" src="/y-filter/shared/icon.svg" alt="" width="44" height="44">
+                  <span class="acct-tile-title">Y-FILTER. 管理コンソール</span>
+                  <span class="acct-tile-value">Y-FILTER. を入れた端末の設定を、まとめて管理できます。</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <a class="acct-tile acct-tile--app" href="/account/?connect=malu&amp;next=%2Fdictionary%2F" data-acct-available="malu" hidden>
+                  <img src="/dictionary/ico/icon-192.png" alt="" width="44" height="44">
+                  <span class="acct-tile-title">MALU</span>
+                  <span class="acct-tile-value">単語帳と、検索履歴の端末のあいだの同期が使えます。</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <div class="acct-tile acct-tile--app is-static is-soon">
+                  <span class="tile-ico ti-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></span>
+                  <span class="acct-tile-title">これからのサービス</span>
+                  <span class="acct-tile-value">新しいサービスも、このアカウントで使えるようになります。</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- 設定の同期 -->
+            <section class="acct-section" data-acct-section="settings" aria-labelledby="acct-h-settings" hidden>
+              <h2 class="acct-section-title" id="acct-h-settings">設定の同期</h2>
+              <p class="acct-section-lead">このアカウントでログインしている端末のあいだで、設定を自動でそろえます。</p>
+              <div class="acct-tiles">
+                <div class="acct-tile is-static">
+                  <span class="acct-tile-title">表示言語</span>
+                  <span class="acct-tile-note">サイト・MALU・SK's Lab の言語。ここで変えると、ほかの端末にも反映されます。</span>
+                  <select class="acct-select" data-acct-lang aria-label="表示言語"></select>
+                </div>
+                <div class="acct-tile is-static">
+                  <span class="acct-tile-title">アプリの設定</span>
+                  <span class="acct-tile-note">MALU（既定の辞書・結果の開き方・テーマ）と QR Drop（テーマ・転送や履歴の設定）。検索履歴・転送したファイルは同期しません。</span>
+                </div>
+                <button class="acct-tile" type="button" data-acct-sync>
+                  <span class="acct-tile-title">今すぐ同期</span>
+                  <span class="acct-tile-value">最後に同期した日時: <span data-acct-sync-at>-</span></span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></svg>
+                </button>
+              </div>
+            </section>
+
+            <!-- プライバシー -->
+            <section class="acct-section" data-acct-section="privacy" aria-labelledby="acct-h-privacy" hidden>
+              <h2 class="acct-section-title" id="acct-h-privacy">プライバシー</h2>
+              <p class="acct-section-lead">SK は、閲覧履歴や検索語を集めません。保存している情報は、いつでも確認・削除できます。</p>
+              <div class="acct-tiles">
+                <button class="acct-tile" type="button" data-acct-export>
+                  <span class="acct-tile-title">データをダウンロード</span>
+                  <span class="acct-tile-value">このアカウントについて保存されている情報を、ファイル（JSON）で受け取れます。</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+                </button>
+                <a class="acct-tile" href="/policies/#sk-privacy">
+                  <span class="acct-tile-title">プライバシーポリシー</span>
+                  <span class="acct-tile-value">情報の取り扱いについて読む</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <button class="acct-tile acct-tile--danger" type="button" data-acct-delete>
+                  <span class="acct-tile-title" data-acct-delete-label>アカウントを削除</span>
+                  <span class="acct-tile-value">アカウント（プロフィール・同期した設定・お知らせを含む）と、管理コンソールの管理グループ・接続している端末・リクエストをすべて削除します。元に戻すことはできません。</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </button>
+              </div>
+            </section>
+
+            <!-- 開発者（config/developers に登録された UID）だけに出す -->
+            <section class="acct-section" data-acct-section="developer" aria-labelledby="acct-h-developer" hidden>
+              <h2 class="acct-section-title" id="acct-h-developer">開発者</h2>
+              <p class="acct-section-lead">開発者として登録されているアカウントだけに表示しています。</p>
+              <div class="acct-tiles">
+                <a class="acct-tile" href="/inbox/">
+                  <span class="acct-tile-title">お問い合わせの受信箱</span>
+                  <span class="acct-tile-value">お問い合わせフォームから届いた内容を読み、アカウントに返事を送れます。</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <a class="acct-tile" href="/studio/">
+                  <span class="acct-tile-title">記事エディター</span>
+                  <span class="acct-tile-value">サポートのお知らせと記事を書いて公開できます。</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+              </div>
+            </section>
+
+            <p class="acct-msg acct-msg--toast" data-acct-msg role="alert"></p>
           </div>
         </div>
 
-        <noscript><div class="card">SK Hub Systems アカウントを使うには、JavaScript を有効にしてください。</div></noscript>
+        <!-- 読み込めない -->
+        <div class="acct-center" data-acct-view="error" hidden>
+          <h1 class="acct-center-title">アカウントを読み込めませんでした</h1>
+          <p class="acct-center-lead" data-acct-error>時間をおいて再度お試しください。</p>
+          <div class="acct-center-actions">
+            <button class="acct-pill acct-pill--primary" type="button" data-acct-retry>もう一度読み込む</button>
+            <button class="acct-pill" type="button" data-acct-signout>ログアウト</button>
+          </div>
+        </div>
+
+        <noscript><div class="acct-center">SK Hub Systems アカウントを使うには、JavaScript を有効にしてください。</div></noscript>
       </div>
     </section>
+
+    <!-- プロフィールの編集 -->
+    <dialog class="acct-dialog" data-acct-profile-dialog>
+      <form method="dialog" data-acct-profile-form>
+        <h2>名前とアイコン</h2>
+        <p>SK のサービスやサイトのヘッダーに表示される名前とアイコンです。Google アカウントの名前・写真は変わりません。</p>
+        <div class="acct-profile-preview">
+          <span class="acct-avatar acct-avatar--letter" data-acct-preview-letter aria-hidden="true"></span>
+          <img class="acct-avatar" data-acct-preview-photo alt="" width="72" height="72" referrerpolicy="no-referrer" hidden>
+          <strong data-acct-preview-name></strong>
+        </div>
+        <label class="acct-field">
+          <span>表示名</span>
+          <input type="text" name="name" maxlength="40" autocomplete="nickname" data-acct-profile-name>
+          <small>空欄にすると、Google アカウントの名前を使います。</small>
+        </label>
+        <fieldset class="acct-field">
+          <legend>アイコン</legend>
+          <label class="acct-radio" data-acct-avatar-google><input type="radio" name="avatar" value="google"> <span>Google アカウントの写真</span></label>
+          <label class="acct-radio"><input type="radio" name="avatar" value="letter"> <span>名前の頭文字</span></label>
+          <div class="acct-colors" role="radiogroup" aria-label="アイコンの色" data-acct-colors></div>
+        </fieldset>
+        <div class="acct-dialog-actions">
+          <button class="acct-pill" value="cancel" formnovalidate>キャンセル</button>
+          <button class="acct-pill acct-pill--primary" value="save">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- サービスの接続の解除（文言はサービスごとに account-page.js が入れる） -->
+    <dialog class="acct-dialog" data-acct-disconnect-dialog>
+      <form method="dialog">
+        <h2 data-acct-disconnect-title></h2>
+        <p data-acct-disconnect-text></p>
+        <label class="acct-agree">
+          <input type="checkbox" data-acct-disconnect-wipe>
+          <span><span data-acct-disconnect-wipe-label></span> <small data-acct-disconnect-wipe-note></small></span>
+        </label>
+        <div class="acct-dialog-actions">
+          <button class="acct-pill" value="cancel">キャンセル</button>
+          <button class="acct-pill acct-pill--danger" value="disconnect">接続を解除</button>
+        </div>
+      </form>
+    </dialog>
 
     <!-- 削除の確認 -->
     <dialog class="acct-dialog" data-acct-delete-dialog>
       <form method="dialog">
         <h2>アカウントを削除しますか？</h2>
         <p>管理グループ・接続している端末・リクエストも一緒に削除され、元に戻せません。続けると、確認のためにもう一度 Google のログイン画面が開きます。</p>
+        <p>接続していた端末の Y-FILTER. は遠隔管理が外れ、最後に配信された設定のままフィルタリングを続けます。共同管理者として参加しているグループからは抜けます。</p>
         <label class="acct-agree">
           <input type="checkbox" data-acct-delete-agree>
           <span>削除すると元に戻せないことを理解しました</span>
         </label>
-        <div class="btn-row">
-          <button class="btn acct-danger-btn" value="delete" data-acct-delete-confirm disabled>削除する</button>
-          <button class="btn btn-tonal" value="cancel">やめる</button>
+        <div class="acct-dialog-actions">
+          <button class="acct-pill" value="cancel">キャンセル</button>
+          <button class="acct-pill acct-pill--danger" value="delete" data-acct-delete-confirm disabled>削除する</button>
         </div>
       </form>
     </dialog>
@@ -254,6 +444,8 @@
   <script>window.SKI18N && SKI18N.translatePage();</script>
   <script src="/support/articles.js" defer></script>
   <script src="/assets/site.js" defer></script>
+  <!-- SK Hub Systems アカウントの設定の同期（ログイン中だけ） -->
+  <script src="/assets/hub/sync-loader.js" defer></script>
   <script src="/frameworks/check.js?check=none" defer></script>
 </body>
 </html>

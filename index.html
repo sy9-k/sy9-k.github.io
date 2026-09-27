@@ -65,7 +65,7 @@
           <div class="float-card float-yf">
             <div class="head">
               <img class="yf-tile" src="/y-filter/shared/icon.svg" alt="">
-              <div><strong>Y-FILTER.</strong><small>開発中のフィルタ拡張機能</small></div>
+              <div><strong>Y-FILTER.</strong><small data-yf-when="missing">開発中のフィルタ拡張機能</small><small class="float-yf-live" data-yf-when="installed">このブラウザで使用中</small></div>
             </div>
             <ul>
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>カテゴリでブロック</li>
@@ -93,7 +93,9 @@
             <div class="cover">
               <img class="icon yf-tile" src="/y-filter/shared/icon.svg" alt="">
               <div><h3>Y-FILTER.</h3><div class="kind">ブラウザ拡張機能</div></div>
-              <span class="badge badge-dev"><span class="dot"></span>開発中</span>
+              <span class="badge badge-dev" data-yf-when="missing"><span class="dot"></span>開発中</span>
+              <!-- このブラウザに Y-FILTER. が入っているとき（拡張機能が <html data-yfilter-version> を付ける） -->
+              <span class="badge badge-live" data-yf-when="installed"><span class="dot"></span>このブラウザで使用中</span>
             </div>
             <div class="body">
               <p>有害なサイトのブロックや利用時間の管理ができるフィルタリング拡張機能。保護者や学校が、管理コンソールから複数の端末をまとめて管理できます。</p>
@@ -259,6 +261,8 @@
   <script>window.SKI18N && SKI18N.translatePage();</script>
   <script src="/support/articles.js" defer></script>
   <script src="/assets/site.js" defer></script>
+  <!-- SK Hub Systems アカウントの設定の同期（ログイン中だけ） -->
+  <script src="/assets/hub/sync-loader.js" defer></script>
   <script src="/frameworks/check.js" defer></script>
 </body>
 </html>

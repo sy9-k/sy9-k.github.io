@@ -59,6 +59,17 @@
 .yf-btn[aria-disabled="true"] { cursor: default; box-shadow: none; opacity: .75; }
 .yf-btn[aria-disabled="true"]:active { transform: none; }
 
+/* このブラウザに Y-FILTER. が入っているとき */
+.yf-installed { display: inline-flex; align-items: center; gap: 12px; margin-top: 28px; padding: 10px 18px 10px 10px; border-radius: 16px; background: #fff; border: 1px solid #bfe5cc; box-shadow: 0 8px 24px rgba(27, 127, 59, .12); }
+.yf-installed-ico { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #e6f5ec; color: #1b7f3b; flex: none; }
+.yf-installed-ico svg { width: 18px; height: 18px; }
+.yf-installed strong { display: block; font-size: 14.5px; }
+.yf-installed small { display: block; color: var(--yf-muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.yf-update { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 14px; border-radius: 12px; background: var(--yf-accent-soft); border: 1px solid var(--yf-accent-border); color: var(--yf-accent-text); font-size: 13.5px; font-weight: 600; max-width: 520px; }
+.yf-update svg { width: 18px; height: 18px; flex: none; }
+.yf-update a { color: inherit; }
+.yf-installed + .yf-cta, .yf-update + .yf-cta { margin-top: 22px; }
+
 /* フィルターの様子 */
 .yf-viz { position: relative; background: #fff; border: 1px solid var(--yf-line-strong); border-radius: 22px; padding: 18px; box-shadow: var(--yf-shadow-lg); }
 .yf-viz-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 14px; border-bottom: 1px solid var(--yf-line); margin-bottom: 10px; }

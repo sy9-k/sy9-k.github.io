@@ -18,7 +18,7 @@ import { NEWTAB_MODES, REMOTE_SETTING_KEYS, buildDefaultSettings, localDateKey, 
 import { hashAccessCode, validateNewAccessCode } from "./shared/access-code.js";
 import "./shared/time-rules.js"; // globalThis.YFilterTime（ルールの説明文に使う）
 // SK Hub Systems アカウント（未作成・規約が新しくなったときは /account/ で同意してから戻ってくる）
-import { ACCOUNT_TERMS_VERSION, accountPageUrl, rememberAccount, signOutAccount } from "/assets/hub/account.js";
+import { ACCOUNT_TERMS_VERSION, accountPageUrl, disconnectService, isConnected, profileOf, rememberAccount, signOutAccount } from "/assets/hub/account.js";
 
 const ONLINE_WINDOW_MS = 15 * 60 * 1000; // 端末は最長 10 分ごとに報告する
 const PAIRING_TTL_MS = 30 * 60 * 1000;
@@ -149,6 +149,19 @@ $("signin-btn").addEventListener("click", async () => {
 // ヘッダーのアカウントのメニューの「ログアウト」（console-header.js）。ヘッダーのログイン表示も一緒に消す
 document.addEventListener("skconsole:signout", () => signOutAccount());
 
+// ヘッダーの「管理コンソールとの接続を解除」: アカウントとの接続だけを外す（管理グループ・端末は残る）。
+// データも消したいときは、アカウントのページの「サービス」から
+document.addEventListener("skconsole:disconnect", async () => {
+  if (!state.user) return;
+  if (!confirm("この SK Hub Systems アカウントと管理コンソールの接続を解除します。管理グループと接続している端末はそのまま残り、次に管理コンソールを開いたときに、もう一度接続するか確認します。よろしいですか？")) return;
+  try {
+    await disconnectService(state.user, "yfilter");
+    location.href = "/account/#services";
+  } catch (err) {
+    toast(`接続を解除できませんでした: ${errText(err)}`, true);
+  }
+});
+
 // ヘッダーの「端末」「管理グループ」は、管理画面を開いているときだけ出す
 function showConsoleMenus(visible) {
   document.querySelectorAll("[data-console-only]").forEach((el) => { el.hidden = !visible; });
@@ -159,6 +172,7 @@ onAuthStateChanged(auth, async (user) => {
   state.userUnsubs = [];
   clearTeamSubscriptions();
   state.user = user;
+  state.account = null;
   state.teams = [];
   state.teamId = "";
   show("signin", !user);
@@ -176,12 +190,14 @@ onAuthStateChanged(auth, async (user) => {
   loadCategories();
 });
 
-// SK Hub Systems アカウントを作っていない（規約に同意していない）ときは、アカウントのページで同意してもらう
+// SK Hub Systems アカウントを作っていない（規約に同意していない）・管理コンソールに接続していないときは、
+// アカウントのページで同意・接続してもらってから戻ってくる（/account/?connect=yfilter&next=/y-filter/）
 async function hasAccount(user) {
   try {
     const snap = await getDoc(doc(db, "accounts", user.uid));
-    if (snap.exists() && snap.data().termsVersion === ACCOUNT_TERMS_VERSION) {
-      rememberAccount(user);
+    if (snap.exists() && snap.data().termsVersion === ACCOUNT_TERMS_VERSION && isConnected(snap.data(), "yfilter")) {
+      state.account = snap.data();
+      rememberAccount(user, state.account);
       return true;
     }
   } catch (err) {
@@ -189,14 +205,17 @@ async function hasAccount(user) {
     return false;
   }
   show("app", false);
-  location.replace(accountPageUrl("/y-filter/"));
+  location.replace(accountPageUrl("/y-filter/", "yfilter"));
   return false;
 }
 
 // ---------- 管理グループ（共同管理者） ----------
 
+// 共同管理者に見せる名前は、SK Hub Systems アカウントのプロフィールの表示名（決めていなければ Google の名前）
+const myName = () => profileOf(state.user, state.account).name;
+
 function memberEntry() {
-  return { email: state.user.email || "", name: state.user.displayName || "", joinedAt: serverTimestamp() };
+  return { email: state.user.email || "", name: myName(), joinedAt: serverTimestamp() };
 }
 
 // 自分のグループ（ID = 自分の UID）がなければ作る。名前・メールが変わっていれば更新する
@@ -210,7 +229,7 @@ async function ensureOwnTeam() {
       return;
     }
     const info = snap.data().memberInfo?.[uid] || {};
-    if (info.email !== (state.user.email || "") || info.name !== (state.user.displayName || "")) {
+    if (info.email !== (state.user.email || "") || info.name !== myName()) {
       await updateDoc(ref, { [`memberInfo.${uid}`]: memberEntry() });
     }
   } catch (err) {

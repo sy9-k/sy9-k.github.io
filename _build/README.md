@@ -22,6 +22,15 @@ python _build/og/render.py
 
 `_build/og/og.html` を Microsoft Edge で撮影して `assets/og.png` に保存します。
 
+## 多言語（日本語・英語・中国語・韓国語）
+
+URL は変えずに、`/lang/` で選んだ言語でページを訳して表示します（`assets/i18n.js`）。
+
+- 訳は `_build/i18n/<言語>.json`（キーが日本語の文）。build すると `assets/i18n/<言語>.js` が作られます。
+- build が訳のない文を見つけると `_build/i18n/missing/<言語>.json` に書き出すので、訳を JSON に足してもう一度 build します。
+- build で作らないページ（MALU など）とスクリプトの `t("…")` も、`build.py` の `STANDALONE_PAGES`・`RUNTIME_SOURCES` に入れておけば探します。
+- SK's Lab（QR Drop・スマートダッシュボード）は日本語と英語だけです（`<html data-i18n-langs="ja en">`。ほかの言語を選んでいると英語で出る）。英訳は `en.json` にだけ入れ、`build.py` の `EN_ONLY_PAGES` で探します。
+
 ## サポートの記事・お知らせ
 
 記事は **記事エディター（https://sy9-k.github.io/studio/）** で書きます。保存すると SK Hub Systems に入り、サポートページにすぐ出ます（build もプッシュもいりません）。

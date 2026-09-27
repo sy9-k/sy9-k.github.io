@@ -2,6 +2,70 @@
   "_note": "アップデート情報。新しいものを上に足していく。category は SK / Y-FILTER. / SK Hub Systems / MALU / Lab のどれか。トップ・ステータス・アップデートのページで表示される。 訳は各項目の i18n（en / zh-CN / zh-TW / ko の title・body・label）。ない言語は日本語で出る。",
   "items": [
     {
+      "date": "2026-09-27",
+      "category": "MALU",
+      "title": "MALU が SK Hub Systems アカウントに対応しました",
+      "body": "MALU を SK Hub Systems アカウントに接続すると、調べた言葉を保存できる「単語帳」が使えます。設定で有効にすれば、検索履歴をほかの端末と同期することもできます。あわせて、SK プライバシーポリシーと SK Hub Systems アカウント規約を改定しました。",
+      "link": {
+        "href": "/dictionary/",
+        "label": "MALU を開く"
+      },
+      "i18n": {
+        "en": {
+          "title": "MALU now works with SK Hub Systems accounts",
+          "body": "Connect MALU to your SK Hub Systems account to use the wordbook for saving words you've looked up. Turn it on in settings to sync your search history with your other devices, too. We've also revised the SK Privacy Policy and the SK Hub Systems Account Terms.",
+          "label": "Open MALU"
+        },
+        "zh-CN": {
+          "title": "MALU 支持 SK Hub Systems 账户",
+          "body": "将 MALU 连接到 SK Hub Systems 账户后，即可使用保存查过词语的“单词本”。在设置中开启后，还可以与其他设备同步搜索记录。同时修订了 SK 隐私政策和 SK Hub Systems 账户条款。",
+          "label": "打开 MALU"
+        },
+        "zh-TW": {
+          "title": "MALU 支援 SK Hub Systems 帳戶",
+          "body": "將 MALU 連接到 SK Hub Systems 帳戶後，即可使用儲存查過詞語的「單字本」。在設定中開啟後，還可以與其他裝置同步搜尋紀錄。同時修訂了 SK 隱私權政策和 SK Hub Systems 帳戶條款。",
+          "label": "開啟 MALU"
+        },
+        "ko": {
+          "title": "MALU가 SK Hub Systems 계정을 지원합니다",
+          "body": "MALU를 SK Hub Systems 계정에 연결하면 찾아본 단어를 저장하는 '단어장'을 사용할 수 있습니다. 설정에서 켜면 검색 기록을 다른 기기와 동기화할 수도 있습니다. 아울러 SK 개인정보 처리방침과 SK Hub Systems 계정 약관을 개정했습니다.",
+          "label": "MALU 열기"
+        }
+      }
+    },
+    {
+      "date": "2026-09-27",
+      "category": "SK Hub Systems",
+      "title": "アカウントのページを新しくしました",
+      "body": "表示名とアイコンを決められるプロフィール、表示言語やアプリの設定の端末間の同期、SK からのお知らせを追加しました。サービスは、最初に使うときに「このアカウントで使いますか？」と確認してから接続するようになり、いつでも接続を解除できます。",
+      "link": {
+        "href": "/account/",
+        "label": "アカウントのページ"
+      },
+      "i18n": {
+        "en": {
+          "title": "A new Account page",
+          "body": "We've added profiles with your own display name and icon, syncing of display language and app settings across devices, and notices from SK. Services now ask \"Use this account?\" the first time you use them before connecting, and you can disconnect at any time.",
+          "label": "Account page"
+        },
+        "zh-CN": {
+          "title": "账户页面全新改版",
+          "body": "新增了可设置显示名称和头像的个人资料、显示语言和应用设置的跨设备同步，以及来自 SK 的通知。服务在首次使用时会先确认“要使用此账户吗？”再进行连接，并可随时解除连接。",
+          "label": "账户页面"
+        },
+        "zh-TW": {
+          "title": "帳戶頁面全新改版",
+          "body": "新增了可設定顯示名稱和大頭貼的個人資料、顯示語言和應用程式設定的跨裝置同步，以及來自 SK 的通知。服務在首次使用時會先確認「要使用此帳戶嗎？」再進行連接，並可隨時解除連接。",
+          "label": "帳戶頁面"
+        },
+        "ko": {
+          "title": "계정 페이지를 새롭게 바꿨습니다",
+          "body": "표시 이름과 아이콘을 정할 수 있는 프로필, 표시 언어와 앱 설정의 기기 간 동기화, SK의 알림을 추가했습니다. 서비스는 처음 사용할 때 '이 계정을 사용할까요?'라고 확인한 뒤 연결하며, 언제든 연결을 해제할 수 있습니다.",
+          "label": "계정 페이지"
+        }
+      }
+    },
+    {
       "date": "2026-09-26",
       "category": "SK",
       "title": "お問い合わせフォームを新しくしました",

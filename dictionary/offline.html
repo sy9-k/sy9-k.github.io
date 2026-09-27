@@ -6,6 +6,7 @@
   <title>オフライン</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="ico/icon-192.png" />
+  <script src="/assets/i18n.js"></script>
   <style>
     :root{--primary:#365da2;--on-primary:#fff;--surface:#f8f9ff;--container:#e6e8ef;--on-surface:#1a1b21;--on-surface-variant:#434654;color-scheme:light}
     @media (prefers-color-scheme:dark){:root{--primary:#b3c5ff;--on-primary:#003063;--surface:#121319;--container:#282a2f;--on-surface:#e1e2ea;--on-surface-variant:#c2c6d7;color-scheme:dark}}
@@ -25,5 +26,6 @@
     <p>アプリ本体は表示できますが、辞書検索はインターネット接続が必要です。オンラインに戻って再読み込みしてください。</p>
     <a href="index.html">再読み込み</a>
   </div>
+  <script>window.SKI18N && SKI18N.translatePage();</script>
 </body>
 </html>

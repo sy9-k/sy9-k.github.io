@@ -4,7 +4,7 @@
 // （SK プライバシーポリシー第七条。Firestore の TTL は有料プランが必要なので、ここで行う）
 import { db, signIn, signOutAccount, watchAccount } from "/assets/hub/account.js";
 import {
-  Timestamp, collection, deleteDoc, deleteField, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, serverTimestamp,
+  Timestamp, addDoc, collection, deleteDoc, deleteField, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, serverTimestamp,
   updateDoc, where, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -20,6 +20,8 @@ const baseTitle = document.title;
 let items = [];
 let filter = "new";
 let unsubscribe = null;
+const replyOpen = new Set(); // 返事の欄を開いているお問い合わせ
+const drafts = {}; // 書きかけの返事
 
 const el = (tag, className, text) => {
   const e = document.createElement(tag);
@@ -83,8 +85,22 @@ function card(item) {
   if (item.userAgent) addInfo("ブラウザ", el("span", "inbox-muted", `${item.userAgent}${item.language ? `（${item.language}）` : ""}`));
   const handled = toDate(item.handledAt);
   if (item.status === "done" && handled) addInfo("対応", el("span", "inbox-muted", `${handled.toLocaleDateString("ja-JP")} に対応済み（1 年後に自動で削除）`));
+  const replied = toDate(item.repliedAt);
+  if (item.uid) addInfo("アカウント", el("span", "inbox-muted", replied ? `${replied.toLocaleString("ja-JP")} にお知らせで返事済み` : "SK Hub Systems アカウントのお知らせで返事できます"));
 
   const actions = el("div", "btn-row inbox-actions");
+  let replyBox = null;
+  if (item.uid) {
+    const replyBtn = el("button", "btn btn-primary", replied ? "もう一度返事を送る" : "アカウントに返事を送る");
+    replyBtn.type = "button";
+    replyBtn.addEventListener("click", () => {
+      if (replyOpen.has(item.id)) replyOpen.delete(item.id);
+      else replyOpen.add(item.id);
+      render();
+    });
+    actions.appendChild(replyBtn);
+    if (replyOpen.has(item.id)) replyBox = replyForm(item);
+  }
   const toggle = el("button", "btn btn-tonal", item.status === "done" ? "未対応に戻す" : "対応済みにする");
   toggle.type = "button";
   toggle.addEventListener("click", () => setDone(item, item.status !== "done", toggle));
@@ -97,7 +113,62 @@ function card(item) {
   actions.append(toggle, del);
 
   box.append(meta, body, info, actions);
+  if (replyBox) box.appendChild(replyBox);
   return box;
+}
+
+// アカウントのお知らせ（accounts/{UID}/notices）で返事をする。送ったら対応済みにする
+// 一覧は届くたびに描き直すので、書きかけは drafts に取っておく
+function replyForm(item) {
+  const form = el("form", "inbox-reply");
+  const label = el("label", null, "返事（相手のアカウントの「お知らせ」に届きます）");
+  const text = el("textarea");
+  text.rows = 6;
+  text.maxLength = 5000;
+  text.required = true;
+  text.value = drafts[item.id] || "";
+  text.addEventListener("input", () => { drafts[item.id] = text.value; });
+  label.appendChild(text);
+  const row = el("div", "btn-row");
+  const send = el("button", "btn btn-primary", "送信する");
+  send.type = "submit";
+  const cancel = el("button", "btn btn-tonal", "やめる");
+  cancel.type = "button";
+  cancel.addEventListener("click", () => { replyOpen.delete(item.id); render(); });
+  row.append(send, cancel);
+  const msg = el("p", "acct-msg");
+  form.append(label, row, msg);
+  requestAnimationFrame(() => text.focus());
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const bodyText = text.value.trim();
+    if (!bodyText) return;
+    send.disabled = true;
+    try {
+      await addDoc(collection(db, "accounts", item.uid, "notices"), {
+        kind: "reply",
+        title: `お問い合わせ（受付番号 ${receipt(item.id)}）への返事`,
+        body: bodyText,
+        contactId: item.id,
+        createdAt: serverTimestamp()
+      });
+      delete drafts[item.id];
+      replyOpen.delete(item.id);
+      await updateDoc(doc(db, "contacts", item.id), {
+        repliedAt: serverTimestamp(),
+        status: "done",
+        handledAt: serverTimestamp(),
+        expireAt: Timestamp.fromMillis(Date.now() + RETENTION_MS)
+      });
+    } catch (err) {
+      msg.textContent = err.code === "permission-denied"
+        ? "送れませんでした。相手のアカウントが削除されている可能性があります。"
+        : `送れませんでした（${err.code || err.message}）`;
+      send.disabled = false;
+    }
+  });
+  return form;
 }
 
 async function setDone(item, isDone, button) {

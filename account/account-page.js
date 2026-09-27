@@ -1,18 +1,21 @@
 // SK Hub Systems アカウントのページ（/account/）
-// ログイン → アカウントの作成（規約への同意）→ アカウントの確認・データのダウンロード・削除
+// ログイン → アカウントの作成（規約への同意）→ アカウントの確認・プロフィール・お知らせ・設定の同期・データのダウンロード・削除
 // サービスのページから ?next=/y-filter/ のように来たときは、使えるようになったら戻す。
 import {
-  agreeLatestTerms, confirmWithGoogle, db, deleteLogin, register, safeNext, signIn,
-  signOutAccount, watchAccount
+  PROFILE_COLORS, PROFILE_NAME_MAX, SERVICES, SYNC_AT_KEY, agreeLatestTerms, connectService, disconnectService, isConnected, confirmWithGoogle, db, deleteLogin, markNoticesSeen,
+  profileOf, register, rememberAccount, safeNext, saveLanguage, saveProfile, signIn, signOutAccount, syncSettings, watchAccount
 } from "/assets/hub/account.js";
 import {
-  arrayRemove, collection, deleteDoc, deleteField, doc, getCountFromServer, getDoc, getDocs, query, updateDoc, where, writeBatch
+  arrayRemove, collection, deleteDoc, deleteField, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, updateDoc, where,
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const root = document.querySelector("[data-acct]");
 const $ = (sel) => root.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
-const next = safeNext(new URLSearchParams(location.search).get("next"));
+let next = safeNext(new URLSearchParams(location.search).get("next"));
+// サービスを最初に使うとき（?connect=yfilter）: アカウントが使えるようになったら、接続するか確かめる
+let connectKey = SERVICES[new URLSearchParams(location.search).get("connect")] ? new URLSearchParams(location.search).get("connect") : "";
 // 多言語（assets/i18n.js）
 const I18N = window.SKI18N;
 const t = I18N.t;
@@ -33,8 +36,41 @@ const formatDate = (d) => (d ? I18N.date(d) : "-");
 
 function showView(name) {
   root.querySelectorAll("[data-acct-view]").forEach((el) => { el.hidden = el.dataset.acctView !== name; });
+  // ログイン後だけ、ページの見出しの帯（ログアウトつき）を出す
+  $("[data-acct-localnav]").hidden = name !== "ready";
   message("");
 }
+
+// ---------- 項目の切り替え（左の一覧 → 右の中身。URL の # で開く項目を決める） ----------
+// ヘッダーのメニューの「お知らせ」「データのダウンロード・削除」は /account/#notices・#privacy に来る
+const SECTIONS = ["profile", "security", "notices", "services", "settings", "privacy", "developer"];
+let section = "";
+
+function sectionFromHash() {
+  const name = location.hash.replace(/^#/, "");
+  if (!SECTIONS.includes(name)) return "profile";
+  // 開発者の項目は、開発者のときだけ
+  if (name === "developer" && $('[data-acct-nav="developer"]').hidden) return "profile";
+  return name;
+}
+
+function showSection(name) {
+  section = name;
+  root.querySelectorAll("[data-acct-section]").forEach((el) => { el.hidden = el.dataset.acctSection !== name; });
+  root.querySelectorAll("[data-acct-nav]").forEach((a) => {
+    if (a.dataset.acctNav === name) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  });
+  message("");
+  if (name === "notices") noticesOpened();
+}
+
+window.addEventListener("hashchange", () => {
+  if (current.status !== "ready") return;
+  showSection(sectionFromHash());
+  // スマートフォンでは、項目の一覧が上にあるので中身の先頭へ
+  if (window.matchMedia("(max-width: 860px)").matches) $(".acct-main").scrollIntoView({ block: "start" });
+});
 
 // 表示中の画面のメッセージ欄に出す
 function message(text) {
@@ -95,32 +131,414 @@ function render(state) {
   }
 
   // ready
+  if (connectKey && !isConnected(account, connectKey)) {
+    showView("connect");
+    fillConnect(connectKey);
+    $("[data-acct-connect-user]").replaceChildren(userChip(user));
+    return;
+  }
   if (next) {
     $("[data-acct-next]").hidden = false;
     location.replace(next);
   }
   showView("ready");
-  const photo = $("[data-acct-photo]");
-  const letter = $("[data-acct-letter]");
-  photo.hidden = !user.photoURL;
-  letter.hidden = !!user.photoURL;
-  if (user.photoURL) photo.src = user.photoURL;
-  letter.textContent = (user.displayName || user.email || "?").trim().charAt(0).toUpperCase();
-  $("[data-acct-name]").textContent = user.displayName || t("（名前なし）");
+  renderProfile(user, account);
   $("[data-acct-email]").textContent = user.email || "";
+  $("[data-acct-email-tile]").textContent = user.email || "-";
   $("[data-acct-uid]").textContent = user.uid;
   $("[data-acct-created]").textContent = formatDate(toDate(account.createdAt) || toDate(user.metadata?.creationTime));
-  $("[data-acct-terms]").textContent = t("SK Hub Systems アカウント規約（{version} 版）に {date} に同意しています。", { version: account.termsVersion, date: formatDate(toDate(account.termsAgreedAt)) });
-  renderConsole(user);
-  // 開発者なら受信箱への入口を出す（config/developers は登録された本人だけが読める）
+  $("[data-acct-terms]").textContent = t("{version} 版に {date} に同意", { version: account.termsVersion, date: formatDate(toDate(account.termsAgreedAt)) });
+  showSection(sectionFromHash());
+  renderServices(user, account);
+  renderNotices(user, account);
+  renderSettings();
+  // 開発者なら受信箱・記事エディターの項目を出す（config/developers は登録された本人だけが読める）
   getDoc(doc(db, "config", "developers"))
-    .then(() => { $("[data-acct-dev]").hidden = false; })
-    .catch(() => { $("[data-acct-dev]").hidden = true; });
-  // ヘッダーのメニューの「データのダウンロード・削除」（/account/#privacy）から来たとき
-  if (location.hash === "#privacy") document.getElementById("privacy")?.scrollIntoView({ block: "start" });
+    .then(() => {
+      root.querySelectorAll("[data-acct-dev]").forEach((el) => { el.hidden = false; });
+      if (location.hash === "#developer") showSection("developer");
+    })
+    .catch(() => { root.querySelectorAll("[data-acct-dev]").forEach((el) => { el.hidden = true; }); });
 }
 
+// ---------- プロフィール ----------
+
+function paintAvatar(photoEl, letterEl, p) {
+  photoEl.hidden = !p.photo;
+  letterEl.hidden = !!p.photo;
+  if (p.photo) photoEl.src = p.photo;
+  letterEl.textContent = p.letter;
+  letterEl.style.background = p.colorValue;
+}
+
+function renderProfile(user, account) {
+  const p = profileOf(user, account);
+  paintAvatar($("[data-acct-photo]"), $("[data-acct-letter]"), p);
+  $("[data-acct-name]").textContent = p.name || t("（名前なし）");
+  $("[data-acct-profile-summary]").textContent = `${p.name || t("（名前なし）")} · ${p.photo ? t("Google アカウントの写真") : t("名前の頭文字")}`;
+}
+
+const profileDialog = document.querySelector("[data-acct-profile-dialog]");
+const profileForm = profileDialog.querySelector("[data-acct-profile-form]");
+const colorsEl = profileDialog.querySelector("[data-acct-colors]");
+const COLOR_NAMES = { blue: t("青"), green: t("緑"), amber: t("オレンジ"), violet: t("紫"), pink: t("ピンク"), teal: t("青緑") };
+let profileColor = "blue";
+
+Object.entries(PROFILE_COLORS).forEach(([key, value]) => {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "acct-color";
+  b.dataset.color = key;
+  b.style.background = value;
+  b.setAttribute("role", "radio");
+  b.setAttribute("aria-label", COLOR_NAMES[key]);
+  b.title = COLOR_NAMES[key];
+  b.addEventListener("click", () => {
+    profileColor = key;
+    profileForm.elements.avatar.value = "letter";
+    previewProfile();
+  });
+  colorsEl.appendChild(b);
+});
+
+// 編集中の内容を上のプレビューに出す
+function draftProfile() {
+  return { name: profileForm.elements.name.value, avatar: profileForm.elements.avatar.value, color: profileColor };
+}
+function previewProfile() {
+  const { user } = current;
+  const p = profileOf(user, { profile: draftProfile() });
+  paintAvatar(profileDialog.querySelector("[data-acct-preview-photo]"), profileDialog.querySelector("[data-acct-preview-letter]"), p);
+  profileDialog.querySelector("[data-acct-preview-name]").textContent = p.name || t("（名前なし）");
+  colorsEl.querySelectorAll(".acct-color").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.color === profileColor)));
+  colorsEl.classList.toggle("is-off", profileForm.elements.avatar.value !== "letter");
+}
+
+$("[data-acct-edit-profile]").addEventListener("click", () => {
+  const { user, account } = current;
+  if (busy || !user) return;
+  const saved = (account && account.profile) || {};
+  profileForm.elements.name.value = saved.name || "";
+  profileForm.elements.name.placeholder = user.displayName || "";
+  profileForm.elements.name.maxLength = PROFILE_NAME_MAX;
+  // Google の写真がないアカウントは、頭文字だけ
+  profileDialog.querySelector("[data-acct-avatar-google]").hidden = !user.photoURL;
+  profileForm.elements.avatar.value = saved.avatar === "letter" || !user.photoURL ? "letter" : "google";
+  profileColor = PROFILE_COLORS[saved.color] ? saved.color : "blue";
+  previewProfile();
+  profileDialog.returnValue = "";
+  profileDialog.showModal();
+});
+profileForm.addEventListener("input", previewProfile);
+
+profileDialog.addEventListener("close", async () => {
+  if (profileDialog.returnValue !== "save" || !current.user) return;
+  const { user, account } = current;
+  const profile = draftProfile();
+  const btn = $("[data-acct-edit-profile]");
+  setBusy(true, btn);
+  try {
+    await saveProfile(user, profile);
+    const next = { ...account, profile: { name: profile.name.trim(), avatar: profile.avatar, color: profile.color } };
+    current = { ...current, account: next };
+    renderProfile(user, next);
+    rememberAccount(user, next);
+    message(t("プロフィールを保存しました。"));
+  } catch (err) {
+    message(errText(err));
+  } finally {
+    setBusy(false, btn);
+  }
+});
+
+// ---------- お知らせ ----------
+// SK からの個別のお知らせ（accounts/{UID}/notices）と、サポートのお知らせ（記事の news）を新しい順に並べる。
+// 前に開いたとき（noticesSeenAt）より新しいものに印を付け、開いたら既読にする
+const NOTICE_MAX = 8;
+
+async function renderNotices(user, account) {
+  const list = $("[data-acct-notices]");
+  const seen = toDate(account.noticesSeenAt);
+  // サポートのお知らせ（日付だけ）は、前に開いた日（まだなら、アカウントを作った日）より後の日付のものを未読にする
+  const since = seen || toDate(account.createdAt) || new Date();
+  const newsSince = new Date(since.getFullYear(), since.getMonth(), since.getDate() + 1);
+
+  const [personal, news] = await Promise.all([
+    getDocs(query(collection(db, "accounts", user.uid, "notices"), orderBy("createdAt", "desc"), limit(30)))
+      .then((snap) => snap.docs.map((d) => {
+        const n = d.data();
+        const at = toDate(n.createdAt) || new Date();
+        return { source: "sk", id: d.id, at, unread: !seen || at > seen, ...n };
+      }))
+      .catch(() => []),
+    (window.SKArticles ? window.SKArticles.load() : Promise.resolve({ articles: [] }))
+      .then(({ articles }) => articles.filter((a) => a.type === "news" && a.date).map((a) => {
+        const at = new Date(`${a.date}T00:00:00`);
+        return { source: "news", id: a.id, at, unread: at >= newsSince, ...a };
+      }))
+      .catch(() => [])
+  ]);
+
+  const items = [...personal, ...news].sort((a, b) => b.at - a.at).slice(0, NOTICE_MAX);
+  if (!items.length) {
+    list.replaceChildren(el("li", "acct-notice-empty", t("お知らせはまだありません。")));
+  } else {
+    list.replaceChildren(...items.map((n) => noticeItem(user, n)));
+  }
+  const unread = items.filter((n) => n.unread).length;
+  const badge = $("[data-acct-unread]");
+  badge.hidden = !unread;
+  badge.textContent = t("未読 {n} 件", { n: unread });
+  const navCount = $("[data-acct-nav-unread]");
+  navCount.hidden = !unread;
+  navCount.textContent = String(unread);
+  // お知らせの項目を開いたら既読にする（印は、このページを開いているあいだは残す）
+  noticesToMark = unread || !seen ? user : null;
+  if (section === "notices") noticesOpened();
+}
+
+let noticesToMark = null;
+function noticesOpened() {
+  if (!noticesToMark) return;
+  const user = noticesToMark;
+  noticesToMark = null;
+  markNoticesSeen(user).catch(() => {});
+  $("[data-acct-nav-unread]").hidden = true;
+}
+
+function el(tag, className, text) {
+  const e = document.createElement(tag);
+  if (className) e.className = className;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function noticeItem(user, n) {
+  const li = el("li", `acct-notice${n.unread ? " is-unread" : ""}`);
+  const head = el("div", "acct-notice-head");
+  head.append(
+    el("span", `acct-notice-kind${n.source === "sk" ? " is-sk" : ""}`, n.source === "sk" ? t("SK から") : t("お知らせ")),
+    el("time", null, formatDate(n.at))
+  );
+  if (n.unread) head.appendChild(el("span", "acct-notice-new", t("新着")));
+  li.appendChild(head);
+
+  if (n.source === "news") {
+    const a = el("a", "acct-notice-title", n.title);
+    a.href = `/support/?a=${encodeURIComponent(n.id)}`;
+    li.appendChild(a);
+    if (n.summary) li.appendChild(el("p", "acct-notice-body", n.summary));
+    return li;
+  }
+
+  // お問い合わせへの返事は、見出しをいまの言語で作る（受付番号 = お問い合わせの ID の先頭 8 文字）
+  const title = n.kind === "reply" && n.contactId
+    ? t("お問い合わせ（受付番号 {id}）への返事", { id: n.contactId.slice(0, 8).toUpperCase() })
+    : n.title;
+  li.appendChild(el("strong", "acct-notice-title", title));
+  li.appendChild(el("p", "acct-notice-body is-full", n.body || ""));
+  const del = el("button", "acct-notice-delete", t("削除"));
+  del.type = "button";
+  del.addEventListener("click", async () => {
+    if (!confirm(t("このお知らせを削除しますか？"))) return;
+    del.disabled = true;
+    try {
+      await deleteDoc(doc(db, "accounts", user.uid, "notices", n.id));
+      li.remove();
+      if (!$("[data-acct-notices]").children.length) $("[data-acct-notices]").appendChild(el("li", "acct-notice-empty", t("お知らせはまだありません。")));
+    } catch (err) {
+      del.disabled = false;
+      message(errText(err));
+    }
+  });
+  li.appendChild(del);
+  return li;
+}
+
+// ---------- 設定の同期 ----------
+
+function renderSettings() {
+  const select = $("[data-acct-lang]");
+  if (!select.options.length) {
+    I18N.LANGS.forEach((l) => select.appendChild(new Option(l.name, l.code)));
+  }
+  select.value = I18N.stored() || "ja";
+  let at = 0;
+  try { at = Number(localStorage.getItem(SYNC_AT_KEY) || 0); } catch (e) { at = 0; }
+  $("[data-acct-sync-at]").textContent = at ? new Date(at).toLocaleString(I18N.locale) : "-";
+}
+
+$("[data-acct-lang]").addEventListener("change", async (e) => {
+  const select = e.currentTarget;
+  const code = select.value;
+  if (busy || !current.user) return;
+  setBusy(true, select);
+  try {
+    await saveLanguage(current.user, code);
+    I18N.setLang(code);
+  } catch (err) {
+    message(errText(err));
+    select.value = I18N.stored() || "ja";
+    setBusy(false, select);
+  }
+});
+
+$("[data-acct-sync]").addEventListener("click", async (e) => {
+  const btn = e.currentTarget;
+  if (busy || !current.user) return;
+  setBusy(true, btn);
+  try {
+    const snap = await getDoc(doc(db, "accounts", current.user.uid));
+    const result = await syncSettings(current.user, snap.data());
+    if (result.pulled.includes("lang") && (I18N.stored() || "ja") !== I18N.lang) { location.reload(); return; }
+    renderSettings();
+    message(result.pulled.length ? t("アカウントに保存された設定を、この端末に読み込みました。")
+      : result.pushed.length ? t("この端末の設定をアカウントに保存しました。")
+        : t("設定はそろっています。"));
+  } catch (err) {
+    message(errText(err));
+  } finally {
+    setBusy(false, btn);
+  }
+});
+
 // 管理コンソールを使っているか（自分の管理グループの端末の数・参加しているグループ）
+// ---------- サービス（接続しているものだけ出す） ----------
+
+// サービスごとの文言（接続の確認・接続の解除）
+const SERVICE_NAMES = { yfilter: t("Y-FILTER. 管理コンソール"), malu: "MALU" };
+const SERVICE_TEXT = {
+  yfilter: {
+    lead: t("このアカウントを管理コンソールに接続すると、端末の設定をまとめて管理できるようになります。"),
+    usesTitle: t("管理コンソールが使う情報"),
+    uses: [t("表示名とメールアドレス（共同管理者どうしで表示されます）"), t("管理グループ・接続した端末・リクエスト（このアカウントに結び付けて保存します）")],
+    note: t("閲覧履歴や検索語は使いません。接続は、アカウントのページの「サービス」からいつでも解除できます。"),
+    termsName: t("SK Hub Systems 利用規約"),
+    disconnect: t("解除すると、次に管理コンソールを開いたときに、もう一度接続するか確認します。管理グループと接続している端末は、そのまま残ります。"),
+    wipe: t("管理コンソールのデータ（管理グループ・接続している端末・リクエスト）も削除する"),
+    wipeNote: t("元に戻せません。接続していた端末の Y-FILTER. は、最後に配信された設定のままフィルタリングを続けます")
+  },
+  malu: {
+    lead: t("このアカウントを MALU に接続すると、単語帳が使えるようになり、検索履歴をほかの端末と同期できるようになります。"),
+    usesTitle: t("MALU が使う情報"),
+    uses: [t("単語帳に保存した言葉"), t("検索履歴（MALU の設定で同期を有効にしたときだけ）")],
+    note: t("保存した言葉と検索履歴は、あなただけが見られます。接続は、アカウントのページの「サービス」からいつでも解除できます。"),
+    termsName: t("SK 利用規約"),
+    disconnect: t("解除すると、単語帳と検索履歴の同期が使えなくなります。保存した言葉と同期した検索履歴は、そのまま残ります。"),
+    wipe: t("単語帳と、同期した検索履歴も削除する"),
+    wipeNote: t("元に戻せません。端末に保存されている検索履歴は消えません")
+  }
+};
+
+function fillConnect(key) {
+  const s = SERVICES[key];
+  const text = SERVICE_TEXT[key];
+  const icon = $("[data-acct-connect-icon]");
+  icon.src = s.icon;
+  icon.classList.toggle("yf-tile", key === "yfilter");
+  $("[data-acct-connect-title]").textContent = t("{name} で SK Hub Systems アカウントを使いますか？", { name: SERVICE_NAMES[key] });
+  $("[data-acct-connect-lead]").textContent = text.lead;
+  $("[data-acct-connect-uses-title]").textContent = text.usesTitle;
+  $("[data-acct-connect-uses]").replaceChildren(...text.uses.map((u) => el("li", null, u)));
+  $("[data-acct-connect-note]").textContent = text.note;
+  const link = `<a href="${s.terms}" target="_blank" rel="noopener">${text.termsName}</a>`;
+  $("[data-acct-connect-terms]").innerHTML = t("「続ける」を選ぶと、{terms}に同意したことになります。", { terms: link });
+}
+
+function renderServices(user, account) {
+  let count = 0;
+  Object.keys(SERVICES).forEach((key) => {
+    const on = isConnected(account, key);
+    if (on) count += 1;
+    root.querySelectorAll(`[data-acct-service="${key}"]`).forEach((e) => { e.hidden = !on; });
+    root.querySelectorAll(`[data-acct-available="${key}"]`).forEach((e) => { e.hidden = on; });
+    const since = toDate(account.services?.[key]?.connectedAt);
+    const at = $(`[data-acct-connected-at="${key}"]`);
+    if (at) at.textContent = since ? t("{date} に接続", { date: formatDate(since) }) : "";
+  });
+  $("[data-acct-no-services]").hidden = count > 0;
+  if (isConnected(account, "yfilter")) renderConsole(user);
+  if (isConnected(account, "malu")) renderMalu(user, account);
+}
+
+// MALU: 単語帳の言葉の数と、検索履歴の同期
+async function renderMalu(user, account) {
+  const sync = account.services?.malu?.historySync ? t("検索履歴の同期: オン") : t("検索履歴の同期: オフ");
+  const elMalu = $("[data-acct-malu]");
+  try {
+    const words = await getCountFromServer(collection(db, "accounts", user.uid, "maluWords"));
+    elMalu.textContent = `${t("単語帳 {n} 語", { n: words.data().count })} · ${sync}`;
+  } catch (e) {
+    elMalu.textContent = sync;
+  }
+}
+
+// 接続の確認: 続ける → 接続してサービスに戻る / キャンセル → アカウントのページ（サービス）
+$("[data-acct-connect]").addEventListener("click", async (e) => {
+  const btn = e.currentTarget;
+  const { user } = current;
+  if (busy || !user || !connectKey) return;
+  setBusy(true, btn);
+  try {
+    await connectService(user, connectKey);
+    location.replace(next || SERVICES[connectKey].url);
+  } catch (err) {
+    message(errText(err));
+    setBusy(false, btn);
+  }
+});
+
+$("[data-acct-connect-cancel]").addEventListener("click", () => {
+  connectKey = "";
+  next = "";
+  history.replaceState(null, "", `${I18N.path("/account/")}#services`);
+  render(current);
+});
+
+// 接続の解除（管理コンソールのデータも消すかを選べる）
+const disconnectDialog = document.querySelector("[data-acct-disconnect-dialog]");
+const disconnectWipe = disconnectDialog.querySelector("[data-acct-disconnect-wipe]");
+let disconnectKey = "";
+root.querySelectorAll("[data-acct-disconnect]").forEach((btn) => btn.addEventListener("click", () => {
+  if (busy || !current.user) return;
+  disconnectKey = btn.dataset.acctDisconnect;
+  const text = SERVICE_TEXT[disconnectKey];
+  disconnectDialog.querySelector("[data-acct-disconnect-title]").textContent = t("{name} との接続を解除しますか？", { name: SERVICE_NAMES[disconnectKey] });
+  disconnectDialog.querySelector("[data-acct-disconnect-text]").textContent = text.disconnect;
+  disconnectDialog.querySelector("[data-acct-disconnect-wipe-label]").textContent = text.wipe;
+  disconnectDialog.querySelector("[data-acct-disconnect-wipe-note]").textContent = text.wipeNote;
+  disconnectWipe.checked = false;
+  disconnectDialog.returnValue = "";
+  disconnectDialog.showModal();
+}));
+
+disconnectDialog.addEventListener("close", async () => {
+  if (disconnectDialog.returnValue !== "disconnect" || !current.user || !disconnectKey) return;
+  const { user, account } = current;
+  const btn = root.querySelector(`[data-acct-disconnect="${disconnectKey}"]`);
+  setBusy(true, btn);
+  try {
+    const wipe = disconnectWipe.checked;
+    if (wipe && disconnectKey === "yfilter") await deleteConsoleData(user.uid);
+    // MALU は、接続を外すと単語帳に書けなくなるので、先に消す（消すのは接続していなくてもできる）
+    if (wipe && disconnectKey === "malu") await deleteMaluData(user.uid);
+    await disconnectService(user, disconnectKey);
+    const services = { ...(account.services || {}) };
+    delete services[disconnectKey];
+    const updated = { ...account, services };
+    current = { ...current, account: updated };
+    rememberAccount(user, updated);
+    renderServices(user, updated);
+    message(!wipe ? t("接続を解除しました。")
+      : disconnectKey === "malu" ? t("接続を解除し、単語帳と同期した検索履歴を削除しました。")
+        : t("接続を解除し、管理コンソールのデータを削除しました。"));
+  } catch (err) {
+    message(errText(err));
+  } finally {
+    setBusy(false, btn);
+  }
+});
+
 async function renderConsole(user) {
   const el = $("[data-acct-console]");
   try {
@@ -181,9 +599,12 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
   if (busy || !user) return;
   setBusy(true, btn);
   try {
-    const [teams, devices] = await Promise.all([
+    const [teams, devices, notices, maluWords, maluHistory] = await Promise.all([
       getDocs(query(collection(db, "teams"), where("members", "array-contains", user.uid))),
-      getDocs(query(collection(db, "devices"), where("ownerUid", "==", user.uid)))
+      getDocs(query(collection(db, "devices"), where("ownerUid", "==", user.uid))),
+      getDocs(collection(db, "accounts", user.uid, "notices")),
+      getDocs(collection(db, "accounts", user.uid, "maluWords")),
+      getDoc(doc(db, "accounts", user.uid, "malu", "history"))
     ]);
     const plain = (v) => JSON.parse(JSON.stringify(v, (k, x) => (x && typeof x.toDate === "function" ? x.toDate().toISOString() : x)));
     const data = {
@@ -198,7 +619,13 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
         createdAt: user.metadata?.creationTime,
         lastSignInAt: user.metadata?.lastSignInTime
       },
+      // profile（表示名・アイコン）・settings（同期している設定）・noticesSeenAt を含む
       account: plain(account),
+      notices: notices.docs.map((d) => ({ id: d.id, ...plain(d.data()) })),
+      malu: {
+        words: maluWords.docs.map((d) => plain(d.data())),
+        syncedHistory: maluHistory.exists() ? plain(maluHistory.data()) : null
+      },
       yFilterConsole: {
         teams: teams.docs.map((d) => ({ id: d.id, role: d.id === user.uid ? "owner" : "co-admin", ...plain(d.data()) })),
         devices: devices.docs.map((d) => ({ id: d.id, ...plain(d.data()) }))
@@ -236,7 +663,8 @@ dialog.addEventListener("close", async () => {
   const btn = $("[data-acct-delete]");
   const user = current.user;
   setBusy(true, btn);
-  btn.textContent = t("削除しています…");
+  const label = btn.querySelector("[data-acct-delete-label]");
+  label.textContent = t("削除しています…");
   try {
     // 途中で止まらないように、データを消す前に Google で本人を確認する
     await confirmWithGoogle(user);
@@ -248,25 +676,42 @@ dialog.addEventListener("close", async () => {
   } catch (err) {
     message(t("削除できませんでした。{reason}", { reason: errText(err) }));
   } finally {
-    btn.textContent = t("アカウントを削除する");
+    label.textContent = t("アカウントを削除");
     setBusy(false, btn);
   }
 });
 
-// 管理コンソールのデータ: 自分の管理グループ（端末・リクエスト・コード）を消し、ほかのグループからは抜ける
+// アカウントのお知らせと、管理コンソールのデータを消す（アカウントの削除）
 async function deleteServiceData(uid) {
+  const notices = await getDocs(collection(db, "accounts", uid, "notices"));
+  await deleteRefs(notices.docs.map((d) => d.ref));
+  await deleteMaluData(uid);
+  await deleteConsoleData(uid);
+}
+
+// MALU のデータ: 単語帳と、同期した検索履歴
+async function deleteMaluData(uid) {
+  const words = await getDocs(collection(db, "accounts", uid, "maluWords"));
+  await deleteRefs([...words.docs.map((d) => d.ref), doc(db, "accounts", uid, "malu", "history")]);
+}
+
+async function deleteRefs(refs) {
+  for (let i = 0; i < refs.length; i += 400) {
+    const batch = writeBatch(db);
+    refs.slice(i, i + 400).forEach((ref) => batch.delete(ref));
+    await batch.commit();
+  }
+}
+
+// 管理コンソールのデータ: 自分の管理グループ（端末・リクエスト・コード）を消し、ほかのグループからは抜ける
+async function deleteConsoleData(uid) {
   const owned = await Promise.all([
     getDocs(query(collection(db, "devices"), where("ownerUid", "==", uid))),
     getDocs(query(collection(db, "requests"), where("ownerUid", "==", uid))),
     getDocs(query(collection(db, "pairingCodes"), where("ownerUid", "==", uid))),
     getDocs(query(collection(db, "teamInvites"), where("teamId", "==", uid)))
   ]);
-  const refs = owned.flatMap((snap) => snap.docs.map((d) => d.ref));
-  for (let i = 0; i < refs.length; i += 400) {
-    const batch = writeBatch(db);
-    refs.slice(i, i + 400).forEach((ref) => batch.delete(ref));
-    await batch.commit();
-  }
+  await deleteRefs(owned.flatMap((snap) => snap.docs.map((d) => d.ref)));
 
   const teams = await getDocs(query(collection(db, "teams"), where("members", "array-contains", uid)));
   for (const team of teams.docs) {

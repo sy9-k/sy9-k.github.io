@@ -7,7 +7,7 @@ Article 1 Basic Policy
 3. Details of how information is handled in Y-FILTER., SK Hub Systems, and the SK Hub Systems account are set out in the "Y-FILTER. Terms of Service and Privacy Policy," the "SK Hub Systems Terms of Service," and the "SK Hub Systems Account Terms." Where they differ from this Policy, their provisions prevail for that service.
 
 Article 2 Overview by Service
-(a) The Site (including SK's Lab tools), MALU, and the Y-FILTER. management console: handle the access check information in Article 3. MALU's search terms, search history, and settings are stored only in the browser and never sent.
+(a) The Site (including SK's Lab tools), MALU, and the Y-FILTER. management console: handle the access check information in Article 3. MALU's search terms, search history, and settings are stored only in the browser and never sent. However, when signed in with an SK Hub Systems account, as set out in the SK Hub Systems Account Terms, MALU settings are synced, words saved to the wordbook are stored in the user's own account when connected to MALU, and search history is stored there when search history sync is turned on.
 (b) Y-FILTER.: filtering happens inside the browser, and browsing history and search terms are never sent to the Developer.
 (c) SK Hub Systems: stores settings, device status, and the like only when Y-FILTER.'s remote management is used.
 (d) Contact: stores what is entered in the contact form in SK Hub Systems.
@@ -68,3 +68,4 @@ Supplementary Provisions
 1. This Policy takes effect on September 25, 2026.
 2. On September 26, 2026, Articles 1, 2, 6, and 11 were revised for the launch of the SK Hub Systems account.
 3. On September 26, 2026, inquiries moved from Google Forms to the SK Hub Systems contact form, and Articles 2, 4, 6, and 9 were revised.
+4. On September 27, 2026, Article 2 was revised for SK Hub Systems account settings sync and MALU integration.

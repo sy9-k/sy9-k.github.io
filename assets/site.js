@@ -13,31 +13,55 @@
   // ---------- ヘッダーのアカウント ----------
   // SK Hub Systems アカウントでログイン中なら、アイコンを出す（名前とアイコンは assets/hub/account.js がこのブラウザに保存する。
   // ここでは Firebase を読み込まない）
+  //   hint = { name, photo（Google の写真。頭文字にしている人は空）, letter, color, unread（お知らせの未読の数） }
   let accountHint = null;
   let accountPhoto = "";
+  let accountUnread = 0;
   function readAccountHint() {
     try { accountHint = JSON.parse(localStorage.getItem("skhub_account") || "null"); } catch (e) { accountHint = null; }
     accountPhoto = accountHint && /^https:\/\//.test(accountHint.photo || "") ? accountHint.photo : "";
+    accountUnread = accountHint ? Math.max(0, Number(accountHint.unread) || 0) : 0;
   }
   readAccountHint();
 
+  // 写真がなければ頭文字（プロフィールで選んだ色）
   function accountAvatar(className) {
+    const letter = () => {
+      const span = document.createElement("span");
+      span.className = `${className} hd-avatar-letter`;
+      span.textContent = accountHint.letter || "?";
+      if (/^#[0-9a-f]{6}$/i.test(accountHint.color || "")) span.style.background = accountHint.color;
+      span.setAttribute("aria-hidden", "true");
+      return span;
+    };
+    if (!accountPhoto) return accountHint && accountHint.letter ? letter() : null;
     const img = document.createElement("img");
     img.className = className;
     img.src = accountPhoto;
     img.alt = "";
     img.referrerPolicy = "no-referrer";
-    img.addEventListener("error", () => img.remove());
+    img.addEventListener("error", () => img.replaceWith(letter()));
     return img;
   }
 
   const accountLink = document.querySelector("[data-account-link]");
   function renderAccountLink() {
     if (!accountLink) return;
-    accountLink.querySelector(".hd-account-photo")?.remove();
-    if (accountPhoto) accountLink.prepend(accountAvatar("hd-account-photo"));
-    if (accountHint) accountLink.setAttribute("aria-label", t("アカウント（{name}）", { name: accountHint.name || t("ログイン中") }));
-    else accountLink.removeAttribute("aria-label");
+    accountLink.querySelectorAll(".hd-account-photo, .hd-account-badge").forEach((el) => el.remove());
+    const avatar = accountHint && accountAvatar("hd-account-photo");
+    if (avatar) accountLink.prepend(avatar);
+    if (accountUnread) {
+      const badge = document.createElement("span");
+      badge.className = "hd-account-badge";
+      badge.setAttribute("aria-hidden", "true");
+      accountLink.appendChild(badge);
+    }
+    if (accountHint) {
+      const label = t("アカウント（{name}）", { name: accountHint.name || t("ログイン中") });
+      accountLink.setAttribute("aria-label", accountUnread ? `${label} ${t("未読のお知らせ {n} 件", { n: accountUnread })}` : label);
+    } else {
+      accountLink.removeAttribute("aria-label");
+    }
   }
   renderAccountLink();
 
@@ -48,7 +72,9 @@
       profile: accountHint,
       items: [
         [t("アカウント"), lp("/account/")],
-        [t("Y-FILTER. 管理コンソール"), "/y-filter/"],
+        [accountUnread ? t("お知らせ（{n}）", { n: accountUnread }) : t("お知らせ"), lp("/account/#notices")],
+        // 接続しているサービスだけ（接続は、サービスを最初に使うときに確かめる）
+        ...((accountHint.services || []).includes("yfilter") ? [[t("Y-FILTER. 管理コンソール"), "/y-filter/"]] : []),
         [t("データのダウンロード・削除"), lp("/account/#privacy")],
         [t("ログアウト"), lp("/account/?signout=1")]
       ]
@@ -192,7 +218,8 @@
       if (data.profile) {
         const profile = document.createElement("div");
         profile.className = "hd-menu-profile";
-        if (accountPhoto) profile.appendChild(accountAvatar("hd-menu-profile-photo"));
+        const avatar = accountAvatar("hd-menu-profile-photo");
+        if (avatar) profile.appendChild(avatar);
         const text = document.createElement("div");
         const name = document.createElement("strong");
         name.textContent = data.profile.name || t("ログイン中");
@@ -393,6 +420,39 @@
       return a;
     }));
   }
+
+  // ---------- このブラウザの Y-FILTER.（製品ページ・トップ） ----------
+  // 拡張機能（y-filter リポジトリの site-bridge.js）が <html data-yfilter-version="7.0.2"> を付ける。
+  //   data-yf-when="installed" / "missing" … 入っている・いないで出し分け（site.css。JS なしで効く）
+  //   data-yf-version … 入っている版 / data-yf-latest … 最新の版（/y-filter/shared/version.json）
+  //   data-yf-update  … 入っている版が古いときだけ出す / data-yf-uptodate … 最新のときだけ出す
+  const olderThan = (a, b) => {
+    const pa = String(a).split(".").map(Number);
+    const pb = String(b).split(".").map(Number);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) < (pb[i] || 0);
+    }
+    return false;
+  };
+  let yfChecked = false;
+  function applyYFilter() {
+    const installed = document.documentElement.dataset.yfilterVersion || "";
+    if (!installed || yfChecked || !document.querySelector("[data-yf-version], [data-yf-update], [data-yf-uptodate]")) return;
+    yfChecked = true;
+    document.querySelectorAll("[data-yf-version]").forEach((el) => { el.textContent = installed; });
+    fetch("/y-filter/shared/version.json", { cache: "no-cache" })
+      .then((res) => res.json())
+      .then(({ version: latest }) => {
+        if (!latest) return;
+        const old = olderThan(installed, latest);
+        document.querySelectorAll("[data-yf-latest]").forEach((el) => { el.textContent = latest; });
+        document.querySelectorAll("[data-yf-update]").forEach((el) => { el.hidden = !old; });
+        document.querySelectorAll("[data-yf-uptodate]").forEach((el) => { el.hidden = old; });
+      })
+      .catch(() => { /* 最新の版がわからなければ、入っている版だけ出す */ });
+  }
+  applyYFilter();
+  document.addEventListener("yfilter:present", applyYFilter);
 
   // ---------- サポートID ----------
   const idEls = document.querySelectorAll("[data-support-id]");

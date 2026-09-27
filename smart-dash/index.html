@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-i18n-langs="ja en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スマートダッシュボード 2.0</title>
+<!-- 多言語（サイト共通の言語設定。スマートダッシュボードは日本語と英語） -->
+<script src="/assets/i18n.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -433,29 +435,34 @@
   </div>
 </div>
 
+<script>window.SKI18N && SKI18N.translatePage();</script>
 <script>
 (function(){
   "use strict";
 
-  const DAY_LABELS = ["日","月","火","水","木","金","土"];
+  // 多言語: t("日本語の文") でいまの言語の文にする（訳は _build/i18n/en.json）
+  const JA = !window.SKI18N || SKI18N.lang === "ja";
+  const t = window.SKI18N ? SKI18N.t : (text, vars) => (vars ? text.replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m)) : text);
+
+  const DAY_LABELS = JA ? ["日","月","火","水","木","金","土"] : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   
   const WIDGET_TYPES = [
-    { id: "hero", name: "ヒーロー背景 & 時計", icon: "schedule" },
-    { id: "clock", name: "独立時計ウィジェット", icon: "access_time" },
-    { id: "calendar", name: "カレンダー & 予定", icon: "calendar_month" },
-    { id: "spotify", name: "Spotify / 音楽プレイヤー", icon: "graphic_eq" },
-    { id: "weather", name: "天気予報", icon: "cloud" },
-    { id: "news", name: "ニュース RSS", icon: "newspaper" },
-    { id: "trash", name: "ゴミ出し通知", icon: "delete_sweep" },
-    { id: "memo", name: "メモ帳", icon: "sticky_note_2" },
-    { id: "todo", name: "ToDo・タスク", icon: "check_box" },
-    { id: "habit", name: "習慣トラッカー", icon: "task_alt" },
-    { id: "pomodoro", name: "ポモドーロタイマー", icon: "ecg_heart" },
-    { id: "countdown", name: "カウントダウン", icon: "hourglass_bottom" },
-    { id: "quote", name: "今日の一言・名言", icon: "format_quote" },
-    { id: "market", name: "為替・マーケット", icon: "show_chart" },
-    { id: "timer", name: "キッチンタイマー", icon: "timer" },
-    { id: "none", name: "（非表示）", icon: "check_box_outline_blank" }
+    { id: "hero", name: t("ヒーロー背景 & 時計"), icon: "schedule" },
+    { id: "clock", name: t("独立時計ウィジェット"), icon: "access_time" },
+    { id: "calendar", name: t("カレンダー & 予定"), icon: "calendar_month" },
+    { id: "spotify", name: t("Spotify / 音楽プレイヤー"), icon: "graphic_eq" },
+    { id: "weather", name: t("天気予報"), icon: "cloud" },
+    { id: "news", name: t("ニュース RSS"), icon: "newspaper" },
+    { id: "trash", name: t("ゴミ出し通知"), icon: "delete_sweep" },
+    { id: "memo", name: t("メモ帳"), icon: "sticky_note_2" },
+    { id: "todo", name: t("ToDo・タスク"), icon: "check_box" },
+    { id: "habit", name: t("習慣トラッカー"), icon: "task_alt" },
+    { id: "pomodoro", name: t("ポモドーロタイマー"), icon: "ecg_heart" },
+    { id: "countdown", name: t("カウントダウン"), icon: "hourglass_bottom" },
+    { id: "quote", name: t("今日の一言・名言"), icon: "format_quote" },
+    { id: "market", name: t("為替・マーケット"), icon: "show_chart" },
+    { id: "timer", name: t("キッチンタイマー"), icon: "timer" },
+    { id: "none", name: t("（非表示）"), icon: "check_box_outline_blank" }
   ];
 
   const BGM_STREAMS = [
@@ -483,23 +490,23 @@
     owmApiKey: "",
     city: "Kyoto,JP",
     newsUrl: "https://news.yahoo.co.jp/rss/topics/top-picks.xml",
-    memos: ["冷蔵庫のミルクを確認", "ゴミ袋を買う"],
+    memos: [t("冷蔵庫のミルクを確認"), t("ゴミ袋を買う")],
     todos: [
-      { text: "部屋の掃除をする", done: false },
-      { text: "牛乳を買う", done: true }
+      { text: t("部屋の掃除をする"), done: false },
+      { text: t("牛乳を買う"), done: true }
     ],
     habits: [
-      { name: "水分補給 2L", icon: "local_drink", done: false },
-      { name: "読書 20分", icon: "menu_book", done: true },
-      { name: "ストレッチ", icon: "fitness_center", done: false }
+      { name: t("水分補給 2L"), icon: "local_drink", done: false },
+      { name: t("読書 20分"), icon: "menu_book", done: true },
+      { name: t("ストレッチ"), icon: "fitness_center", done: false }
     ],
-    countdownTitle: "夏休みまで",
+    countdownTitle: t("夏休みまで"),
     countdownDate: "2026-08-10",
     trashTypes: [
-      { name:"燃えるゴミ", icon:"local_fire_department", color:"#ef4444", days:[1,4] },
-      { name:"資源ごみ",   icon:"recycling", color:"#10b981", days:[3] },
-      { name:"プラゴミ",   icon:"eco", color:"#f59e0b", days:[2] },
-      { name:"不燃ゴミ",   icon:"delete", color:"#6366f1", days:[5] }
+      { name:t("燃えるゴミ"), icon:"local_fire_department", color:"#ef4444", days:[1,4] },
+      { name:t("資源ごみ"),   icon:"recycling", color:"#10b981", days:[3] },
+      { name:t("プラゴミ"),   icon:"eco", color:"#f59e0b", days:[2] },
+      { name:t("不燃ゴミ"),   icon:"delete", color:"#6366f1", days:[5] }
     ]
   };
 
@@ -662,7 +669,7 @@
     if(CONFIG.calMode === "google" && CONFIG.calendarUrl){
       container.innerHTML = `
         <div class="widget widget-calendar">
-          <h3><span class="material-symbols-outlined icon-sm">calendar_month</span> Googleカレンダー</h3>
+          <h3><span class="material-symbols-outlined icon-sm">calendar_month</span> ${t('Googleカレンダー')}</h3>
           <iframe src="${CONFIG.calendarUrl}" style="width:100%; height:100%; border:none; border-radius:10px;"></iframe>
         </div>`;
       return;
@@ -678,8 +685,8 @@
         <div class="cal-grid" id="calGrid"></div>
         <div class="cal-events-list" id="calEventsList"></div>
         <div style="display:flex; gap:4px; margin-top:4px;">
-          <input type="text" id="calNewEvInput" class="focusable" placeholder="新予定を追加..." style="font-size:11.5px; padding:3px 6px; border-radius:4px; border:1px solid #ddd; flex:1;">
-          <button id="calAddEvBtn" class="focusable" style="font-size:11.5px; background:var(--accent); color:#fff; border:none; border-radius:4px; padding:3px 8px; cursor:pointer;">追加</button>
+          <input type="text" id="calNewEvInput" class="focusable" placeholder="${t('新予定を追加...')}" style="font-size:11.5px; padding:3px 6px; border-radius:4px; border:1px solid #ddd; flex:1;">
+          <button id="calAddEvBtn" class="focusable" style="font-size:11.5px; background:var(--accent); color:#fff; border:none; border-radius:4px; padding:3px 8px; cursor:pointer;">${t('追加')}</button>
         </div>
       </div>`;
 
@@ -717,7 +724,7 @@
 
     const year = calCurrentDate.getFullYear();
     const month = calCurrentDate.getMonth();
-    label.textContent = `${year}年 ${month + 1}月`;
+    label.textContent = JA ? `${year}年 ${month + 1}月` : new Date(year, month, 1).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 
     grid.innerHTML = DAY_LABELS.map(d => `<div class="cal-day-label">${d}</div>`).join('');
 
@@ -755,12 +762,12 @@
 
     const evList = container.querySelector("#calEventsList");
     if(evList){
-      evList.innerHTML = `<div style="font-weight:700; color:var(--muted); margin-bottom:2px;">${calSelectedDateStr} の予定:</div>`;
+      evList.innerHTML = `<div style="font-weight:700; color:var(--muted); margin-bottom:2px;">${t('{date} の予定:', { date: calSelectedDateStr })}</div>`;
       const localEvs = (CONFIG.events && CONFIG.events[calSelectedDateStr]) || [];
       const icalEvs = fetchedIcalEvents[calSelectedDateStr] || [];
       
       if(localEvs.length === 0 && icalEvs.length === 0){
-        evList.innerHTML += `<div style="color:#9ca3af; font-size:11px;">予定はありません</div>`;
+        evList.innerHTML += `<div style="color:#9ca3af; font-size:11px;">${t('予定はありません')}</div>`;
       } else {
         icalEvs.forEach(ev => {
           const item = document.createElement("div");
@@ -819,7 +826,7 @@
       contentArea.innerHTML = `
         <div class="bgm-player-panel">
           <div class="bgm-title" id="bgmStreamTitle">Lofi Chill</div>
-          <div class="bgm-subtitle" id="bgmStatus">停止中</div>
+          <div class="bgm-subtitle" id="bgmStatus">${t('停止中')}</div>
           <div class="bgm-controls">
             <button class="bgm-btn focusable" id="bgmPlayBtn">
               <span class="material-symbols-outlined" id="bgmPlayIcon">play_arrow</span>
@@ -838,7 +845,7 @@
 
       if (bgmAudio && !bgmAudio.paused) {
         playIcon.textContent = "pause";
-        statusEl.textContent = "再生中";
+        statusEl.textContent = t("再生中");
       }
 
       playBtn.onclick = () => {
@@ -851,14 +858,14 @@
           bgmAudio.src = BGM_STREAMS[selectEl.value].url;
           bgmAudio.play().then(() => {
             playIcon.textContent = "pause";
-            statusEl.textContent = "再生中";
+            statusEl.textContent = t("再生中");
           }).catch(() => {
-            statusEl.textContent = "再生エラー";
+            statusEl.textContent = t("再生エラー");
           });
         } else {
           bgmAudio.pause();
           playIcon.textContent = "play_arrow";
-          statusEl.textContent = "一時停止";
+          statusEl.textContent = t("一時停止");
         }
       };
 
@@ -868,7 +875,7 @@
         if (bgmAudio) {
           bgmAudio.pause();
           bgmAudio.src = stream.url;
-          if (statusEl.textContent === "再生中") {
+          if (statusEl.textContent === t("再生中")) {
             bgmAudio.play();
           }
         }
@@ -888,12 +895,12 @@
   function renderWeatherWidget(container){
     container.innerHTML = `
       <div class="widget widget-weather">
-        <h3><span class="material-symbols-outlined icon-sm">cloud</span> 天気予報</h3>
+        <h3><span class="material-symbols-outlined icon-sm">cloud</span> ${t('天気予報')}</h3>
         <div class="wcur">
           <span class="wicon-big material-symbols-outlined" id="wIconBig">wb_sunny</span>
           <div>
             <div class="wtemp" id="wTempBig">22°C</div>
-            <div style="font-size:12px; opacity:.9;" id="wDesc">晴れ</div>
+            <div style="font-size:12px; opacity:.9;" id="wDesc">${t('晴れ')}</div>
           </div>
         </div>
         <div class="wforecast" id="wForecast"></div>
@@ -920,7 +927,7 @@
     if(apiKey){
       try {
         // 現在の天気
-        const resCur = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=ja`);
+        const resCur = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=${JA ? 'ja' : 'en'}`);
         if(resCur.ok){
           const dataCur = await resCur.json();
           const temp = `${Math.round(dataCur.main.temp)}°C`;
@@ -931,7 +938,7 @@
         }
 
         // 今後5日間の予報 (3時間ごと)
-        const resForecast = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=ja`);
+        const resForecast = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=${JA ? 'ja' : 'en'}`);
         if(resForecast.ok){
           const dataForecast = await resForecast.json();
           if(dataForecast.list && dataForecast.list.length > 0){
@@ -957,7 +964,7 @@
               const dow = DAY_LABELS[new Date(dStr).getDay()];
 
               return {
-                lbl: `${dow}曜`,
+                lbl: t('{dow}曜', { dow }),
                 ic: ic,
                 tmp: `${maxTemp}°/${minTemp}°`
               };
@@ -975,11 +982,11 @@
     }
 
     // APIキーがない場合、または失敗時のデモフォールバック
-    updateWeatherUI('wb_sunny', '22°C', '晴れ（デモ）');
+    updateWeatherUI('wb_sunny', '22°C', t('晴れ（デモ）'));
     renderForecast([
-      { lbl: '明日', ic: 'wb_sunny', tmp: '23°/15°' },
-      { lbl: '明後日', ic: 'partly_cloudy_day', tmp: '20°/14°' },
-      { lbl: '3日後', ic: 'rainy', tmp: '18°/12°' }
+      { lbl: t('明日'), ic: 'wb_sunny', tmp: '23°/15°' },
+      { lbl: t('明後日'), ic: 'partly_cloudy_day', tmp: '20°/14°' },
+      { lbl: t('3日後'), ic: 'rainy', tmp: '18°/12°' }
     ]);
   }
 
@@ -1011,8 +1018,8 @@
   function renderNewsWidget(container){
     container.innerHTML = `
       <div class="widget widget-news">
-        <h3><span class="material-symbols-outlined icon-sm">newspaper</span> ニュース</h3>
-        <ul id="newsList"><li>読み込み中...</li></ul>
+        <h3><span class="material-symbols-outlined icon-sm">newspaper</span> ${t('ニュース')}</h3>
+        <ul id="newsList"><li>${t('読み込み中...')}</li></ul>
       </div>`;
     loadNewsData();
   }
@@ -1021,7 +1028,7 @@
     const list = document.getElementById("newsList");
     if(!list) return;
     const rss = CONFIG.newsUrl && CONFIG.newsUrl.trim();
-    if(!rss){ list.innerHTML = "<li>ニュースRSSが未設定です</li>"; return; }
+    if(!rss){ list.innerHTML = `<li>${t('ニュースRSSが未設定です')}</li>`; return; }
     try{
       const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}`);
       const data = await res.json();
@@ -1032,13 +1039,13 @@
         li.innerHTML = `<a href="${item.link}" target="_blank" rel="noopener" class="focusable">${item.title}</a>`;
         list.appendChild(li);
       });
-    }catch(e){ list.innerHTML = "<li>ニュース取得失敗</li>"; }
+    }catch(e){ list.innerHTML = `<li>${t('ニュース取得失敗')}</li>`; }
   }
 
   function renderTrashWidget(container){
     container.innerHTML = `
       <div class="widget widget-trash">
-        <h3><span class="material-symbols-outlined icon-sm">delete_sweep</span> ゴミ出し</h3>
+        <h3><span class="material-symbols-outlined icon-sm">delete_sweep</span> ${t('ゴミ出し')}</h3>
         <div id="trashToday"></div>
         <div class="trash-divider"></div>
         <div id="trashNext"></div>
@@ -1056,10 +1063,10 @@
 
     const todayTypes = types.filter(t => (t.days||[]).includes(today));
     if(todayTypes.length){
-      todayEl.innerHTML = `<div style="opacity:.85;font-size:11px;margin-bottom:2px;">今日収集</div>` +
+      todayEl.innerHTML = `<div style="opacity:.85;font-size:11px;margin-bottom:2px;">${t('今日収集')}</div>` +
         todayTypes.map(t=>`<div class="trash-row"><span class="ic material-symbols-outlined">${t.icon}</span><span class="name">${t.name}</span></div>`).join("");
     }else{
-      todayEl.innerHTML = `<div style="opacity:.85;font-size:11px;margin-bottom:2px;">今日収集</div><div class="trash-empty">本日の収集はありません</div>`;
+      todayEl.innerHTML = `<div style="opacity:.85;font-size:11px;margin-bottom:2px;">${t('今日収集')}</div><div class="trash-empty">${t('本日の収集はありません')}</div>`;
     }
 
     let bestOffset = 8, nextTypes = [];
@@ -1073,22 +1080,22 @@
     });
     if(nextTypes.length){
       const dow = DAY_LABELS[(today + bestOffset) % 7];
-      const when = bestOffset === 1 ? "明日" : `${dow}曜日`;
-      nextEl.innerHTML = `<div style="opacity:.85;font-size:11px;margin-bottom:2px;">次回（${when}）</div>` +
+      const when = bestOffset === 1 ? t('明日') : t('{dow}曜日', { dow });
+      nextEl.innerHTML = `<div style="opacity:.85;font-size:11px;margin-bottom:2px;">${t('次回（{when}）', { when })}</div>` +
         nextTypes.map(t=>`<div class="trash-row"><span class="ic material-symbols-outlined">${t.icon}</span><span class="name">${t.name}</span></div>`).join("");
     }else{
-      nextEl.innerHTML = `<div class="trash-empty">予定なし</div>`;
+      nextEl.innerHTML = `<div class="trash-empty">${t('予定なし')}</div>`;
     }
   }
 
   function renderMemoWidget(container){
     container.innerHTML = `
       <div class="widget widget-memo">
-        <h3><span class="material-symbols-outlined icon-sm">sticky_note_2</span> メモ</h3>
+        <h3><span class="material-symbols-outlined icon-sm">sticky_note_2</span> ${t('メモ')}</h3>
         <ul id="memoList"></ul>
         <div class="memo-add">
-          <input type="text" id="memoInput" class="focusable" placeholder="メモ追加...">
-          <button id="memoAddBtn" class="focusable">追加</button>
+          <input type="text" id="memoInput" class="focusable" placeholder="${t('メモ追加...')}">
+          <button id="memoAddBtn" class="focusable">${t('追加')}</button>
         </div>
       </div>`;
     updateMemoList();
@@ -1129,11 +1136,11 @@
   function renderTodoWidget(container){
     container.innerHTML = `
       <div class="widget widget-todo">
-        <h3><span class="material-symbols-outlined icon-sm">check_box</span> ToDo リスト</h3>
+        <h3><span class="material-symbols-outlined icon-sm">check_box</span> ${t('ToDo リスト')}</h3>
         <ul id="todoList"></ul>
         <div class="memo-add" style="margin-top:auto;">
-          <input type="text" id="todoInput" class="focusable" placeholder="タスクを追加...">
-          <button id="todoAddBtn" class="focusable">追加</button>
+          <input type="text" id="todoInput" class="focusable" placeholder="${t('タスクを追加...')}">
+          <button id="todoAddBtn" class="focusable">${t('追加')}</button>
         </div>
       </div>`;
     updateTodoList();
@@ -1186,7 +1193,7 @@
   function renderHabitWidget(container){
     container.innerHTML = `
       <div class="widget widget-habit">
-        <h3><span class="material-symbols-outlined icon-sm">task_alt</span> 習慣トラッカー</h3>
+        <h3><span class="material-symbols-outlined icon-sm">task_alt</span> ${t('習慣トラッカー')}</h3>
         <div class="habit-list" id="habitList"></div>
       </div>`;
     updateHabitList();
@@ -1204,7 +1211,7 @@
           <span class="material-symbols-outlined icon-sm" style="color:var(--accent);">${h.icon || 'star'}</span>
           <span>${h.name}</span>
         </div>
-        <button class="habit-btn focusable ${h.done ? 'done' : ''}">${h.done ? '達成！' : '未完了'}</button>`;
+        <button class="habit-btn focusable ${h.done ? 'done' : ''}">${h.done ? t('達成！') : t('未完了')}</button>`;
       item.querySelector("button").onclick = () => {
         CONFIG.habits[idx].done = !CONFIG.habits[idx].done;
         saveConfig(CONFIG);
@@ -1219,14 +1226,14 @@
   function renderPomodoroWidget(container){
     container.innerHTML = `
       <div class="widget widget-pomodoro">
-        <h3><span class="material-symbols-outlined icon-sm">ecg_heart</span> ポモドーロ</h3>
+        <h3><span class="material-symbols-outlined icon-sm">ecg_heart</span> ${t('ポモドーロ')}</h3>
         <div>
-          <span class="pomo-mode" id="pomoMode">${isPomoWorkMode ? '🔥 集中タイム (25分)' : '☕ 休憩タイム (5分)'}</span>
+          <span class="pomo-mode" id="pomoMode">${isPomoWorkMode ? t('🔥 集中タイム (25分)') : t('☕ 休憩タイム (5分)')}</span>
           <div class="pomo-timer" id="pomoTimerDisplay">25:00</div>
         </div>
         <div class="pomo-controls">
-          <button class="pomo-btn focusable" id="pomoStartBtn">${isPomoRunning ? '一時停止' : 'スタート'}</button>
-          <button class="pomo-btn focusable" id="pomoResetBtn" style="background:rgba(255,255,255,0.2); color:#fff;">リセット</button>
+          <button class="pomo-btn focusable" id="pomoStartBtn">${isPomoRunning ? t('一時停止') : t('スタート')}</button>
+          <button class="pomo-btn focusable" id="pomoResetBtn" style="background:rgba(255,255,255,0.2); color:#fff;">${t('リセット')}</button>
         </div>
       </div>`;
 
@@ -1244,7 +1251,7 @@
     startBtn.onclick = () => {
       if(!isPomoRunning){
         isPomoRunning = true;
-        startBtn.textContent = '一時停止';
+        startBtn.textContent = t('一時停止');
         pomoTimerInterval = setInterval(() => {
           if(pomoSeconds > 0){
             pomoSeconds--;
@@ -1254,15 +1261,15 @@
             isPomoRunning = false;
             isPomoWorkMode = !isPomoWorkMode;
             pomoSeconds = isPomoWorkMode ? 1500 : 300;
-            modeDisplay.textContent = isPomoWorkMode ? '🔥 集中タイム (25分)' : '☕ 休憩タイム (5分)';
-            startBtn.textContent = 'スタート';
+            modeDisplay.textContent = isPomoWorkMode ? t('🔥 集中タイム (25分)') : t('☕ 休憩タイム (5分)');
+            startBtn.textContent = t('スタート');
             updateDisplay();
           }
         }, 1000);
       } else {
         clearInterval(pomoTimerInterval);
         isPomoRunning = false;
-        startBtn.textContent = 'スタート';
+        startBtn.textContent = t('スタート');
       }
     };
 
@@ -1271,8 +1278,8 @@
       isPomoRunning = false;
       isPomoWorkMode = true;
       pomoSeconds = 1500;
-      modeDisplay.textContent = '🔥 集中タイム (25分)';
-      startBtn.textContent = 'スタート';
+      modeDisplay.textContent = t('🔥 集中タイム (25分)');
+      startBtn.textContent = t('スタート');
       updateDisplay();
     };
     updateDisplay();
@@ -1280,7 +1287,7 @@
 
   // 4. COUNTDOWN WIDGET
   function renderCountdownWidget(container){
-    const title = CONFIG.countdownTitle || "目標日";
+    const title = CONFIG.countdownTitle || t("目標日");
     const targetDateStr = CONFIG.countdownDate || new Date().toISOString().split('T')[0];
 
     const today = new Date();
@@ -1293,21 +1300,21 @@
 
     container.innerHTML = `
       <div class="widget widget-countdown">
-        <h3><span class="material-symbols-outlined icon-sm">hourglass_bottom</span> カウントダウン</h3>
+        <h3><span class="material-symbols-outlined icon-sm">hourglass_bottom</span> ${t('カウントダウン')}</h3>
         <div>
-          <div class="countdown-target">${title} まで</div>
-          <div class="countdown-days">${diffDays >= 0 ? `あと ${diffDays} 日` : `${Math.abs(diffDays)} 日経過`}</div>
+          <div class="countdown-target">${t('{title} まで', { title })}</div>
+          <div class="countdown-days">${diffDays >= 0 ? t('あと {n} 日', { n: diffDays }) : t('{n} 日経過', { n: Math.abs(diffDays) })}</div>
         </div>
       </div>`;
   }
 
   // 5. QUOTE OF THE DAY WIDGET
   const QUOTES = [
-    { text: "継続は力なり。一歩一歩の積み重ねが未来を創る。", author: "ことわざ" },
-    { text: "今日という日は、残りの人生の最初の一日である。", author: "チャールズ・ディードリッヒ" },
-    { text: "失敗したのではない。うまくいかない方法を1万通り発見しただけだ。", author: "トーマス・エジソン" },
-    { text: "シンプルであることは、究極の洗練である。", author: "レオナルド・ダ・ヴィンチ" },
-    { text: "思い立った日が吉日。", author: "日本の格言" }
+    { text: t("継続は力なり。一歩一歩の積み重ねが未来を創る。"), author: t("ことわざ") },
+    { text: t("今日という日は、残りの人生の最初の一日である。"), author: t("チャールズ・ディードリッヒ") },
+    { text: t("失敗したのではない。うまくいかない方法を1万通り発見しただけだ。"), author: t("トーマス・エジソン") },
+    { text: t("シンプルであることは、究極の洗練である。"), author: t("レオナルド・ダ・ヴィンチ") },
+    { text: t("思い立った日が吉日。"), author: t("日本の格言") }
   ];
 
   function renderQuoteWidget(container){
@@ -1316,7 +1323,7 @@
 
     container.innerHTML = `
       <div class="widget widget-quote">
-        <h3 style="margin-bottom:8px;"><span class="material-symbols-outlined icon-sm">format_quote</span> 今日の一言</h3>
+        <h3 style="margin-bottom:8px;"><span class="material-symbols-outlined icon-sm">format_quote</span> ${t('今日の一言')}</h3>
         <div class="quote-text">“${quote.text}”</div>
         <div class="quote-author">— ${quote.author}</div>
       </div>`;
@@ -1326,7 +1333,7 @@
   function renderMarketWidget(container){
     container.innerHTML = `
       <div class="widget widget-market">
-        <h3><span class="material-symbols-outlined icon-sm">show_chart</span> 為替・マーケット</h3>
+        <h3><span class="material-symbols-outlined icon-sm">show_chart</span> ${t('為替・マーケット')}</h3>
         <div class="market-grid">
           <div class="market-item">
             <span class="market-symbol">USD / JPY</span>
@@ -1357,21 +1364,21 @@
 
     container.innerHTML = `
       <div class="widget widget-timer">
-        <h3><span class="material-symbols-outlined icon-sm">timer</span> タイマー</h3>
+        <h3><span class="material-symbols-outlined icon-sm">timer</span> ${t('タイマー')}</h3>
         <div class="timer-time-wrap">
           <input type="number" id="timerMin" class="timer-input focusable" min="0" max="99" value="${String(Math.floor(timerSeconds / 60)).padStart(2,"0")}">
           <span class="timer-colon">:</span>
           <input type="number" id="timerSec" class="timer-input focusable" min="0" max="59" value="${String(timerSeconds % 60).padStart(2,"0")}">
         </div>
         <div class="timer-quick-btns">
-          <button class="timer-quick-btn focusable" data-add="600">+10分</button>
-          <button class="timer-quick-btn focusable" data-add="60">+1分</button>
-          <button class="timer-quick-btn focusable" data-add="10">+10秒</button>
-          <button class="timer-quick-btn focusable" id="btnTimerClear">クリア</button>
+          <button class="timer-quick-btn focusable" data-add="600">${t('+10分')}</button>
+          <button class="timer-quick-btn focusable" data-add="60">${t('+1分')}</button>
+          <button class="timer-quick-btn focusable" data-add="10">${t('+10秒')}</button>
+          <button class="timer-quick-btn focusable" id="btnTimerClear">${t('クリア')}</button>
         </div>
         <div class="timer-controls">
-          <button id="btnTimerStart" class="focusable">${isTimerRunning ? '一時停止' : 'スタート'}</button>
-          <button id="btnTimerReset" class="focusable btn-reset">リセット</button>
+          <button id="btnTimerStart" class="focusable">${isTimerRunning ? t('一時停止') : t('スタート')}</button>
+          <button id="btnTimerReset" class="focusable btn-reset">${t('リセット')}</button>
         </div>
       </div>`;
 
@@ -1414,7 +1421,7 @@
         isTimerRunning = false;
         timerSeconds = 0;
         updateDisplayFromSeconds(0);
-        startBtn.textContent = 'スタート';
+        startBtn.textContent = t('スタート');
       };
     }
 
@@ -1456,7 +1463,7 @@
         timerSeconds = getSecondsFromInputs();
         if (timerSeconds <= 0) return;
         isTimerRunning = true;
-        startBtn.textContent = '一時停止';
+        startBtn.textContent = t('一時停止');
         
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
@@ -1467,7 +1474,7 @@
             clearInterval(timerInterval);
             timerInterval = null;
             isTimerRunning = false;
-            startBtn.textContent = 'スタート';
+            startBtn.textContent = t('スタート');
             playAlarmSound();
           }
         }, 1000);
@@ -1475,7 +1482,7 @@
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = null;
         isTimerRunning = false;
-        startBtn.textContent = 'スタート';
+        startBtn.textContent = t('スタート');
       }
     };
 
@@ -1486,7 +1493,7 @@
       isTimerRunning = false;
       timerSeconds = 300;
       updateDisplayFromSeconds(300);
-      startBtn.textContent = 'スタート';
+      startBtn.textContent = t('スタート');
     };
   }
 
@@ -1528,7 +1535,7 @@
     const heroClock = document.getElementById("heroClock");
     const heroDate = document.getElementById("heroDate");
     if(heroClock) heroClock.textContent = `${hh}:${mm}`;
-    if(heroDate) heroDate.textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${DAY_LABELS[now.getDay()]}）`;
+    if(heroDate) heroDate.textContent = JA ? `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${DAY_LABELS[now.getDay()]}）` : now.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
 
     const digiTime = document.getElementById("clockDigitalTime");
     const digiDate = document.getElementById("clockDigitalDate");

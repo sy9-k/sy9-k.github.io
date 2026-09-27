@@ -55,6 +55,8 @@
           ["アカウント", "/account/"],
           ["データのダウンロード・削除", "/account/#privacy"],
           ["SK のホームページ", "/"],
+          // アカウントとの接続だけを外す（console.js。確かめてから）
+          { label: "管理コンソールとの接続を解除", action: () => document.dispatchEvent(new CustomEvent("skconsole:disconnect")) },
           { label: "ログアウト", action: () => document.dispatchEvent(new CustomEvent("skconsole:signout")) }
         ]
       } : {

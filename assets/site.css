@@ -103,6 +103,11 @@ main { display: block; }
 .badge-live { background: var(--green-soft); color: var(--link); }
 .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .badge-live .dot { animation: pulse 2s ease-in-out infinite; }
+/* Y-FILTER. が入っているかで出し分ける（拡張機能が <html data-yfilter-version> を読み込みの最初に付けるので、ちらつかない） */
+html:not([data-yfilter-version]) [data-yf-when="installed"],
+html[data-yfilter-version] [data-yf-when="missing"],
+[data-yf-update][hidden], [data-yf-uptodate][hidden] { display: none !important; }
+.float-yf-live { color: var(--link) !important; font-weight: 700; }
 @keyframes pulse { 50% { opacity: .35; } }
 
 /* 色付きのアイコンタイル */
@@ -707,88 +712,248 @@ img.yf-tile.yf-tile {
 @media (max-width: 600px) { .help-article { padding: 24px 20px 28px; border-radius: 22px; } .help-steps li { padding-left: 50px; } }
 
 /* ---------- SK Hub Systems アカウント ---------- */
+/* ログイン前・アカウントの作成は中央にまとめ、ログイン後は「左に項目の一覧・右にタイル」（Apple Account のページの形） */
+.acct {
+  --acct-ink: #1d1d1f;
+  --acct-muted: #6e6e73;
+  --acct-tile: #f5f5f7;
+  --acct-tile-hover: #ebebef;
+  --acct-line: #d2d2d7;
+  --acct-blue: #0071e3;
+  --acct-link: #0066cc;
+  --acct-red: #d70015;
+  background: #fff;
+  color: var(--acct-ink);
+  min-height: calc(100vh - 52px);
+  padding-bottom: 96px;
+}
 .acct.is-busy { cursor: progress; }
+/* ほかのページ（受信箱・記事エディター・お問い合わせ）でも使う部品 */
 .acct-loading { color: var(--muted); text-align: center; padding: 48px 28px; }
+.acct .acct-loading { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 120px 0; color: var(--acct-muted); font-size: 15px; }
+.acct-spinner { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid var(--acct-line); border-top-color: var(--acct-muted); animation: acct-spin .8s linear infinite; }
+@keyframes acct-spin { to { transform: rotate(360deg); } }
 .acct-msg { color: #b42318; font-size: 14px; font-weight: 600; margin-top: 12px; }
 .acct-msg:empty { display: none; }
-.acct-signin { display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; align-items: center; padding: 36px; background: linear-gradient(135deg, #eaf1ff, #fff 60%); }
-.acct-signin h2 { font-size: 26px; font-weight: 800; }
-.acct-signin-main p { color: var(--muted); margin-top: 10px; }
+.acct-h { font-size: 17px; font-weight: 800; }
 .acct-google { display: inline-flex; align-items: center; gap: 12px; margin-top: 22px; min-height: 52px; padding: 0 24px 0 18px; border: 0; border-radius: 999px; background: #fff; color: var(--ink); font: inherit; font-size: 15.5px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow), inset 0 0 0 1px var(--line); transition: transform .15s ease, box-shadow .15s ease; }
 .acct-google:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(13, 16, 20, .05), 0 14px 30px rgba(13, 16, 20, .12), inset 0 0 0 1px var(--line); }
 .acct-google:disabled { opacity: .6; cursor: progress; transform: none; }
 .acct-google svg { width: 22px; height: 22px; }
-.acct-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.acct-points li { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; background: #fff; border: 1px solid var(--line); border-radius: 18px; }
-.acct-points .tile-ico { width: 38px; height: 38px; border-radius: 12px; }
-.acct-points .tile-ico svg { width: 20px; height: 20px; }
-.acct-points strong { display: block; font-size: 14.5px; }
-.acct-points small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
-@media (max-width: 800px) { .acct-signin { grid-template-columns: 1fr; gap: 24px; padding: 24px; } }
 
-.acct-consent { max-width: 760px; margin: 0 auto; padding: 32px 36px; }
-.acct-consent h2 { font-size: 24px; font-weight: 800; margin-top: 20px; }
-.acct-consent-lead { color: var(--muted); margin-top: 8px; }
-.acct-user-chip { display: inline-flex; align-items: center; gap: 12px; padding: 8px 18px 8px 8px; border-radius: 999px; background: var(--surface-2); }
+/* ページの見出しの帯（ログイン後。ヘッダーの下に貼り付く） */
+.acct-localnav { position: sticky; top: 51px; z-index: 50; background: rgba(255, 255, 255, .8); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0, 0, 0, .12); }
+.acct-localnav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; }
+.acct-localnav-title { font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
+.acct-localnav-link { border: 0; background: none; padding: 6px 0; font: inherit; font-size: 13.5px; color: var(--acct-link); cursor: pointer; }
+.acct-localnav-link:hover { text-decoration: underline; }
+.acct-localnav[hidden] { display: none; }
+
+/* 丸いボタン */
+.acct-pill { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--acct-tile); color: var(--acct-ink); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s ease, opacity .15s ease; }
+.acct-pill:hover { background: var(--acct-tile-hover); }
+.acct-pill--primary { background: var(--acct-blue); color: #fff; }
+.acct-pill--primary:hover { background: #0077ed; }
+.acct-pill--danger { background: var(--acct-red); color: #fff; }
+.acct-pill--danger:hover { background: #e30019; }
+.acct-pill:disabled { opacity: .4; cursor: default; }
+
+/* ---------- ログイン前・アカウントの作成・エラー（中央） ---------- */
+.acct-center { max-width: 560px; margin: 0 auto; padding: 88px 0 24px; text-align: center; }
+.acct-center--wide { max-width: 720px; }
+.acct-center-logo { width: 72px; height: 72px; border-radius: 18px; margin: 0 auto 22px; display: block; }
+.acct-center-title { font-size: clamp(32px, 5vw, 48px); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+.acct-center-lead { margin: 14px auto 0; max-width: 520px; font-size: 17px; line-height: 1.6; color: var(--acct-muted); }
+.acct-center .acct-google { margin-top: 32px; }
+.acct-center-note { margin: 18px auto 0; max-width: 440px; font-size: 13px; color: var(--acct-muted); }
+.acct-center-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 26px; }
+.acct-points { list-style: none; margin: 64px 0 0; padding: 36px 0 0; border-top: 1px solid var(--acct-line); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; text-align: left; }
+.acct-points li { display: flex; flex-direction: column; gap: 6px; }
+.acct-points .tile-ico { width: 38px; height: 38px; border-radius: 12px; margin-bottom: 6px; }
+.acct-points .tile-ico svg { width: 20px; height: 20px; }
+.acct-points strong { font-size: 15px; }
+.acct-points small { color: var(--acct-muted); font-size: 13px; line-height: 1.6; }
+.acct-center--wide .acct-user { display: flex; justify-content: center; margin-bottom: 22px; }
+.acct-user-chip { display: inline-flex; align-items: center; gap: 12px; padding: 8px 18px 8px 8px; border-radius: 999px; background: var(--acct-tile); text-align: left; }
 .acct-user-chip img { width: 40px; height: 40px; border-radius: 50%; }
 .acct-user-chip strong { display: block; font-size: 14.5px; line-height: 1.3; }
-.acct-user-chip small { display: block; color: var(--muted); font-size: 12.5px; }
-.acct-data { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
-.acct-data > div { padding: 18px 20px; border-radius: 18px; background: var(--surface-2); }
-.acct-data h3 { font-size: 14.5px; font-weight: 800; }
+.acct-user-chip small { display: block; color: var(--acct-muted); font-size: 12.5px; }
+.acct-data { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; text-align: left; }
+.acct-data > div { padding: 20px 22px; border-radius: 18px; background: var(--acct-tile); }
+.acct-data h3 { font-size: 15px; font-weight: 700; }
 .acct-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; line-height: 1.6; }
 .acct-list li { position: relative; padding-left: 26px; }
 .acct-list li::before { content: ""; position: absolute; left: 0; top: 2px; width: 18px; height: 18px; border-radius: 6px; background: center / 12px no-repeat; }
 .acct-list--yes li::before { background-color: #e6efff; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a56db' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E"); }
 .acct-list--no li::before { background-color: #fee2e2; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b91c1c' stroke-width='3.5' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E"); }
-.acct-agree { display: flex; align-items: flex-start; gap: 12px; margin: 22px 0 18px; padding: 16px 18px; border-radius: 16px; border: 1px solid var(--line); cursor: pointer; font-size: 14.5px; line-height: 1.7; }
-.acct-agree input { width: 20px; height: 20px; margin: 3px 0 0; flex: none; accent-color: var(--accent); }
-.acct-agree:has(input:checked) { border-color: #bcd3ff; background: #f5f8ff; }
-@media (max-width: 600px) { .acct-consent { padding: 22px; } .acct-data { grid-template-columns: 1fr; } }
+.acct-agree { display: flex; align-items: flex-start; gap: 12px; margin: 22px 0 0; padding: 16px 18px; border-radius: 16px; border: 1px solid var(--acct-line); cursor: pointer; font-size: 14.5px; line-height: 1.7; text-align: left; }
+.acct-agree input { width: 20px; height: 20px; margin: 3px 0 0; flex: none; accent-color: var(--acct-blue); }
+.acct-agree:has(input:checked) { border-color: #99c7ff; background: #f2f8ff; }
+.acct-agree a { color: var(--acct-link); }
+.acct-agree small { display: block; margin-top: 2px; color: #6e6e73; font-size: 12.5px; line-height: 1.6; }
 
-.acct-next { margin-bottom: 16px; padding: 14px 18px; border-radius: 16px; background: var(--green-soft); color: var(--link); font-weight: 700; }
-.acct-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 18px; align-items: start; }
-.acct-side { display: flex; flex-direction: column; gap: 18px; }
-.acct-profile { text-align: center; padding: 32px 26px; position: sticky; top: 76px; background: linear-gradient(180deg, #eaf1ff, #fff 45%); }
-.acct-avatar { width: 88px; height: 88px; border-radius: 50%; margin: 0 auto; display: block; box-shadow: 0 0 0 4px #fff, 0 12px 28px rgba(37, 99, 235, .2); }
-.acct-avatar--letter { display: grid; place-items: center; background: var(--accent); color: #fff; font-size: 36px; font-weight: 800; }
+/* ---------- ログイン後（左に項目の一覧、右にタイル） ---------- */
+.acct-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 56px; align-items: start; padding-top: 48px; }
+.acct-next { grid-column: 1 / -1; padding: 14px 18px; border-radius: 14px; background: #e8f2ff; color: var(--acct-link); font-weight: 600; }
+.acct-sidebar { position: sticky; top: 132px; min-width: 0; }
+.acct-me { text-align: center; padding-bottom: 24px; }
+.acct-avatar { width: 96px; height: 96px; border-radius: 50%; margin: 0 auto; display: block; object-fit: cover; }
+.acct-avatar--letter { display: grid; place-items: center; background: var(--accent); color: #fff; font-size: 40px; font-weight: 600; }
 .acct-avatar[hidden] { display: none; }
-.acct-profile h2 { font-size: 21px; font-weight: 800; margin-top: 16px; overflow-wrap: anywhere; }
-.acct-email { color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
-.acct-meta { margin: 20px 0; padding: 0; text-align: left; border-top: 1px solid var(--line); }
-.acct-meta > div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
-.acct-meta dt { color: var(--muted); flex: none; }
-.acct-meta dd { margin: 0; font-weight: 600; min-width: 0; text-align: right; }
-.acct-meta code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; overflow-wrap: anywhere; }
-.acct-h { font-size: 17px; font-weight: 800; }
-.acct-services { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.acct-services li { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--line); }
-.acct-services li > img { width: 44px; height: 44px; border-radius: 13px; padding: 5px; box-sizing: border-box; background: #fff; box-shadow: inset 0 0 0 1px var(--line); flex: none; }
-.acct-services li > div { flex: 1; min-width: 0; }
-.acct-services strong { display: block; font-size: 14.5px; }
-.acct-services small { display: block; color: var(--muted); font-size: 12.5px; }
-.acct-services .btn { min-height: 38px; padding: 0 16px; font-size: 13px; }
-.acct-services .is-soon { border-style: dashed; background: var(--surface-2); }
-.acct-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
-.acct-actions:last-child { border-bottom: 0; padding-bottom: 0; }
-.acct-actions strong { display: block; font-size: 14.5px; }
-.acct-actions small { display: block; color: var(--muted); font-size: 12.5px; }
-.acct-actions .btn { min-height: 38px; padding: 0 16px; font-size: 13px; flex: none; }
-.acct-danger { border-color: #f5c2c0; }
-.acct-danger p { color: var(--muted); font-size: 14px; margin-top: 8px; }
-.acct-danger p strong { color: #b42318; }
-.acct-danger .btn { margin-top: 16px; }
-.acct-danger-btn { background: #d92d20; color: #fff; }
-.acct-danger-btn:disabled { opacity: .45; }
-.acct-error h2 { font-size: 20px; font-weight: 800; }
-.acct-error p { color: var(--muted); margin: 8px 0 18px; }
-.acct-dialog { max-width: 460px; width: calc(100% - 32px); border: 0; border-radius: 24px; padding: 28px; box-shadow: 0 30px 80px rgba(13, 16, 20, .3); }
-.acct-dialog::backdrop { background: rgba(13, 16, 20, .4); backdrop-filter: blur(4px); }
-.acct-dialog h2 { font-size: 20px; font-weight: 800; }
-.acct-dialog p { color: var(--muted); font-size: 14.5px; margin-top: 8px; }
-.acct-dialog .acct-agree { margin: 18px 0; }
-@media (max-width: 860px) { .acct-grid { grid-template-columns: 1fr; } .acct-profile { position: static; } }
-@media (max-width: 520px) { .acct-actions { flex-direction: column; align-items: flex-start; } }
+.acct-me-name { margin-top: 14px; font-size: 22px; font-weight: 700; letter-spacing: -.01em; line-height: 1.3; overflow-wrap: anywhere; }
+.acct-me-email { margin-top: 2px; font-size: 14px; color: var(--acct-muted); overflow-wrap: anywhere; }
+.acct-nav { display: flex; flex-direction: column; gap: 2px; }
+.acct-nav a { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 14px; border-radius: 10px; color: var(--acct-muted); font-size: 15px; font-weight: 500; text-decoration: none; transition: background .15s ease, color .15s ease; }
+.acct-nav a:hover { color: var(--acct-ink); background: var(--acct-tile); }
+.acct-nav a[aria-current="page"] { color: var(--acct-ink); font-weight: 700; background: var(--acct-tile); }
+.acct-nav a[hidden] { display: none; }
+.acct-nav-count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--acct-red); color: #fff; font-size: 11.5px; font-weight: 700; display: inline-grid; place-items: center; }
+.acct-nav-count[hidden] { display: none; }
+
+.acct-main { min-width: 0; }
+.acct-section[hidden] { display: none; }
+.acct-section { animation: acct-in .25s ease; }
+@keyframes acct-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.acct-section-title { display: flex; align-items: center; gap: 12px; font-size: clamp(28px, 3.4vw, 40px); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+.acct-section-lead { margin-top: 10px; max-width: 640px; font-size: 17px; line-height: 1.6; color: var(--acct-muted); }
+
+/* タイル */
+.acct-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 32px; }
+.acct-tile { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 120px; padding: 22px 56px 22px 24px; border: 0; border-radius: 18px; background: var(--acct-tile); color: var(--acct-ink); font: inherit; text-align: left; text-decoration: none; cursor: pointer; transition: background .15s ease, transform .15s ease; }
+.acct-tile:hover { background: var(--acct-tile-hover); }
+.acct-tile:active { transform: scale(.99); }
+.acct-tile:focus-visible { outline: 2px solid var(--acct-blue); outline-offset: 2px; }
+.acct-tile:disabled { opacity: .6; cursor: progress; }
+.acct-tile.is-static { cursor: default; padding-right: 24px; }
+.acct-tile.is-static:hover { background: var(--acct-tile); }
+.acct-tile.is-static:active { transform: none; }
+.acct-tile-title { font-size: 17px; font-weight: 700; line-height: 1.35; }
+.acct-tile-value { font-size: 15px; color: var(--acct-muted); line-height: 1.55; overflow-wrap: anywhere; }
+.acct-tile-value code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+.acct-tile-note { font-size: 13px; color: var(--acct-muted); line-height: 1.55; }
+.acct-tile-mark { position: absolute; top: 22px; right: 22px; width: 20px; height: 20px; fill: none; stroke: var(--acct-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.acct-tile--app { padding-top: 20px; }
+.acct-tile--app > img, .acct-tile--app > .tile-ico { width: 44px; height: 44px; margin-bottom: 10px; }
+.acct-tile--app > img { border-radius: 12px; padding: 5px; box-sizing: border-box; background: #fff; }
+.acct-tile--app > .tile-ico { border-radius: 12px; }
+.acct-tile--app > .tile-ico svg { width: 22px; height: 22px; }
+.acct-tile.is-soon { background: #fff; box-shadow: inset 0 0 0 1px var(--acct-line); }
+.acct-tile.is-soon:hover { background: #fff; }
+.acct-tile--danger .acct-tile-title { color: var(--acct-red); }
+.acct-select { margin-top: 12px; font: inherit; font-size: 15px; color: var(--acct-ink); background: #fff; border: 1px solid var(--acct-line); border-radius: 10px; padding: 8px 12px; min-width: 180px; }
+.acct-select:focus { outline: 0; border-color: var(--acct-blue); box-shadow: 0 0 0 3px rgba(0, 113, 227, .2); }
+.acct-pill--small { min-height: 34px; padding: 0 16px; font-size: 13.5px; text-decoration: none; }
+.acct-tile .acct-pill:not(.acct-pill--primary) { background: #fff; }
+.acct-tile .acct-pill:not(.acct-pill--primary):hover { background: #fafafa; }
+.acct-tile-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.acct-tile[hidden] { display: none; }
+.acct-subtitle { margin-top: 44px; font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
+.acct-subtitle + .acct-tiles { margin-top: 16px; }
+.acct-empty { margin-top: 32px; padding: 28px 24px; border-radius: 18px; background: var(--acct-tile); color: var(--acct-muted); text-align: center; }
+.acct-empty[hidden] { display: none; }
+[data-acct-connected]:not(:has(.acct-tile:not([hidden]))) { display: none; }
+
+/* サービスへの接続の確認 */
+.acct-connect .acct-center-title { font-size: clamp(26px, 4vw, 36px); }
+.acct-connect-icons { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 26px; }
+.acct-connect-icons img { width: 64px; height: 64px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, .12); }
+.acct-connect-icons img.yf-tile { padding: 8px; box-sizing: border-box; background: #fff; }
+.acct-connect-link { display: flex; gap: 5px; }
+.acct-connect-link i { width: 6px; height: 6px; border-radius: 50%; background: var(--acct-line); animation: acct-dots 1.2s ease-in-out infinite; }
+.acct-connect-link i:nth-child(2) { animation-delay: .15s; }
+.acct-connect-link i:nth-child(3) { animation-delay: .3s; }
+@keyframes acct-dots { 0%, 100% { background: var(--acct-line); } 40% { background: var(--acct-blue); } }
+.acct-connect .acct-user { display: flex; justify-content: center; margin-top: 24px; }
+.acct-connect-box { margin-top: 24px; padding: 20px 22px; border-radius: 18px; background: var(--acct-tile); text-align: left; }
+.acct-connect-box h3 { font-size: 15px; font-weight: 700; }
+.acct-connect-box p { margin-top: 12px; font-size: 13px; color: var(--acct-muted); }
+.acct-center-note a { color: var(--acct-link); }
+.acct-msg--toast { margin-top: 24px; padding: 12px 16px; border-radius: 12px; background: var(--acct-tile); color: var(--acct-ink); font-weight: 500; }
+
+/* お知らせ */
+.acct-unread { display: inline-flex; align-items: center; height: 26px; padding: 0 11px; border-radius: 999px; background: #ffe5e7; color: var(--acct-red); font-size: 13px; font-weight: 700; letter-spacing: 0; }
+.acct-unread[hidden] { display: none; }
+.acct-notice-list { list-style: none; margin: 32px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.acct-notice { position: relative; padding: 20px 24px; border-radius: 18px; background: var(--acct-tile); }
+.acct-notice.is-unread { background: #eef5ff; }
+.acct-notice-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: var(--acct-muted); }
+.acct-notice-kind { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; background: #fff; font-weight: 600; color: var(--acct-ink); }
+.acct-notice-kind.is-sk { background: var(--acct-blue); color: #fff; }
+.acct-notice-new { color: var(--acct-red); font-weight: 700; }
+.acct-notice-new::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: currentColor; vertical-align: 1px; }
+.acct-notice-title { display: block; margin-top: 8px; font-size: 17px; font-weight: 700; color: var(--acct-ink); text-decoration: none; overflow-wrap: anywhere; }
+a.acct-notice-title:hover { color: var(--acct-link); text-decoration: underline; }
+.acct-notice-body { margin-top: 4px; color: var(--acct-muted); font-size: 14.5px; line-height: 1.7; overflow-wrap: anywhere; }
+.acct-notice-body.is-full { color: var(--acct-ink); white-space: pre-wrap; font-size: 15px; line-height: 1.8; }
+.acct-notice-delete { margin-top: 10px; padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--acct-link); cursor: pointer; }
+.acct-notice-delete:hover { text-decoration: underline; }
+.acct-notice-empty { padding: 28px 24px; border-radius: 18px; background: var(--acct-tile); color: var(--acct-muted); font-size: 15px; text-align: center; }
+.acct-more { display: inline-block; margin-top: 18px; font-size: 15px; color: var(--acct-link); text-decoration: none; }
+.acct-more:hover { text-decoration: underline; }
+.acct-more::after { content: " ›"; }
+
+/* ダイアログ（プロフィールの編集・削除の確認） */
+.acct-dialog { max-width: 480px; width: calc(100% - 32px); border: 0; border-radius: 22px; padding: 30px; color: #1d1d1f; box-shadow: 0 30px 80px rgba(0, 0, 0, .3); }
+.acct-dialog::backdrop { background: rgba(0, 0, 0, .4); backdrop-filter: blur(6px); }
+.acct-dialog[open] { animation: acct-pop .22s ease; }
+@keyframes acct-pop { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: none; } }
+.acct-dialog h2 { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
+.acct-dialog p { color: #6e6e73; font-size: 14.5px; margin-top: 8px; }
+.acct-dialog .acct-agree { margin: 18px 0 0; }
+.acct-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; }
+.acct-dialog .acct-pill { min-height: 40px; padding: 0 20px; font-size: 14.5px; background: #f5f5f7; color: #1d1d1f; }
+.acct-dialog .acct-pill:hover { background: #ebebef; }
+.acct-dialog .acct-pill--primary { background: #0071e3; color: #fff; }
+.acct-dialog .acct-pill--primary:hover { background: #0077ed; }
+.acct-dialog .acct-pill--danger { background: #d70015; color: #fff; }
+.acct-profile-preview { display: flex; align-items: center; gap: 14px; margin: 20px 0 6px; padding: 14px 16px; border-radius: 16px; background: #f5f5f7; }
+.acct-profile-preview .acct-avatar { width: 52px; height: 52px; margin: 0; font-size: 22px; flex: none; }
+.acct-profile-preview strong { font-size: 16px; overflow-wrap: anywhere; min-width: 0; }
+.acct-field { display: block; border: 0; margin: 18px 0 0; padding: 0; min-width: 0; }
+.acct-field > span, .acct-field legend { display: block; padding: 0; margin-bottom: 8px; font-size: 14px; font-weight: 700; }
+.acct-field input[type="text"] { width: 100%; font: inherit; font-size: 16px; color: #1d1d1f; background: #fff; border: 1px solid #d2d2d7; border-radius: 12px; padding: 11px 14px; }
+.acct-field input[type="text"]:focus { outline: 0; border-color: #0071e3; box-shadow: 0 0 0 3px rgba(0, 113, 227, .2); }
+.acct-field small { display: block; color: #6e6e73; font-size: 12.5px; margin-top: 6px; }
+.acct-radio { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 15px; cursor: pointer; }
+.acct-radio[hidden] { display: none; }
+.acct-radio input { width: 18px; height: 18px; margin: 0; accent-color: #0071e3; }
+.acct-colors { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 4px 28px; transition: opacity .15s ease; }
+.acct-colors.is-off { opacity: .45; }
+.acct-color { width: 30px; height: 30px; border-radius: 50%; border: 0; padding: 0; cursor: pointer; box-shadow: 0 0 0 2px #fff, 0 0 0 3px transparent; transition: box-shadow .15s ease, transform .15s ease; }
+.acct-color:hover { transform: scale(1.08); }
+.acct-color[aria-checked="true"] { box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1d1d1f; }
+.acct-color:focus-visible { outline: 2px solid #0071e3; outline-offset: 3px; }
+
+/* お問い合わせの受信箱: アカウントへの返事 */
+.inbox-reply { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.inbox-reply label { display: block; font-size: 13.5px; font-weight: 800; }
+.inbox-reply textarea { display: block; width: 100%; margin-top: 8px; font: inherit; font-size: 15px; line-height: 1.7; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; resize: vertical; }
+.inbox-reply .btn-row { margin-top: 10px; }
+.inbox-reply .btn { min-height: 38px; padding: 0 16px; font-size: 13px; }
+
+@media (max-width: 860px) {
+  .acct-layout { grid-template-columns: 1fr; gap: 28px; padding-top: 28px; }
+  .acct-sidebar { position: static; }
+  .acct-me { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 16px; align-items: center; text-align: left; padding-bottom: 18px; }
+  .acct-me .acct-avatar { width: 64px; height: 64px; margin: 0; grid-row: 1 / 3; font-size: 26px; }
+  .acct-me-name { margin-top: 0; font-size: 20px; align-self: end; }
+  .acct-me-email { align-self: start; }
+  /* 項目の一覧は横に並べてスクロール */
+  .acct-nav { flex-direction: row; gap: 6px; overflow-x: auto; margin: 0 -16px; padding: 2px 16px 6px; scrollbar-width: none; }
+  .acct-nav::-webkit-scrollbar { display: none; }
+  .acct-nav a { flex: none; padding: 8px 14px; border-radius: 999px; background: var(--acct-tile); font-size: 14px; white-space: nowrap; }
+  .acct-nav a[aria-current="page"] { background: var(--acct-ink); color: #fff; }
+  .acct-nav a[aria-current="page"] .acct-nav-count { background: #fff; color: var(--acct-red); }
+  .acct-points { grid-template-columns: 1fr; gap: 18px; margin-top: 48px; }
+}
+@media (max-width: 640px) {
+  .acct-tiles { grid-template-columns: 1fr; gap: 12px; margin-top: 24px; }
+  .acct-tile { min-height: 0; }
+  .acct-center { padding-top: 56px; }
+  .acct-data { grid-template-columns: 1fr; }
+  .acct-localnav-title { font-size: 17px; }
+  .acct-section-lead { font-size: 15.5px; }
+}
 
 /* ---------- お問い合わせ ---------- */
 .contact-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 18px; align-items: start; }
@@ -851,10 +1016,11 @@ img.yf-tile.yf-tile {
 .inbox-actions { margin-top: 16px; }
 .inbox-actions .btn { min-height: 38px; padding: 0 16px; font-size: 13px; }
 .inbox-delete { color: #b42318; }
-.acct-dev { border-color: #bcd3ff; background: linear-gradient(135deg, #f1f6ff, #fff 60%); }
 
 /* ---------- 記事エディター（開発者用） ---------- */
 .studio { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 18px; align-items: start; }
+/* ログインの状態で出し分ける画面（アカウント・受信箱・記事エディター）。hidden のものは、要素の display の指定より優先して隠す */
+[data-acct-view][hidden], [data-inbox-view][hidden], [data-studio-view][hidden] { display: none !important; }
 .studio-side { position: sticky; top: 72px; display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 96px); }
 .studio-side-head { display: flex; flex-direction: column; gap: 10px; }
 .studio-side-head .btn svg { width: 18px; height: 18px; }

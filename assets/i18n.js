@@ -21,6 +21,9 @@
 
   var root = document.documentElement;
   var lang = byCode(stored()) ? stored() : "ja";
+  // ページが対応する言語を絞っているとき（例: <html data-i18n-langs="ja en">。SK's Lab のツール）、それ以外の言語は英語で出す
+  var allowed = (root.getAttribute("data-i18n-langs") || "").split(/\s+/).filter(Boolean);
+  if (allowed.length && allowed.indexOf(lang) < 0) lang = allowed.indexOf("en") >= 0 ? "en" : allowed[0];
 
   // 日本語以外: 辞書を読み込み（<head> の中なので同期で入る）、訳し終わるまでページを隠す（日本語が一瞬見えないように）
   if (lang !== "ja") {

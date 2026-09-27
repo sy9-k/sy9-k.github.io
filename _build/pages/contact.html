@@ -51,6 +51,12 @@
             <span>サポートIDとブラウザの情報を添える <small>調査がスムーズになります（<code data-support-id>読み込み中…</code>）</small></span>
           </label>
 
+          <!-- SK Hub Systems アカウントでログイン中だけ出す（contact.js） -->
+          <label class="contact-attach" data-contact-account hidden>
+            <input type="checkbox" name="account" checked>
+            <span>返事を SK Hub Systems アカウントのお知らせで受け取る <small>アカウントのページの「お知らせ」に届きます。メールアドレスを書かなくても返事を受け取れます</small></span>
+          </label>
+
           <p class="contact-note">送信した内容は SK Hub Systems に保存し、<a href="/policies/#sk-privacy">SK プライバシーポリシー</a>に従って、お問い合わせへの対応のためにだけ使います。</p>
           <div class="btn-row">
             <button class="btn btn-primary" type="submit" data-contact-submit>送信する</button>

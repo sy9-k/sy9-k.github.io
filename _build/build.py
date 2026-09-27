@@ -62,9 +62,15 @@ EXTRA = {
 RUNTIME_SOURCES = [
     "assets/site.js", "support/help.js", "support/articles.js", "account/account-page.js",
     "contact/contact.js", "status/status.js", "frameworks/check.js",
+    "dictionary/script.js", "dictionary/account.js", "assets/hub/sync-loader.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
-STANDALONE_PAGES = ["usercheck/blocked.html", "usercheck/terms_not_accepted.html"]
+STANDALONE_PAGES = [
+    "usercheck/blocked.html", "usercheck/terms_not_accepted.html",
+    "dictionary/index.html", "dictionary/offline.html",
+]
+# 英語だけに訳すページ（SK's Lab のツール。<html data-i18n-langs="ja en">）。ページの文とスクリプトの t("…") の両方を探す
+EN_ONLY_PAGES = ["qr-prj/index.html", "smart-dash/index.html"]
 
 
 def page_url(dst):
@@ -122,18 +128,30 @@ print("wrote", len(pages), "pages")
 # 辞書にない文を探す（ページ ＋ build で作らないページ ＋ スクリプトの t("…")）
 for rel in STANDALONE_PAGES:
     checked.append((REPO / rel).read_text(encoding="utf-8"))
-runtime_keys = set()
-for rel in RUNTIME_SOURCES:
-    source = (REPO / rel).read_text(encoding="utf-8")
-    for q in ('"', "'"):
-        for k in re.findall(r"\b(?:t|tx|tw)\(\s*" + q + r"((?:[^" + q + r"\\]|\\.)*)" + q, source):
-            runtime_keys.add(json.loads(f'"{k}"') if "\\" in k else k)
-for code, tr in translators.items():
-    for text in checked:
+def runtime_keys_of(sources):
+    keys = set()
+    for source in sources:
+        for q in ('"', "'"):
+            for k in re.findall(r"\b(?:t|tx|tw)\(\s*" + q + r"((?:[^" + q + r"\\]|\\.)*)" + q, source):
+                keys.add(json.loads('"' + k.replace("\\'", "'") + '"') if "\\" in k else k)
+    return keys
+
+
+def check_missing(tr, texts, keys):
+    for text in texts:
         translate(text, tr)
-    for k in runtime_keys:
+    for k in keys:
         if re.search(r"[぀-ヿ㐀-鿿]", k) and not tr.table.get(key_of(k)):
             tr.missing.add(key_of(k))
+
+
+runtime_keys = runtime_keys_of((REPO / rel).read_text(encoding="utf-8") for rel in RUNTIME_SOURCES)
+en_only = [(REPO / rel).read_text(encoding="utf-8") for rel in EN_ONLY_PAGES]
+en_only_keys = runtime_keys_of(en_only)
+for code, tr in translators.items():
+    check_missing(tr, checked, runtime_keys)
+    if code == "en":
+        check_missing(tr, en_only, en_only_keys)
 
 # ブラウザで使う辞書（キーは assets/i18n.js の keyOf と同じ形）
 (REPO / "assets" / "i18n").mkdir(parents=True, exist_ok=True)

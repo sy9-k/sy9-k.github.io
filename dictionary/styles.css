@@ -282,3 +282,57 @@ p,h1,h2,h3{margin:0}
 
 /* SK Hub Systems のアクセスチェック（右下の表示・同意カード）と重ならないよう、下のバナーを上げる */
 @media (max-width:760px){body:has([data-RedCheckOSS-info-widget]) .install-banner{bottom:72px}body:has([data-RedCheckOSS-consent-card]) .install-banner{display:none}}
+
+/* ==========================================================================
+   SK Hub Systems アカウントとの連携（account.js）: 単語帳・検索履歴の同期
+   ========================================================================== */
+/* 検索欄の「単語帳に保存」（しおり） */
+.save-word{color:var(--md-on-surface-variant)}
+.save-word:disabled{opacity:.38;cursor:default}
+.save-word .save-word__on{display:none}
+.save-word[aria-pressed="true"]{color:var(--md-primary)}
+.save-word[aria-pressed="true"] .save-word__on{display:block}
+.save-word[aria-pressed="true"] .save-word__off{display:none}
+
+/* 設定の「アカウント」 */
+.malu-account{display:flex;flex-direction:column;gap:2px}
+.malu-account > .settings-item:first-child{border-top-left-radius:20px;border-top-right-radius:20px}
+.malu-account > .settings-item:last-child{border-bottom-left-radius:20px;border-bottom-right-radius:20px}
+.malu-profile{justify-content:flex-start}
+.malu-profile__text{flex:1;min-width:0}
+.malu-profile__text p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.malu-avatar{width:40px;height:40px;border-radius:50%;flex:none;object-fit:cover}
+.malu-avatar--letter{display:grid;place-items:center;color:#fff;font-weight:500;font-size:1.125rem}
+.malu-link-action{display:inline-flex;align-items:center}
+
+/* スイッチ（Material 3） */
+.malu-switch{position:relative;display:inline-flex;flex:none;cursor:pointer}
+.malu-switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.malu-switch__track{position:relative;width:52px;height:32px;border-radius:var(--md-shape-full);background:var(--md-surface-container-highest);box-shadow:inset 0 0 0 2px var(--md-outline);transition:background-color .2s var(--md-easing-standard)}
+.malu-switch__track::after{content:"";position:absolute;top:8px;left:8px;width:16px;height:16px;border-radius:50%;background:var(--md-outline);transition:transform .2s var(--md-easing-standard),width .2s,height .2s,top .2s,left .2s,background-color .2s}
+.malu-switch input:checked + .malu-switch__track{background:var(--md-primary);box-shadow:none}
+.malu-switch input:checked + .malu-switch__track::after{top:4px;left:4px;width:24px;height:24px;transform:translateX(20px);background:var(--md-on-primary)}
+.malu-switch input:focus-visible + .malu-switch__track{outline:2px solid var(--md-primary);outline-offset:2px}
+.malu-switch input:disabled + .malu-switch__track{opacity:.38}
+
+/* 単語帳の画面 */
+.wordbook-body{width:100%;max-width:760px;margin:0 auto;padding:8px 24px 56px}
+.wordbook-lead{padding:4px 4px 20px;font-size:.875rem;line-height:1.25rem;color:var(--md-on-surface-variant)}
+.wordbook-empty{padding:32px 20px;border-radius:20px;background:var(--md-surface-container);color:var(--md-on-surface-variant);text-align:center;font-size:.875rem}
+.wordbook-prompt{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:24px;border-radius:20px;background:var(--md-surface-container)}
+.wordbook-prompt__title{font-size:1.125rem;line-height:1.5rem;color:var(--md-on-surface)}
+.wordbook-prompt__text{font-size:.875rem;line-height:1.25rem;color:var(--md-on-surface-variant);margin-bottom:8px}
+.wordbook-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.wordbook-item{display:flex;align-items:center;gap:4px;padding-right:8px;border-radius:var(--md-shape-xs);background:var(--md-surface-container)}
+.wordbook-item:first-child{border-top-left-radius:20px;border-top-right-radius:20px}
+.wordbook-item:last-child{border-bottom-left-radius:20px;border-bottom-right-radius:20px}
+.wordbook-item__main{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:14px 20px;border:0;background:transparent;color:var(--md-on-surface);text-align:left;cursor:pointer;border-radius:inherit}
+.wordbook-item__main:hover{background:color-mix(in srgb,var(--md-on-surface) 8%,transparent)}
+.wordbook-item__word{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:1.0625rem;line-height:1.5rem}
+.wordbook-item__dict{font-size:.8125rem;color:var(--md-on-surface-variant)}
+.wordbook-item__delete{color:var(--md-on-surface-variant)}
+
+/* お知らせ（画面の下） */
+.malu-toast{position:fixed;left:50%;bottom:24px;z-index:100;max-width:calc(100% - 32px);padding:14px 20px;border-radius:var(--md-shape-xs);background:var(--md-inverse-surface);color:var(--md-inverse-on-surface);font-size:.875rem;box-shadow:var(--md-elevation-3);transform:translate(-50%,16px);opacity:0;pointer-events:none;transition:opacity .2s var(--md-easing-standard),transform .2s var(--md-easing-standard)}
+.malu-toast.is-shown{opacity:1;transform:translate(-50%,0)}
+@media (max-width:600px){.wordbook-body{padding:8px 16px 48px}}

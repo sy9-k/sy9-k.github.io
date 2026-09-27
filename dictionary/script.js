@@ -1,3 +1,5 @@
+// 多言語（/assets/i18n.js）。t('日本語') で、選んだ言語の訳を返す（辞書は assets/i18n/<言語>.js）
+const t = window.SKI18N ? window.SKI18N.t : (s, v) => (v ? s.replace(/\{(\w+)\}/g, (m, k) => (v[k] != null ? v[k] : m)) : s);
 const form = document.getElementById('dictionary-form');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 const queryInput = document.getElementById('query-input');
@@ -283,17 +285,17 @@ function updatePwaInstallState() {
   const installed = isStandaloneApp();
   if (pwaInstallStatus) {
     if (installed) {
-      pwaInstallStatus.textContent = 'このアプリはインストール済みです。';
+      pwaInstallStatus.textContent = t('このアプリはインストール済みです。');
     } else if (deferredInstallPrompt) {
-      pwaInstallStatus.textContent = 'この端末にアプリとしてインストールできます。';
+      pwaInstallStatus.textContent = t('この端末にアプリとしてインストールできます。');
     } else {
-      pwaInstallStatus.textContent = 'ブラウザの条件がそろうとインストールできます。';
+      pwaInstallStatus.textContent = t('ブラウザの条件がそろうとインストールできます。');
     }
   }
 
   if (pwaInstallButton) {
     pwaInstallButton.disabled = installed || !deferredInstallPrompt;
-    pwaInstallButton.textContent = installed ? 'インストール済み' : 'インストール';
+    pwaInstallButton.textContent = installed ? t('インストール済み') : t('インストール');
   }
 }
 
@@ -373,6 +375,12 @@ function addSearchHistory(term, dictionaryKey) {
   }
   saveSearchHistory();
   updateClearHistoryState();
+  notifyAccount('history');
+}
+
+// SK Hub Systems アカウントとの連携（account.js）に知らせる（検索履歴の同期・単語帳のボタン）
+function notifyAccount(what) {
+  if (window.MALU && typeof window.MALU.onChange === 'function') window.MALU.onChange(what);
 }
 
 function renderSearchHistory() {
@@ -385,13 +393,13 @@ function renderSearchHistory() {
 
   const title = document.createElement('p');
   title.className = 'search-history-title';
-  title.textContent = '検索履歴';
+  title.textContent = t('検索履歴');
   historyContainer.appendChild(title);
 
   if (!categoryHistory.length) {
     const empty = document.createElement('p');
     empty.className = 'history-empty';
-    empty.textContent = 'このカテゴリの検索履歴はまだありません。';
+    empty.textContent = t('このカテゴリの検索履歴はまだありません。');
     historyContainer.appendChild(empty);
     return;
   }
@@ -430,6 +438,7 @@ function renderSearchHistory() {
           selectedDictionary = item.dictionaryKey;
           setAccent(getSelectedAccentColor());
           renderDictionaryButtons();
+          notifyAccount('selection');
           queryInput.focus();
         });
 
@@ -453,17 +462,17 @@ function renderSearchHistory() {
 
 const categories = {
   kokugo: {
-    label: '国語辞典',
+    label: t('国語辞典'),
     color: '#1b4b8d',
     dictionaries: [
       { key: 'weblio', label: 'Weblio' },
-      { key: 'goo', label: 'goo 辞書' },
-      { key: 'kotobank', label: 'コトバンク' },
-      { key: 'daijirin', label: '大辞林' }
+      { key: 'goo', label: t('goo 辞書') },
+      { key: 'kotobank', label: t('コトバンク') },
+      { key: 'daijirin', label: t('大辞林') }
     ]
   },
   eigo: {
-    label: '英語辞書',
+    label: t('英語辞書'),
     color: '#1a73e8',
     dictionaries: [
       { key: 'oxford', label: 'Oxford' },
@@ -473,43 +482,43 @@ const categories = {
     ]
   },
   kankoku: {
-    label: '韓国語辞書',
+    label: t('韓国語辞書'),
     color: '#d93025',
     dictionaries: [
-      { key: 'naver_kr', label: 'NAVER 韓国語' },
-      { key: 'daum_kr', label: 'Daum 韓国語' },
-      { key: 'papago_ko', label: 'Papago 翻訳' },
-      { key: 'google_ko', label: 'Google 翻訳' }
+      { key: 'naver_kr', label: t('NAVER 韓国語') },
+      { key: 'daum_kr', label: t('Daum 韓国語') },
+      { key: 'papago_ko', label: t('Papago 翻訳') },
+      { key: 'google_ko', label: t('Google 翻訳') }
     ]
   },
   chinese: {
-    label: '中国語辞典',
+    label: t('中国語辞典'),
     color: '#ff6f00',
     dictionaries: [
-      { key: 'naver_zh', label: 'NAVER 中国語' },
-      { key: 'baidu_zh', label: 'Baidu 中国語' },
-      { key: 'google_zh', label: 'Google 翻訳' },
-      { key: 'papago_zh', label: 'Papago 翻訳' }
+      { key: 'naver_zh', label: t('NAVER 中国語') },
+      { key: 'baidu_zh', label: t('Baidu 中国語') },
+      { key: 'google_zh', label: t('Google 翻訳') },
+      { key: 'papago_zh', label: t('Papago 翻訳') }
     ]
   },
   eij: {
-    label: '英和・和英辞典',
+    label: t('英和・和英辞典'),
     color: '#0f9d58',
     dictionaries: [
       { key: 'jisho', label: 'Jisho' },
-      { key: 'alc', label: '英辞郎' },
-      { key: 'weblio_ej', label: 'Weblio 英和' },
+      { key: 'alc', label: t('英辞郎') },
+      { key: 'weblio_ej', label: t('Weblio 英和') },
       { key: 'deepl_ej', label: 'DeepL' }
     ]
   },
   nikankoku: {
-    label: '日韓・韓日辞典',
+    label: t('日韓・韓日辞典'),
     color: '#fbbc05',
     dictionaries: [
-      { key: 'naver_ja_ko', label: 'NAVER 日韓' },
-      { key: 'daum_ja_ko', label: 'Daum 日韓' },
-      { key: 'papago_jk', label: 'Papago 翻訳' },
-      { key: 'google_jk', label: 'Google 翻訳' }
+      { key: 'naver_ja_ko', label: t('NAVER 日韓') },
+      { key: 'daum_ja_ko', label: t('Daum 日韓') },
+      { key: 'papago_jk', label: t('Papago 翻訳') },
+      { key: 'google_jk', label: t('Google 翻訳') }
     ]
   }
 };
@@ -579,7 +588,7 @@ function renderDictionaryButtons() {
   const category = categories[selectedCategory];
   dictionarySelectRow.innerHTML = '';
   dictionaryPanel.classList.remove('hide');
-  dictionarySelectRow.setAttribute('aria-label', '辞書選択');
+  dictionarySelectRow.setAttribute('aria-label', t('辞書選択'));
 
   category.dictionaries.forEach((dictionary) => {
     const button = document.createElement('button');
@@ -689,23 +698,24 @@ function showSettingsSection(sectionId) {
 
 function clearSearchHistory() {
   if (!searchHistory.length) {
-    alert('削除できる検索履歴がありません。');
+    alert(t('削除できる検索履歴がありません。'));
     updateClearHistoryState();
     return;
   }
-  const shouldClear = window.confirm('検索履歴をすべて削除します。よろしいですか？');
+  const shouldClear = window.confirm(t('検索履歴をすべて削除します。よろしいですか？'));
   if (!shouldClear) return;
   searchHistory = [];
   saveSearchHistory();
   renderSearchHistory();
   updateClearHistoryState();
-  alert('検索履歴を削除しました。');
+  notifyAccount('clear');
+  alert(t('検索履歴を削除しました。'));
 }
 
 function updateClearHistoryState() {
   const historyCount = searchHistory.length;
   if (clearHistoryStatus) {
-    clearHistoryStatus.textContent = `保存件数: ${historyCount}件`;
+    clearHistoryStatus.textContent = t('保存件数: {n}件', { n: historyCount });
   }
   if (clearHistoryButton) {
     clearHistoryButton.disabled = historyCount === 0;
@@ -730,42 +740,42 @@ function resetCacheAndReload() {
 
 function updateNetworkStatusLabel() {
   if (networkStatus) {
-    networkStatus.textContent = `現在: ${navigator.onLine ? 'オンライン' : 'オフライン'}`;
+    networkStatus.textContent = t('現在: {state}', { state: navigator.onLine ? t('オンライン') : t('オフライン') });
   }
 }
 
 function checkForUpdates() {
   if (aboutUpdateStatus) {
-    aboutUpdateStatus.textContent = '更新を確認しています...';
+    aboutUpdateStatus.textContent = t('更新を確認しています...');
   }
   if (pwaUpdateStatus) {
-    pwaUpdateStatus.textContent = '更新を確認しています...';
+    pwaUpdateStatus.textContent = t('更新を確認しています...');
   }
 
   window.setTimeout(() => {
     if (aboutUpdateStatus) {
-      aboutUpdateStatus.textContent = 'MALU は最新です';
+      aboutUpdateStatus.textContent = t('MALU は最新です');
     }
     if (pwaUpdateStatus) {
-      pwaUpdateStatus.textContent = 'MALU は最新です。';
+      pwaUpdateStatus.textContent = t('MALU は最新です。');
     }
   }, 600);
 }
 
 async function checkForServiceWorkerUpdates() {
   if (aboutUpdateStatus) {
-    aboutUpdateStatus.textContent = '更新を確認しています...';
+    aboutUpdateStatus.textContent = t('更新を確認しています...');
   }
   if (pwaUpdateStatus) {
-    pwaUpdateStatus.textContent = '更新を確認しています...';
+    pwaUpdateStatus.textContent = t('更新を確認しています...');
   }
 
   if (!('serviceWorker' in navigator)) {
     if (aboutUpdateStatus) {
-      aboutUpdateStatus.textContent = 'Service Worker は使用できません。';
+      aboutUpdateStatus.textContent = t('Service Worker は使用できません。');
     }
     if (pwaUpdateStatus) {
-      pwaUpdateStatus.textContent = 'Service Worker は使用できません。';
+      pwaUpdateStatus.textContent = t('Service Worker は使用できません。');
     }
     return;
   }
@@ -781,8 +791,8 @@ async function checkForServiceWorkerUpdates() {
 
     const hasUpdate = Boolean(registration.waiting || registration.installing);
     const message = hasUpdate
-      ? '更新を見つけました。再読み込みで反映します。'
-      : 'MALU は最新です。';
+      ? t('更新を見つけました。再読み込みで反映します。')
+      : t('MALU は最新です。');
 
     if (aboutUpdateStatus) {
       aboutUpdateStatus.textContent = message;
@@ -792,10 +802,10 @@ async function checkForServiceWorkerUpdates() {
     }
   } catch (error) {
     if (aboutUpdateStatus) {
-      aboutUpdateStatus.textContent = '更新の確認に失敗しました。';
+      aboutUpdateStatus.textContent = t('更新の確認に失敗しました。');
     }
     if (pwaUpdateStatus) {
-      pwaUpdateStatus.textContent = '更新の確認に失敗しました。';
+      pwaUpdateStatus.textContent = t('更新の確認に失敗しました。');
     }
     console.log('Service Worker update check failed:', error);
   }
@@ -821,7 +831,41 @@ function handleDictionarySelection(dictionaryKey) {
   selectedDictionary = dictionaryKey;
   setAccent(getSelectedAccentColor());
   updateDictionaryButtonSelection();
+  notifyAccount('selection');
 }
+
+// 言葉と辞書を選んだ状態にする（単語帳・検索履歴から）
+function useWord(term, dictionaryKey) {
+  const category = findCategoryForDictionary(dictionaryKey);
+  if (category) {
+    selectedCategory = category;
+    selectedDictionary = dictionaryKey;
+    updateCategorySelection();
+  }
+  queryInput.value = term;
+  notifyAccount('selection');
+  queryInput.focus();
+}
+
+// SK Hub Systems アカウントとの連携（account.js）から使う入口
+window.MALU = {
+  t,
+  getHistory: () => searchHistory.slice(),
+  setHistory(list) {
+    searchHistory = list;
+    saveSearchHistory();
+    renderSearchHistory();
+    updateClearHistoryState();
+  },
+  current: () => ({ term: queryInput.value.trim(), dictionary: selectedDictionary }),
+  dictionaryLabel: getDictionaryLabel,
+  categoryLabel: (dictionaryKey) => {
+    const key = findCategoryForDictionary(dictionaryKey);
+    return key ? categories[key].label : '';
+  },
+  useWord,
+  onChange: null
+};
 
 function setOfflineMode(value) {
   isOffline = value;
@@ -867,11 +911,15 @@ function updateTime() {
   const day = String(now.getDate()).padStart(2, '0');
   const weekdayNames = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
   const weekday = weekdayNames[now.getDay()];
+  const lang = window.SKI18N ? window.SKI18N.lang : 'ja';
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const currentDate = document.getElementById('current-date');
   if (currentDate) {
-    currentDate.textContent = `${year}年${month}月${day}日 ${weekday}`;
+    // 日本語以外は、その言語の書き方（例: Saturday, September 26, 2026）
+    currentDate.textContent = lang === 'ja'
+      ? `${year}年${month}月${day}日 ${weekday}`
+      : now.toLocaleDateString(window.SKI18N.locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   }
   currentTime.textContent = `${hours}:${minutes}`;
 }
@@ -880,9 +928,12 @@ categoryButtons.forEach((button) => {
   button.addEventListener('click', () => {
     selectedCategory = button.dataset.category;
     updateCategorySelection();
+    notifyAccount('selection');
     queryInput.focus();
   });
 });
+
+queryInput.addEventListener('input', () => notifyAccount('selection'));
 
 if (settingsButton) {
   settingsButton.addEventListener('click', openSettings);
@@ -985,7 +1036,7 @@ form.addEventListener('submit', (event) => {
   renderSearchHistory();
   const urlBuilder = dictionaryUrls[selectedDictionary];
   if (!urlBuilder) {
-    alert('辞書を選択してください。');
+    alert(t('辞書を選択してください。'));
     return;
   }
   const url = urlBuilder(text);

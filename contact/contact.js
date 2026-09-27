@@ -30,6 +30,22 @@
   const lastSent = () => { try { return Number(localStorage.getItem(COOLDOWN_KEY) || 0); } catch (e) { return 0; } };
   const supportId = () => { try { return localStorage.getItem("skhub_uuid") || ""; } catch (e) { return ""; } };
 
+  // SK Hub Systems アカウントでログイン中なら、返事をアカウントのお知らせで受け取れる（uid を添えて、ログインの証明つきで送る）
+  const accountOption = form.querySelector("[data-contact-account]");
+  const loggedIn = () => { try { return !!localStorage.getItem("skhub_account"); } catch (e) { return false; } };
+  if (accountOption) accountOption.hidden = !loggedIn();
+  async function accountAuth() {
+    if (!accountOption || accountOption.hidden || !form.elements.account.checked) return null;
+    try {
+      const { currentUser } = await import("/assets/hub/account.js");
+      const user = await currentUser();
+      if (!user) return null;
+      return { uid: user.uid, token: await user.getIdToken() };
+    } catch (e) {
+      return null; // 読み込めなければ、アカウントなしで送る
+    }
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     msg.textContent = "";
@@ -58,9 +74,15 @@
     submit.disabled = true;
     submit.textContent = t("送信しています…");
     try {
+      const headers = { "Content-Type": "application/json" };
+      const account = await accountAuth();
+      if (account) {
+        fields.uid = { stringValue: account.uid };
+        headers.Authorization = `Bearer ${account.token}`;
+      }
       const res = await fetch(URL_, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ fields }),
         credentials: "omit",
         referrerPolicy: "no-referrer"
