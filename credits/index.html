@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- 多言語: /lang/ で選んだ言語で表示する（URL は変わらない）。ページの最後の translatePage() で訳す -->
   <script src="/assets/i18n.js"></script>
+  <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
+  <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
   <title>Link & Credit | SK</title>
   <meta name="description" content="SK のサイトとプロダクトで使わせてもらっているもの（RedCheck など）と、つながりのあるサイト。">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" data-theme-color>
   <link rel="canonical" href="https://sy9-k.github.io/credits/">
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
   <meta property="og:type" content="website">
@@ -141,6 +143,8 @@
           <div class="font-item"><span class="font-sample" style="font-family:Inter,sans-serif">Aa</span><div><strong>Inter</strong><small>Rasmus Andersson</small></div></div>
           <div class="font-item"><span class="font-sample" style="font-family:'Noto Sans JP',sans-serif">あア</span><div><strong>Noto Sans JP</strong><small>Google</small></div></div>
           <div class="font-item"><span class="font-sample" style="font-family:'Space Grotesk',sans-serif">Aa</span><div><strong>Space Grotesk</strong><small>Florian Karsten（Y-FILTER. のページ）</small></div></div>
+          <div class="font-item"><span class="font-sample" style="font-family:'M PLUS 1',sans-serif">あA</span><div><strong>M PLUS 1</strong><small>M+ FONTS PROJECT（MALU・Nagi）</small></div></div>
+          <div class="font-item"><span class="font-sample" style="font-family:'M PLUS 1 Code',monospace">A1</span><div><strong>M PLUS 1 Code</strong><small>M+ FONTS PROJECT（404 ページのターミナル）</small></div></div>
         </div>
       </div>
     </section>
@@ -187,7 +191,7 @@
         </div>
         <div>
           <h2>プロダクト</h2>
-          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/products/nagi/">Nagi</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
         </div>
         <div>
           <h2>サポートと情報</h2>
@@ -195,7 +199,6 @@
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">SK</div>
-      <nav class="footer-langs" aria-label="Language" data-footer-langs></nav>
       <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
     </div>
   </footer>

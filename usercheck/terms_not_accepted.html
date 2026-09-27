@@ -7,6 +7,8 @@
   <title data-i18n="利用規約に未同意 | SK">利用規約に未同意 | SK</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはサイトのヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
+  <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
   <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap"></script>
   <link rel="stylesheet" href="/assets/site.css">
   <!-- 選んだ言語で表示する（assets/i18n.js。body の最後で translatePage()） -->

@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const SUPPORT = I18N.path("/support/");
 
   // 以前のページ内リンク（/support/#y-filter など）とカテゴリの対応（カテゴリは日本語で持ち、表示するときに訳す）
-  const HASH_CATEGORY = { malu: "MALU", "y-filter": "Y-FILTER.", hub: "SK Hub Systems", account: "アカウント", lab: "SK's Lab", site: "このサイト", privacy: "情報と規約" };
-  const CATEGORY_CLASS = { "MALU": "cat-malu", "Y-FILTER.": "cat-yf", "SK Hub Systems": "cat-hub", "アカウント": "cat-hub", "SK's Lab": "cat-lab", "このサイト": "cat-sk", "情報と規約": "cat-sk" };
+  const HASH_CATEGORY = { malu: "MALU", nagi: "Nagi", "y-filter": "Y-FILTER.", hub: "SK Hub Systems", account: "アカウント", lab: "SK's Lab", site: "このサイト", privacy: "情報と規約" };
+  const CATEGORY_CLASS = { "MALU": "cat-malu", "Nagi": "cat-nagi", "Y-FILTER.": "cat-yf", "SK Hub Systems": "cat-hub", "アカウント": "cat-hub", "SK's Lab": "cat-lab", "このサイト": "cat-sk", "情報と規約": "cat-sk" };
   const TYPE_LABEL = { news: t("お知らせ"), guide: t("サポート記事") };
   const categoryName = (c) => t(c);
 

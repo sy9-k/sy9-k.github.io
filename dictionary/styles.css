@@ -11,7 +11,7 @@
   --md-inverse-surface:#2f3036;--md-inverse-on-surface:#eff0f8;
   --md-scrim:#000000;
 
-  --md-font:"Roboto","Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",system-ui,sans-serif;
+  --md-font:"M PLUS 1","Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",system-ui,sans-serif;
 
   --md-shape-xs:4px;--md-shape-sm:8px;--md-shape-md:12px;--md-shape-lg:16px;--md-shape-xl:28px;--md-shape-full:999px;
 
@@ -108,7 +108,7 @@ p,h1,h2,h3{margin:0}
 .clock-card{position:relative;overflow:hidden;padding:24px 28px 28px;border-radius:var(--md-shape-xl);background:var(--md-primary-container);color:var(--md-on-primary-container);transition:background-color .3s var(--md-easing-standard),color .3s var(--md-easing-standard)}
 .clock-card::after{content:"";position:absolute;right:-56px;top:-72px;width:240px;height:240px;border-radius:50%;background:var(--md-primary);opacity:.1;pointer-events:none}
 .clock-card__date{font-size:1rem;line-height:1.5rem;font-weight:500;letter-spacing:.01em;opacity:.85}
-.clock-card__time{margin-top:4px;font-family:"Roboto",var(--md-font);font-size:clamp(3.5rem,11vw,5.25rem);line-height:1.1;font-weight:400;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.clock-card__time{margin-top:4px;font-family:var(--md-font);font-size:clamp(3.5rem,11vw,5.25rem);line-height:1.1;font-weight:400;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 
 /* 検索 */
 .search-area{display:flex;flex-direction:column;gap:16px}

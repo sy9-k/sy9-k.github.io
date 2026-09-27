@@ -29,6 +29,7 @@ pages = [
     ("about.html", "about/index.html", "私について | SK", "Y-FILTER. と MALU を開発している SK の自己紹介と、これまでにつくったもの。", False, True),
     ("y-filter.html", "products/y-filter/index.html", "Y-FILTER. | SK", "有害なサイトのブロックや利用時間の管理ができるブラウザ拡張機能「Y-FILTER.」（開発中）。", False, True),
     ("malu.html", "products/malu/index.html", "MALU | SK", "国語・英語・韓国語・中国語などの辞書をひとつの検索ボックスから引ける辞書検索アプリ「MALU」。", False, True),
+    ("nagi.html", "products/nagi/index.html", "Nagi | SK", "集中と休憩をくり返して、勉強や作業の時間を記録する集中タイマー「Nagi」。1 日の目標と連続日数、端末のあいだの同期。", False, True),
     ("support.html", "support/index.html", "サポート | SK", "SK からのお知らせと、Y-FILTER.・MALU・SK Hub Systems・SK's Lab の使い方や困ったときの記事。", True, True),
     ("account.html", "account/index.html", "SK Hub Systems アカウント | SK", "SK のサービスを 1 つの Google アカウントで使える「SK Hub Systems アカウント」。ログイン・アカウントの確認・削除。", True, True),
     ("contact.html", "contact/index.html", "お問い合わせ | SK", "SK への不具合の報告・ご質問・ご要望はこちらから。", True, True),
@@ -65,11 +66,13 @@ RUNTIME_SOURCES = [
     "assets/site.js", "support/help.js", "support/articles.js", "account/account-page.js",
     "contact/contact.js", "status/status.js", "frameworks/check.js",
     "dictionary/script.js", "dictionary/account.js", "assets/hub/sync-loader.js", "assets/analytics.js", "assets/nf-secret.js", "assets/terminal.js",
+    "nagi/app.js", "nagi/account.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
 STANDALONE_PAGES = [
     "usercheck/blocked.html", "usercheck/terms_not_accepted.html",
     "dictionary/index.html", "dictionary/offline.html",
+    "nagi/index.html",
 ]
 # 英語だけに訳すページ（SK's Lab のツール。<html data-i18n-langs="ja en">）。ページの文とスクリプトの t("…") の両方を探す
 EN_ONLY_PAGES = ["qr-prj/index.html", "smart-dash/index.html"]
@@ -174,7 +177,7 @@ for code, tr in translators.items():
         path.unlink()
 
 # サイトマップ（このスクリプトで作るページ ＋ 別に作っているアプリ）
-sitemap += [ORIGIN + "/dictionary/", ORIGIN + "/y-filter/", ORIGIN + "/qr-prj/", ORIGIN + "/smart-dash/"]
+sitemap += [ORIGIN + "/dictionary/", ORIGIN + "/nagi/", ORIGIN + "/y-filter/", ORIGIN + "/qr-prj/", ORIGIN + "/smart-dash/"]
 today = datetime.date.today().isoformat()
 xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
 xml += [f"  <url><loc>{u}</loc><lastmod>{today}</lastmod></url>" for u in sitemap]

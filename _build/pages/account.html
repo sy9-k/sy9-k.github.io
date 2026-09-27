@@ -230,6 +230,16 @@
                     <button class="acct-pill acct-pill--small" type="button" data-acct-disconnect="malu">接続を解除</button>
                   </span>
                 </div>
+                <div class="acct-tile acct-tile--app is-static" data-acct-service="nagi" hidden>
+                  <img src="/nagi/ico/icon-192.png" alt="" width="44" height="44">
+                  <span class="acct-tile-title">Nagi</span>
+                  <span class="acct-tile-value" data-acct-nagi>確認中…</span>
+                  <span class="acct-tile-note" data-acct-connected-at="nagi"></span>
+                  <span class="acct-tile-actions">
+                    <a class="acct-pill acct-pill--small acct-pill--primary" href="/nagi/">開く</a>
+                    <button class="acct-pill acct-pill--small" type="button" data-acct-disconnect="nagi">接続を解除</button>
+                  </span>
+                </div>
               </div>
               <p class="acct-empty" data-acct-no-services hidden>まだ接続しているサービスはありません。</p>
 
@@ -245,6 +255,12 @@
                   <img src="/dictionary/ico/icon-192.png" alt="" width="44" height="44">
                   <span class="acct-tile-title">MALU</span>
                   <span class="acct-tile-value">単語帳と、検索履歴の端末のあいだの同期が使えます。</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <a class="acct-tile acct-tile--app" href="/account/?connect=nagi&amp;next=%2Fnagi%2F" data-acct-available="nagi" hidden>
+                  <img src="/nagi/ico/icon-192.png" alt="" width="44" height="44">
+                  <span class="acct-tile-title">Nagi</span>
+                  <span class="acct-tile-value">集中の記録と 1 日の目標を、端末のあいだで同期できます。</span>
                   <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
                 </a>
                 <div class="acct-tile acct-tile--app is-static is-soon">

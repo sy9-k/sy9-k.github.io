@@ -1,6 +1,38 @@
 {
-  "_note": "アップデート情報。新しいものを上に足していく。category は SK / Y-FILTER. / SK Hub Systems / MALU / Lab のどれか。トップ・ステータス・アップデートのページで表示される。 訳は各項目の i18n（en / zh-CN / zh-TW / ko の title・body・label）。ない言語は日本語で出る。",
+  "_note": "アップデート情報。新しいものを上に足していく。category は SK / Y-FILTER. / SK Hub Systems / MALU / Nagi / Lab のどれか。トップ・ステータス・アップデートのページで表示される。 訳は各項目の i18n（en / zh-CN / zh-TW / ko の title・body・label）。ない言語は日本語で出る。",
   "items": [
+    {
+      "date": "2026-09-27",
+      "category": "Nagi",
+      "title": "集中タイマー「Nagi」を公開しました",
+      "body": "集中と休憩をくり返して、勉強や作業の時間を記録する集中タイマーです。1 日の目標と連続日数、終わったときの音と通知、パソコン向けの拡大表示に対応し、ホーム画面に追加できます。SK Hub Systems アカウントに接続すると、記録を端末のあいだで同期できます。あわせて、SK 利用規約・SK プライバシーポリシー・SK Hub Systems アカウント規約を改定しました。",
+      "link": {
+        "href": "/products/nagi/",
+        "label": "Nagi について"
+      },
+      "i18n": {
+        "en": {
+          "title": "We've released the focus timer \"Nagi\"",
+          "body": "A focus timer that repeats focus and breaks and records your study and work time. It supports daily goals and streaks, sounds and notifications when time is up, an enlarged view for computers, and adding to your home screen. Connect it to your SK Hub Systems account to sync your records between devices. We've also revised the SK Terms of Service, the SK Privacy Policy, and the SK Hub Systems Account Terms.",
+          "label": "About Nagi"
+        },
+        "zh-CN": {
+          "title": "推出专注计时器“Nagi”",
+          "body": "一款重复专注与休息、记录学习和工作时间的专注计时器。支持每日目标与连续天数、结束时的声音与通知、适合电脑的放大显示，并可添加到主屏幕。连接 SK Hub Systems 账户后，可以在设备之间同步记录。同时修订了 SK 使用条款、SK 隐私政策和 SK Hub Systems 账户条款。",
+          "label": "关于 Nagi"
+        },
+        "zh-TW": {
+          "title": "推出專注計時器「Nagi」",
+          "body": "一款重複專注與休息、記錄學習和工作時間的專注計時器。支援每日目標與連續天數、結束時的聲音與通知、適合電腦的放大顯示，並可加入主畫面。連接 SK Hub Systems 帳戶後，可以在裝置之間同步記錄。同時修訂了 SK 使用條款、SK 隱私權政策和 SK Hub Systems 帳戶條款。",
+          "label": "關於 Nagi"
+        },
+        "ko": {
+          "title": "집중 타이머 'Nagi'를 공개했습니다",
+          "body": "집중과 휴식을 반복하며 공부나 작업 시간을 기록하는 집중 타이머입니다. 하루 목표와 연속 일수, 끝났을 때의 소리와 알림, 컴퓨터용 크게 보기를 지원하며 홈 화면에 추가할 수 있습니다. SK Hub Systems 계정에 연결하면 기기 간에 기록을 동기화할 수 있습니다. 아울러 SK 이용약관, SK 개인정보 처리방침, SK Hub Systems 계정 약관을 개정했습니다.",
+          "label": "Nagi 소개"
+        }
+      }
+    },
     {
       "date": "2026-09-27",
       "category": "MALU",

@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- 多言語: /lang/ で選んだ言語で表示する（URL は変わらない）。ページの最後の translatePage() で訳す -->
   <script src="/assets/i18n.js"></script>
+  <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
+  <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
   <title>SK Hub Systems アカウント | SK</title>
   <meta name="description" content="SK のサービスを 1 つの Google アカウントで使える「SK Hub Systems アカウント」。ログイン・アカウントの確認・削除。">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" data-theme-color>
   <link rel="canonical" href="https://sy9-k.github.io/account/">
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
   <meta property="og:type" content="website">
@@ -277,6 +279,16 @@
                     <button class="acct-pill acct-pill--small" type="button" data-acct-disconnect="malu">接続を解除</button>
                   </span>
                 </div>
+                <div class="acct-tile acct-tile--app is-static" data-acct-service="nagi" hidden>
+                  <img src="/nagi/ico/icon-192.png" alt="" width="44" height="44">
+                  <span class="acct-tile-title">Nagi</span>
+                  <span class="acct-tile-value" data-acct-nagi>確認中…</span>
+                  <span class="acct-tile-note" data-acct-connected-at="nagi"></span>
+                  <span class="acct-tile-actions">
+                    <a class="acct-pill acct-pill--small acct-pill--primary" href="/nagi/">開く</a>
+                    <button class="acct-pill acct-pill--small" type="button" data-acct-disconnect="nagi">接続を解除</button>
+                  </span>
+                </div>
               </div>
               <p class="acct-empty" data-acct-no-services hidden>まだ接続しているサービスはありません。</p>
 
@@ -292,6 +304,12 @@
                   <img src="/dictionary/ico/icon-192.png" alt="" width="44" height="44">
                   <span class="acct-tile-title">MALU</span>
                   <span class="acct-tile-value">単語帳と、検索履歴の端末のあいだの同期が使えます。</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <a class="acct-tile acct-tile--app" href="/account/?connect=nagi&amp;next=%2Fnagi%2F" data-acct-available="nagi" hidden>
+                  <img src="/nagi/ico/icon-192.png" alt="" width="44" height="44">
+                  <span class="acct-tile-title">Nagi</span>
+                  <span class="acct-tile-value">集中の記録と 1 日の目標を、端末のあいだで同期できます。</span>
                   <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
                 </a>
                 <div class="acct-tile acct-tile--app is-static is-soon">
@@ -472,7 +490,7 @@
         </div>
         <div>
           <h2>プロダクト</h2>
-          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/products/nagi/">Nagi</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
         </div>
         <div>
           <h2>サポートと情報</h2>
@@ -480,7 +498,6 @@
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">SK</div>
-      <nav class="footer-langs" aria-label="Language" data-footer-langs></nav>
       <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
     </div>
   </footer>

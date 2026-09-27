@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="description" content="集中と休憩をくり返して、勉強や作業の時間を記録する集中タイマー" />
+<meta name="theme-color" content="#f4fbf8" />
+<title>Nagi</title>
+<!-- 表示（ライト・ダーク）。サイトで選んだものに合わせる（CSS より先に <html> に付ける。サイトの assets/site.js の「表示」） -->
+<script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}");if(t.mode==="light"||t.mode==="dark")document.documentElement.setAttribute("data-theme",t.mode);}catch(e){}})();</script>
+<!-- 文字は M PLUS 1（M+）。アイコンは Material Symbols -->
+<script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;500;700;800&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>
+<link rel="stylesheet" href="styles.css" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/png" href="ico/icon-192.png" />
+<link rel="apple-touch-icon" href="ico/apple-touch-icon.png" />
+<!-- 多言語: /lang/ で選んだ言語で表示する（/assets/i18n.js。body の最後で translatePage()） -->
+<script src="/assets/i18n.js"></script>
+</head>
+<body>
+  <!-- 背景の静かな波（飾り） -->
+  <svg class="waves" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
+    <path class="wave wave-1" d="M0 190c120 22 240 22 360 0s240-44 360-22 240 44 360 22 240-44 360-22v152H0z"/>
+    <path class="wave wave-2" d="M0 236c120-18 240-18 360 0s240 36 360 18 240-36 360-18 240 36 360 18v86H0z"/>
+  </svg>
+
+  <!-- 上の帯 -->
+  <header class="top-bar">
+    <a class="brand" href="/products/nagi/" title="Nagi について">
+      <img src="ico/icon-192.png" alt="" width="32" height="32">
+      <span>Nagi</span>
+    </a>
+    <div class="top-actions">
+      <!-- 同期の状態（account.js） -->
+      <button type="button" id="sync-button" class="icon-btn" aria-label="同期" title="同期" hidden><span class="ms" aria-hidden="true">sync</span></button>
+      <!-- 拡大表示（タイマーだけを大きく。F キーでも） -->
+      <button type="button" id="zen-button" class="icon-btn" aria-label="拡大表示" title="拡大表示（F）"><span class="ms" aria-hidden="true" id="zen-icon">fullscreen</span></button>
+      <button type="button" id="settings-button" class="icon-btn" aria-label="設定" title="設定"><span class="ms" aria-hidden="true">settings</span></button>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="timer-column">
+    <!-- 区切りボタン（集中・休憩・長い休憩） -->
+    <div class="segmented" role="tablist" aria-label="タイマーの種類">
+      <button type="button" role="tab" data-mode="focus" aria-selected="true"><span class="ms check" aria-hidden="true">check</span><span>集中</span></button>
+      <button type="button" role="tab" data-mode="short" aria-selected="false"><span class="ms check" aria-hidden="true">check</span><span>休憩</span></button>
+      <button type="button" role="tab" data-mode="long" aria-selected="false"><span class="ms check" aria-hidden="true">check</span><span>長い休憩</span></button>
+    </div>
+
+    <!-- タイマー（輪は残り時間。app.js が stroke-dashoffset を動かす） -->
+    <section class="timer" aria-live="polite">
+      <svg class="ring" viewBox="0 0 240 240" aria-hidden="true">
+        <circle class="ring-track" cx="120" cy="120" r="108"/>
+        <circle class="ring-progress" id="ring-progress" cx="120" cy="120" r="108"/>
+      </svg>
+      <div class="timer-center">
+        <span class="mode-chip" id="mode-chip"><span class="ms" aria-hidden="true" id="mode-icon">self_improvement</span><span id="mode-name">集中</span></span>
+        <div class="time" id="time">25:00</div>
+        <div class="status" id="status">準備ができたら「はじめる」</div>
+      </div>
+    </section>
+
+    <div class="round" id="round"></div>
+
+    <!-- 操作 -->
+    <div class="controls">
+      <button type="button" id="reset-button" class="tonal-icon-btn" aria-label="リセット" title="リセット"><span class="ms" aria-hidden="true">restart_alt</span></button>
+      <button type="button" id="start-button" class="fab">
+        <span class="ms" aria-hidden="true" id="start-icon">play_arrow</span>
+        <span id="start-label">はじめる</span>
+      </button>
+      <button type="button" id="skip-button" class="tonal-icon-btn" aria-label="次へ" title="次へ"><span class="ms" aria-hidden="true">skip_next</span></button>
+    </div>
+
+    <!-- キーボードの操作（パソコンだけ出す） -->
+    <p class="shortcuts" aria-hidden="true"><kbd>Space</kbd>はじめる・一時停止 <kbd>R</kbd>リセット <kbd>N</kbd>次へ <kbd>F</kbd>拡大表示</p>
+    </div>
+
+    <div class="cards">
+      <!-- 今日の目標と連続日数 -->
+      <section class="card today">
+        <div class="card-head">
+          <div>
+            <div class="overline">今日の集中</div>
+            <div class="today-value"><strong id="today-minutes">0分</strong><span id="today-goal"> / 2時間</span></div>
+          </div>
+          <span class="chip" id="streak" title="目標を達成した日が続いている日数"><span class="ms" aria-hidden="true">waves</span><span id="streak-value">0日連続</span></span>
+        </div>
+        <!-- 進み具合（Material 3 の線の進み具合: 進んだ部分・すき間・残り・終わりの点） -->
+        <div class="linear" role="progressbar" aria-label="今日の目標" aria-valuemin="0" aria-valuemax="100" id="goal-bar">
+          <span class="linear-active" id="goal-fill"></span>
+          <span class="linear-track" id="goal-track"></span>
+          <span class="linear-stop"></span>
+        </div>
+        <p class="support" id="goal-note"></p>
+      </section>
+
+      <!-- この 7 日 -->
+      <section class="card week">
+        <div class="card-head">
+          <div class="overline">この 7 日</div>
+          <span class="support" id="week-total"></span>
+        </div>
+        <div class="week-chart" id="week-chart"></div>
+        <div class="legend"><i></i><span>目標</span></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ホーム画面に追加（app.js。追加できるブラウザで、閉じていなければ出す） -->
+  <div id="install-banner" class="install" hidden>
+    <img src="ico/icon-192.png" alt="" width="40" height="40">
+    <div class="install-text"><strong>Nagi をホーム画面に追加</strong><span>アプリのように、すぐ開けます。</span></div>
+    <button type="button" id="install-dismiss" class="text-btn">あとで</button>
+    <button type="button" id="install-button" class="filled-btn">追加</button>
+  </div>
+
+  <!-- 設定 -->
+  <dialog id="settings" class="dialog" aria-labelledby="settings-title">
+    <form method="dialog" class="dialog-inner">
+      <div class="dialog-head">
+        <button type="submit" class="icon-btn" aria-label="閉じる" title="閉じる"><span class="ms" aria-hidden="true">close</span></button>
+        <h2 id="settings-title">設定</h2>
+      </div>
+      <div class="dialog-body">
+        <h3>時間（分）</h3>
+        <div class="fields">
+          <label class="field"><input type="number" id="set-focus" min="1" max="180" inputmode="numeric"><span>集中</span></label>
+          <label class="field"><input type="number" id="set-short" min="1" max="60" inputmode="numeric"><span>休憩</span></label>
+          <label class="field"><input type="number" id="set-long" min="1" max="90" inputmode="numeric"><span>長い休憩</span></label>
+          <label class="field"><input type="number" id="set-every" min="2" max="10" inputmode="numeric"><span>長い休憩までの回数</span></label>
+        </div>
+
+        <h3>1日の目標</h3>
+        <div class="fields">
+          <label class="field"><input type="number" id="set-goal" min="10" max="1440" step="10" inputmode="numeric"><span>目標（分）</span></label>
+        </div>
+
+        <h3>進め方と知らせ方</h3>
+        <div class="list">
+          <label class="list-item"><span class="ms lead" aria-hidden="true">coffee</span><span class="list-text">集中が終わったら、休憩を自動ではじめる</span><input type="checkbox" id="set-auto-break" class="switch" role="switch"></label>
+          <label class="list-item"><span class="ms lead" aria-hidden="true">self_improvement</span><span class="list-text">休憩が終わったら、集中を自動ではじめる</span><input type="checkbox" id="set-auto-focus" class="switch" role="switch"></label>
+          <label class="list-item"><span class="ms lead" aria-hidden="true">volume_up</span><span class="list-text">終わったら音を鳴らす</span><input type="checkbox" id="set-sound" class="switch" role="switch"></label>
+          <label class="list-item"><span class="ms lead" aria-hidden="true">notifications</span><span class="list-text">終わったら通知する<small>ほかのタブを見ていても気づけます</small></span><input type="checkbox" id="set-notify" class="switch" role="switch"></label>
+        </div>
+        <p class="support" id="notify-hint"></p>
+
+        <h3>SK Hub Systems アカウント</h3>
+        <!-- 同期（account.js が中身を作る） -->
+        <div id="nagi-account" class="account-box"><p class="support">確認中…</p></div>
+
+        <h3>記録</h3>
+        <p class="support">集中の記録と設定は、このブラウザの中に保存します。SK Hub Systems アカウントで同期しているときは、アカウントにも保存します。</p>
+        <button type="button" id="clear-button" class="outlined-btn danger">このブラウザの記録を消す</button>
+        <p class="support small">Nagi は <a href="/policies/#sk-terms" target="_blank" rel="noopener">SK 利用規約</a>・<a href="/policies/#sk-privacy" target="_blank" rel="noopener">SK プライバシーポリシー</a>のもとで提供しています。</p>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="snackbar" id="toast" role="status" aria-live="polite"></div>
+
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <script src="app.js"></script>
+  <!-- SK Hub Systems アカウントとの同期（ログインしている人だけ Firebase を読み込む） -->
+  <script type="module" src="account.js"></script>
+  <!-- SK Hub Systems アカウントの設定の同期（ログイン中だけ） -->
+  <script src="/assets/hub/sync-loader.js" defer></script>
+  <script src="/frameworks/check.js" defer></script>
+  <!-- アクセス解析（Google アナリティクス。許可した人だけ） -->
+  <script src="/assets/analytics.js" defer></script>
+</body>
+</html>

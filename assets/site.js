@@ -70,6 +70,7 @@
     return accountHint ? {
       title: t("SK Hub Systems アカウント"),
       profile: accountHint,
+      appearance: true,
       items: [
         [t("アカウント"), lp("/account/")],
         [accountUnread ? t("お知らせ（{n}）", { n: accountUnread }) : t("お知らせ"), lp("/account/#notices")],
@@ -80,6 +81,7 @@
       ]
     } : {
       title: t("SK Hub Systems アカウント"),
+      appearance: true,
       items: [
         [t("ログイン・アカウントを作成"), lp("/account/")],
         [t("SK Hub Systems アカウントとは"), lp("/support/?a=account-about")],
@@ -97,6 +99,7 @@
         [t("プロダクト一覧"), lp("/#products")],
         ["Y-FILTER.", lp("/products/y-filter/")],
         ["MALU", lp("/products/malu/")],
+        ["Nagi", lp("/products/nagi/")],
         ["SK Hub Systems", lp("/sk-hub-systems/")],
         ["SK's Lab", lp("/lab/")]
       ]
@@ -230,6 +233,8 @@
         nodes.push(profile);
       }
       nodes.push(makeList(toEntries(data.items)));
+      // アカウントのメニューのいちばん下に「表示」（ライト・ダーク・テーマカラー）
+      if (data.appearance) nodes.push(themeMenuBlock());
       content.replaceChildren(...nodes);
     }
 
@@ -403,23 +408,9 @@
   }
 
   // ---------- 言語の切り替え ----------
-  // ヘッダーの地球のアイコン → /lang/（戻り先つき）。フッター → 各言語の同じページ
+  // ヘッダーの地球のアイコン（スマホはメニューの「言語」）→ /lang/（戻り先つき）
   const here = location.pathname + location.search + location.hash;
   document.querySelectorAll("[data-lang-link]").forEach((a) => { a.href = `/lang/?next=${encodeURIComponent(here)}`; });
-  const footerLangs = document.querySelector("[data-footer-langs]");
-  if (footerLangs && I18N.LANGS.length) {
-    footerLangs.replaceChildren(...I18N.LANGS.map((l) => {
-      const a = document.createElement("a");
-      a.href = I18N.path(here, l.code);
-      a.lang = l.code;
-      a.hreflang = l.code;
-      a.textContent = l.name;
-      if (l.code === I18N.lang) a.setAttribute("aria-current", "true");
-      // 選んだ言語を覚えてから移る（日本語のページは、覚えている言語のページへ移るため）
-      a.addEventListener("click", (e) => { e.preventDefault(); I18N.setLang(l.code, here); });
-      return a;
-    }));
-  }
 
   // ---------- アクセス解析の設定（フッター。assets/analytics.js） ----------
   // 測定 ID が入っているときだけ出す。押すと、許可するかをもう一度たずねる
@@ -470,6 +461,160 @@
   }
   applyYFilter();
   document.addEventListener("yfilter:present", applyYFilter);
+
+  // ---------- 表示（ライト・ダーク・テーマカラー。ヘッダーのアカウントのメニューの「表示」） ----------
+  // 選んだものは、このブラウザの localStorage（sk_theme = { mode: auto|light|dark, accent }）に保存する。
+  // <html data-theme / data-accent> は、ちらつかないよう <head> の小さなスクリプト（index.html）が最初に付ける。色は site.css のトークン
+  const THEME_KEY = "sk_theme";
+  // site.css の :root[data-accent="…"] と同じ名前。color はボタンの色（ライトのときのテーマカラー）
+  const ACCENTS = [
+    { key: "blue", name: "SK's Blue", color: "#2563eb" },
+    { key: "sakura", name: "SK's Sakura", color: "#db2777" },
+    { key: "matcha", name: "SK's Matcha", color: "#16a34a" },
+    { key: "mikan", name: "SK's Mikan", color: "#ea580c" },
+    { key: "fuji", name: "SK's Fuji", color: "#7c3aed" },
+    { key: "sora", name: "SK's Sora", color: "#0891b2" },
+    { key: "sumi", name: "SK's Sumi", color: "#334155" }
+  ];
+  const ACCENT_NOTES = {
+    blue: t("いつもの青"), sakura: t("さくら"), matcha: t("抹茶"), mikan: t("みかん"), fuji: t("藤"), sora: t("空"), sumi: t("墨")
+  };
+
+  function readTheme() {
+    try {
+      const v = JSON.parse(localStorage.getItem(THEME_KEY) || "{}");
+      return {
+        mode: v.mode === "light" || v.mode === "dark" ? v.mode : "auto",
+        accent: ACCENTS.some((a) => a.key === v.accent) ? v.accent : "blue"
+      };
+    } catch (e) {
+      return { mode: "auto", accent: "blue" };
+    }
+  }
+
+  function applyTheme(theme) {
+    const root = document.documentElement;
+    if (theme.mode === "auto") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", theme.mode);
+    if (theme.accent === "blue") root.removeAttribute("data-accent");
+    else root.setAttribute("data-accent", theme.accent);
+    // スマホのブラウザの上の帯の色（ページの背景に合わせる）
+    const meta = document.querySelector("meta[data-theme-color]");
+    if (meta) meta.setAttribute("content", getComputedStyle(root).getPropertyValue("--bg").trim() || "#ffffff");
+    renderThemePicker(theme);
+  }
+
+  function saveTheme(theme) {
+    try { localStorage.setItem(THEME_KEY, JSON.stringify(theme)); } catch (e) { /* 保存できなくても、このページでは変わる */ }
+    applyTheme(theme);
+  }
+
+  // 押したボタンのところから、新しい色が円く広がって切り替わる（View Transitions）。
+  // ページを移動するときの動き（header.css）は、切り替えのあいだだけ止める（html.sk-theme-switching。site.css）
+  function switchTheme(next, button, event) {
+    const current = readTheme();
+    if (current.mode === next.mode && current.accent === next.accent) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!document.startViewTransition || reduced) { saveTheme(next); return; }
+    // キーボードで押したときは、ボタンの真ん中から
+    let x = event && event.clientX, y = event && event.clientY;
+    if (!x && !y && button) {
+      const r = button.getBoundingClientRect();
+      x = r.left + r.width / 2;
+      y = r.top + r.height / 2;
+    }
+    const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+    const root = document.documentElement;
+    root.classList.add("sk-theme-switching");
+    const transition = document.startViewTransition(() => saveTheme(next));
+    transition.ready.then(() => {
+      root.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+        { duration: 560, easing: "cubic-bezier(.22, 1, .36, 1)", pseudoElement: "::view-transition-new(root)" }
+      );
+    }).catch(() => {});
+    transition.finished.finally(() => root.classList.remove("sk-theme-switching"));
+  }
+
+  // root … まだページに入れていないメニューの中身のときは、その要素
+  function renderThemePicker(theme, root = document) {
+    root.querySelectorAll("[data-theme-mode]").forEach((btn) => {
+      btn.setAttribute("aria-checked", String(btn.dataset.themeMode === theme.mode));
+    });
+    root.querySelectorAll("[data-theme-colors] button").forEach((btn) => {
+      btn.setAttribute("aria-checked", String(btn.dataset.accent === theme.accent));
+    });
+    const accent = ACCENTS.find((a) => a.key === theme.accent) || ACCENTS[0];
+    root.querySelectorAll("[data-theme-name]").forEach((el) => {
+      const text = `${accent.name}（${ACCENT_NOTES[accent.key]}）`;
+      if (el.textContent === text) return;
+      // 名前が変わったときは、ふわっと入れ替える（最初に出すときは動かさない）
+      const changed = !!el.textContent;
+      el.textContent = text;
+      if (changed) {
+        el.classList.remove("is-changed");
+        void el.offsetWidth;
+        el.classList.add("is-changed");
+      }
+    });
+  }
+
+  // 「表示」のボタン（ヘッダーのアカウントのメニュー）に、色のボタンを入れて押せるようにする
+  function bindThemeControls(root) {
+    root.querySelectorAll("[data-theme-colors]:not([data-bound])").forEach((box) => {
+      box.dataset.bound = "1";
+      box.replaceChildren(...ACCENTS.map((a) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("role", "radio");
+        btn.dataset.accent = a.key;
+        btn.style.setProperty("--swatch", a.color);
+        btn.setAttribute("aria-label", `${a.name}（${ACCENT_NOTES[a.key]}）`);
+        btn.title = `${a.name}（${ACCENT_NOTES[a.key]}）`;
+        btn.addEventListener("click", (e) => switchTheme({ ...readTheme(), accent: a.key }, btn, e));
+        return btn;
+      }));
+    });
+    root.querySelectorAll("[data-theme-mode]:not([data-bound])").forEach((btn) => {
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", (e) => switchTheme({ ...readTheme(), mode: btn.dataset.themeMode }, btn, e));
+    });
+    renderThemePicker(readTheme(), root);
+  }
+
+  // ヘッダーのアカウントのメニューのいちばん下に出す「表示」
+  function themeMenuBlock() {
+    const block = document.createElement("div");
+    block.className = "hd-menu-theme";
+    block.innerHTML =
+      '<div class="hd-menu-title"></div>' +
+      '<div class="hd-theme-row"><div class="hd-theme-modes" role="radiogroup">' +
+      '<button type="button" role="radio" data-theme-mode="auto"></button>' +
+      '<button type="button" role="radio" data-theme-mode="light"></button>' +
+      '<button type="button" role="radio" data-theme-mode="dark"></button></div>' +
+      '<div class="hd-theme-colors" role="radiogroup" data-theme-colors></div>' +
+      '<span class="hd-theme-name" data-theme-name></span></div>';
+    block.querySelector(".hd-menu-title").textContent = t("表示");
+    block.querySelector(".hd-theme-modes").setAttribute("aria-label", t("表示"));
+    block.querySelector(".hd-theme-colors").setAttribute("aria-label", t("テーマカラー"));
+    block.querySelector('[data-theme-mode="auto"]').textContent = t("自動");
+    block.querySelector('[data-theme-mode="light"]').textContent = t("ライト");
+    block.querySelector('[data-theme-mode="dark"]').textContent = t("ダーク");
+    bindThemeControls(block);
+    return block;
+  }
+
+  function setupThemePicker() {
+    bindThemeControls(document);
+    applyTheme(readTheme());
+    // 読み込んだときは色の丸を弾ませない（選び直したときだけ。site.css の html.sk-theme-ready）
+    requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add("sk-theme-ready")));
+    // ほかのタブで変えたときも合わせる
+    window.addEventListener("storage", (e) => { if (e.key === THEME_KEY) applyTheme(readTheme()); });
+    // 「自動」のときは、端末のライト・ダークが変わったらスマホの帯の色も合わせる
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => applyTheme(readTheme()));
+  }
+  setupThemePicker();
 
   // ---------- サポートID ----------
   const idEls = document.querySelectorAll("[data-support-id]");
@@ -620,7 +765,7 @@
   // <ol data-updates data-limit="3"> … 新しい順に表示する（data-limit がなければすべて）
   const updateLists = document.querySelectorAll("[data-updates]");
   if (updateLists.length) {
-    const CATEGORY_CLASS = { "SK": "cat-sk", "Y-FILTER.": "cat-yf", "SK Hub Systems": "cat-hub", "MALU": "cat-malu", "Lab": "cat-lab" };
+    const CATEGORY_CLASS = { "SK": "cat-sk", "Y-FILTER.": "cat-yf", "SK Hub Systems": "cat-hub", "MALU": "cat-malu", "Nagi": "cat-nagi", "Lab": "cat-lab" };
     const formatDate = (s) => I18N.date(s);
     // 訳は各項目の i18n: { "en": { title, body, label } }（なければ日本語）
     const localize = (it) => {

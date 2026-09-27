@@ -1,4 +1,5 @@
-/* Y-FILTER. の紹介ページ。拡張機能の welcome.html（初期画面）と同じデザイン（ライト） */
+/* Y-FILTER. の紹介ページ。拡張機能の welcome.html（初期画面）と同じデザイン
+   ダークモード（assets/site.css と同じ条件）では、下の .yf-page の変数だけを入れ替える */
 .yf-page {
   --yf-ink: #f6f3ec;
   --yf-ink-2: #ffffff;
@@ -55,13 +56,13 @@
 .yf-btn svg { width: 16px; height: 16px; }
 .yf-btn-accent { background: var(--yf-accent); color: var(--yf-accent-ink); box-shadow: 0 8px 30px var(--yf-accent-glow); }
 .yf-btn-accent:hover { box-shadow: 0 10px 40px var(--yf-accent-glow); filter: brightness(1.03); }
-.yf-btn-line { background: rgba(255, 255, 255, .6); border-color: var(--yf-line-strong); }
+.yf-btn-line { background: color-mix(in srgb, var(--yf-ink-2) 60%, transparent); border-color: var(--yf-line-strong); }
 .yf-btn-line:hover { background: var(--yf-tint-hover); }
 .yf-btn[aria-disabled="true"] { cursor: default; box-shadow: none; opacity: .75; }
 .yf-btn[aria-disabled="true"]:active { transform: none; }
 
 /* このブラウザに Y-FILTER. が入っているとき */
-.yf-installed { display: inline-flex; align-items: center; gap: 12px; margin-top: 28px; padding: 10px 18px 10px 10px; border-radius: 16px; background: #fff; border: 1px solid #bfe5cc; box-shadow: 0 8px 24px rgba(27, 127, 59, .12); }
+.yf-installed { display: inline-flex; align-items: center; gap: 12px; margin-top: 28px; padding: 10px 18px 10px 10px; border-radius: 16px; background: var(--yf-ink-2); border: 1px solid #bfe5cc; box-shadow: 0 8px 24px rgba(27, 127, 59, .12); }
 .yf-installed-ico { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #e6f5ec; color: #1b7f3b; flex: none; }
 .yf-installed-ico svg { width: 18px; height: 18px; }
 .yf-installed strong { display: block; font-size: 14.5px; }
@@ -72,7 +73,7 @@
 .yf-installed + .yf-cta, .yf-update + .yf-cta { margin-top: 22px; }
 
 /* フィルターの様子 */
-.yf-viz { position: relative; background: #fff; border: 1px solid var(--yf-line-strong); border-radius: 22px; padding: 18px; box-shadow: var(--yf-shadow-lg); }
+.yf-viz { position: relative; background: var(--yf-ink-2); border: 1px solid var(--yf-line-strong); border-radius: 22px; padding: 18px; box-shadow: var(--yf-shadow-lg); }
 .yf-viz-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 14px; border-bottom: 1px solid var(--yf-line); margin-bottom: 10px; }
 .yf-viz-title { font-family: var(--yf-display); font-size: 13px; color: var(--yf-muted); display: flex; align-items: center; gap: 8px; }
 .yf-live { width: 8px; height: 8px; border-radius: 50%; background: var(--yf-accent); animation: yf-pulse 1.8s infinite; }
@@ -96,7 +97,7 @@
 .yf-viz-stat span { font-size: 11px; color: var(--yf-muted); }
 
 /* ---------- 開発中のお知らせ ---------- */
-.yf-notice { display: flex; gap: 14px; align-items: flex-start; padding: 18px 22px; margin-bottom: 72px; border-radius: 18px; background: #fff; border: 1px solid var(--yf-accent-border); box-shadow: 0 8px 30px var(--yf-accent-glow); }
+.yf-notice { display: flex; gap: 14px; align-items: flex-start; padding: 18px 22px; margin-bottom: 72px; border-radius: 18px; background: var(--yf-ink-2); border: 1px solid var(--yf-accent-border); box-shadow: 0 8px 30px var(--yf-accent-glow); }
 .yf-notice svg { width: 22px; height: 22px; flex: none; margin-top: 2px; color: var(--yf-accent-text); }
 .yf-notice strong { display: block; }
 .yf-notice p { font-size: 14px; color: var(--yf-muted); }
@@ -105,7 +106,7 @@
 .yf-label { font-family: var(--yf-display); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--yf-muted); margin: 0 0 18px; }
 
 /* ---------- Features ---------- */
-.yf-features { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--yf-line); border-left: 1px solid var(--yf-line); margin-bottom: 88px; background: rgba(255, 255, 255, .55); }
+.yf-features { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--yf-line); border-left: 1px solid var(--yf-line); margin-bottom: 88px; background: color-mix(in srgb, var(--yf-ink-2) 55%, transparent); }
 .yf-feature { padding: 28px; border-right: 1px solid var(--yf-line); border-bottom: 1px solid var(--yf-line); }
 .yf-feature svg { width: 26px; height: 26px; stroke: var(--yf-accent-text); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .yf-feature h3 { font-size: 16px; margin: 16px 0 6px; }
@@ -122,7 +123,7 @@
   content: ""; position: absolute; left: 0; top: 2px; width: 19px; height: 19px; border-radius: 6px;
   background: var(--yf-accent) center / 12px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1204' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
 }
-.yf-window { border-radius: 16px; box-shadow: var(--yf-shadow-lg), 0 0 0 1px var(--yf-line-strong); background: #fff; }
+.yf-window { border-radius: 16px; box-shadow: var(--yf-shadow-lg), 0 0 0 1px var(--yf-line-strong); background: var(--yf-ink-2); }
 .yf-window img { display: block; width: 100%; }
 
 /* 管理画面の全体 */
@@ -130,7 +131,7 @@
 .yf-showcase .yf-sub { margin: 16px auto 0; }
 .yf-showcase .yf-window { max-width: 1000px; margin: 40px auto 0; transform: perspective(1800px) rotateX(4deg); transform-origin: center top; }
 .yf-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 1000px; margin: 28px auto 0; }
-.yf-stats > div { background: #fff; border: 1px solid var(--yf-line-strong); border-radius: 16px; padding: 16px 18px; text-align: left; }
+.yf-stats > div { background: var(--yf-ink-2); border: 1px solid var(--yf-line-strong); border-radius: 16px; padding: 16px 18px; text-align: left; }
 .yf-stats b { display: block; font-family: var(--yf-display); font-size: 30px; line-height: 1.1; }
 .yf-stats b small { font-size: 16px; margin-left: 2px; }
 .yf-stats span { font-size: 12.5px; color: var(--yf-muted); }
@@ -167,7 +168,7 @@
 /* ---------- プライバシー ---------- */
 .yf-privacy { padding: 96px 0 72px; text-align: center; }
 .yf-privacy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; text-align: left; }
-.yf-privacy-card { background: #fff; border: 1px solid var(--yf-line-strong); border-radius: 20px; padding: 26px; }
+.yf-privacy-card { background: var(--yf-ink-2); border: 1px solid var(--yf-line-strong); border-radius: 20px; padding: 26px; }
 .yf-privacy-card svg { width: 28px; height: 28px; stroke: var(--yf-accent-text); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .yf-privacy-card h3 { font-size: 17px; margin: 14px 0 6px; }
 .yf-privacy-card p { font-size: 14px; color: var(--yf-muted); line-height: 1.75; }
@@ -204,3 +205,25 @@
 }
 /* 見出しは言葉のまとまりで折り返す */
 .yf .nb { display: inline-block; }
+
+/* ダークモード（端末がダークでライトを選んでいない / ダークを選んだ）。値を変えるときは両方そろえる */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .yf-page {
+    --yf-ink: #0e1116; --yf-ink-2: #161b22;
+    --yf-line: rgba(255, 255, 255, .08); --yf-line-strong: rgba(255, 255, 255, .16);
+    --yf-tint: rgba(255, 255, 255, .03); --yf-tint-hover: rgba(255, 255, 255, .06);
+    --yf-text: #eef0f3; --yf-muted: #a3abb8; --yf-faint: #7c8594;
+    --yf-accent-text: #ffc83d; --yf-accent-soft: rgba(255, 200, 61, .12); --yf-accent-border: rgba(255, 200, 61, .35);
+    --yf-danger-soft: rgba(196, 50, 31, .18); --yf-grid-glow: rgba(255, 200, 61, .16);
+    --yf-shadow-lg: 0 24px 60px rgba(0, 0, 0, .45);
+  }
+}
+:root[data-theme="dark"] .yf-page {
+  --yf-ink: #0e1116; --yf-ink-2: #161b22;
+  --yf-line: rgba(255, 255, 255, .08); --yf-line-strong: rgba(255, 255, 255, .16);
+  --yf-tint: rgba(255, 255, 255, .03); --yf-tint-hover: rgba(255, 255, 255, .06);
+  --yf-text: #eef0f3; --yf-muted: #a3abb8; --yf-faint: #7c8594;
+  --yf-accent-text: #ffc83d; --yf-accent-soft: rgba(255, 200, 61, .12); --yf-accent-border: rgba(255, 200, 61, .35);
+  --yf-danger-soft: rgba(196, 50, 31, .18); --yf-grid-glow: rgba(255, 200, 61, .16);
+  --yf-shadow-lg: 0 24px 60px rgba(0, 0, 0, .45);
+}

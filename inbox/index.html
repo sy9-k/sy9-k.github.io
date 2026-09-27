@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- 多言語: /lang/ で選んだ言語で表示する（URL は変わらない）。ページの最後の translatePage() で訳す -->
   <script src="/assets/i18n.js"></script>
+  <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
+  <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
   <title>お問い合わせの受信箱 | SK</title>
   <meta name="description" content="SK へのお問い合わせの受信箱（開発者用）。">
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" data-theme-color>
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SK">
@@ -96,7 +98,7 @@
         </div>
         <div>
           <h2>プロダクト</h2>
-          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/products/nagi/">Nagi</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
         </div>
         <div>
           <h2>サポートと情報</h2>
@@ -104,7 +106,6 @@
         </div>
       </div>
       <div class="wordmark" aria-hidden="true">SK</div>
-      <nav class="footer-langs" aria-label="Language" data-footer-langs></nav>
       <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
     </div>
   </footer>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 多言語: /lang/ で選んだ言語で表示する（URL は変わらない）。ページの最後の translatePage() で訳す -->
+  <script src="/assets/i18n.js"></script>
+  <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
+  <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
+  <title>Nagi | SK</title>
+  <meta name="description" content="集中と休憩をくり返して、勉強や作業の時間を記録する集中タイマー「Nagi」。1 日の目標と連続日数、端末のあいだの同期。">
+  <meta name="theme-color" content="#ffffff" data-theme-color>
+  <link rel="canonical" href="https://sy9-k.github.io/products/nagi/">
+  <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SK">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:title" content="Nagi | SK">
+  <meta property="og:description" content="集中と休憩をくり返して、勉強や作業の時間を記録する集中タイマー「Nagi」。1 日の目標と連続日数、端末のあいだの同期。">
+  <meta property="og:url" content="https://sy9-k.github.io/products/nagi/">
+  <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap"></script>
+  <link rel="stylesheet" href="/assets/header.css">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+  <a class="skip" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <a class="hd-logo" href="/" aria-label="ホーム">
+      <span class="hd-logo-image" aria-hidden="true"><img src="/assets/logo.svg" alt="" width="26" height="26"></span>
+      <span class="hd-logo-back" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+    <a class="hd-item" href="/about/">私について</a>
+    <a class="hd-item" href="/#products" data-menu="products">プロダクト</a>
+    <a class="hd-item" href="/support/" data-menu="support" data-no-navigation="true">サポートと情報</a>
+    <a class="hd-item hd-account" href="/account/" data-menu="account" data-account-link>アカウント</a>
+    <a class="hd-item hd-lang" href="/lang/" data-lang-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg><span class="hd-lang-label">言語</span></a>
+    <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
+  </header>
+  <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
+  <div class="hd-backdrop" id="hd-backdrop"></div>
+
+  <main id="main">
+    <section class="p-hero band band--nagi">
+      <div class="wrap">
+        <div class="top">
+          <img class="icon" src="/nagi/ico/icon-192.png" alt="">
+          <div>
+            <h1>Nagi</h1>
+            <div class="kind">集中タイマー（Web）</div>
+          </div>
+          <span class="badge badge-live"><span class="dot"></span>公開中</span>
+        </div>
+        <p class="lead">集中と休憩を、凪のように静かにくり返す。勉強や作業の時間を記録して、1 日の目標と、達成した日が続いている日数を見える形にします。</p>
+        <div class="btn-row">
+          <a class="btn btn-primary nagi-btn" href="/nagi/">Nagi を開く<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-tonal" href="/support/?a=nagi-about">使い方・サポート</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Nagi の画面のイメージ（CSS で描いたもの。本物の画面は /nagi/） -->
+    <section class="section screenshot-wrap">
+      <div class="wrap">
+        <div class="window nagi-mock" aria-hidden="true">
+          <div class="window-bar"><i></i><i></i><i></i><span class="window-url">sy9-k.github.io/nagi</span></div>
+          <div class="nagi-mock-body">
+            <div class="nagi-mock-timer">
+              <div class="nagi-mock-seg"><span class="on">✓ 集中</span><span>休憩</span><span>長い休憩</span></div>
+              <div class="nagi-mock-dial">
+                <div class="nagi-mock-ring"></div>
+                <div class="nagi-mock-center">
+                  <span class="nagi-mock-chip">集中</span>
+                  <strong>18:24</strong>
+                  <small>集中しています</small>
+                </div>
+              </div>
+              <div class="nagi-mock-controls"><i></i><span>一時停止</span><i></i></div>
+            </div>
+            <div class="nagi-mock-cards">
+              <div class="nagi-mock-card">
+                <small>今日の集中</small>
+                <strong>1時間20分 <em>/ 2時間</em></strong>
+                <div class="nagi-mock-bar"><span></span></div>
+                <span class="nagi-mock-streak">5日連続</span>
+              </div>
+              <div class="nagi-mock-card">
+                <small>この 7 日</small>
+                <div class="nagi-mock-week"><i style="--h:.7"></i><i style="--h:1" class="met"></i><i style="--h:.45"></i><i style="--h:1.1" class="met"></i><i style="--h:1" class="met"></i><i style="--h:.85"></i><i style="--h:.66"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Features</span>
+          <h2>特長</h2>
+        </div>
+        <div class="grid-3">
+          <div class="card feature">
+            <span class="tile-ico ti-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg></span>
+            <h3>集中と休憩をくり返す</h3>
+            <p>集中 25 分・休憩 5 分をくり返し、4 回ごとに長い休憩。時間は設定で変えられます。</p>
+          </div>
+          <div class="card feature">
+            <span class="tile-ico ti-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 3 2"/><path d="M3 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 3 2"/><circle cx="12" cy="7" r="3"/></svg></span>
+            <h3>1 日の目標と連続日数</h3>
+            <p>「1 日 2 時間」のような目標を決めると、今日の進み具合と、達成した日が何日続いているかが見えます。</p>
+          </div>
+          <div class="card feature">
+            <span class="tile-ico ti-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span>
+            <h3>音と通知で知らせる</h3>
+            <p>時間になったら、風鈴のようなやさしい音と通知でお知らせ。ほかのタブを見ていても気づけます。</p>
+          </div>
+          <div class="card feature">
+            <span class="tile-ico ti-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></span>
+            <h3>拡大表示</h3>
+            <p>パソコンでは、タイマーだけを画面いっぱいに。動いているあいだは画面が暗くなりません。</p>
+          </div>
+          <div class="card feature">
+            <span class="tile-ico ti-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></svg></span>
+            <h3>ホーム画面に追加</h3>
+            <p>スマホやパソコンのホーム画面に追加すると、アプリのようにすぐ開けます。オフラインでも使えます。</p>
+          </div>
+          <div class="card feature">
+            <span class="tile-ico ti-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-13.7 5.6M4 12a8 8 0 0 1 13.7-5.6"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></span>
+            <h3>端末のあいだで同期</h3>
+            <p>SK Hub Systems アカウントでログインすると、スマホとパソコンの記録と目標をまとめられます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">How it works</span>
+          <h2>使い方</h2>
+        </div>
+        <ol class="nagi-steps">
+          <li><b>1</b><div><strong>集中する</strong><p>「はじめる」を押して、時間まで一つのことに集中します。</p></div></li>
+          <li><b>2</b><div><strong>休憩する</strong><p>音が鳴ったら休憩。休憩のあいだは、画面が空の色に変わります。</p></div></li>
+          <li><b>3</b><div><strong>記録がたまる</strong><p>集中した時間が今日の記録に足され、目標に近づいていきます。</p></div></li>
+        </ol>
+        <p class="nagi-keys"><span>パソコンでは:</span> <kbd>Space</kbd> はじめる・一時停止 <kbd>R</kbd> リセット <kbd>N</kbd> 次へ <kbd>F</kbd> 拡大表示</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="card nagi-privacy">
+          <span class="tile-ico ti-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+          <div>
+            <h2>記録するのは、時間だけ</h2>
+            <p>Nagi が記録するのは、集中を始めた時刻と、集中した時間だけです。何を勉強したかや、見ていたサイトは記録しません。記録と設定はこのブラウザの中に保存し、SK Hub Systems アカウントを Nagi に接続したときだけ、あなたのアカウントにも保存します。</p>
+            <p class="nagi-privacy-links"><a href="/policies/#sk-privacy">SK プライバシーポリシー</a><a href="/support/?a=nagi-sync">記録の同期について</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <div>
+          <a class="logo" href="/" aria-label="SK ホーム"><img src="/assets/logo.svg" alt="" width="36" height="36">SK</a>
+          <p class="about">毎日のネットを、もう少し安心で便利に。Y-FILTER. と MALU を開発しています。</p>
+        </div>
+        <div>
+          <h2>プロダクト</h2>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/products/nagi/">Nagi</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
+        </div>
+        <div>
+          <h2>サポートと情報</h2>
+          <ul><li><a href="/support/">サポート記事</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li data-analytics-settings hidden><a href="#analytics">アクセス解析の設定</a></li><li><a href="/credits/">Link &amp; Credit</a></li><li><a href="/about/">私について</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">SK</div>
+      <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
+    </div>
+  </footer>
+
+  <!-- ページを選んだ言語に訳す（ほかのスクリプトが動く前に。assets/i18n.js） -->
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <script src="/support/articles.js" defer></script>
+  <script src="/assets/site.js" defer></script>
+  <!-- SK Hub Systems アカウントの設定の同期（ログイン中だけ） -->
+  <script src="/assets/hub/sync-loader.js" defer></script>
+  <script src="/frameworks/check.js" defer></script>
+  <!-- アクセス解析（Google アナリティクス。許可した人だけ） -->
+  <script src="/assets/analytics.js" defer></script>
+</body>
+</html>

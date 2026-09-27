@@ -68,7 +68,9 @@ export async function saveProfile(user, profile) {
 //   検索履歴の同期は、MALU で本人が有効にしたときだけ（services.malu.historySync）
 export const SERVICES = {
   yfilter: { name: "Y-FILTER. 管理コンソール", url: "/y-filter/", icon: "/y-filter/shared/icon.svg", terms: "/policies/#sk-hub-systems" },
-  malu: { name: "MALU", url: "/dictionary/", icon: "/dictionary/ico/icon-192.png", terms: "/policies/#sk-terms" }
+  malu: { name: "MALU", url: "/dictionary/", icon: "/dictionary/ico/icon-192.png", terms: "/policies/#sk-terms" },
+  // Nagi のデータ: 集中の記録と 1 日の目標 accounts/{UID}/nagi/data（nagi/account.js）
+  nagi: { name: "Nagi", url: "/nagi/", icon: "/nagi/ico/icon-192.png", terms: "/policies/#sk-terms" }
 };
 
 export function isConnected(account, key) {

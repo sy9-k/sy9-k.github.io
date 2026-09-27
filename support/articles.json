@@ -2,6 +2,7 @@
   "_note": "サポートの記事の予備。記事は記事エディター（/studio/）で書き、SK Hub Systems に保存する。このファイルは SK Hub Systems に記事がない・届かないときだけ使われる（記事エディターの「バックアップを書き出す」で作り直せる）。type は news（お知らせ）か guide（サポート記事）。news で重要なものは important: true。本文 body は段落のリストで、{\"p\"} 段落 / {\"h\"} 小見出し / {\"steps\"} 手順 / {\"list\"} 箇条書き / {\"note\"} 補足。文中の [文字](URL) はリンクに、`文字` はコード（ID・アドレスなど）になる。id は URL（/support/?a=id）になるので英数字とハイフンで。 訳は各記事の i18n（en / zh-CN / zh-TW / ko の title・summary・body）。",
   "categories": [
     "MALU",
+    "Nagi",
     "Y-FILTER.",
     "SK Hub Systems",
     "アカウント",
@@ -578,6 +579,383 @@
             },
             {
               "p": "이름만 바뀌었으며, 구조나 다루는 정보는 달라지지 않습니다. 관리 콘솔과 Y-FILTER. 설정 화면의 표시도 차례로 새 이름으로 바뀝니다."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "nagi-about",
+      "type": "guide",
+      "date": "2026-09-27",
+      "category": "Nagi",
+      "title": "Nagi の使い方",
+      "summary": "集中と休憩をくり返して、勉強や作業の時間を記録する集中タイマーです。",
+      "body": [
+        {
+          "p": "Nagi は、集中（初期 25 分）と休憩（5 分）をくり返し、4 回ごとに長い休憩（15 分）をとる集中タイマーです。集中した時間を記録して、1 日の目標と、目標を達成した日が何日続いているかを表示します。"
+        },
+        {
+          "h": "使いはじめる"
+        },
+        {
+          "steps": [
+            "[Nagi](/nagi/) を開き、「はじめる」を押します。",
+            "時間になると音が鳴り、休憩になります（休憩のあいだは画面が空の色になります）。",
+            "休憩が終わったら、次の集中をはじめます。集中した時間は、今日の記録に足されます。"
+          ]
+        },
+        {
+          "h": "設定"
+        },
+        {
+          "list": [
+            "右上の歯車から、集中・休憩の時間、長い休憩までの回数、1 日の目標を変えられます。",
+            "終わったあとに次を自動ではじめるか、音を鳴らすか、通知するかも選べます。",
+            "1 分未満でやめた集中は記録しません。"
+          ]
+        },
+        {
+          "h": "パソコンで使う"
+        },
+        {
+          "p": "右上の拡大表示のボタン（または `F` キー）で、タイマーだけを画面いっぱいに表示できます。動いているあいだは画面が暗くなりません。キーボードでは `Space` ではじめる・一時停止、`R` でリセット、`N` で次へ進めます。"
+        },
+        {
+          "note": "記録するのは、集中を始めた時刻と集中した時間だけです。何を勉強したかは記録しません。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "How to use Nagi",
+          "summary": "A focus timer that repeats focus and breaks and records your study and work time.",
+          "body": [
+            {
+              "p": "Nagi is a focus timer that repeats focus (25 minutes by default) and breaks (5 minutes), with a long break (15 minutes) every 4 rounds. It records the time you focused and shows your daily goal and how many days in a row you've met it."
+            },
+            {
+              "h": "Getting started"
+            },
+            {
+              "steps": [
+                "Open [Nagi](/nagi/) and press \"Start\".",
+                "When time is up, a sound plays and your break begins (the screen turns sky blue during breaks).",
+                "When the break ends, start your next focus. The time you focused is added to today's record."
+              ]
+            },
+            {
+              "h": "Settings"
+            },
+            {
+              "list": [
+                "From the gear icon at the top right, you can change the focus and break times, the number of rounds before a long break, and your daily goal.",
+                "You can also choose whether to start the next period automatically, play a sound, and show a notification.",
+                "Focus sessions stopped in under 1 minute aren't recorded."
+              ]
+            },
+            {
+              "h": "Using it on a computer"
+            },
+            {
+              "p": "Use the enlarge button at the top right (or the `F` key) to show just the timer across the whole screen. The screen stays on while it's running. On the keyboard, press `Space` to start or pause, `R` to reset, and `N` to go to the next period."
+            },
+            {
+              "note": "Nagi records only when you started focusing and how long you focused. It doesn't record what you studied."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "Nagi 的使用方法",
+          "summary": "重复专注与休息，记录学习和工作时间的专注计时器。",
+          "body": [
+            {
+              "p": "Nagi 是一款重复专注（默认 25 分钟）与休息（5 分钟）、每 4 次安排一次长休息（15 分钟）的专注计时器。它会记录专注的时间，并显示每日目标和连续达成目标的天数。"
+            },
+            {
+              "h": "开始使用"
+            },
+            {
+              "steps": [
+                "打开 [Nagi](/nagi/)，按下“开始”。",
+                "时间到了会响起声音并进入休息（休息期间画面会变成天空的颜色）。",
+                "休息结束后，开始下一次专注。专注的时间会加到今天的记录中。"
+              ]
+            },
+            {
+              "h": "设置"
+            },
+            {
+              "list": [
+                "点按右上角的齿轮，可以更改专注和休息的时长、长休息前的次数以及每日目标。",
+                "还可以选择结束后是否自动开始下一段、是否播放声音、是否通知。",
+                "不满 1 分钟就停止的专注不会被记录。"
+              ]
+            },
+            {
+              "h": "在电脑上使用"
+            },
+            {
+              "p": "点按右上角的放大显示按钮（或按 `F` 键），可以只把计时器放大到整个屏幕。运行期间屏幕不会变暗。键盘上按 `Space` 开始或暂停，按 `R` 重置，按 `N` 进入下一段。"
+            },
+            {
+              "note": "只记录开始专注的时间和专注的时长。不会记录你学习了什么。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "Nagi 的使用方法",
+          "summary": "重複專注與休息，記錄學習和工作時間的專注計時器。",
+          "body": [
+            {
+              "p": "Nagi 是一款重複專注（預設 25 分鐘）與休息（5 分鐘）、每 4 次安排一次長休息（15 分鐘）的專注計時器。它會記錄專注的時間，並顯示每日目標和連續達成目標的天數。"
+            },
+            {
+              "h": "開始使用"
+            },
+            {
+              "steps": [
+                "開啟 [Nagi](/nagi/)，按下「開始」。",
+                "時間到了會響起聲音並進入休息（休息期間畫面會變成天空的顏色）。",
+                "休息結束後，開始下一次專注。專注的時間會加到今天的記錄中。"
+              ]
+            },
+            {
+              "h": "設定"
+            },
+            {
+              "list": [
+                "點按右上角的齒輪，可以變更專注和休息的時長、長休息前的次數以及每日目標。",
+                "還可以選擇結束後是否自動開始下一段、是否播放聲音、是否通知。",
+                "不滿 1 分鐘就停止的專注不會被記錄。"
+              ]
+            },
+            {
+              "h": "在電腦上使用"
+            },
+            {
+              "p": "點按右上角的放大顯示按鈕（或按 `F` 鍵），可以只把計時器放大到整個螢幕。執行期間螢幕不會變暗。鍵盤上按 `Space` 開始或暫停，按 `R` 重設，按 `N` 進入下一段。"
+            },
+            {
+              "note": "只記錄開始專注的時間和專注的時長。不會記錄你學習了什麼。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "Nagi 사용 방법",
+          "summary": "집중과 휴식을 반복하며 공부나 작업 시간을 기록하는 집중 타이머입니다.",
+          "body": [
+            {
+              "p": "Nagi는 집중(기본 25분)과 휴식(5분)을 반복하고, 4번마다 긴 휴식(15분)을 하는 집중 타이머입니다. 집중한 시간을 기록하고, 하루 목표와 목표를 며칠 연속으로 달성했는지를 보여 줍니다."
+            },
+            {
+              "h": "시작하기"
+            },
+            {
+              "steps": [
+                "[Nagi](/nagi/)를 열고 '시작'을 누릅니다.",
+                "시간이 되면 소리가 나고 휴식이 시작됩니다(쉬는 동안 화면이 하늘색으로 바뀝니다).",
+                "휴식이 끝나면 다음 집중을 시작합니다. 집중한 시간은 오늘의 기록에 더해집니다."
+              ]
+            },
+            {
+              "h": "설정"
+            },
+            {
+              "list": [
+                "오른쪽 위의 톱니바퀴에서 집중·휴식 시간, 긴 휴식까지의 횟수, 하루 목표를 바꿀 수 있습니다.",
+                "끝난 뒤 다음을 자동으로 시작할지, 소리를 낼지, 알림을 보낼지도 고를 수 있습니다.",
+                "1분이 안 되어 멈춘 집중은 기록하지 않습니다."
+              ]
+            },
+            {
+              "h": "컴퓨터에서 사용하기"
+            },
+            {
+              "p": "오른쪽 위의 크게 보기 버튼(또는 `F` 키)으로 타이머만 화면 가득 표시할 수 있습니다. 작동하는 동안에는 화면이 어두워지지 않습니다. 키보드에서는 `Space`로 시작·일시정지, `R`로 초기화, `N`으로 다음으로 넘어갑니다."
+            },
+            {
+              "note": "기록하는 것은 집중을 시작한 시각과 집중한 시간뿐입니다. 무엇을 공부했는지는 기록하지 않습니다."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "nagi-sync",
+      "type": "guide",
+      "date": "2026-09-27",
+      "category": "Nagi",
+      "title": "Nagi の記録をほかの端末と同期する",
+      "summary": "SK Hub Systems アカウントで、スマホとパソコンの記録と目標をまとめます。",
+      "body": [
+        {
+          "p": "SK Hub Systems アカウントを Nagi に接続すると、集中の記録と 1 日の目標を、ログインしているほかの端末と同期できます。"
+        },
+        {
+          "h": "接続する"
+        },
+        {
+          "steps": [
+            "Nagi の右上の歯車を押して、設定を開きます。",
+            "「SK Hub Systems アカウント」の「ログインして同期する」（ログイン中なら「Nagi に接続する」）を押します。",
+            "確認画面で「続ける」を押すと、Nagi に戻り、同期がはじまります。"
+          ]
+        },
+        {
+          "h": "同期のしくみ"
+        },
+        {
+          "list": [
+            "端末の記録とアカウントの記録をまとめ、どちらにしかない記録も両方に入ります。",
+            "1 日の目標は、あとで変えたほうにそろいます。",
+            "上の帯の同期のボタンで、今すぐ同期できます。"
+          ]
+        },
+        {
+          "p": "接続は、[アカウントのページ](/account/#services)の「サービス」から解除できます。解除するときに、アカウントに保存した記録を削除することもできます。"
+        },
+        {
+          "note": "同期した記録を読めるのは、あなただけです。「このブラウザの記録を消す」では、アカウントの記録は消えません。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Sync Nagi records with your other devices",
+          "summary": "Use your SK Hub Systems account to bring together your records and goal on your phone and computer.",
+          "body": [
+            {
+              "p": "When you connect your SK Hub Systems account to Nagi, your focus records and daily goal sync with your other signed-in devices."
+            },
+            {
+              "h": "Connect"
+            },
+            {
+              "steps": [
+                "Press the gear at the top right of Nagi to open settings.",
+                "Under \"SK Hub Systems account,\" press \"Sign in to sync\" (or \"Connect to Nagi\" if you're signed in).",
+                "Press \"Continue\" on the confirmation screen to return to Nagi and start syncing."
+              ]
+            },
+            {
+              "h": "How syncing works"
+            },
+            {
+              "list": [
+                "Records on the device and in the account are combined, so records that exist in only one place are added to both.",
+                "Your daily goal matches whichever was changed most recently.",
+                "Press the sync button in the top bar to sync right away."
+              ]
+            },
+            {
+              "p": "You can disconnect from \"Services\" on the [account page](/account/#services). When you disconnect, you can also delete the records saved in the account."
+            },
+            {
+              "note": "Only you can read your synced records. \"Delete records in this browser\" doesn't delete the records in your account."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "将 Nagi 的记录与其他设备同步",
+          "summary": "通过 SK Hub Systems 账户，合并手机和电脑上的记录与目标。",
+          "body": [
+            {
+              "p": "将 SK Hub Systems 账户连接到 Nagi 后，专注记录和每日目标可以与其他已登录的设备同步。"
+            },
+            {
+              "h": "连接"
+            },
+            {
+              "steps": [
+                "点按 Nagi 右上角的齿轮，打开设置。",
+                "在“SK Hub Systems 账户”中点按“登录并同步”（已登录时为“连接到 Nagi”）。",
+                "在确认画面中点按“继续”，即可返回 Nagi 并开始同步。"
+              ]
+            },
+            {
+              "h": "同步的机制"
+            },
+            {
+              "list": [
+                "设备上的记录和账户中的记录会合并，只存在于一方的记录也会加入双方。",
+                "每日目标会统一为较晚修改的那一方。",
+                "点按顶部栏的同步按钮，可以立即同步。"
+              ]
+            },
+            {
+              "p": "可以在[账户页面](/account/#services)的“服务”中断开连接。断开时，也可以删除保存在账户中的记录。"
+            },
+            {
+              "note": "同步的记录只有你能读取。“删除此浏览器中的记录”不会删除账户中的记录。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "將 Nagi 的記錄與其他裝置同步",
+          "summary": "透過 SK Hub Systems 帳戶，合併手機和電腦上的記錄與目標。",
+          "body": [
+            {
+              "p": "將 SK Hub Systems 帳戶連接到 Nagi 後，專注記錄和每日目標可以與其他已登入的裝置同步。"
+            },
+            {
+              "h": "連接"
+            },
+            {
+              "steps": [
+                "點按 Nagi 右上角的齒輪，開啟設定。",
+                "在「SK Hub Systems 帳戶」中點按「登入並同步」（已登入時為「連接到 Nagi」）。",
+                "在確認畫面中點按「繼續」，即可返回 Nagi 並開始同步。"
+              ]
+            },
+            {
+              "h": "同步的機制"
+            },
+            {
+              "list": [
+                "裝置上的記錄和帳戶中的記錄會合併，只存在於一方的記錄也會加入雙方。",
+                "每日目標會統一為較晚變更的那一方。",
+                "點按頂部列的同步按鈕，可以立即同步。"
+              ]
+            },
+            {
+              "p": "可以在[帳戶頁面](/account/#services)的「服務」中中斷連接。中斷時，也可以刪除儲存在帳戶中的記錄。"
+            },
+            {
+              "note": "同步的記錄只有你能讀取。「刪除此瀏覽器中的記錄」不會刪除帳戶中的記錄。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "Nagi 기록을 다른 기기와 동기화하기",
+          "summary": "SK Hub Systems 계정으로 스마트폰과 컴퓨터의 기록과 목표를 모읍니다.",
+          "body": [
+            {
+              "p": "SK Hub Systems 계정을 Nagi에 연결하면 집중 기록과 하루 목표를 로그인한 다른 기기와 동기화할 수 있습니다."
+            },
+            {
+              "h": "연결하기"
+            },
+            {
+              "steps": [
+                "Nagi 오른쪽 위의 톱니바퀴를 눌러 설정을 엽니다.",
+                "'SK Hub Systems 계정'의 '로그인하고 동기화'(로그인 중이면 'Nagi에 연결')를 누릅니다.",
+                "확인 화면에서 '계속'을 누르면 Nagi로 돌아가 동기화가 시작됩니다."
+              ]
+            },
+            {
+              "h": "동기화 방식"
+            },
+            {
+              "list": [
+                "기기의 기록과 계정의 기록을 합쳐, 한쪽에만 있는 기록도 양쪽에 들어갑니다.",
+                "하루 목표는 나중에 바꾼 쪽으로 맞춰집니다.",
+                "상단 바의 동기화 버튼으로 바로 동기화할 수 있습니다."
+              ]
+            },
+            {
+              "p": "연결은 [계정 페이지](/account/#services)의 '서비스'에서 해제할 수 있습니다. 해제할 때 계정에 저장한 기록을 삭제할 수도 있습니다."
+            },
+            {
+              "note": "동기화한 기록은 본인만 읽을 수 있습니다. '이 브라우저의 기록 삭제'로는 계정의 기록이 삭제되지 않습니다."
             }
           ]
         }

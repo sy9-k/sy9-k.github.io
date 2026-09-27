@@ -493,7 +493,7 @@ $("[data-acct-sync]").addEventListener("click", async (e) => {
 // ---------- サービス（接続しているものだけ出す） ----------
 
 // サービスごとの文言（接続の確認・接続の解除）
-const SERVICE_NAMES = { yfilter: t("Y-FILTER. 管理コンソール"), malu: "MALU" };
+const SERVICE_NAMES = { yfilter: t("Y-FILTER. 管理コンソール"), malu: "MALU", nagi: "Nagi" };
 const SERVICE_TEXT = {
   yfilter: {
     lead: t("このアカウントを管理コンソールに接続すると、端末の設定をまとめて管理できるようになります。"),
@@ -514,6 +514,16 @@ const SERVICE_TEXT = {
     disconnect: t("解除すると、単語帳と検索履歴の同期が使えなくなります。保存した言葉と同期した検索履歴は、そのまま残ります。"),
     wipe: t("単語帳と、同期した検索履歴も削除する"),
     wipeNote: t("元に戻せません。端末に保存されている検索履歴は消えません")
+  },
+  nagi: {
+    lead: t("このアカウントを Nagi に接続すると、集中の記録と 1 日の目標を、スマホやパソコンなどのあいだで同期できるようになります。"),
+    usesTitle: t("Nagi が使う情報"),
+    uses: [t("集中の記録（始めた時刻と、集中した時間）"), t("1 日の目標")],
+    note: t("記録は、あなただけが見られます。何の勉強をしたかなどは記録しません。接続は、アカウントのページの「サービス」からいつでも解除できます。"),
+    termsName: t("SK 利用規約"),
+    disconnect: t("解除すると、記録の同期が止まります。アカウントに保存した記録は、そのまま残ります。"),
+    wipe: t("アカウントに保存した集中の記録も削除する"),
+    wipeNote: t("元に戻せません。端末に保存されている記録は消えません")
   }
 };
 
@@ -546,6 +556,23 @@ function renderServices(user, account) {
   $("[data-acct-no-services]").hidden = count > 0;
   if (isConnected(account, "yfilter")) renderConsole(user);
   if (isConnected(account, "malu")) renderMalu(user, account);
+  if (isConnected(account, "nagi")) renderNagi(user);
+}
+
+// Nagi: 同期している集中の記録の合計と、1 日の目標
+async function renderNagi(user) {
+  const elNagi = $("[data-acct-nagi]");
+  try {
+    const snap = await getDoc(doc(db, "accounts", user.uid, "nagi", "data"));
+    if (!snap.exists()) { elNagi.textContent = t("まだ同期した記録はありません"); return; }
+    const data = snap.data();
+    const minutes = Math.floor((data.sessions || []).reduce((a, x) => a + (Number(x.m) || 0), 0));
+    const h = Math.floor(minutes / 60);
+    const total = h ? t("{h}時間{m}分", { h, m: minutes % 60 }) : t("{m}分", { m: minutes });
+    elNagi.textContent = `${t("集中した時間 {time}", { time: total })} · ${t("目標 1 日 {m} 分", { m: data.goal })}`;
+  } catch (e) {
+    elNagi.textContent = t("記録を確認できませんでした");
+  }
 }
 
 // MALU: 単語帳の言葉の数と、検索履歴の同期
@@ -609,6 +636,7 @@ disconnectDialog.addEventListener("close", async () => {
     if (wipe && disconnectKey === "yfilter") await deleteConsoleData(user.uid);
     // MALU は、接続を外すと単語帳に書けなくなるので、先に消す（消すのは接続していなくてもできる）
     if (wipe && disconnectKey === "malu") await deleteMaluData(user.uid);
+    if (wipe && disconnectKey === "nagi") await deleteNagiData(user.uid);
     await disconnectService(user, disconnectKey);
     const services = { ...(account.services || {}) };
     delete services[disconnectKey];
@@ -619,7 +647,8 @@ disconnectDialog.addEventListener("close", async () => {
     renderOverview(user, updated);
     message(!wipe ? t("接続を解除しました。")
       : disconnectKey === "malu" ? t("接続を解除し、単語帳と同期した検索履歴を削除しました。")
-        : t("接続を解除し、管理コンソールのデータを削除しました。"));
+        : disconnectKey === "nagi" ? t("接続を解除し、アカウントに保存した集中の記録を削除しました。")
+          : t("接続を解除し、管理コンソールのデータを削除しました。"));
   } catch (err) {
     message(errText(err));
   } finally {
@@ -691,13 +720,14 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
   if (busy || !user) return;
   setBusy(true, btn);
   try {
-    const [teams, devices, notices, maluWords, maluHistory, backups] = await Promise.all([
+    const [teams, devices, notices, maluWords, maluHistory, backups, nagiData] = await Promise.all([
       getDocs(query(collection(db, "teams"), where("members", "array-contains", user.uid))),
       getDocs(query(collection(db, "devices"), where("ownerUid", "==", user.uid))),
       getDocs(collection(db, "accounts", user.uid, "notices")),
       getDocs(collection(db, "accounts", user.uid, "maluWords")),
       getDoc(doc(db, "accounts", user.uid, "malu", "history")),
-      getDocs(collection(db, "teams", user.uid, "backups"))
+      getDocs(collection(db, "teams", user.uid, "backups")),
+      getDoc(doc(db, "accounts", user.uid, "nagi", "data"))
     ]);
     const plain = (v) => JSON.parse(JSON.stringify(v, (k, x) => (x && typeof x.toDate === "function" ? x.toDate().toISOString() : x)));
     const data = {
@@ -719,6 +749,8 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
         words: maluWords.docs.map((d) => plain(d.data())),
         syncedHistory: maluHistory.exists() ? plain(maluHistory.data()) : null
       },
+      // Nagi の集中の記録（s = 始めた時刻（ミリ秒）、m = 集中した分）と 1 日の目標
+      nagi: nagiData.exists() ? plain(nagiData.data()) : null,
       yFilterConsole: {
         teams: teams.docs.map((d) => ({ id: d.id, role: d.id === user.uid ? "owner" : "co-admin", ...plain(d.data()) })),
         devices: devices.docs.map((d) => ({ id: d.id, ...plain(d.data()) })),
@@ -781,7 +813,13 @@ async function deleteServiceData(uid) {
   const notices = await getDocs(collection(db, "accounts", uid, "notices"));
   await deleteRefs(notices.docs.map((d) => d.ref));
   await deleteMaluData(uid);
+  await deleteNagiData(uid);
   await deleteConsoleData(uid);
+}
+
+// Nagi のデータ: 同期した集中の記録と目標
+async function deleteNagiData(uid) {
+  await deleteRefs([doc(db, "accounts", uid, "nagi", "data")]);
 }
 
 // MALU のデータ: 単語帳と、同期した検索履歴
