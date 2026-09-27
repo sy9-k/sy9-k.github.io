@@ -96,12 +96,9 @@
     products: {
       title: t("プロダクト"),
       items: [
-        [t("プロダクト一覧"), lp("/#products")],
-        ["Y-FILTER.", lp("/products/y-filter/")],
-        ["MALU", lp("/products/malu/")],
-        ["Nagi", lp("/products/nagi/")],
-        ["SK Hub Systems", lp("/sk-hub-systems/")],
-        ["SK's Lab", lp("/lab/")]
+        [t("すべてのプロダクト"), lp("/products/")],
+        ["SK's Brand", lp("/brand/")],
+        ["SK Hub Systems", lp("/sk-hub-systems/")]
       ]
     },
     // groups があると、見出しつきの列に分けて出す（スマホでは縦に並ぶ）
@@ -122,6 +119,7 @@
           items: [
             [t("アップデート"), lp("/updates/")],
             [t("利用規約とプライバシーポリシー"), lp("/policies/")],
+            ["SK's Brand", lp("/brand/")],
             ["Link & Credit", lp("/credits/")]
           ]
         }
@@ -502,6 +500,8 @@
     const meta = document.querySelector("meta[data-theme-color]");
     if (meta) meta.setAttribute("content", getComputedStyle(root).getPropertyValue("--bg").trim() || "#ffffff");
     renderThemePicker(theme);
+    // ほかのスクリプト（SK's Brand のページなど）に知らせる
+    document.dispatchEvent(new CustomEvent("sk:theme", { detail: theme }));
   }
 
   function saveTheme(theme) {
@@ -615,6 +615,11 @@
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => applyTheme(readTheme()));
   }
   setupThemePicker();
+  // ほかのページのスクリプトから「表示」を変えるときの入口（/brand/brand.js）。set は切り替えのアニメーションつき
+  window.SKTheme = {
+    get: readTheme,
+    set: (patch, button, event) => switchTheme({ ...readTheme(), ...patch }, button, event)
+  };
 
   // ---------- サポートID ----------
   const idEls = document.querySelectorAll("[data-support-id]");

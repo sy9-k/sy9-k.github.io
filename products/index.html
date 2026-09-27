@@ -7,16 +7,17 @@
   <script src="/assets/i18n.js"></script>
   <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
   <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
-  <title>Language | SK</title>
-  <meta name="description" content="Choose your language / 言語を選択">
-  <meta name="robots" content="noindex">
+  <title>プロダクト | SK</title>
+  <meta name="description" content="SK がつくっているアプリ・ブラウザ拡張機能・サーバー基盤・実験中のツール（MALU・Nagi・Y-FILTER.・SK Hub Systems・SK's Lab）の一覧。">
   <meta name="theme-color" content="#ffffff" data-theme-color>
+  <link rel="canonical" href="https://sy9-k.github.io/products/">
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SK">
   <meta property="og:locale" content="ja_JP">
-  <meta property="og:title" content="Language | SK">
-  <meta property="og:description" content="Choose your language / 言語を選択">
+  <meta property="og:title" content="プロダクト | SK">
+  <meta property="og:description" content="SK がつくっているアプリ・ブラウザ拡張機能・サーバー基盤・実験中のツール（MALU・Nagi・Y-FILTER.・SK Hub Systems・SK's Lab）の一覧。">
+  <meta property="og:url" content="https://sy9-k.github.io/products/">
   <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -26,9 +27,8 @@
   <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap"></script>
   <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
-  <script src="/lang/lang.js" defer></script>
 </head>
-<body class="lang-page">
+<body>
   <a class="skip" href="#main">本文へ移動</a>
   <header class="site-header">
     <a class="hd-logo" href="/" aria-label="ホーム">
@@ -46,23 +46,36 @@
   <div class="hd-backdrop" id="hd-backdrop"></div>
 
   <main id="main">
-    <section class="lang-screen band band--plain">
-      <div class="lang-card" data-lang-card>
-        <div class="lang-head">
-          <div class="lang-globe" data-lang-globe aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg>
-          </div>
-          <h1 class="lang-title" data-lang-title>Language</h1>
-          <p class="lang-desc" data-lang-desc>Please select your language</p>
+    <section class="plist band band--plain">
+      <div class="wrap">
+        <h1>すべてのプロダクト</h1>
+        <p class="plist-lead">SK がつくっている、アプリ・拡張機能・サーバー基盤・実験中のツールの一覧です。</p>
+
+        <h2>アプリ</h2>
+        <div class="plist-grid">
+          <a class="plist-item" href="/products/malu/"><img src="/dictionary/ico/icon-192.png" alt="" width="44" height="44"><span><strong>MALU</strong><small>辞書検索</small></span></a>
+          <a class="plist-item" href="/products/nagi/"><img src="/nagi/ico/icon-192.png" alt="" width="44" height="44"><span><strong>Nagi</strong><small>集中タイマー</small></span></a>
         </div>
-        <div class="lang-list" role="radiogroup" aria-label="Language">
-          <button type="button" class="lang-item" role="radio" aria-checked="false" data-lang="ja" lang="ja">日本語</button>
-          <button type="button" class="lang-item" role="radio" aria-checked="false" data-lang="en" lang="en">English</button>
-          <button type="button" class="lang-item" role="radio" aria-checked="false" data-lang="zh-CN" lang="zh-CN">简体中文</button>
-          <button type="button" class="lang-item" role="radio" aria-checked="false" data-lang="zh-TW" lang="zh-TW">繁體中文</button>
-          <button type="button" class="lang-item" role="radio" aria-checked="false" data-lang="ko" lang="ko">한국어</button>
+
+        <h2>ブラウザ拡張機能</h2>
+        <div class="plist-grid">
+          <a class="plist-item" href="/products/y-filter/"><img class="yf-tile" src="/y-filter/shared/icon.svg" alt="" width="44" height="44"><span><strong>Y-FILTER.</strong><small>フィルタリング</small></span><em class="plist-tag">開発中</em></a>
         </div>
-        <button type="button" class="lang-continue" data-lang-continue disabled>Continue</button>
+
+        <h2>サーバーとアカウント</h2>
+        <div class="plist-grid">
+          <a class="plist-item" href="/sk-hub-systems/"><img class="plist-logo" src="/assets/logo.svg" alt="" width="44" height="44"><span><strong>SK Hub Systems</strong><small>サーバー基盤</small></span></a>
+          <a class="plist-item" href="/account/"><span class="plist-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span><strong>SK Hub Systems アカウント</strong><small>ひとつのアカウントで</small></span></a>
+          <a class="plist-item" href="/y-filter/"><img class="yf-tile" src="/y-filter/shared/icon.svg" alt="" width="44" height="44"><span><strong>Y-FILTER. 管理コンソール</strong><small>端末をまとめて管理</small></span></a>
+        </div>
+
+        <h2>SK's Lab <span class="plist-sub">実験中のツール</span></h2>
+        <div class="plist-grid">
+          <a class="plist-item" href="/qr-prj/"><span class="plist-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></span><span><strong>QR Drop</strong><small>QR コードでファイル転送</small></span></a>
+          <a class="plist-item" href="/smart-dash/"><span class="plist-ico ti-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="10" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="13" y="11" width="8" height="10" rx="1.5"/><rect x="3" y="15" width="8" height="6" rx="1.5"/></svg></span><span><strong>スマートダッシュボード</strong><small>時計・天気・予定を一画面に</small></span></a>
+        </div>
+
+        <p class="plist-more"><a href="/brand/">SK のデザインとこだわり（SK's Brand）</a><a href="/updates/">アップデート</a><a href="/status/">システム稼働状況</a></p>
       </div>
     </section>
   </main>
@@ -94,7 +107,7 @@
   <script src="/assets/site.js" defer></script>
   <!-- SK Hub Systems アカウントの設定の同期（ログイン中だけ） -->
   <script src="/assets/hub/sync-loader.js" defer></script>
-  <script src="/frameworks/check.js?check=none" defer></script>
+  <script src="/frameworks/check.js" defer></script>
   <!-- アクセス解析（Google アナリティクス。許可した人だけ） -->
   <script src="/assets/analytics.js" defer></script>
 </body>

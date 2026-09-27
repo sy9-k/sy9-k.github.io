@@ -29,6 +29,8 @@ pages = [
     ("about.html", "about/index.html", "私について | SK", "Y-FILTER. と MALU を開発している SK の自己紹介と、これまでにつくったもの。", False, True),
     ("y-filter.html", "products/y-filter/index.html", "Y-FILTER. | SK", "有害なサイトのブロックや利用時間の管理ができるブラウザ拡張機能「Y-FILTER.」（開発中）。", False, True),
     ("malu.html", "products/malu/index.html", "MALU | SK", "国語・英語・韓国語・中国語などの辞書をひとつの検索ボックスから引ける辞書検索アプリ「MALU」。", False, True),
+    ("products.html", "products/index.html", "プロダクト | SK", "SK がつくっているアプリ・ブラウザ拡張機能・サーバー基盤・実験中のツール（MALU・Nagi・Y-FILTER.・SK Hub Systems・SK's Lab）の一覧。", False, True),
+    ("brand.html", "brand/index.html", "SK's Brand | SK", "SK のプロダクトに共通するデザインとことばのきまり。大切にしていること・ロゴ・色・文字・形と動き・使う人との約束。", False, True),
     ("nagi.html", "products/nagi/index.html", "Nagi | SK", "集中と休憩をくり返して、勉強や作業の時間を記録する集中タイマー「Nagi」。1 日の目標と連続日数、端末のあいだの同期。", False, True),
     ("support.html", "support/index.html", "サポート | SK", "SK からのお知らせと、Y-FILTER.・MALU・SK Hub Systems・SK's Lab の使い方や困ったときの記事。", True, True),
     ("account.html", "account/index.html", "SK Hub Systems アカウント | SK", "SK のサービスを 1 つの Google アカウントで使える「SK Hub Systems アカウント」。ログイン・アカウントの確認・削除。", True, True),
@@ -53,6 +55,11 @@ EXTRA = {
     "lang.html": ('  <script src="/lang/lang.js" defer></script>\n', "lang-page"),
     # 隠しコマンド（assets/nf-secret.js）
     "404.html": ('  <script src="/assets/nf-secret.js" defer></script>\n', None),
+    "brand.html": (
+        '  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=M+PLUS+1:wght@400;700&family=M+PLUS+1+Code:wght@500&display=swap"></script>\n'
+        '  <script src="/brand/brand.js" defer></script>\n',
+        None,
+    ),
     "credits.html": ('  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap"></script>\n', None),
     "y-filter.html": (
         '  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@900&display=swap"></script>\n'
@@ -66,7 +73,7 @@ RUNTIME_SOURCES = [
     "assets/site.js", "support/help.js", "support/articles.js", "account/account-page.js",
     "contact/contact.js", "status/status.js", "frameworks/check.js",
     "dictionary/script.js", "dictionary/account.js", "assets/hub/sync-loader.js", "assets/analytics.js", "assets/nf-secret.js", "assets/terminal.js",
-    "nagi/app.js", "nagi/account.js",
+    "nagi/app.js", "nagi/account.js", "brand/brand.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
 STANDALONE_PAGES = [

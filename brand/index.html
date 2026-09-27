@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 多言語: /lang/ で選んだ言語で表示する（URL は変わらない）。ページの最後の translatePage() で訳す -->
+  <script src="/assets/i18n.js"></script>
+  <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
+  <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
+  <title>SK's Brand | SK</title>
+  <meta name="description" content="SK のプロダクトに共通するデザインとことばのきまり。大切にしていること・ロゴ・色・文字・形と動き・使う人との約束。">
+  <meta name="theme-color" content="#ffffff" data-theme-color>
+  <link rel="canonical" href="https://sy9-k.github.io/brand/">
+  <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SK">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:title" content="SK's Brand | SK">
+  <meta property="og:description" content="SK のプロダクトに共通するデザインとことばのきまり。大切にしていること・ロゴ・色・文字・形と動き・使う人との約束。">
+  <meta property="og:url" content="https://sy9-k.github.io/brand/">
+  <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap"></script>
+  <link rel="stylesheet" href="/assets/header.css">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=M+PLUS+1:wght@400;700&family=M+PLUS+1+Code:wght@500&display=swap"></script>
+  <script src="/brand/brand.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <a class="hd-logo" href="/" aria-label="ホーム">
+      <span class="hd-logo-image" aria-hidden="true"><img src="/assets/logo.svg" alt="" width="26" height="26"></span>
+      <span class="hd-logo-back" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L11 6M5 12L11 18" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+    <a class="hd-item" href="/about/">私について</a>
+    <a class="hd-item" href="/products/" data-menu="products">プロダクト</a>
+    <a class="hd-item" href="/support/" data-menu="support" data-no-navigation="true">サポートと情報</a>
+    <a class="hd-item hd-account" href="/account/" data-menu="account" data-account-link>アカウント</a>
+    <a class="hd-item hd-lang" href="/lang/" data-lang-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg><span class="hd-lang-label">言語</span></a>
+    <button class="hd-menu-btn" type="button" aria-expanded="false" aria-controls="hd-menu" aria-label="メニュー"><span></span><span></span></button>
+  </header>
+  <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
+  <div class="hd-backdrop" id="hd-backdrop"></div>
+
+  <main id="main">
+    <!-- SK's Brand: デザインとことばのきまり（動きのある部分は /brand/brand.js） -->
+    <section class="brand-hero band band--plain">
+      <div class="wrap">
+        <span class="eyebrow">Brand</span>
+        <h1 class="brand-title"><span>SK's</span> <span class="brand-title-accent">Brand</span></h1>
+        <p class="brand-lead">SK のプロダクトに共通する、デザインとことばのきまり。見た目だけでなく、使う人への約束も、ここにまとめています。</p>
+        <nav class="brand-toc" aria-label="このページの目次">
+          <a href="#principles">大切にしていること</a><a href="#logo">ロゴ</a><a href="#color">色</a><a href="#type">文字</a><a href="#shape">形と動き</a><a href="#voice">ことば</a><a href="#promise">約束</a>
+        </nav>
+      </div>
+    </section>
+
+    <!-- 大切にしていること -->
+    <section class="section" id="principles">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Principles</span>
+          <h2>大切にしていること</h2>
+          <p>毎日のネットを、もう少し安心で便利に。そのために、4 つのことを大切にしています。</p>
+        </div>
+        <div class="brand-principles">
+          <div class="card brand-principle">
+            <span class="brand-num">01</span>
+            <h3>安心</h3>
+            <p class="brand-principle-sub">集めない・送らない</p>
+            <p>必要なものだけを、必要なときに。閲覧履歴や検索語は集めません。できることは、ブラウザの中で済ませます。</p>
+          </div>
+          <div class="card brand-principle">
+            <span class="brand-num">02</span>
+            <h3>やさしい</h3>
+            <p class="brand-principle-sub">だれにでもわかる</p>
+            <p>専門用語をなるべく使わず、小学生にも伝わることばで。説明がなくても、さわればわかる形に。</p>
+          </div>
+          <div class="card brand-principle">
+            <span class="brand-num">03</span>
+            <h3>静か</h3>
+            <p class="brand-principle-sub">じゃましない</p>
+            <p>通知や動きは控えめに。広告は出しません。使う人の時間と集中を、うばわないように。</p>
+          </div>
+          <div class="card brand-principle">
+            <span class="brand-num">04</span>
+            <h3>ていねい</h3>
+            <p class="brand-principle-sub">細かいところまで</p>
+            <p>0.3 秒の動き、1px の余白、ダークモードの色まで。気づかれないところにこそ、手をかけます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ロゴ -->
+    <section class="section" id="logo">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Logo</span>
+          <h2>ロゴ</h2>
+          <p>青いキューブのマークと、「SK」の文字。明るい背景でも、暗い背景でも、そのままの形と色で使います。</p>
+        </div>
+        <div class="brand-logos">
+          <div class="brand-logo-tile is-light"><img src="/assets/logo.svg" alt="SK のマーク（明るい背景）" width="96" height="96"><span class="brand-logo-word">SK</span></div>
+          <div class="brand-logo-tile is-dark"><img src="/assets/logo.svg" alt="SK のマーク（暗い背景）" width="96" height="96"><span class="brand-logo-word">SK</span></div>
+          <div class="brand-logo-tile is-outline"><span class="brand-logo-outline" aria-hidden="true">SK</span><small>フッターの大きな文字（線だけの SK）</small></div>
+        </div>
+        <ul class="brand-rules">
+          <li><strong>まわりに余白を</strong>マークの 4 分の 1 以上の余白をあけます。</li>
+          <li><strong>形を変えない</strong>のばしたり、回したり、切ったりしません。</li>
+          <li><strong>色を変えない</strong>テーマカラーを選んでいても、マークの色はそのままです。</li>
+          <li><strong>飾らない</strong>影やふちどり、光る効果をつけません。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 色 -->
+    <section class="section" id="color">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Color</span>
+          <h2>色</h2>
+          <p>基本の色は SK's Blue。サイトでは、好きなテーマカラーに変えられます。色の丸を押すと、このページの色が変わります（色の名前の下のコードを押すと、コピーできます）。</p>
+        </div>
+
+        <h3 class="brand-h3">テーマカラー</h3>
+        <div class="brand-swatches" data-brand-accents>
+          <button type="button" class="brand-swatch" data-accent="blue" style="--sw:#2563eb; --sw-d:#3b82f6"><i></i><strong>SK's Blue</strong><small>いつもの青</small><code data-copy="#2563eb">#2563eb</code></button>
+          <button type="button" class="brand-swatch" data-accent="sakura" style="--sw:#db2777; --sw-d:#f472b6"><i></i><strong>SK's Sakura</strong><small>さくら</small><code data-copy="#db2777">#db2777</code></button>
+          <button type="button" class="brand-swatch" data-accent="matcha" style="--sw:#16a34a; --sw-d:#22c55e"><i></i><strong>SK's Matcha</strong><small>抹茶</small><code data-copy="#16a34a">#16a34a</code></button>
+          <button type="button" class="brand-swatch" data-accent="mikan" style="--sw:#ea580c; --sw-d:#fb923c"><i></i><strong>SK's Mikan</strong><small>みかん</small><code data-copy="#ea580c">#ea580c</code></button>
+          <button type="button" class="brand-swatch" data-accent="fuji" style="--sw:#7c3aed; --sw-d:#a78bfa"><i></i><strong>SK's Fuji</strong><small>藤</small><code data-copy="#7c3aed">#7c3aed</code></button>
+          <button type="button" class="brand-swatch" data-accent="sora" style="--sw:#0891b2; --sw-d:#22d3ee"><i></i><strong>SK's Sora</strong><small>空</small><code data-copy="#0891b2">#0891b2</code></button>
+          <button type="button" class="brand-swatch" data-accent="sumi" style="--sw:#334155; --sw-d:#94a3b8"><i></i><strong>SK's Sumi</strong><small>墨</small><code data-copy="#334155">#334155</code></button>
+        </div>
+
+        <h3 class="brand-h3">プロダクトの色</h3>
+        <div class="brand-products">
+          <div class="brand-product" style="--pc:#ffc83d; --pc-ink:#1a1204"><img class="yf-tile" src="/y-filter/shared/icon.svg" alt="" width="48" height="48"><div><strong>Y-FILTER.</strong><small>見守る黄色</small></div><code data-copy="#ffc83d">#ffc83d</code></div>
+          <div class="brand-product" style="--pc:#5a5fe0; --pc-ink:#fff"><img src="/dictionary/ico/icon-192.png" alt="" width="48" height="48"><div><strong>MALU</strong><small>ことばの紫</small></div><code data-copy="#5a5fe0">#5a5fe0</code></div>
+          <div class="brand-product" style="--pc:#0f766e; --pc-ink:#fff"><img src="/nagi/ico/icon-192.png" alt="" width="48" height="48"><div><strong>Nagi</strong><small>凪の青緑</small></div><code data-copy="#0f766e">#0f766e</code></div>
+          <div class="brand-product" style="--pc:#0b6bcb; --pc-ink:#fff"><img class="plist-logo" src="/assets/logo.svg" alt="" width="48" height="48"><div><strong>SK Hub Systems</strong><small>支える青</small></div><code data-copy="#0b6bcb">#0b6bcb</code></div>
+        </div>
+
+        <h3 class="brand-h3">基本の色</h3>
+        <div class="brand-neutrals">
+          <div class="brand-neutral" style="--n:var(--ink)"><i></i><strong>Ink</strong><small>文字</small><span class="brand-hexes"><code data-copy="#0d1014">#0d1014</code><code data-copy="#e8ecf1">#e8ecf1</code></span></div>
+          <div class="brand-neutral" style="--n:var(--muted)"><i></i><strong>Muted</strong><small>説明の文字</small><span class="brand-hexes"><code data-copy="#5a6371">#5a6371</code><code data-copy="#9aa4b2">#9aa4b2</code></span></div>
+          <div class="brand-neutral" style="--n:var(--bg)"><i></i><strong>Background</strong><small>背景</small><span class="brand-hexes"><code data-copy="#f5f6f8">#f5f6f8</code><code data-copy="#0b0e13">#0b0e13</code></span></div>
+          <div class="brand-neutral" style="--n:var(--surface)"><i></i><strong>Surface</strong><small>カード</small><span class="brand-hexes"><code data-copy="#ffffff">#ffffff</code><code data-copy="#151a21">#151a21</code></span></div>
+          <div class="brand-neutral" style="--n:var(--line)"><i></i><strong>Line</strong><small>線</small><span class="brand-hexes"><code data-copy="#e1e4e9">#e1e4e9</code><code data-copy="#2a313b">#2a313b</code></span></div>
+        </div>
+        <p class="brand-note">コードは、左がライト、右がダークのときの色です。</p>
+      </div>
+    </section>
+
+    <!-- 文字 -->
+    <section class="section" id="type">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Typography</span>
+          <h2>文字</h2>
+          <p>読みやすさを第一に。プロダクトごとに、性格に合った書体を選んでいます。</p>
+        </div>
+        <div class="brand-fonts">
+          <div class="card brand-font">
+            <div class="brand-font-sample" style="font-family:Inter,'Noto Sans JP',sans-serif">毎日のネットを、<br>もう少し安心で便利に。</div>
+            <div class="brand-font-meta"><strong>Inter ＋ Noto Sans JP</strong><small>サイト全体の文字</small></div>
+            <div class="brand-font-glyphs" style="font-family:Inter,'Noto Sans JP',sans-serif">Aa Bb 0123 あア安</div>
+          </div>
+          <div class="card brand-font">
+            <div class="brand-font-sample" style="font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-weight:700;letter-spacing:-.02em">Y-FILTER.</div>
+            <div class="brand-font-meta"><strong>Space Grotesk</strong><small>Y-FILTER. の見出し</small></div>
+            <div class="brand-font-glyphs" style="font-family:'Space Grotesk',sans-serif">Aa Bb 0123 → ✓</div>
+          </div>
+          <div class="card brand-font">
+            <div class="brand-font-sample" style="font-family:'M PLUS 1','Noto Sans JP',sans-serif">集中と休憩を、<br>凪のように。</div>
+            <div class="brand-font-meta"><strong>M PLUS 1</strong><small>MALU・Nagi の文字</small></div>
+            <div class="brand-font-glyphs" style="font-family:'M PLUS 1',sans-serif">Aa 25:00 あア凪</div>
+          </div>
+          <div class="card brand-font">
+            <div class="brand-font-sample brand-font-code" style="font-family:'M PLUS 1 Code',ui-monospace,monospace">sk@hub:~$ whoami</div>
+            <div class="brand-font-meta"><strong>M PLUS 1 Code</strong><small>ひみつのターミナル</small></div>
+            <div class="brand-font-glyphs" style="font-family:'M PLUS 1 Code',monospace">0O 1lI {} =&gt;</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 形と動き -->
+    <section class="section" id="shape">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Shape &amp; Motion</span>
+          <h2>形と動き</h2>
+          <p>角はやわらかく、動きは短く。気持ちよさは、気づかれないくらいがちょうどいい。</p>
+        </div>
+        <div class="brand-shapes">
+          <div class="brand-shape"><div class="brand-shape-demo is-card"></div><strong>カード</strong><small>角の丸み 28px（なめらかな角）</small></div>
+          <div class="brand-shape"><div class="brand-shape-demo is-pill"><span>ボタン</span></div><strong>ボタン</strong><small>丸い両端</small></div>
+          <div class="brand-shape"><div class="brand-shape-demo is-icon"><img src="/assets/logo.svg" alt="" width="40" height="40"></div><strong>アイコン</strong><small>角の丸い四角</small></div>
+          <div class="brand-shape"><div class="brand-shape-demo is-shadow"></div><strong>影</strong><small>うすく、やわらかく</small></div>
+        </div>
+
+        <div class="brand-motions">
+          <div class="card brand-motion">
+            <div class="brand-motion-stage"><span class="brand-motion-page" data-motion="page"></span></div>
+            <div><strong>ページの移動</strong><p>0.3 秒。前のページが少し小さくなって消え、次のページが出てきます。</p></div>
+            <button type="button" class="btn btn-tonal" data-play="page">動かしてみる</button>
+          </div>
+          <div class="card brand-motion">
+            <div class="brand-motion-stage"><span class="brand-motion-ripple" data-motion="ripple"></span></div>
+            <div><strong>表示の切り替え</strong><p>押したところから、新しい色が円く広がります。</p></div>
+            <button type="button" class="btn btn-tonal" data-play="theme">ライト・ダークを切り替える</button>
+          </div>
+          <div class="card brand-motion">
+            <div class="brand-motion-stage"><span class="brand-motion-pop" data-motion="pop"></span></div>
+            <div><strong>選んだとき</strong><p>選んだものが、ポンと小さく弾みます。</p></div>
+            <button type="button" class="btn btn-tonal" data-play="pop">動かしてみる</button>
+          </div>
+        </div>
+        <p class="brand-note">動きを減らす設定にしている人には、動きを出しません。</p>
+      </div>
+    </section>
+
+    <!-- ことば -->
+    <section class="section" id="voice">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Voice</span>
+          <h2>ことば</h2>
+          <p>画面のことばは、となりで話しかけるように。短く、やさしく、相手をせめない。</p>
+        </div>
+        <div class="brand-voice">
+          <div class="brand-voice-rules">
+            <div><strong>です・ます</strong><p>ていねいに、でもかたくなりすぎずに。</p></div>
+            <div><strong>むずかしいことばを使わない</strong><p>「認証」ではなく「ログイン」。「同期処理」ではなく「同期」。</p></div>
+            <div><strong>次にすることを伝える</strong><p>うまくいかなかったときは、理由と、次に何をすればいいかを書く。</p></div>
+            <div><strong>相手をせめない</strong><p>「無効な入力です」ではなく、どう入れればいいかを伝える。</p></div>
+          </div>
+          <div class="brand-voice-table">
+            <div class="brand-voice-row is-head"><span>こうは書かない</span><span>こう書く</span></div>
+            <div class="brand-voice-row"><span>認証に失敗しました</span><span>ログインできませんでした</span></div>
+            <div class="brand-voice-row"><span>同期処理を実行中</span><span>同期しています…</span></div>
+            <div class="brand-voice-row"><span>無効な入力です</span><span>8 文字のコードを入力してください</span></div>
+            <div class="brand-voice-row"><span>ネットワークエラー</span><span>通信できませんでした。インターネットの接続を確認してください。</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 約束 -->
+    <section class="section" id="promise">
+      <div class="wrap">
+        <div class="brand-promise">
+          <div>
+            <span class="eyebrow">Promise</span>
+            <h2>使う人との約束</h2>
+            <p>デザインのきまりと同じくらい、大切にしていることです。</p>
+          </div>
+          <ul>
+            <li>閲覧履歴や検索語を集めません。</li>
+            <li>集めた情報を、広告や販売に使いません。</li>
+            <li>アクセス解析は、許可した人だけ。</li>
+            <li>自分のデータは、いつでもダウンロード・削除できます。</li>
+          </ul>
+          <p class="brand-promise-links"><a href="/policies/#sk-privacy">SK プライバシーポリシー</a><a href="/credits/">使わせてもらっているもの</a><a href="/products/">すべてのプロダクト</a></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="brand-toast" data-brand-toast role="status" aria-live="polite"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <div>
+          <a class="logo" href="/" aria-label="SK ホーム"><img src="/assets/logo.svg" alt="" width="36" height="36">SK</a>
+          <p class="about">毎日のネットを、もう少し安心で便利に。Y-FILTER. と MALU を開発しています。</p>
+        </div>
+        <div>
+          <h2>プロダクト</h2>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/products/nagi/">Nagi</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
+        </div>
+        <div>
+          <h2>サポートと情報</h2>
+          <ul><li><a href="/support/">サポート記事</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li data-analytics-settings hidden><a href="#analytics">アクセス解析の設定</a></li><li><a href="/brand/">SK's Brand</a></li><li><a href="/credits/">Link &amp; Credit</a></li><li><a href="/about/">私について</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li></ul>
+        </div>
+      </div>
+      <div class="wordmark" aria-hidden="true">SK</div>
+      <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
+    </div>
+  </footer>
+
+  <!-- ページを選んだ言語に訳す（ほかのスクリプトが動く前に。assets/i18n.js） -->
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <script src="/support/articles.js" defer></script>
+  <script src="/assets/site.js" defer></script>
+  <!-- SK Hub Systems アカウントの設定の同期（ログイン中だけ） -->
+  <script src="/assets/hub/sync-loader.js" defer></script>
+  <script src="/frameworks/check.js" defer></script>
+  <!-- アクセス解析（Google アナリティクス。許可した人だけ） -->
+  <script src="/assets/analytics.js" defer></script>
+</body>
+</html>
