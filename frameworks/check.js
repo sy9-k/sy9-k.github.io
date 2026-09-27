@@ -174,7 +174,9 @@
                 );
             }
 
-            if (termsPending && !noticeShown) {
+            // まだ同意していない（「同意して閉じる」も「同意しない」も押していない）: 押すまで、どのページでも帯を出す。
+            // 同意するまでは、アクセスチェックの記録を送らない（SK 利用規約 第二条2・SK プライバシーポリシー 第三条5）
+            if (termsPending) {
                 const injected = this.injectConsentCard();
 
                 if (!injected) {
@@ -389,94 +391,93 @@
                 "data-RedCheckOSS-style",
                 "consent-card"
             );
+            // 初回の案内は、画面の下いっぱいの帯（スマホでは文とボタンを 2 段に）
             style.textContent = `
                 .RedCheckOSS-consent-card{
                     position:fixed;
-                    right:16px;
-                    bottom:16px;
-                    left:auto;
-                    max-width:calc(100vw - 32px);
-                    width:fit-content;
-                    box-sizing:border-box;
+                    left:0;
+                    right:0;
+                    bottom:0;
                     z-index:2147483647;
-                    pointer-events:none;
-                    font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-                }
-                .RedCheckOSS-consent-card__panel{
-                    width:fit-content;
-                    max-width:100%;
                     box-sizing:border-box;
-                    padding:18px 18px 16px;
-                    border-radius:32px;
-                    corner-shape:superellipse(1.5);
-                    background:#fff;
-                    color:#000;
-                    box-shadow:0 12px 36px rgba(0,0,0,.32);
-                    pointer-events:auto;
+                    font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+                    animation:RedCheckOSS-bar-in .35s cubic-bezier(.22,1,.36,1) both;
                 }
-                .RedCheckOSS-consent-card__title{
-                    margin:0 0 10px;
-                    font-size:22px;
-                    line-height:1.35;
-                    font-weight:700;
+                @keyframes RedCheckOSS-bar-in{from{transform:translateY(100%)}to{transform:none}}
+                .RedCheckOSS-consent-card__panel{
+                    display:flex;
+                    align-items:center;
+                    gap:12px 20px;
+                    box-sizing:border-box;
+                    width:100%;
+                    padding:12px max(16px,calc((100% - 1120px) / 2)) calc(12px + env(safe-area-inset-bottom));
+                    background:#fff;
+                    color:#1d1d1f;
+                    border-top:1px solid #e3e5e8;
+                    box-shadow:0 -6px 24px rgba(0,0,0,.08);
                 }
                 .RedCheckOSS-consent-card__text{
+                    flex:1;
+                    min-width:0;
                     margin:0;
-                    color:#000b;
+                    color:#3a3a3c;
                     font-size:13px;
-                    line-height:1.7;
+                    line-height:1.65;
+                }
+                .RedCheckOSS-consent-card__title{
+                    margin:0 6px 0 0;
+                    color:#1d1d1f;
+                    font-size:13px;
+                    font-weight:700;
+                }
+                .RedCheckOSS-consent-card__text a{
+                    color:#2563eb;
+                    text-decoration:underline;
+                    text-underline-offset:2px;
                 }
                 .RedCheckOSS-consent-card__actions{
                     display:flex;
                     align-items:center;
-                    flex-wrap:wrap;
-                    gap:6px;
-                    margin-top:16px;
+                    gap:8px;
+                    flex:none;
                 }
+                .RedCheckOSS-consent-card__extra:empty{display:none}
+                .RedCheckOSS-consent-card__extra{margin-right:6px}
                 .RedCheckOSS-consent-card__button{
                     display:inline-flex;
                     align-items:center;
                     justify-content:center;
-                    min-height:36px;
+                    min-height:34px;
                     box-sizing:border-box;
-                    padding:0 13px;
-                    border:1px solid transparent;
-                    border-radius:16px;
-                    corner-shape:superellipse(1.5);
+                    padding:0 14px;
+                    border:0;
+                    border-radius:999px;
                     font:inherit;
-                    font-size:12px;
+                    font-size:12.5px;
                     font-weight:600;
                     line-height:1;
+                    white-space:nowrap;
                     cursor:pointer;
-                    text-decoration:none;
-                    transition:transform .15s ease,background-color .15s ease,border-color .15s ease,opacity .15s ease;
-                }
-                .RedCheckOSS-consent-card__button:hover{
-                    transform:translateY(-1px);
-                }
-                .RedCheckOSS-consent-card__button--document{
-                    background:#00000009;
-                    color:#000;
+                    transition:background-color .15s ease,opacity .15s ease;
                 }
                 .RedCheckOSS-consent-card__button--deny{
-                    background:#eee;
-                    color:#000;
+                    background:#f0f1f3;
+                    color:#1d1d1f;
                 }
+                .RedCheckOSS-consent-card__button--deny:hover{background:#e6e7ea}
                 .RedCheckOSS-consent-card__button--agree{
                     background:#2563eb;
                     color:#fff;
                 }
-                @media(max-width:600px){
-                    .RedCheckOSS-consent-card{right:10px;bottom:10px;max-width:calc(100vw - 20px)}
-                    .RedCheckOSS-consent-card__panel{padding:16px}
-                    .RedCheckOSS-consent-card__title{font-size:20px}
-                    .RedCheckOSS-consent-card__button{
-                        min-height:35px;
-                        padding:0 11px;
-                        font-size:11px;
-                    }
+                .RedCheckOSS-consent-card__button--agree:hover{background:#1d4fd8}
+                @media(max-width:720px){
+                    .RedCheckOSS-consent-card__panel{flex-direction:column;align-items:stretch;gap:10px}
+                    .RedCheckOSS-consent-card__actions{flex-wrap:wrap}
+                    .RedCheckOSS-consent-card__extra{flex:1 1 100%;margin-right:0}
+                    .RedCheckOSS-consent-card__button{flex:1}
                 }
                 @media(prefers-reduced-motion:reduce){
+                    .RedCheckOSS-consent-card{animation:none}
                     .RedCheckOSS-consent-card__button{transition:none}
                 }
             `;
@@ -491,29 +492,29 @@
             );
 
             panel.className = "RedCheckOSS-consent-card__panel";
-            panel.setAttribute("role", "dialog");
-            panel.setAttribute("aria-modal", "false");
+            panel.setAttribute("role", "region");
             panel.setAttribute(
                 "aria-labelledby",
                 "RedCheckOSS-consent-card-title"
             );
 
             // 多言語（assets/i18n.js があるページだけ。ないページは日本語）
-            const tx = (s) => (window.SKI18N ? window.SKI18N.t(s) : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+            const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+            const tx = (s) => esc(window.SKI18N ? window.SKI18N.t(s) : s);
             const lx = (u) => (window.SKI18N ? window.SKI18N.path(u) : u);
+            const policy = (hash, label) => `<a href="${lx(this.CONFIG.POLICIES_URL)}#${hash}" target="_blank" rel="noopener noreferrer">${tx(label)}</a>`;
+            // 文の中の {terms}・{privacy} をリンクにする（文は訳してから入れ替える）
+            const sentence = tx("使う前に、{terms}と{privacy}を確認して、同意してください。")
+                .replace("{terms}", policy("sk-terms", "利用規約"))
+                .replace("{privacy}", policy("sk-privacy", "プライバシーポリシー"));
+            // __extra … ほかのスクリプトが選択肢を足す場所（assets/analytics.js がアクセス解析のスイッチを入れる）
             panel.innerHTML = `
-                <h2
+                <p class="RedCheckOSS-consent-card__text"><strong
                     id="RedCheckOSS-consent-card-title"
                     class="RedCheckOSS-consent-card__title"
-                >${tx("ようこそ！")}</h2>
-                <p class="RedCheckOSS-consent-card__text">${tx("次回のアクセス以降、利用規約とプライバシーポリシーに同意したものとします")}</p>
+                >${tx("ようこそ！")}</strong>${sentence}</p>
                 <div class="RedCheckOSS-consent-card__actions">
-                    <a
-                        class="RedCheckOSS-consent-card__button RedCheckOSS-consent-card__button--document"
-                        href="${lx(this.CONFIG.POLICIES_URL)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >${tx("書類閲覧")}</a>
+                    <div class="RedCheckOSS-consent-card__extra" data-RedCheckOSS-consent-extra></div>
                     <button
                         type="button"
                         class="RedCheckOSS-consent-card__button RedCheckOSS-consent-card__button--deny"

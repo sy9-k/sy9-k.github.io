@@ -18,7 +18,7 @@ Article 3 Information Handled by the Access Check
 2. Stored in the browser: a support ID (a random identifier created for each browser), the terms consent status, and whether notices have been shown
 3. Sent to and stored in SK Hub Systems: the support ID, the URL of the page accessed (excluding anything after "?"), the domain of the referring site, the browser type (user agent), language setting, date and time of access, and the result of the access restriction check
 4. The access check does not record names, email addresses, or IP addresses.
-5. If "Decline" is chosen or consent is withdrawn, nothing is sent to the server.
+5. Nothing is sent to the server until you choose "Agree and close," if you choose "Decline," or if you withdraw your agreement.
 
 Article 4 Information Handled for Inquiries
 1. The following information sent from the contact form (https://sy9-k.github.io/contact/) is stored in SK Hub Systems:
@@ -29,7 +29,7 @@ Article 4 Information Handled for Inquiries
 2. This information is used only to respond to inquiries. Only the Developer can read it.
 
 Article 4-2 Access Analytics (Google Analytics)
-1. On the Site (including SK's Lab tools) and MALU, access analytics using Google Analytics by Google LLC is performed to understand how the Services are used and improve them. It is performed only if you choose "Allow" in the notice shown; until you choose, or if you choose "Don't allow," Google Analytics is not loaded.
+1. On the Site (including SK's Lab tools) and MALU, access analytics using Google Analytics by Google LLC is performed to understand how the Services are used and improve them. It is performed only if you turn on analytics and agree in the notice shown on your first visit, or choose "Allow" in the notice shown. Until you choose, or if you don't allow it, Google Analytics is not loaded.
 2. If you allow it, Google Analytics uses cookies and sends Google information such as the URL and title of pages viewed, the referring page, time spent, screen size, browser and OS type, language, and approximate region (country or region level). IP addresses are anonymized by Google Analytics, and the Developer does not receive this information in a form that identifies individuals.
 3. The Developer does not use Google signals or advertising features. The SK Hub Systems account page, developer pages, and consent screens are not included in access analytics. MALU search terms are not sent.
 4. You can withdraw your permission at any time from "Analytics settings" at the bottom of the Site. After withdrawal, no further measurement is made, and Google Analytics cookies in the browser are deleted.
@@ -79,3 +79,4 @@ Supplementary Provisions
 3. On September 26, 2026, inquiries moved from Google Forms to the SK Hub Systems contact form, and Articles 2, 4, 6, and 9 were revised.
 4. On September 27, 2026, Article 2 was revised for SK Hub Systems account settings sync and MALU integration.
 5. On September 27, 2026, Articles 1, 7, and 9 were revised and Article 4-2 was added with the introduction of access analytics using Google Analytics (only if allowed).
+6. On September 27, 2026, Article 3 was revised along with the change to how agreement to the SK Terms of Service is given.

@@ -43,14 +43,14 @@ function showView(name) {
 
 // ---------- 項目の切り替え（左の一覧 → 右の中身。URL の # で開く項目を決める） ----------
 // ヘッダーのメニューの「お知らせ」「データのダウンロード・削除」は /account/#notices・#privacy に来る
-const SECTIONS = ["profile", "security", "notices", "services", "settings", "privacy", "developer"];
+const SECTIONS = ["overview", "profile", "security", "notices", "services", "settings", "privacy", "developer"];
 let section = "";
 
 function sectionFromHash() {
   const name = location.hash.replace(/^#/, "");
-  if (!SECTIONS.includes(name)) return "profile";
+  if (!SECTIONS.includes(name)) return "overview";
   // 開発者の項目は、開発者のときだけ
-  if (name === "developer" && $('[data-acct-nav="developer"]').hidden) return "profile";
+  if (name === "developer" && $('[data-acct-nav="developer"]').hidden) return "overview";
   return name;
 }
 
@@ -152,6 +152,8 @@ function render(state) {
   renderServices(user, account);
   renderNotices(user, account);
   renderSettings();
+  renderOverview(user, account);
+  renderPrivacyTiles();
   // 開発者なら受信箱・記事エディターの項目を出す（config/developers は登録された本人だけが読める）
   getDoc(doc(db, "config", "developers"))
     .then(() => {
@@ -242,6 +244,7 @@ profileDialog.addEventListener("close", async () => {
     const next = { ...account, profile: { name: profile.name.trim(), avatar: profile.avatar, color: profile.color } };
     current = { ...current, account: next };
     renderProfile(user, next);
+    renderOverview(user, next);
     rememberAccount(user, next);
     message(t("プロフィールを保存しました。"));
   } catch (err) {
@@ -292,6 +295,7 @@ async function renderNotices(user, account) {
   const navCount = $("[data-acct-nav-unread]");
   navCount.hidden = !unread;
   navCount.textContent = String(unread);
+  $("[data-acct-ov-notices]").textContent = unread ? t("未読 {n} 件", { n: unread }) : t("新しいお知らせはありません");
   // お知らせの項目を開いたら既読にする（印は、このページを開いているあいだは残す）
   noticesToMark = unread || !seen ? user : null;
   if (section === "notices") noticesOpened();
@@ -357,6 +361,59 @@ function noticeItem(user, n) {
 
 // ---------- 設定の同期 ----------
 
+// ---------- 概要 ----------
+
+function renderOverview(user, account) {
+  const p = profileOf(user, account);
+  $("[data-acct-greeting]").textContent = p.name ? t("こんにちは、{name} さん", { name: p.name }) : t("概要");
+  const connected = Object.keys(SERVICES).filter((key) => isConnected(account, key)).map((key) => SERVICE_NAMES[key]);
+  $("[data-acct-ov-services]").textContent = connected.length
+    ? t("{names} に接続しています", { names: connected.join("・") })
+    : t("接続しているサービスはありません");
+  renderOverviewSettings();
+}
+
+function renderOverviewSettings() {
+  const code = I18N.stored() || "ja";
+  const lang = (I18N.LANGS.find((l) => l.code === code) || I18N.LANGS[0]).name;
+  let at = 0;
+  try { at = Number(localStorage.getItem(SYNC_AT_KEY) || 0); } catch (e) { at = 0; }
+  $("[data-acct-ov-settings]").textContent = at
+    ? t("表示言語: {lang} · 最後の同期: {time}", { lang, time: new Date(at).toLocaleString(I18N.locale) })
+    : t("表示言語: {lang}", { lang });
+}
+
+// ---------- プライバシー（このブラウザのアクセス解析・サポートID） ----------
+
+function renderPrivacyTiles() {
+  const a = window.SKAnalytics;
+  const tile = $("[data-acct-analytics]");
+  tile.hidden = !(a && a.enabled());
+  if (a && a.enabled()) {
+    const c = a.choice();
+    $("[data-acct-analytics-state]").textContent = c === "granted" ? t("許可しています")
+      : c === "denied" ? t("許可していません") : t("まだ選んでいません");
+  }
+  let id = "";
+  try { id = localStorage.getItem("skhub_uuid") || ""; } catch (e) { id = ""; }
+  $("[data-acct-support-id-value]").textContent = id || t("（まだありません）");
+  $("[data-acct-support-id]").disabled = !id;
+}
+
+$("[data-acct-analytics]").addEventListener("click", () => { if (window.SKAnalytics) window.SKAnalytics.open(); });
+document.addEventListener("sk:analytics", renderPrivacyTiles);
+
+$("[data-acct-support-id]").addEventListener("click", async () => {
+  const id = $("[data-acct-support-id-value]").textContent;
+  const note = $("[data-acct-support-id-note]");
+  try {
+    await navigator.clipboard.writeText(id);
+    note.textContent = t("コピーしました。");
+  } catch (e) {
+    note.textContent = t("コピーできませんでした。ID を長押しか選択してコピーしてください。");
+  }
+});
+
 function renderSettings() {
   const select = $("[data-acct-lang]");
   if (!select.options.length) {
@@ -366,6 +423,7 @@ function renderSettings() {
   let at = 0;
   try { at = Number(localStorage.getItem(SYNC_AT_KEY) || 0); } catch (e) { at = 0; }
   $("[data-acct-sync-at]").textContent = at ? new Date(at).toLocaleString(I18N.locale) : "-";
+  renderOverviewSettings();
 }
 
 $("[data-acct-lang]").addEventListener("change", async (e) => {
@@ -529,6 +587,7 @@ disconnectDialog.addEventListener("close", async () => {
     current = { ...current, account: updated };
     rememberAccount(user, updated);
     renderServices(user, updated);
+    renderOverview(user, updated);
     message(!wipe ? t("接続を解除しました。")
       : disconnectKey === "malu" ? t("接続を解除し、単語帳と同期した検索履歴を削除しました。")
         : t("接続を解除し、管理コンソールのデータを削除しました。"));

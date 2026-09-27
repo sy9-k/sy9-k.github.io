@@ -104,19 +104,48 @@
               <p class="acct-me-email" data-acct-email></p>
             </div>
             <nav class="acct-nav" aria-label="アカウントの項目">
+              <a href="#overview" data-acct-nav="overview">概要</a>
               <a href="#profile" data-acct-nav="profile">個人情報</a>
               <a href="#security" data-acct-nav="security">サインインとセキュリティ</a>
               <a href="#notices" data-acct-nav="notices">お知らせ<span class="acct-nav-count" data-acct-nav-unread hidden></span></a>
               <a href="#services" data-acct-nav="services">サービス</a>
-              <a href="#settings" data-acct-nav="settings">設定の同期</a>
+              <a href="#settings" data-acct-nav="settings">設定</a>
               <a href="#privacy" data-acct-nav="privacy">プライバシー</a>
               <a href="#developer" data-acct-nav="developer" data-acct-dev hidden>開発者</a>
             </nav>
           </aside>
 
           <div class="acct-main">
+            <!-- 概要: ほかの項目の状態をまとめて見る（account-page.js が中身を入れる） -->
+            <section class="acct-section" data-acct-section="overview" aria-labelledby="acct-h-overview">
+              <h2 class="acct-section-title" id="acct-h-overview" data-acct-greeting>概要</h2>
+              <p class="acct-section-lead">SK Hub Systems アカウントの状態を、ここでまとめて確認できます。</p>
+              <div class="acct-tiles">
+                <a class="acct-tile" href="#notices">
+                  <span class="acct-tile-title">お知らせ</span>
+                  <span class="acct-tile-value" data-acct-ov-notices>確認中…</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <a class="acct-tile" href="#services">
+                  <span class="acct-tile-title">サービス</span>
+                  <span class="acct-tile-value" data-acct-ov-services>-</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <a class="acct-tile" href="#settings">
+                  <span class="acct-tile-title">設定</span>
+                  <span class="acct-tile-value" data-acct-ov-settings>-</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+                <a class="acct-tile" href="#privacy">
+                  <span class="acct-tile-title">プライバシー</span>
+                  <span class="acct-tile-value">データのダウンロード・アカウントの削除・アクセス解析</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
+              </div>
+            </section>
+
             <!-- 個人情報 -->
-            <section class="acct-section" data-acct-section="profile" aria-labelledby="acct-h-profile">
+            <section class="acct-section" data-acct-section="profile" aria-labelledby="acct-h-profile" hidden>
               <h2 class="acct-section-title" id="acct-h-profile">個人情報</h2>
               <p class="acct-section-lead">SK のサービスで表示される名前とアイコン、アカウントの基本情報です。</p>
               <div class="acct-tiles">
@@ -151,11 +180,6 @@
                   <span class="acct-tile-value">Google</span>
                   <span class="acct-tile-note">2 段階認証などは Google アカウントで設定します</span>
                   <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16 16 8M9 8h7v7"/></svg>
-                </a>
-                <a class="acct-tile" href="/policies/#sk-hub-account">
-                  <span class="acct-tile-title">規約への同意</span>
-                  <span class="acct-tile-value" data-acct-terms>-</span>
-                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
                 </a>
                 <button class="acct-tile" type="button" data-acct-signout>
                   <span class="acct-tile-title">ログアウト</span>
@@ -226,10 +250,10 @@
               </div>
             </section>
 
-            <!-- 設定の同期 -->
+            <!-- 設定（表示言語・設定の同期） -->
             <section class="acct-section" data-acct-section="settings" aria-labelledby="acct-h-settings" hidden>
-              <h2 class="acct-section-title" id="acct-h-settings">設定の同期</h2>
-              <p class="acct-section-lead">このアカウントでログインしている端末のあいだで、設定を自動でそろえます。</p>
+              <h2 class="acct-section-title" id="acct-h-settings">設定</h2>
+              <p class="acct-section-lead">表示言語と、アプリの設定は、このアカウントでログインしている端末のあいだで自動でそろいます。</p>
               <div class="acct-tiles">
                 <div class="acct-tile is-static">
                   <span class="acct-tile-title">表示言語</span>
@@ -251,13 +275,31 @@
             <!-- プライバシー -->
             <section class="acct-section" data-acct-section="privacy" aria-labelledby="acct-h-privacy" hidden>
               <h2 class="acct-section-title" id="acct-h-privacy">プライバシー</h2>
-              <p class="acct-section-lead">SK は、閲覧履歴や検索語を集めません。保存している情報は、いつでも確認・削除できます。</p>
+              <p class="acct-section-lead">SK は、ほかのサイトの閲覧履歴や検索語を集めません。保存している情報は、いつでも確認・削除できます。</p>
               <div class="acct-tiles">
                 <button class="acct-tile" type="button" data-acct-export>
                   <span class="acct-tile-title">データをダウンロード</span>
                   <span class="acct-tile-value">このアカウントについて保存されている情報を、ファイル（JSON）で受け取れます。</span>
                   <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
                 </button>
+                <!-- このブラウザのアクセス解析（assets/analytics.js）。測定 ID がないときは出さない -->
+                <button class="acct-tile" type="button" data-acct-analytics hidden>
+                  <span class="acct-tile-title">アクセス解析（このブラウザ）</span>
+                  <span class="acct-tile-value" data-acct-analytics-state>-</span>
+                  <span class="acct-tile-note">Google アナリティクスで、見られたページなどを集計するかどうか。広告には使いません</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </button>
+                <button class="acct-tile" type="button" data-acct-support-id>
+                  <span class="acct-tile-title">サポートID（このブラウザ）</span>
+                  <span class="acct-tile-value"><code data-acct-support-id-value>-</code></span>
+                  <span class="acct-tile-note" data-acct-support-id-note>お問い合わせのときに伝えると、調査がスムーズになります。押すとコピーします</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h10v10H9zM5 15V5h10"/></svg>
+                </button>
+                <a class="acct-tile" href="/policies/#sk-hub-account">
+                  <span class="acct-tile-title">規約への同意</span>
+                  <span class="acct-tile-value" data-acct-terms>-</span>
+                  <svg class="acct-tile-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </a>
                 <a class="acct-tile" href="/policies/#sk-privacy">
                   <span class="acct-tile-title">プライバシーポリシー</span>
                   <span class="acct-tile-value">情報の取り扱いについて読む</span>

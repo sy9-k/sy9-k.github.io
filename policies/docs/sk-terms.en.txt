@@ -17,7 +17,7 @@ Article 1 Purpose and Scope
 
 Article 2 Consent
 1. Anyone who uses the Services ("Users") shall do so after agreeing to these Terms and the SK Privacy Policy.
-2. On the Site and MALU, a notice about these Terms and the SK Privacy Policy is shown on the first visit. Users are deemed to have agreed when they choose "Agree and close" or on their next visit.
+2. On the Site and MALU, a notice about these Terms and the SK Privacy Policy is shown at the bottom of the screen until you agree. You are deemed to agree when you choose "Agree and close" in the notice.
 3. In Y-FILTER., consent is formed when the User agrees to these Terms, the SK Privacy Policy, and the Y-FILTER. Terms of Service and Privacy Policy on the consent screen at first launch.
 4. For the SK Hub Systems account, consent is formed when the User agrees to these Terms, the SK Privacy Policy, and the SK Hub Systems Account Terms when creating an account.
 5. Users who do not agree may be unable to use all or part of the Services.
@@ -76,3 +76,4 @@ Article 15 Notices and Inquiries
 Supplementary Provisions
 1. These Terms take effect on September 25, 2026.
 2. On September 26, 2026, Articles 1 and 2 were revised for the launch of the SK Hub Systems account, and Article 7 was revised for the change in how inquiries are received.
+3. On September 27, 2026, Article 2 was revised so that agreement is given when "Agree and close" is chosen (agreement is no longer deemed given on the next visit).

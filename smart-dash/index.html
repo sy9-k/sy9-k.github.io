@@ -1642,7 +1642,9 @@
 <!-- SK Hub Systems のアクセスチェック（利用規約の同意・アクセス制限） -->
 <style>
   /* 右下はメモの「追加」ボタンと重なるので、ダッシュボードでは左上に出す（左上は写真だけで操作する部分がない） */
-  .RedCheckOSS-info-widget, .RedCheckOSS-consent-card { top: 16px !important; left: 16px !important; right: auto !important; bottom: auto !important; }
+  .RedCheckOSS-info-widget { top: 16px !important; left: 16px !important; right: auto !important; bottom: auto !important; }
+  /* 初回の案内（下の帯）は、ダッシュボードでは上に出す */
+  .RedCheckOSS-consent-card { top: 0 !important; bottom: auto !important; left: 0 !important; right: 0 !important; animation: none !important; }
   .RedCheckOSS-info-widget { flex-direction: row !important; }
 </style>
 <script src="/frameworks/check.js" defer></script>
