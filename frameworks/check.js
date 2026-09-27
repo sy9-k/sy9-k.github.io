@@ -932,19 +932,20 @@
                 "data-RedCheckOSS-style",
                 "view-transition"
             );
+            // assets/header.css と同じ内容（header.css を読み込まないページ用。値を変えるときは両方そろえる）
             style.textContent = `
                 @view-transition{navigation:auto}
                 ::view-transition-old(root){
-                    animation:fade-and-scale-out 0.6s cubic-bezier(.4,.04,0,1);
+                    animation:sk-page-out .3s cubic-bezier(.4,.04,0,1) both;
                 }
                 ::view-transition-new(root){
-                    animation:fade-and-scale-in 0.6s cubic-bezier(.4,.04,0,1);
+                    animation:sk-page-in .3s cubic-bezier(.4,.04,0,1) both;
                 }
-                @keyframes fade-and-scale-out{
-                    to{opacity:0;transform:scale(.9)}
+                @keyframes sk-page-out{
+                    to{opacity:0;transform:scale(.96)}
                 }
-                @keyframes fade-and-scale-in{
-                    from{opacity:0;transform:scale(.9)}
+                @keyframes sk-page-in{
+                    from{opacity:0;transform:scale(.96)}
                 }
                 @media(prefers-reduced-motion:reduce){
                     ::view-transition-old(root),::view-transition-new(root){animation:none}

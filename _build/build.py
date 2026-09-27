@@ -50,6 +50,8 @@ EXTRA = {
     "support.html": ('  <script src="/support/help.js" defer></script>\n', None),
     "status.html": ('  <script src="/status/status.js" defer></script>\n', None),
     "lang.html": ('  <script src="/lang/lang.js" defer></script>\n', "lang-page"),
+    # 隠しコマンド（assets/nf-secret.js）
+    "404.html": ('  <script src="/assets/nf-secret.js" defer></script>\n', None),
     "credits.html": ('  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap"></script>\n', None),
     "y-filter.html": (
         '  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@900&display=swap"></script>\n'
@@ -62,7 +64,7 @@ EXTRA = {
 RUNTIME_SOURCES = [
     "assets/site.js", "support/help.js", "support/articles.js", "account/account-page.js",
     "contact/contact.js", "status/status.js", "frameworks/check.js",
-    "dictionary/script.js", "dictionary/account.js", "assets/hub/sync-loader.js", "assets/analytics.js",
+    "dictionary/script.js", "dictionary/account.js", "assets/hub/sync-loader.js", "assets/analytics.js", "assets/nf-secret.js", "assets/terminal.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
 STANDALONE_PAGES = [

@@ -2,6 +2,21 @@
    動きは assets/site.js のヘッダーメニュー。管理コンソールは site.css を読み込まないので、ここだけで完結させる */
 .site-header, .site-header *, .hd-menu, .hd-menu *, .hd-backdrop { box-sizing: border-box; }
 
+/* ---------- ページを移動するときのアニメーション（View Transitions） ----------
+   移動前と移動後の両方のページで、表示される時点で有効になっている必要があるので、CSS に最初から書いておく
+   （frameworks/check.js もあとから同じものを入れるが、それだけだと間に合わず、出たり出なかったりする）。
+   ヘッダーは別に扱って、動かさずにそのまま切り替える */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: sk-page-out .3s cubic-bezier(.4, .04, 0, 1) both; }
+::view-transition-new(root) { animation: sk-page-in .3s cubic-bezier(.4, .04, 0, 1) both; }
+@keyframes sk-page-out { to { opacity: 0; transform: scale(.96); } }
+@keyframes sk-page-in { from { opacity: 0; transform: scale(.96); } }
+.site-header { view-transition-name: sk-header; }
+::view-transition-group(sk-header) { animation-duration: .3s; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root), ::view-transition-group(sk-header) { animation: none; }
+}
+
 /* ---------- ヘッダー（search3958 の headerv2 と同じ見た目・動き） ---------- */
 .site-header {
   position: fixed; top: -1px; left: 0; right: 0; z-index: 1000;
