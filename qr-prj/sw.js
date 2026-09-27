@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qr-airdrop-v4';
+const CACHE_NAME = 'qr-airdrop-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -42,7 +42,8 @@ self.addEventListener('fetch', (e) => {
     || (url.origin === self.location.origin && (url.pathname.startsWith('/assets/hub/') || url.pathname.startsWith('/y-filter/')))) return;
 
   // 多言語の辞書（/assets/i18n...）は、訳の更新がすぐ届くように通信優先（オフラインのときだけキャッシュ）
-  if (url.origin === self.location.origin && url.pathname.startsWith('/assets/i18n')) {
+  // アクセス解析（/assets/analytics.js）も同じ（測定 ID や設定の変更がすぐ届くように）
+  if (url.origin === self.location.origin && (url.pathname.startsWith('/assets/i18n') || url.pathname === '/assets/analytics.js')) {
     e.respondWith(
       fetch(e.request)
         .then((response) => {

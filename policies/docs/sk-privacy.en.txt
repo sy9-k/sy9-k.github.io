@@ -3,7 +3,7 @@ Established: September 25, 2026
 
 Article 1 Basic Policy
 1. SK (the "Developer") handles Users' information in the Services defined in the SK Terms of Service in accordance with this Policy.
-2. The Developer handles information only to the extent necessary to provide the Services. Information is never used for advertising, sale, provision to third parties, or tracking behavior.
+2. The Developer handles information only to the extent necessary to provide the Services. The information handled is never used for advertising, sale, provision to third parties, or tracking behavior outside the Services. The access analytics in Article 4-2 is performed only for people who allow it.
 3. Details of how information is handled in Y-FILTER., SK Hub Systems, and the SK Hub Systems account are set out in the "Y-FILTER. Terms of Service and Privacy Policy," the "SK Hub Systems Terms of Service," and the "SK Hub Systems Account Terms." Where they differ from this Policy, their provisions prevail for that service.
 
 Article 2 Overview by Service
@@ -28,6 +28,13 @@ Article 4 Information Handled for Inquiries
 (d) The date and time sent
 2. This information is used only to respond to inquiries. Only the Developer can read it.
 
+Article 4-2 Access Analytics (Google Analytics)
+1. On the Site (including SK's Lab tools) and MALU, access analytics using Google Analytics by Google LLC is performed to understand how the Services are used and improve them. It is performed only if you choose "Allow" in the notice shown; until you choose, or if you choose "Don't allow," Google Analytics is not loaded.
+2. If you allow it, Google Analytics uses cookies and sends Google information such as the URL and title of pages viewed, the referring page, time spent, screen size, browser and OS type, language, and approximate region (country or region level). IP addresses are anonymized by Google Analytics, and the Developer does not receive this information in a form that identifies individuals.
+3. The Developer does not use Google signals or advertising features. The SK Hub Systems account page, developer pages, and consent screens are not included in access analytics. MALU search terms are not sent.
+4. You can withdraw your permission at any time from "Analytics settings" at the bottom of the Site. After withdrawal, no further measurement is made, and Google Analytics cookies in the browser are deleted.
+5. For how Google handles information, see Google's Privacy Policy (https://policies.google.com/privacy) and "How Google uses information from sites or apps that use our services" (https://policies.google.com/technologies/partner-sites).
+
 Article 5 Purposes of Use
 1. Providing, maintaining, and improving the Services
 2. Responding to abuse and nuisance behavior (including access restrictions)
@@ -43,6 +50,7 @@ Article 7 Retention Period
 2. Access restriction information is deleted when the restriction is lifted.
 3. The content of inquiries is deleted about one year after they have been handled.
 4. Where Service Terms specify a retention period, that period applies.
+5. Google Analytics data older than 2 months is deleted according to the Google Analytics settings.
 
 Article 8 Provision to Third Parties
 The Developer does not provide the information it handles to third parties, except as required by law.
@@ -52,6 +60,7 @@ The Services use the following external services. These services may receive IP 
 (a) GitHub Pages (hosting the Site; GitHub, Inc.)
 (b) Firebase (SK Hub Systems; Google LLC)
 (c) Google Fonts (displaying text; Google LLC)
+(d) Google Analytics (access analytics, Google LLC; only if allowed, as set out in Article 4-2)
 
 Article 10 Information of Minors
 The Services are expected to be used by minors as well. The Developer strives not to handle more information than necessary.
@@ -69,3 +78,4 @@ Supplementary Provisions
 2. On September 26, 2026, Articles 1, 2, 6, and 11 were revised for the launch of the SK Hub Systems account.
 3. On September 26, 2026, inquiries moved from Google Forms to the SK Hub Systems contact form, and Articles 2, 4, 6, and 9 were revised.
 4. On September 27, 2026, Article 2 was revised for SK Hub Systems account settings sync and MALU integration.
+5. On September 27, 2026, Articles 1, 7, and 9 were revised and Article 4-2 was added with the introduction of access analytics using Google Analytics (only if allowed).

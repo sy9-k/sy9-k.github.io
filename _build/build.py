@@ -62,7 +62,7 @@ EXTRA = {
 RUNTIME_SOURCES = [
     "assets/site.js", "support/help.js", "support/articles.js", "account/account-page.js",
     "contact/contact.js", "status/status.js", "frameworks/check.js",
-    "dictionary/script.js", "dictionary/account.js", "assets/hub/sync-loader.js",
+    "dictionary/script.js", "dictionary/account.js", "assets/hub/sync-loader.js", "assets/analytics.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
 STANDALONE_PAGES = [

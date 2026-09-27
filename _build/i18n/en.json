@@ -1093,5 +1093,11 @@
   "アカウントのページを新しくし、MALU と連携": "A new Account page, and MALU integration",
   "プロフィール・設定の同期・お知らせを追加し、サービスは最初に使うときに確認してから接続するようになりました。MALU の単語帳と検索履歴の同期も、このアカウントで使えます。": "Added profiles, settings sync, and notices; services now confirm before connecting the first time you use them. The MALU wordbook and search history sync also work with this account.",
   "サイトのアクセスチェックも担うようになり、SK 全体のサーバー基盤として名前を変えました。仕組みの中の ID（": "It took on the site's access check too, so it was renamed as the server platform for all of SK. The internal ID (",
-  "）は、変えずにそのまま使っています。": ") is still used without change."
+  "）は、変えずにそのまま使っています。": ") is still used without change.",
+  "アクセス解析": "Analytics",
+  "アクセス解析の設定": "Analytics settings",
+  "アクセス解析へのご協力のお願い": "Help us with analytics",
+  "サイトをよりよくするため、Google アナリティクスで、見られたページなどを集計してもいいですか？広告には使いません。": "To improve the site, may we use Google Analytics to count things like which pages are viewed? It's never used for ads.",
+  "許可しない": "Don't allow",
+  "許可する": "Allow"
 }

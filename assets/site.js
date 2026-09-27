@@ -421,6 +421,23 @@
     }));
   }
 
+  // ---------- アクセス解析の設定（フッター。assets/analytics.js） ----------
+  // 測定 ID が入っているときだけ出す。押すと、許可するかをもう一度たずねる
+  function setupAnalyticsLink() {
+    const a = window.SKAnalytics;
+    document.querySelectorAll("[data-analytics-settings]").forEach((li) => {
+      li.hidden = !(a && a.enabled());
+      const link = li.querySelector("a");
+      if (link && !link.dataset.bound) {
+        link.dataset.bound = "1";
+        link.addEventListener("click", (e) => { e.preventDefault(); if (window.SKAnalytics) window.SKAnalytics.open(); });
+      }
+    });
+  }
+  // analytics.js は site.js より後に読み込まれるので、読み込み終わってから
+  if (document.readyState === "complete") setupAnalyticsLink();
+  else window.addEventListener("load", setupAnalyticsLink);
+
   // ---------- このブラウザの Y-FILTER.（製品ページ・トップ） ----------
   // 拡張機能（y-filter リポジトリの site-bridge.js）が <html data-yfilter-version="7.0.2"> を付ける。
   //   data-yf-when="installed" / "missing" … 入っている・いないで出し分け（site.css。JS なしで効く）

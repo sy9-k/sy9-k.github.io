@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dictionary-v8';
+const CACHE_NAME = 'dictionary-v9';
 const urlsToCache = [
   '/dictionary/',
   '/dictionary/index.html',
@@ -61,7 +61,8 @@ self.addEventListener('fetch', (event) => {
   }
 
   // 多言語の辞書（/assets/i18n...）は、訳の更新がすぐ届くように通信優先（オフラインのときだけキャッシュ）
-  if (url.pathname.startsWith('/assets/i18n')) {
+  // アクセス解析（/assets/analytics.js）も同じ（測定 ID や設定の変更がすぐ届くように）
+  if (url.pathname.startsWith('/assets/i18n') || url.pathname === '/assets/analytics.js') {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
