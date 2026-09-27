@@ -500,8 +500,8 @@
       "sk-hub-systems": "sk-hub-systems",
       "newtab": "newtab"
     };
-    // 訳文がある規約（sk-hub-systems はまだ。訳したら足す）
-    const TRANSLATED = ["sk-terms", "sk-privacy", "sk-hub-account"];
+    // 訳文がある規約（policies/docs/<名前>.<言語>.txt）。Y-FILTER. と Newtab の規約は日本語だけ
+    const TRANSLATED = ["sk-terms", "sk-privacy", "sk-hub-account", "sk-hub-systems"];
     const fileOf = (id) => (I18N.lang !== "ja" && TRANSLATED.includes(id) ? `${DOCS[id]}.${I18N.lang}.txt` : `${DOCS[id]}.txt`);
     // 以前のページ内リンク
     const ALIASES = { terms: "sk-terms", privacy: "sk-privacy", products: "y-filter" };

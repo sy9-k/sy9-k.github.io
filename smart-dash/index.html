@@ -444,6 +444,11 @@
   const JA = !window.SKI18N || SKI18N.lang === "ja";
   const t = window.SKI18N ? SKI18N.t : (text, vars) => (vars ? text.replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m)) : text);
 
+  // 端末の時刻での日付（YYYY-MM-DD）。toISOString() は UTC なので、日本では朝 9 時まで前の日になってしまう
+  function localDateStr(d = new Date()){
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
   const DAY_LABELS = JA ? ["日","月","火","水","木","金","土"] : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   
   const WIDGET_TYPES = [
@@ -663,7 +668,7 @@
   }
 
   let calCurrentDate = new Date();
-  let calSelectedDateStr = new Date().toISOString().split('T')[0];
+  let calSelectedDateStr = localDateStr();
 
   function renderCalendarWidget(container){
     if(CONFIG.calMode === "google" && CONFIG.calendarUrl){
@@ -730,7 +735,7 @@
 
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = localDateStr();
 
     for(let i = 0; i < firstDay; i++){
       grid.appendChild(document.createElement("div"));
@@ -943,7 +948,7 @@
           const dataForecast = await resForecast.json();
           if(dataForecast.list && dataForecast.list.length > 0){
             const byDay = {};
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = localDateStr();
 
             dataForecast.list.forEach(item => {
               const dateStr = item.dt_txt.split(' ')[0];
@@ -961,7 +966,7 @@
               const minTemp = Math.round(Math.min(...temps));
               const midItem = items[Math.floor(items.length / 2)];
               const ic = WICON_MAP[midItem.weather[0].icon] || 'cloud';
-              const dow = DAY_LABELS[new Date(dStr).getDay()];
+              const dow = DAY_LABELS[new Date(dStr + 'T00:00:00').getDay()];
 
               return {
                 lbl: t('{dow}曜', { dow }),
@@ -1288,11 +1293,11 @@
   // 4. COUNTDOWN WIDGET
   function renderCountdownWidget(container){
     const title = CONFIG.countdownTitle || t("目標日");
-    const targetDateStr = CONFIG.countdownDate || new Date().toISOString().split('T')[0];
+    const targetDateStr = CONFIG.countdownDate || localDateStr();
 
     const today = new Date();
     today.setHours(0,0,0,0);
-    const target = new Date(targetDateStr);
+    const target = new Date(targetDateStr + 'T00:00:00');
     target.setHours(0,0,0,0);
 
     const diffTime = target - today;

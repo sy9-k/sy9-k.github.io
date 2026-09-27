@@ -47,13 +47,20 @@
     return lines.join("\n");
   }
 
-  // 文中の [文字](URL) をリンクにして、それ以外は文字として入れる
+  // 文中の [文字](URL) をリンクに、`文字` をコード（ID・アドレスなど）にして、それ以外は文字として入れる
   function inline(parent, text) {
-    const re = /\[([^\]]+)\]\(([^)\s]+)\)/g;
+    const re = /\[([^\]]+)\]\(([^)\s]+)\)|`([^`]+)`/g;
     let last = 0;
     let m;
     while ((m = re.exec(text))) {
       if (m.index > last) parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+      if (m[3] != null) {
+        const code = document.createElement("code");
+        code.textContent = m[3];
+        parent.appendChild(code);
+        last = re.lastIndex;
+        continue;
+      }
       const a = document.createElement("a");
       const href = /^(https?:|\/|#|mailto:)/.test(m[2]) ? m[2] : "#";
       // サイト内のページは、いまの言語のページへ

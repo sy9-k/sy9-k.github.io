@@ -1,0 +1,105 @@
+SK Hub Systems Terms of Service (Y-FILTER. remote management)
+Established: September 25, 2026
+
+Article 1 Purpose and Scope
+1. These Terms set out the conditions for using "SK Hub Systems" (the "Feature"), the remote management feature of the browser extension "Y-FILTER." (the "Software").
+2. These Terms are Service Terms under the SK Terms of Service. Matters not covered by these Terms are governed by the Y-FILTER. Terms of Service and Privacy Policy, the SK Terms of Service, and the SK Privacy Policy (together, the "Related Terms"). Where these Terms differ from the Related Terms with respect to the Feature, these Terms prevail.
+3. The Feature uses only servers operated by the Developer (Article 6) and works entirely independently of the services, servers, and accounts of Search3958 and Newtab.
+
+Article 2 Definitions
+1. "Administrator" means a person (such as a parent or guardian, or a person in charge at a school or organization) who signs in to the management console with an SK Hub Systems account (an account signed in with a Google account, as set out in the SK Hub Systems Account Terms) and registers and manages devices. Administrators include the "Owner," who created the management group, and "Co-admins" invited by the Owner.
+2. "User" means a person who uses the Software on a device under an Administrator's management.
+3. "Device" means an instance of the Software (per browser profile) connected to the Feature.
+4. "Management console" means the web page for Administrators to manage devices (https://sy9-k.github.io/y-filter/).
+5. "Pairing code" means an 8-character code issued in the management console to link a device to an Administrator.
+6. "Sent settings" means Software settings that an Administrator sends to devices from the management console, and "Report" means the current settings and status that a device sends to its Administrators.
+7. "Management group" means a set of devices managed jointly by an Owner and Co-admins.
+8. "Request" means a request a User sends to Administrators from the block page, asking that a blocked site be made accessible.
+9. "Blocklist" means the lists of domains and keywords by category that the Software uses to judge sites.
+
+Article 3 Starting Use and Agreement
+1. The Feature is disabled by default. It becomes enabled when these Terms are agreed to on the device and the device is connected by entering a pairing code.
+2. Administrators shall review and agree to these Terms before using the management console. Administrators are deemed to have agreed to these Terms when they choose "Continue" on the confirmation, shown the first time they use the management console, asking whether to connect their SK Hub Systems account to the management console.
+3. If the User is a minor, the device shall be connected and these Terms agreed to by a parent or guardian, or by an Administrator entrusted by a parent or guardian.
+4. Administrators shall inform Users in advance that the device is managed by the Feature and that the information set out in Article 5 is reported to Administrators.
+
+Article 4 How the Feature Works
+1. From the management console, Administrators can send settings to one or more devices, start learning mode, copy another device's settings, disconnect devices, and so on.
+2. Devices check for sent settings about every 2 minutes and apply any new sent settings. Applied settings take priority over changes made on the device's settings screen.
+3. Devices report their current settings and status to Administrators when settings change and about every 10 minutes.
+4. Users can send requests to Administrators from the block page of a device connected to SK Hub Systems. Approving a site request adds that site's domain to the device's allow list. When the daily usage limit is reached, Users can request an extension (15, 30, or 60 minutes), and approving it extends the limit for that day only. The result (approved or not) is notified to the device.
+5. If a daily usage limit is set, the device counts the time spent viewing web pages in 1-minute units (time with no activity and no sound for a certain period is not counted) and restricts access for the rest of the day once the limit is reached.
+6. Like the Owner, Co-admins can send settings to, reply to requests from, and disconnect all devices in the management group.
+7. Applying sent settings or reporting may be delayed or may not happen depending on the network, the device's power and sleep state, the state of the browser, and the like.
+
+Article 5 Information Handled
+1. The information sent from devices and stored is as follows:
+(a) Software settings (block rules, block keywords, categories, allow list, time restrictions, ad blocking, download and upload restrictions, SafeSearch, the settings screen access code (converted into an irreversible form; the code itself is not sent), block page design, Newtab settings, and so on)
+(b) Status (last connected date and time, the number of the applied sent settings, and usage time (minutes) and limits for that day and for each of the last 7 days)
+(c) Device information (Software version, browser user agent, and OS type)
+(d) Only on Chromebooks where the "Send device information to the administrator" setting is enabled: memory usage, the device's asset ID (only for devices managed by an organization), and the email address of the account signed in to the browser
+(e) Connection information (device name, date and time of connection, the pairing code used, and an anonymous device ID issued automatically for each device)
+(f) Only when a User sends a request: the URL and domain of the page, the blocked category, the message entered by the User, and the date and time sent (for usage time extension requests, the desired number of minutes and the date)
+2. The information stored about Administrators is the Google account identifier, email address, and display name (used for sign-in), the pairing codes and invite codes issued, and the email address of the Administrator who replied to a request. The email addresses and display names of management group members are shown to the Administrators of the same management group.
+3. The Feature does not send or store browsing history, search terms, the contents of pages viewed, records of blocked pages, input, or location information (except content a User sends themselves in a request under paragraph 1 (f) of this Article).
+4. This information is used only to provide the Feature (sending settings, reports, requests, and device management). It is never used for advertising, sale, provision to third parties, or analysis of Users' behavior.
+5. All devices using the Software obtain the blocklist from the Developer's servers (Article 6) without signing in. No information identifying the User is sent when obtaining it. The blocklist is managed by the Developer and cannot be edited by Administrators or Users.
+
+Article 6 Storage Location and Management
+1. The information in the preceding Article is stored in Firebase (Cloud Firestore and Firebase Authentication) of Google LLC, operated by the Developer. Cloud Firestore data is stored in the Tokyo region. Sign-in information is managed on Google's infrastructure and may be processed outside Japan.
+2. All communications are encrypted with HTTPS.
+3. Each device can read only its own information and can write only reports and requests. Each Administrator can read and change only the information of devices and requests in the management groups they belong to. People who are not signed in and Administrators of other management groups cannot access this information.
+4. As the operator of Firebase, the Developer is technically able to access this information, but does not view or use it except to respond to outages, abuse, or legal requests, or at the request of an Administrator or User.
+5. Google's terms and privacy policy may apply to the use of Firebase.
+
+Article 7 Retention Period and Deletion
+1. A device's information is deleted when the device is disconnected on the device's settings screen or in the management console.
+2. If agreement to these Terms (or to the Y-FILTER. Terms of Service and Privacy Policy) is withdrawn on a device, the device disconnects and its information is deleted.
+3. Pairing codes are valid for 30 minutes after issue, and Co-admin invite codes for 24 hours after issue (an invite code is deleted once used). Expired codes cannot be used, and codes more than 1 hour past expiry are automatically deleted when an Administrator opens the management console.
+4. A request is deleted when the device receives the Administrator's reply. Requests not received 7 days after the reply, requests with no reply after 30 days, and requests from disconnected devices are automatically deleted when an Administrator opens the management console.
+5. When a Co-admin leaves a management group, or the Owner removes a Co-admin, that Co-admin's information is deleted from the management group.
+6. The Developer may delete the information of devices that have not connected for one year or more.
+7. Administrators can delete their own sign-in information and all information they manage as Owner (management groups, device information, requests, pairing codes, and invite codes) by deleting their account on the SK Hub Systems account page (https://sy9-k.github.io/account/). If deletion is not possible by this method, they may contact the Developer by the method set out in Article 15 of the SK Terms of Service to request deletion.
+
+Article 8 Administrators' Responsibilities
+1. Administrators shall connect to the Feature only devices they have the authority to manage (such as their own children's devices, or devices of a school or organization they are in charge of).
+2. Anyone who knows a pairing code can register any number of devices while it is valid. Administrators shall keep pairing codes from third parties.
+3. Administrators shall properly manage the Google account used to sign in (setting up 2-step verification is recommended).
+4. Administrators shall respect Users' privacy and use the Feature only to the extent necessary to manage devices.
+5. Administrators are responsible for the results of settings they send and replies they give to requests (such as blocking a necessary page or allowing an inappropriate one).
+6. The Owner shall invite as Co-admins only trusted people (such as other parents or guardians, or people in charge at the same school or organization) and shall keep invite codes from third parties. The Owner and Co-admins are also responsible for Co-admins' actions.
+
+Article 9 Prohibited Acts
+1. Administrators and Users shall not:
+(a) Connect, manage, or monitor devices they have no authority to manage
+(b) Wrongfully obtain or use another person's Google account, pairing code, invite code, or device ID, or impersonate another person
+(c) Attempt unauthorized access to the Feature's servers, attempt to circumvent access restrictions, or generate excessive traffic
+(d) Use the Feature for the purpose of unjustly infringing the rights of others, such as stalking or harassment
+(e) Provide the Feature to third parties as a commercial service
+(f) Violate laws or regulations
+2. In the event of a violation of the preceding paragraph, the Developer may, without prior notice, stop the relevant Administrator's sign-in and the device's connection and delete the related information.
+
+Article 10 Changes, Suspension, and Termination
+1. The Feature is provided free of charge and operated within the free tier of Firebase. If usage is high, syncing may become temporarily unavailable, or a limit may be placed on the number of devices that can be connected.
+2. The Developer may change, suspend, or end the Feature for maintenance, outages, security reasons, operational decisions, and the like. If it is ended, the Developer will give notice in advance whenever possible and delete the stored information.
+3. While the Feature is unavailable, device filtering continues with the last applied settings.
+
+Article 11 Disclaimer of Warranties and Limitation of Liability
+1. The Feature is provided as is, without any guarantee that delays in applying sent settings, sync failures, missed blocks, excessive blocking, and the like will not occur.
+2. The Developer is not liable for damages arising from the use of, or inability to use, the Feature, except in cases of the Developer's intent or gross negligence.
+3. The same applies where the Feature is unavailable due to outages or specification changes in Google (Firebase) services.
+
+Article 12 Changes to These Terms
+1. When changing these Terms, the Developer will give notice in the Software and on public pages.
+2. For important changes, such as adding information handled or changing the purposes of use, agreement will be requested again on the device.
+
+Article 13 Governing Law and Jurisdiction
+Article 13 of the SK Terms of Service applies mutatis mutandis.
+
+Supplementary Provisions
+1. These Terms take effect on September 25, 2026.
+2. With these Terms taking effect, the previous Y-FILTER. Systems Terms of Service, which assumed outsourcing to Search3958, are abolished.
+3. Information stored on devices by the previous remote settings mechanism (UUID, etc.) is deleted from devices when the Software is updated. Information stored on Search3958's servers under the previous mechanism is outside the scope of these Terms, and its deletion and so on follow Search3958's rules.
+4. On September 25, 2026, the Feature was renamed from "Y-FILTER. Systems" to "SK Hub Systems," and references were reorganized with the establishment of the SK Terms of Service and the SK Privacy Policy. The renaming does not change the content.
+5. On September 26, 2026, with the launch of the SK Hub Systems account, sign-in to the management console was changed to the SK Hub Systems account, and Articles 2, 3, and 7 were revised.
+6. On September 27, 2026, Article 3 was revised to reflect the confirmation, shown the first time the management console is used, asking whether to connect the SK Hub Systems account.

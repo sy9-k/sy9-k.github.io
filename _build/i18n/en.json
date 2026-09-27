@@ -1086,5 +1086,12 @@
   "検索履歴（MALU の設定で同期を有効にしたときだけ）": "Search history (only when you turn on sync in MALU settings)",
   "管理コンソールのデータ（管理グループ・接続している端末・リクエスト）も削除する": "Also delete the management console data (management groups, connected devices, and requests)",
   "解除すると、単語帳と検索履歴の同期が使えなくなります。保存した言葉と同期した検索履歴は、そのまま残ります。": "After disconnecting, you can't use the wordbook or search history sync. Your saved words and synced search history stay as they are.",
-  "調べた言葉を保存しておけます。SK Hub Systems アカウントに保存するので、ログインしているどの端末でも見られます。": "Save words you've looked up. They're stored in your SK Hub Systems account, so you can see them on any device you're signed in to."
+  "調べた言葉を保存しておけます。SK Hub Systems アカウントに保存するので、ログインしているどの端末でも見られます。": "Save words you've looked up. They're stored in your SK Hub Systems account, so you can see them on any device you're signed in to.",
+  "仕組みの中（Firebase のプロジェクト）では、以前の名前「Y-FILTER. Systems」の名残で": "Internally (in the Firebase project), as a leftover of the old name \"Y-FILTER. Systems,\" it uses the ID",
+  "という ID を使っています。Google でログインするときの画面などに表示されることがありますが、SK Hub Systems と同じものです。この ID はあとから変えられず、作り直すとアカウントや端末のつながりが切れてしまうため、そのまま使っています。": ". It may appear on screens such as the Google sign-in screen, but it's the same as SK Hub Systems. This ID can't be changed afterward, and recreating it would break the links to accounts and devices, so it's still used as is.",
+  "詳しく": "Learn more",
+  "アカウントのページを新しくし、MALU と連携": "A new Account page, and MALU integration",
+  "プロフィール・設定の同期・お知らせを追加し、サービスは最初に使うときに確認してから接続するようになりました。MALU の単語帳と検索履歴の同期も、このアカウントで使えます。": "Added profiles, settings sync, and notices; services now confirm before connecting the first time you use them. The MALU wordbook and search history sync also work with this account.",
+  "サイトのアクセスチェックも担うようになり、SK 全体のサーバー基盤として名前を変えました。仕組みの中の ID（": "It took on the site's access check too, so it was renamed as the server platform for all of SK. The internal ID (",
+  "）は、変えずにそのまま使っています。": ") is still used without change."
 }

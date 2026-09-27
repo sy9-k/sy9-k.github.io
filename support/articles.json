@@ -1,5 +1,5 @@
 {
-  "_note": "サポートの記事の予備。記事は記事エディター（/studio/）で書き、SK Hub Systems に保存する。このファイルは SK Hub Systems に記事がない・届かないときだけ使われる（記事エディターの「バックアップを書き出す」で作り直せる）。type は news（お知らせ）か guide（サポート記事）。news で重要なものは important: true。本文 body は段落のリストで、{\"p\"} 段落 / {\"h\"} 小見出し / {\"steps\"} 手順 / {\"list\"} 箇条書き / {\"note\"} 補足。文中の [文字](URL) はリンクになる。id は URL（/support/?a=id）になるので英数字とハイフンで。 訳は各記事の i18n（en / zh-CN / zh-TW / ko の title・summary・body）。",
+  "_note": "サポートの記事の予備。記事は記事エディター（/studio/）で書き、SK Hub Systems に保存する。このファイルは SK Hub Systems に記事がない・届かないときだけ使われる（記事エディターの「バックアップを書き出す」で作り直せる）。type は news（お知らせ）か guide（サポート記事）。news で重要なものは important: true。本文 body は段落のリストで、{\"p\"} 段落 / {\"h\"} 小見出し / {\"steps\"} 手順 / {\"list\"} 箇条書き / {\"note\"} 補足。文中の [文字](URL) はリンクに、`文字` はコード（ID・アドレスなど）になる。id は URL（/support/?a=id）になるので英数字とハイフンで。 訳は各記事の i18n（en / zh-CN / zh-TW / ko の title・summary・body）。",
   "categories": [
     "MALU",
     "Y-FILTER.",
@@ -10,6 +10,122 @@
     "情報と規約"
   ],
   "articles": [
+    {
+      "id": "policies-revised-2026-09-27",
+      "type": "news",
+      "date": "2026-09-27",
+      "category": "情報と規約",
+      "title": "SK プライバシーポリシーと SK Hub Systems アカウント規約を改定しました",
+      "summary": "MALU と SK Hub Systems アカウントの連携などにあわせて改定しました。",
+      "body": [
+        {
+          "p": "2026年9月27日、次の機能の追加にあわせて、規約を改定しました。"
+        },
+        {
+          "list": [
+            "SK Hub Systems アカウントのプロフィール・設定の同期・お知らせ",
+            "サービスを最初に使うときの接続の確認と、接続の解除",
+            "MALU の単語帳と、検索履歴の同期（どちらも、選んだ人だけ）"
+          ]
+        },
+        {
+          "p": "SK Hub Systems アカウント規約は、次にアカウントを使うときに、もう一度同意をお願いしています。SK Hub Systems 利用規約は、管理コンソールに接続するときに「続ける」を押して同意する形になりました。"
+        },
+        {
+          "p": "内容は [利用規約とプライバシーポリシー](/policies/) でご覧いただけます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "We've revised the SK Privacy Policy and the SK Hub Systems Account Terms",
+          "summary": "Revised for MALU integration with SK Hub Systems accounts and more.",
+          "body": [
+            {
+              "p": "On September 27, 2026, we revised our terms for the following new features."
+            },
+            {
+              "list": [
+                "Profiles, settings sync, and notices for SK Hub Systems accounts",
+                "Confirming before connecting a service the first time you use it, and disconnecting",
+                "The MALU wordbook and search history sync (both only for people who choose them)"
+              ]
+            },
+            {
+              "p": "You'll be asked to agree to the SK Hub Systems Account Terms again the next time you use your account. You now agree to the SK Hub Systems Terms of Service by choosing \"Continue\" when connecting to the management console."
+            },
+            {
+              "p": "You can read them on the [Terms of Service and Privacy Policy](/policies/) page."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "修订了 SK 隐私政策和 SK Hub Systems 账户条款",
+          "summary": "配合 MALU 与 SK Hub Systems 账户的联动等进行了修订。",
+          "body": [
+            {
+              "p": "2026年9月27日，配合以下功能的新增，修订了条款。"
+            },
+            {
+              "list": [
+                "SK Hub Systems 账户的个人资料、设置同步和通知",
+                "首次使用服务时的连接确认，以及解除连接",
+                "MALU 的单词本和搜索记录同步（均仅限选择使用的人）"
+              ]
+            },
+            {
+              "p": "下次使用账户时，会请你再次同意 SK Hub Systems 账户条款。SK Hub Systems 使用条款改为在连接管理控制台时点按“继续”表示同意。"
+            },
+            {
+              "p": "内容请参阅[使用条款和隐私政策](/policies/)。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "修訂了 SK 隱私權政策和 SK Hub Systems 帳戶條款",
+          "summary": "配合 MALU 與 SK Hub Systems 帳戶的連動等進行了修訂。",
+          "body": [
+            {
+              "p": "2026年9月27日，配合以下功能的新增，修訂了條款。"
+            },
+            {
+              "list": [
+                "SK Hub Systems 帳戶的個人資料、設定同步和通知",
+                "首次使用服務時的連接確認，以及解除連接",
+                "MALU 的單字本和搜尋紀錄同步（皆僅限選擇使用的人）"
+              ]
+            },
+            {
+              "p": "下次使用帳戶時，會請你再次同意 SK Hub Systems 帳戶條款。SK Hub Systems 使用條款改為在連接管理主控台時點按「繼續」表示同意。"
+            },
+            {
+              "p": "內容請參閱[使用條款與隱私權政策](/policies/)。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "SK 개인정보 처리방침과 SK Hub Systems 계정 약관을 개정했습니다",
+          "summary": "MALU와 SK Hub Systems 계정의 연동 등에 맞춰 개정했습니다.",
+          "body": [
+            {
+              "p": "2026년 9월 27일, 다음 기능의 추가에 맞춰 약관을 개정했습니다."
+            },
+            {
+              "list": [
+                "SK Hub Systems 계정의 프로필·설정 동기화·알림",
+                "서비스를 처음 사용할 때의 연결 확인과 연결 해제",
+                "MALU의 단어장과 검색 기록 동기화(모두 선택한 사람만)"
+              ]
+            },
+            {
+              "p": "SK Hub Systems 계정 약관은 다음에 계정을 사용할 때 다시 동의를 부탁드립니다. SK Hub Systems 이용약관은 관리 콘솔에 연결할 때 '계속'을 눌러 동의하는 방식으로 바뀌었습니다."
+            },
+            {
+              "p": "내용은 [이용약관과 개인정보 처리방침](/policies/)에서 보실 수 있습니다."
+            }
+          ]
+        }
+      }
+    },
     {
       "id": "sk-hub-account-launch",
       "type": "news",
@@ -697,13 +813,13 @@
     {
       "id": "malu-history-data",
       "type": "guide",
-      "date": "2026-09-26",
+      "date": "2026-09-27",
       "category": "MALU",
       "title": "MALU の検索履歴と、保存される情報",
-      "summary": "検索語・履歴・設定はブラウザの中だけに保存され、送信されません。",
+      "summary": "検索語・履歴・設定はブラウザの中に保存されます。アカウントで同期することもできます。",
       "body": [
         {
-          "p": "MALU の検索語・検索履歴・設定は、お使いのブラウザの中だけに保存されます。サーバーに送ったり、ほかの端末と同期したりはしません。"
+          "p": "MALU の検索語・検索履歴・設定は、お使いのブラウザの中に保存されます。SK Hub Systems アカウントでログインしている場合は設定が端末のあいだで同期され、MALU に接続して選んだ場合に限り、単語帳と検索履歴もアカウントに保存されます。"
         },
         {
           "h": "検索履歴を消す"
@@ -711,8 +827,11 @@
         {
           "steps": [
             "MALU の右上の設定ボタンを押します。",
-            "「検索履歴」の「履歴を消去」を押します。"
+            "「データ」の「検索履歴」で「履歴を消去」を押します。"
           ]
+        },
+        {
+          "p": "[検索履歴の同期](/support/?a=malu-history-sync) を有効にしている場合は、ほかの端末の検索履歴も消えます。"
         },
         {
           "h": "オフラインのとき"
@@ -726,92 +845,101 @@
       ],
       "i18n": {
         "en": {
-          "title": "MALU's search history and what's stored",
-          "summary": "Search terms, history, and settings are stored only in your browser and never sent.",
+          "title": "MALU search history and what's stored",
+          "summary": "Search terms, history, and settings are stored in your browser. You can also sync them with your account.",
           "body": [
             {
-              "p": "MALU's search terms, search history, and settings are stored only in your browser. They're never sent to a server or synced to other devices."
+              "p": "MALU's search terms, search history, and settings are stored in your browser. When you're signed in with an SK Hub Systems account, settings are synced across devices, and only if you connect to MALU and choose to, the wordbook and search history are also saved to your account."
             },
             {
-              "h": "Clearing your search history"
+              "h": "Clear your search history"
             },
             {
               "steps": [
-                "Tap the settings button in the top right of MALU.",
-                "Under \"Search history,\" tap \"Clear history.\""
+                "Click the settings button at the top right of MALU.",
+                "Under \"Data,\" click \"Clear history\" for \"Search history.\""
               ]
+            },
+            {
+              "p": "If [search history sync](/support/?a=malu-history-sync) is on, the search history on your other devices is cleared too."
             },
             {
               "h": "When you're offline"
             },
             {
-              "p": "MALU itself opens offline, but searching needs an internet connection because each dictionary is an external site."
+              "p": "The MALU screen itself opens, but since dictionaries open their own external sites, searching needs an internet connection."
             },
             {
-              "note": "If there's a dictionary you'd like added, [contact us](/contact/) with its name and URL."
+              "note": "If there's a dictionary you'd like, [contact us](/contact/) with the site's name and URL."
             }
           ]
         },
         "zh-CN": {
-          "title": "MALU 的搜索记录与保存的信息",
-          "summary": "搜索词、记录和设置只保存在浏览器中，不会发送。",
+          "title": "MALU 的搜索记录和保存的信息",
+          "summary": "搜索词、记录和设置保存在浏览器中。也可以通过账户同步。",
           "body": [
             {
-              "p": "MALU 的搜索词、搜索记录和设置只保存在你使用的浏览器中，不会发送到服务器，也不会与其他设备同步。"
+              "p": "MALU 的搜索词、搜索记录和设置保存在你使用的浏览器中。使用 SK Hub Systems 账户登录时，设置会在设备之间同步；仅在连接 MALU 并选择使用时，单词本和搜索记录也会保存到账户中。"
             },
             {
-              "h": "清除搜索记录"
+              "h": "删除搜索记录"
             },
             {
               "steps": [
-                "点击 MALU 右上角的设置按钮。",
-                "在“搜索记录”中点击“清除记录”。"
+                "点按 MALU 右上角的设置按钮。",
+                "在“数据”的“搜索记录”中点按“清除记录”。"
               ]
+            },
+            {
+              "p": "开启了[搜索记录同步](/support/?a=malu-history-sync)时，其他设备上的搜索记录也会删除。"
             },
             {
               "h": "离线时"
             },
             {
-              "p": "MALU 界面本身可以打开，但词典需要打开各外部网站，因此搜索需要联网。"
+              "p": "MALU 的画面本身可以打开，但字典会打开各自的外部网站，因此搜索需要连接网络。"
             },
             {
-              "note": "如果有想添加的词典，请附上网站名称和网址[联系我们](/contact/)。"
+              "note": "如有想要的字典，请附上网站名称和网址[联系我们](/contact/)。"
             }
           ]
         },
         "zh-TW": {
-          "title": "MALU 的搜尋紀錄與儲存的資訊",
-          "summary": "搜尋字詞、紀錄和設定只儲存在瀏覽器中，不會傳送。",
+          "title": "MALU 的搜尋紀錄和儲存的資訊",
+          "summary": "搜尋字詞、紀錄和設定儲存在瀏覽器中。也可以透過帳戶同步。",
           "body": [
             {
-              "p": "MALU 的搜尋字詞、搜尋紀錄和設定只儲存在你使用的瀏覽器中，不會傳送到伺服器，也不會與其他裝置同步。"
+              "p": "MALU 的搜尋字詞、搜尋紀錄和設定儲存在你使用的瀏覽器中。使用 SK Hub Systems 帳戶登入時，設定會在裝置之間同步；僅在連接 MALU 並選擇使用時，單字本和搜尋紀錄也會儲存到帳戶中。"
             },
             {
-              "h": "清除搜尋紀錄"
+              "h": "刪除搜尋紀錄"
             },
             {
               "steps": [
-                "點選 MALU 右上角的設定按鈕。",
-                "在「搜尋紀錄」中點選「清除紀錄」。"
+                "點按 MALU 右上角的設定按鈕。",
+                "在「資料」的「搜尋紀錄」中點按「清除記錄」。"
               ]
+            },
+            {
+              "p": "開啟了[搜尋紀錄同步](/support/?a=malu-history-sync)時，其他裝置上的搜尋紀錄也會刪除。"
             },
             {
               "h": "離線時"
             },
             {
-              "p": "MALU 畫面本身可以開啟，但字典需要開啟各外部網站，因此搜尋需要連上網路。"
+              "p": "MALU 的畫面本身可以開啟，但字典會開啟各自的外部網站，因此搜尋需要連接網路。"
             },
             {
-              "note": "如果有想新增的字典，請附上網站名稱和網址[聯絡我們](/contact/)。"
+              "note": "如有想要的字典，請附上網站名稱和網址[聯絡我們](/contact/)。"
             }
           ]
         },
         "ko": {
           "title": "MALU의 검색 기록과 저장되는 정보",
-          "summary": "검색어·기록·설정은 브라우저 안에만 저장되며 전송되지 않습니다.",
+          "summary": "검색어·기록·설정은 브라우저 안에 저장됩니다. 계정으로 동기화할 수도 있습니다.",
           "body": [
             {
-              "p": "MALU의 검색어·검색 기록·설정은 사용 중인 브라우저 안에만 저장됩니다. 서버로 보내거나 다른 기기와 동기화하지 않습니다."
+              "p": "MALU의 검색어·검색 기록·설정은 사용 중인 브라우저 안에 저장됩니다. SK Hub Systems 계정으로 로그인한 경우에는 설정이 기기 사이에서 동기화되며, MALU에 연결하여 선택한 경우에만 단어장과 검색 기록도 계정에 저장됩니다."
             },
             {
               "h": "검색 기록 지우기"
@@ -819,17 +947,327 @@
             {
               "steps": [
                 "MALU 오른쪽 위의 설정 버튼을 누릅니다.",
-                "'검색 기록'의 '기록 지우기'를 누릅니다."
+                "'데이터'의 '검색 기록'에서 '기록 지우기'를 누릅니다."
               ]
+            },
+            {
+              "p": "[검색 기록 동기화](/support/?a=malu-history-sync)를 켜 둔 경우에는 다른 기기의 검색 기록도 지워집니다."
             },
             {
               "h": "오프라인일 때"
             },
             {
-              "p": "MALU 화면 자체는 열리지만, 사전은 각각의 외부 사이트를 열기 때문에 검색하려면 인터넷 연결이 필요합니다."
+              "p": "MALU 화면 자체는 열 수 있지만, 사전은 각각의 외부 사이트를 열기 때문에 검색에는 인터넷 연결이 필요합니다."
             },
             {
-              "note": "원하는 사전이 있으면 사이트 이름과 URL을 첨부해 [문의](/contact/)해 주세요."
+              "note": "원하는 사전이 있으면 사이트 이름과 URL을 적어 [문의](/contact/)해 주세요."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "malu-wordbook",
+      "type": "guide",
+      "date": "2026-09-27",
+      "category": "MALU",
+      "title": "単語帳を使う",
+      "summary": "調べた言葉を保存して、ログインしているどの端末でも見られます。",
+      "body": [
+        {
+          "p": "MALU の単語帳には、調べた言葉を辞書と一緒に保存できます。SK Hub Systems アカウントに保存するので、ログインしているどの端末でも同じ単語帳を使えます。"
+        },
+        {
+          "h": "はじめて使うとき"
+        },
+        {
+          "steps": [
+            "MALU の右上のしおりのボタンを押して、単語帳を開きます。",
+            "「ログインして接続」（ログイン中なら「MALU に接続」）を押します。",
+            "確認画面で「続ける」を押すと、MALU に戻ります。"
+          ]
+        },
+        {
+          "h": "言葉を保存する"
+        },
+        {
+          "steps": [
+            "検索欄に言葉を入力し、辞書を選びます。",
+            "検索欄のしおりのボタンを押します。もう一度押すと、単語帳から外れます。"
+          ]
+        },
+        {
+          "p": "単語帳の言葉を押すと、その言葉と辞書を選んだ状態で検索画面に戻ります。"
+        },
+        {
+          "note": "保存した言葉を読めるのは、あなただけです。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Use the wordbook",
+          "summary": "Save words you've looked up and see them on any device you're signed in to.",
+          "body": [
+            {
+              "p": "The MALU wordbook saves words you've looked up together with the dictionary. It's stored in your SK Hub Systems account, so you can use the same wordbook on any device you're signed in to."
+            },
+            {
+              "h": "The first time"
+            },
+            {
+              "steps": [
+                "Click the bookmark button at the top right of MALU to open the wordbook.",
+                "Click \"Sign in and connect\" (or \"Connect to MALU\" if you're signed in).",
+                "Click \"Continue\" on the confirmation screen to return to MALU."
+              ]
+            },
+            {
+              "h": "Save a word"
+            },
+            {
+              "steps": [
+                "Type a word in the search bar and choose a dictionary.",
+                "Click the bookmark button in the search bar. Click it again to remove the word from the wordbook."
+              ]
+            },
+            {
+              "p": "Click a word in the wordbook to go back to the search screen with that word and dictionary selected."
+            },
+            {
+              "note": "Only you can see the words you save."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "使用单词本",
+          "summary": "保存查过的词语，在任何已登录的设备上都能查看。",
+          "body": [
+            {
+              "p": "MALU 的单词本可以将查过的词语与字典一起保存。保存在 SK Hub Systems 账户中，因此在任何已登录的设备上都能使用同一个单词本。"
+            },
+            {
+              "h": "首次使用时"
+            },
+            {
+              "steps": [
+                "点按 MALU 右上角的书签按钮，打开单词本。",
+                "点按“登录并连接”（已登录时为“连接 MALU”）。",
+                "在确认画面中点按“继续”，即可返回 MALU。"
+              ]
+            },
+            {
+              "h": "保存词语"
+            },
+            {
+              "steps": [
+                "在搜索栏中输入词语并选择字典。",
+                "点按搜索栏中的书签按钮。再次点按则从单词本中移除。"
+              ]
+            },
+            {
+              "p": "点按单词本中的词语，会以选中该词语和字典的状态返回搜索画面。"
+            },
+            {
+              "note": "保存的词语只有你能看到。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "使用單字本",
+          "summary": "儲存查過的詞語，在任何已登入的裝置上都能查看。",
+          "body": [
+            {
+              "p": "MALU 的單字本可以將查過的詞語與字典一起儲存。儲存在 SK Hub Systems 帳戶中，因此在任何已登入的裝置上都能使用同一個單字本。"
+            },
+            {
+              "h": "首次使用時"
+            },
+            {
+              "steps": [
+                "點按 MALU 右上角的書籤按鈕，開啟單字本。",
+                "點按「登入並連接」（已登入時為「連接 MALU」）。",
+                "在確認畫面中點按「繼續」，即可返回 MALU。"
+              ]
+            },
+            {
+              "h": "儲存詞語"
+            },
+            {
+              "steps": [
+                "在搜尋列中輸入詞語並選擇字典。",
+                "點按搜尋列中的書籤按鈕。再次點按則從單字本中移除。"
+              ]
+            },
+            {
+              "p": "點按單字本中的詞語，會以選取該詞語和字典的狀態返回搜尋畫面。"
+            },
+            {
+              "note": "儲存的詞語只有你能看到。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "단어장 사용하기",
+          "summary": "찾아본 단어를 저장해, 로그인한 어느 기기에서든 볼 수 있습니다.",
+          "body": [
+            {
+              "p": "MALU의 단어장에는 찾아본 단어를 사전과 함께 저장할 수 있습니다. SK Hub Systems 계정에 저장하므로, 로그인한 어느 기기에서든 같은 단어장을 사용할 수 있습니다."
+            },
+            {
+              "h": "처음 사용할 때"
+            },
+            {
+              "steps": [
+                "MALU 오른쪽 위의 북마크 버튼을 눌러 단어장을 엽니다.",
+                "'로그인하고 연결'(로그인 중이면 'MALU에 연결')을 누릅니다.",
+                "확인 화면에서 '계속'을 누르면 MALU로 돌아갑니다."
+              ]
+            },
+            {
+              "h": "단어 저장하기"
+            },
+            {
+              "steps": [
+                "검색창에 단어를 입력하고 사전을 고릅니다.",
+                "검색창의 북마크 버튼을 누릅니다. 한 번 더 누르면 단어장에서 빠집니다."
+              ]
+            },
+            {
+              "p": "단어장의 단어를 누르면, 그 단어와 사전을 고른 상태로 검색 화면으로 돌아갑니다."
+            },
+            {
+              "note": "저장한 단어는 본인만 볼 수 있습니다."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "malu-history-sync",
+      "type": "guide",
+      "date": "2026-09-27",
+      "category": "MALU",
+      "title": "検索履歴をほかの端末と同期する",
+      "summary": "有効にした人だけ、検索履歴をアカウントに保存して端末のあいだでそろえます。",
+      "body": [
+        {
+          "p": "MALU の検索履歴は、ふだんはブラウザの中だけに保存されます。SK Hub Systems アカウントに接続して同期を有効にすると、ログインしているほかの端末と検索履歴をそろえられます。"
+        },
+        {
+          "steps": [
+            "MALU の右上の設定ボタンを押します。",
+            "「アカウント」を開きます（まだなら「接続する」から MALU に接続します）。",
+            "「検索履歴の同期」をオンにします。"
+          ]
+        },
+        {
+          "list": [
+            "どこかの端末で検索履歴を消すと、ほかの端末からも消えます。",
+            "オフにすると、アカウントに保存した検索履歴は削除されます（端末の検索履歴は残ります）。"
+          ]
+        },
+        {
+          "note": "アカウントに保存した検索履歴を読めるのは、あなただけです。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Sync your search history with other devices",
+          "summary": "Only if you turn it on: your search history is saved to your account and kept the same across devices.",
+          "body": [
+            {
+              "p": "MALU's search history is normally stored only in the browser. Connect it to your SK Hub Systems account and turn on sync to keep your search history the same on your other signed-in devices."
+            },
+            {
+              "steps": [
+                "Click the settings button at the top right of MALU.",
+                "Open \"Account\" (if you haven't yet, connect to MALU with \"Connect\").",
+                "Turn on \"Search history sync.\""
+              ]
+            },
+            {
+              "list": [
+                "Clearing your search history on one device also clears it on the others.",
+                "Turning sync off deletes the search history saved in your account (the history on your devices stays)."
+              ]
+            },
+            {
+              "note": "Only you can see the search history saved in your account."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "与其他设备同步搜索记录",
+          "summary": "仅限开启的人：将搜索记录保存到账户，并在设备之间统一。",
+          "body": [
+            {
+              "p": "MALU 的搜索记录通常只保存在浏览器中。连接 SK Hub Systems 账户并开启同步后，即可与其他已登录的设备统一搜索记录。"
+            },
+            {
+              "steps": [
+                "点按 MALU 右上角的设置按钮。",
+                "打开“账户”（尚未连接时，通过“连接”连接 MALU）。",
+                "开启“搜索记录同步”。"
+              ]
+            },
+            {
+              "list": [
+                "在任一设备上删除搜索记录，其他设备上的记录也会删除。",
+                "关闭后，保存在账户中的搜索记录将被删除（设备上的搜索记录会保留）。"
+              ]
+            },
+            {
+              "note": "保存在账户中的搜索记录只有你能看到。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "與其他裝置同步搜尋紀錄",
+          "summary": "僅限開啟的人：將搜尋紀錄儲存到帳戶，並在裝置之間統一。",
+          "body": [
+            {
+              "p": "MALU 的搜尋紀錄通常只儲存在瀏覽器中。連接 SK Hub Systems 帳戶並開啟同步後，即可與其他已登入的裝置統一搜尋紀錄。"
+            },
+            {
+              "steps": [
+                "點按 MALU 右上角的設定按鈕。",
+                "開啟「帳戶」（尚未連接時，透過「連接」連接 MALU）。",
+                "開啟「搜尋紀錄同步」。"
+              ]
+            },
+            {
+              "list": [
+                "在任一裝置上刪除搜尋紀錄，其他裝置上的紀錄也會刪除。",
+                "關閉後，儲存在帳戶中的搜尋紀錄將被刪除（裝置上的搜尋紀錄會保留）。"
+              ]
+            },
+            {
+              "note": "儲存在帳戶中的搜尋紀錄只有你能看到。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "검색 기록을 다른 기기와 동기화하기",
+          "summary": "켠 사람만 검색 기록을 계정에 저장해 기기 사이에서 맞춥니다.",
+          "body": [
+            {
+              "p": "MALU의 검색 기록은 보통 브라우저 안에만 저장됩니다. SK Hub Systems 계정에 연결하고 동기화를 켜면, 로그인한 다른 기기와 검색 기록을 맞출 수 있습니다."
+            },
+            {
+              "steps": [
+                "MALU 오른쪽 위의 설정 버튼을 누릅니다.",
+                "'계정'을 엽니다(아직이라면 '연결하기'로 MALU에 연결합니다).",
+                "'검색 기록 동기화'를 켭니다."
+              ]
+            },
+            {
+              "list": [
+                "어느 기기에서 검색 기록을 지우면 다른 기기에서도 지워집니다.",
+                "끄면 계정에 저장한 검색 기록이 삭제됩니다(기기의 검색 기록은 남습니다)."
+              ]
+            },
+            {
+              "note": "계정에 저장한 검색 기록은 본인만 볼 수 있습니다."
             }
           ]
         }
@@ -1675,9 +2113,155 @@
       }
     },
     {
+      "id": "hub-internal-name",
+      "type": "guide",
+      "date": "2026-09-27",
+      "category": "SK Hub Systems",
+      "title": "ログインの画面に「y-filter-systems」と表示される",
+      "summary": "SK Hub Systems の仕組みの中の ID です。以前の名前の名残で、中身は同じものです。",
+      "body": [
+        {
+          "p": "SK Hub Systems は、以前「Y-FILTER. Systems」という名前でした。仕組みの中（Google の Firebase のプロジェクト）では、そのときに付けた `y-filter-systems` という ID を今も使っています。"
+        },
+        {
+          "p": "そのため、Google でログインするときの画面などに `y-filter-systems.firebaseapp.com` と表示されることがあります。これは SK Hub Systems のログインの画面で、SK が運営しているものです。"
+        },
+        {
+          "h": "名前を変えないのは"
+        },
+        {
+          "list": [
+            "Firebase のプロジェクトの ID は、あとから変えられません。",
+            "新しく作り直すと、SK Hub Systems アカウントの ID が全員変わり、アカウント・管理グループ・単語帳のつながりが切れてしまいます。",
+            "接続している Y-FILTER. の端末も、すべて接続し直しになってしまいます。"
+          ]
+        },
+        {
+          "p": "使っている方の設定やデータを守るため、見える名前だけを SK Hub Systems に変え、仕組みの中の ID はそのまま使っています。ID が違っても、扱う情報や規約は変わりません。"
+        },
+        {
+          "note": "ログインの画面で、`y-filter-systems.firebaseapp.com` または `sy9-k.github.io` 以外のアドレスが表示されたときは、ログインせずに [お問い合わせ](/contact/) ください。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "\"y-filter-systems\" appears on the sign-in screen",
+          "summary": "It's an internal ID of SK Hub Systems, left over from its old name. It's the same service.",
+          "body": [
+            {
+              "p": "SK Hub Systems used to be called \"Y-FILTER. Systems.\" Internally (in its Google Firebase project), it still uses the ID `y-filter-systems` given at that time."
+            },
+            {
+              "p": "So `y-filter-systems.firebaseapp.com` may appear on screens such as the Google sign-in screen. This is the SK Hub Systems sign-in screen, operated by SK."
+            },
+            {
+              "h": "Why the name isn't changed"
+            },
+            {
+              "list": [
+                "A Firebase project's ID can't be changed afterward.",
+                "Recreating it would change everyone's SK Hub Systems account ID and break the links to accounts, management groups, and wordbooks.",
+                "Every connected Y-FILTER. device would also have to be connected again."
+              ]
+            },
+            {
+              "p": "To protect users' settings and data, only the visible name was changed to SK Hub Systems, and the internal ID is still used as is. The information handled and the terms are the same regardless of the ID."
+            },
+            {
+              "note": "If the sign-in screen shows an address other than `y-filter-systems.firebaseapp.com` or `sy9-k.github.io`, don't sign in, and please [contact us](/contact/)."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "登录画面中显示“y-filter-systems”",
+          "summary": "这是 SK Hub Systems 内部的 ID，是以前名称的遗留，内容相同。",
+          "body": [
+            {
+              "p": "SK Hub Systems 以前名为“Y-FILTER. Systems”。在内部（Google Firebase 的项目）中，至今仍在使用当时设定的 `y-filter-systems` 这个 ID。"
+            },
+            {
+              "p": "因此，使用 Google 登录时的画面等可能会显示 `y-filter-systems.firebaseapp.com`。这是由 SK 运营的 SK Hub Systems 登录画面。"
+            },
+            {
+              "h": "为什么不更改名称"
+            },
+            {
+              "list": [
+                "Firebase 项目的 ID 之后无法更改。",
+                "如重新创建，所有人的 SK Hub Systems 账户 ID 都会改变，与账户、管理群组、单词本的关联会中断。",
+                "已连接的 Y-FILTER. 设备也都需要重新连接。"
+              ]
+            },
+            {
+              "p": "为了保护用户的设置和数据，只将显示的名称改为 SK Hub Systems，内部的 ID 保持不变。即使 ID 不同，处理的信息和条款也不会改变。"
+            },
+            {
+              "note": "如果登录画面显示 `y-filter-systems.firebaseapp.com` 或 `sy9-k.github.io` 以外的地址，请不要登录，并[联系我们](/contact/)。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "登入畫面中顯示「y-filter-systems」",
+          "summary": "這是 SK Hub Systems 內部的 ID，是以前名稱的遺留，內容相同。",
+          "body": [
+            {
+              "p": "SK Hub Systems 以前名為「Y-FILTER. Systems」。在內部（Google Firebase 的專案）中，至今仍在使用當時設定的 `y-filter-systems` 這個 ID。"
+            },
+            {
+              "p": "因此，使用 Google 登入時的畫面等可能會顯示 `y-filter-systems.firebaseapp.com`。這是由 SK 營運的 SK Hub Systems 登入畫面。"
+            },
+            {
+              "h": "為什麼不變更名稱"
+            },
+            {
+              "list": [
+                "Firebase 專案的 ID 之後無法變更。",
+                "如重新建立，所有人的 SK Hub Systems 帳戶 ID 都會改變，與帳戶、管理群組、單字本的連結會中斷。",
+                "已連線的 Y-FILTER. 裝置也都需要重新連線。"
+              ]
+            },
+            {
+              "p": "為了保護使用者的設定和資料，只將顯示的名稱改為 SK Hub Systems，內部的 ID 保持不變。即使 ID 不同，處理的資訊和條款也不會改變。"
+            },
+            {
+              "note": "如果登入畫面顯示 `y-filter-systems.firebaseapp.com` 或 `sy9-k.github.io` 以外的網址，請不要登入，並[聯絡我們](/contact/)。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "로그인 화면에 'y-filter-systems'라고 표시돼요",
+          "summary": "SK Hub Systems 내부의 ID입니다. 예전 이름의 흔적이며, 같은 서비스입니다.",
+          "body": [
+            {
+              "p": "SK Hub Systems는 예전에 'Y-FILTER. Systems'라는 이름이었습니다. 내부(Google Firebase 프로젝트)에서는 그때 정한 `y-filter-systems`라는 ID를 지금도 사용하고 있습니다."
+            },
+            {
+              "p": "그래서 Google로 로그인할 때의 화면 등에 `y-filter-systems.firebaseapp.com`이 표시될 수 있습니다. 이것은 SK가 운영하는 SK Hub Systems의 로그인 화면입니다."
+            },
+            {
+              "h": "이름을 바꾸지 않는 이유"
+            },
+            {
+              "list": [
+                "Firebase 프로젝트의 ID는 나중에 바꿀 수 없습니다.",
+                "새로 만들면 모든 사람의 SK Hub Systems 계정 ID가 바뀌어, 계정·관리 그룹·단어장과의 연결이 끊어집니다.",
+                "연결된 Y-FILTER. 기기도 모두 다시 연결해야 합니다."
+              ]
+            },
+            {
+              "p": "사용자의 설정과 데이터를 지키기 위해, 보이는 이름만 SK Hub Systems로 바꾸고 내부 ID는 그대로 사용하고 있습니다. ID가 달라도 처리하는 정보와 약관은 바뀌지 않습니다."
+            },
+            {
+              "note": "로그인 화면에 `y-filter-systems.firebaseapp.com` 또는 `sy9-k.github.io` 이외의 주소가 표시되면 로그인하지 말고 [문의](/contact/)해 주세요."
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "account-about",
       "type": "guide",
-      "date": "2026-09-26",
+      "date": "2026-09-27",
       "category": "アカウント",
       "title": "SK Hub Systems アカウントとは",
       "summary": "SK のサービスで共通のアカウントです。ログインは Google アカウントだけです。",
@@ -1702,11 +2286,16 @@
           "list": [
             "Google アカウントの識別子・名前・メールアドレス・アイコン（ログインに使います）",
             "アカウントの作成日と、規約に同意した日",
-            "使ったサービスのデータ（例: 管理コンソールの管理グループ）"
+            "プロフィール（決めた場合の表示名とアイコン）と、端末のあいだで同期する設定",
+            "SK からのお知らせ（お問い合わせへの返事など）",
+            "接続したサービスと、そのデータ（例: 管理コンソールの管理グループ、MALU の単語帳）"
           ]
         },
         {
           "p": "Google アカウントのパスワードや、Gmail・Google ドライブなどの中身、閲覧履歴・検索語は取得しません。"
+        },
+        {
+          "p": "サービスは、最初に使うときに接続するか確認します。詳しくは [サービスを接続する・接続を解除する](/support/?a=account-services) をご覧ください。"
         }
       ],
       "i18n": {
@@ -1733,12 +2322,17 @@
             {
               "list": [
                 "Your Google account ID, name, email address, and profile picture (used for sign-in)",
-                "When you created your account and when you agreed to the terms",
-                "Data from the services you use (e.g. your management group in the console)"
+                "The date the account was created and the date you agreed to the terms",
+                "Your profile (display name and icon, if you set them) and settings synced across devices",
+                "Notices from SK (such as replies to your inquiries)",
+                "Services you've connected and their data (e.g., management groups in the management console, the MALU wordbook)"
               ]
             },
             {
               "p": "We never access your Google account password, the contents of Gmail or Google Drive, or your browsing history or search terms."
+            },
+            {
+              "p": "A service asks whether to connect the first time you use it. See [Connect or disconnect a service](/support/?a=account-services) for details."
             }
           ]
         },
@@ -1764,13 +2358,18 @@
             },
             {
               "list": [
-                "Google 账号的标识符、姓名、邮箱地址和头像（用于登录）",
-                "账户创建日期及同意条款的日期",
-                "所使用服务的数据（例：管理控制台的管理群组）"
+                "Google 账号的标识符、名称、电子邮件地址和头像（用于登录）",
+                "账户的创建日期和同意条款的日期",
+                "个人资料（设置时的显示名称和头像）以及在设备之间同步的设置",
+                "来自 SK 的通知（咨询的回复等）",
+                "已连接的服务及其数据（例如：管理控制台的管理群组、MALU 的单词本）"
               ]
             },
             {
               "p": "不会获取 Google 账号密码、Gmail 和 Google 云端硬盘等的内容，以及浏览记录和搜索词。"
+            },
+            {
+              "p": "首次使用服务时，会确认是否连接。详情请参阅[连接服务、解除连接](/support/?a=account-services)。"
             }
           ]
         },
@@ -1796,13 +2395,18 @@
             },
             {
               "list": [
-                "Google 帳戶的識別碼、姓名、電子郵件地址和大頭貼（用於登入）",
-                "帳戶建立日期及同意條款的日期",
-                "所使用服務的資料（例：管理主控台的管理群組）"
+                "Google 帳戶的識別碼、名稱、電子郵件地址和大頭貼（用於登入）",
+                "帳戶的建立日期和同意條款的日期",
+                "個人資料（設定時的顯示名稱和大頭貼）以及在裝置之間同步的設定",
+                "來自 SK 的通知（聯絡事項的回覆等）",
+                "已連接的服務及其資料（例如：管理主控台的管理群組、MALU 的單字本）"
               ]
             },
             {
               "p": "不會取得 Google 帳戶密碼、Gmail 和 Google 雲端硬碟等的內容，以及瀏覽紀錄和搜尋字詞。"
+            },
+            {
+              "p": "首次使用服務時，會確認是否連接。詳情請參閱[連接服務、解除連接](/support/?a=account-services)。"
             }
           ]
         },
@@ -1828,13 +2432,18 @@
             },
             {
               "list": [
-                "Google 계정의 식별자·이름·이메일 주소·프로필 사진(로그인에 사용)",
-                "계정 생성일과 약관 동의일",
-                "사용한 서비스의 데이터(예: 관리 콘솔의 관리 그룹)"
+                "Google 계정의 식별자·이름·이메일 주소·아이콘(로그인에 사용합니다)",
+                "계정 생성일과 약관에 동의한 날",
+                "프로필(설정한 경우의 표시 이름과 아이콘)과 기기 사이에서 동기화하는 설정",
+                "SK의 알림(문의에 대한 답변 등)",
+                "연결한 서비스와 그 데이터(예: 관리 콘솔의 관리 그룹, MALU의 단어장)"
               ]
             },
             {
               "p": "Google 계정 비밀번호, Gmail·Google 드라이브 등의 내용, 열람 기록·검색어는 가져오지 않습니다."
+            },
+            {
+              "p": "서비스는 처음 사용할 때 연결할지 확인합니다. 자세한 내용은 [서비스 연결하기·연결 해제하기](/support/?a=account-services)를 참고하세요."
             }
           ]
         }
@@ -1843,18 +2452,18 @@
     {
       "id": "account-console-login",
       "type": "guide",
-      "date": "2026-09-26",
+      "date": "2026-09-27",
       "category": "アカウント",
-      "title": "管理コンソールにログインしたら、アカウントの作成の画面が開いた",
-      "summary": "管理コンソールは SK Hub Systems アカウントで使うようになりました。同意すると戻ります。",
+      "title": "管理コンソールにログインしたら、アカウントのページが開いた",
+      "summary": "はじめて使うときは、アカウントの作成と、管理コンソールへの接続を確認します。",
       "body": [
         {
-          "p": "Y-FILTER. の管理コンソールは、SK Hub Systems アカウントで使うようになりました。アカウントをまだ作っていない場合や、アカウント規約が新しくなった場合は、ログインのあとにアカウントのページが開きます。"
+          "p": "Y-FILTER. の管理コンソールは、SK Hub Systems アカウントで使います。アカウントをまだ作っていない場合、アカウント規約が新しくなった場合、管理コンソールにまだ接続していない場合は、ログインのあとにアカウントのページが開きます。"
         },
         {
           "steps": [
-            "表示された内容と規約を確認します。",
-            "「同意します」にチェックを入れ、「アカウントを作成」を押します。",
+            "アカウントを作っていないとき・規約が新しくなったときは、内容を確認し、「同意します」にチェックを入れて「アカウントを作成」（または「同意して続ける」）を押します。",
+            "「Y-FILTER. 管理コンソールで SK Hub Systems アカウントを使いますか？」と表示されたら、内容を確認して「続ける」を押します。「続ける」を押すと、SK Hub Systems 利用規約に同意したことになります。",
             "自動で管理コンソールに戻ります。"
           ]
         },
@@ -1867,90 +2476,90 @@
       ],
       "i18n": {
         "en": {
-          "title": "Signing in to the management console opened an account creation screen",
-          "summary": "The management console now uses SK Hub Systems accounts. Agree and you'll be taken back.",
+          "title": "The account page opened after signing in to the management console",
+          "summary": "The first time, you'll create an account and confirm connecting it to the management console.",
           "body": [
             {
-              "p": "The Y-FILTER. management console now uses SK Hub Systems accounts. If you haven't created an account yet, or the account terms have been updated, the Account page opens after you sign in."
+              "p": "The Y-FILTER. management console is used with an SK Hub Systems account. If you haven't created an account yet, if the Account Terms have been updated, or if you haven't connected to the management console yet, the account page opens after you sign in."
             },
             {
               "steps": [
-                "Review the details and the terms.",
-                "Check \"I agree\" and click \"Create account.\"",
-                "You're taken back to the management console automatically."
+                "If you haven't created an account or the terms have been updated, review the details, check \"I agree,\" and click \"Create account\" (or \"Agree and continue\").",
+                "When \"Use your SK Hub Systems account with the Y-FILTER. management console?\" appears, review it and click \"Continue.\" Clicking \"Continue\" means you agree to the SK Hub Systems Terms of Service.",
+                "You'll be taken back to the management console automatically."
               ]
             },
             {
-              "p": "Your existing management groups, devices, and co-admins keep working as before."
+              "p": "Your existing management groups, devices, and co-admins stay as they are."
             },
             {
-              "note": "To sign in with a different Google account, click \"Use a different account\" on the Account page."
+              "note": "To sign in with a different Google account, click \"Sign in with another account\" on the account page."
             }
           ]
         },
         "zh-CN": {
-          "title": "登录管理控制台后打开了创建账户的界面",
-          "summary": "管理控制台现在使用 SK Hub Systems 账户。同意后即可返回。",
+          "title": "登录管理控制台后，打开了账户页面",
+          "summary": "首次使用时，会创建账户并确认是否连接到管理控制台。",
           "body": [
             {
-              "p": "Y-FILTER. 管理控制台现在使用 SK Hub Systems 账户。如果尚未创建账户，或账户条款已更新，登录后会打开账户页面。"
+              "p": "Y-FILTER. 管理控制台需要使用 SK Hub Systems 账户。尚未创建账户、账户条款已更新，或尚未连接管理控制台时，登录后会打开账户页面。"
             },
             {
               "steps": [
-                "确认显示的内容和条款。",
-                "勾选“我同意”，点击“创建账户”。",
+                "尚未创建账户或条款已更新时，确认内容后勾选“同意”，点按“创建账户”（或“同意并继续”）。",
+                "显示“要在 Y-FILTER. 管理控制台中使用 SK Hub Systems 账户吗？”时，确认内容后点按“继续”。点按“继续”即表示同意 SK Hub Systems 使用条款。",
                 "会自动返回管理控制台。"
               ]
             },
             {
-              "p": "原有的管理群组、设备和共同管理员可以照常使用。"
+              "p": "原有的管理群组、设备和共同管理员可以继续使用。"
             },
             {
-              "note": "如需使用其他 Google 账号登录，请点击账户页面上的“使用其他账户登录”。"
+              "note": "如要使用其他 Google 账号登录，请点按账户页面中的“使用其他账户登录”。"
             }
           ]
         },
         "zh-TW": {
-          "title": "登入管理主控台後開啟了建立帳戶的畫面",
-          "summary": "管理主控台現在使用 SK Hub Systems 帳戶。同意後即可返回。",
+          "title": "登入管理主控台後，開啟了帳戶頁面",
+          "summary": "首次使用時，會建立帳戶並確認是否連接到管理主控台。",
           "body": [
             {
-              "p": "Y-FILTER. 管理主控台現在使用 SK Hub Systems 帳戶。如果尚未建立帳戶，或帳戶條款已更新，登入後會開啟帳戶頁面。"
+              "p": "Y-FILTER. 管理主控台需要使用 SK Hub Systems 帳戶。尚未建立帳戶、帳戶條款已更新，或尚未連接管理主控台時，登入後會開啟帳戶頁面。"
             },
             {
               "steps": [
-                "確認顯示的內容和條款。",
-                "勾選「我同意」，點選「建立帳戶」。",
-                "會自動回到管理主控台。"
+                "尚未建立帳戶或條款已更新時，確認內容後勾選「同意」，點按「建立帳戶」（或「同意並繼續」）。",
+                "顯示「要在 Y-FILTER. 管理主控台中使用 SK Hub Systems 帳戶嗎？」時，確認內容後點按「繼續」。點按「繼續」即表示同意 SK Hub Systems 使用條款。",
+                "會自動返回管理主控台。"
               ]
             },
             {
-              "p": "原有的管理群組、裝置和共同管理員可以照常使用。"
+              "p": "原有的管理群組、裝置和共同管理員可以繼續使用。"
             },
             {
-              "note": "如需使用其他 Google 帳戶登入，請點選帳戶頁面上的「使用其他帳戶登入」。"
+              "note": "如要使用其他 Google 帳戶登入，請點按帳戶頁面中的「使用其他帳戶登入」。"
             }
           ]
         },
         "ko": {
-          "title": "관리 콘솔에 로그인했더니 계정 만들기 화면이 열렸다",
-          "summary": "관리 콘솔은 SK Hub Systems 계정으로 쓰게 되었습니다. 동의하면 돌아갑니다.",
+          "title": "관리 콘솔에 로그인했더니 계정 페이지가 열렸어요",
+          "summary": "처음 사용할 때는 계정 만들기와 관리 콘솔 연결을 확인합니다.",
           "body": [
             {
-              "p": "Y-FILTER. 관리 콘솔은 SK Hub Systems 계정으로 쓰게 되었습니다. 계정을 아직 만들지 않았거나 계정 약관이 새로워진 경우에는 로그인 후 계정 페이지가 열립니다."
+              "p": "Y-FILTER. 관리 콘솔은 SK Hub Systems 계정으로 사용합니다. 아직 계정을 만들지 않았거나, 계정 약관이 새로워졌거나, 아직 관리 콘솔에 연결하지 않은 경우에는 로그인 후 계정 페이지가 열립니다."
             },
             {
               "steps": [
-                "표시된 내용과 약관을 확인합니다.",
-                "'동의합니다'에 체크하고 '계정 만들기'를 누릅니다.",
+                "계정을 만들지 않았거나 약관이 새로워졌을 때는 내용을 확인하고 '동의합니다'에 체크한 뒤 '계정 만들기'(또는 '동의하고 계속')를 누릅니다.",
+                "'Y-FILTER. 관리 콘솔에서 SK Hub Systems 계정을 사용할까요?'가 표시되면 내용을 확인하고 '계속'을 누릅니다. '계속'을 누르면 SK Hub Systems 이용약관에 동의한 것으로 간주됩니다.",
                 "자동으로 관리 콘솔로 돌아갑니다."
               ]
             },
             {
-              "p": "지금까지의 관리 그룹·기기·공동 관리자는 그대로 쓸 수 있습니다."
+              "p": "기존의 관리 그룹·기기·공동 관리자는 그대로 사용할 수 있습니다."
             },
             {
-              "note": "다른 Google 계정으로 로그인하고 싶을 때는 계정 페이지의 '다른 계정으로 로그인'을 눌러 주세요."
+              "note": "다른 Google 계정으로 로그인하려면 계정 페이지의 '다른 계정으로 로그인'을 눌러 주세요."
             }
           ]
         }
@@ -1959,7 +2568,7 @@
     {
       "id": "account-delete",
       "type": "guide",
-      "date": "2026-09-26",
+      "date": "2026-09-27",
       "category": "アカウント",
       "title": "アカウントを削除する・データをダウンロードする",
       "summary": "アカウントのページから、いつでもダウンロード・削除できます。",
@@ -1968,107 +2577,107 @@
           "h": "データをダウンロードする"
         },
         {
-          "p": "[アカウント](/account/) のページの「データとプライバシー」で「ダウンロード」を押すと、このアカウントについて保存されている情報をファイル（JSON）で受け取れます。"
+          "p": "[アカウント](/account/) のページの「プライバシー」で「データをダウンロード」を押すと、このアカウントについて保存されている情報をファイル（JSON）で受け取れます。"
         },
         {
           "h": "アカウントを削除する"
         },
         {
           "steps": [
-            "[アカウント](/account/) のページを開き、いちばん下の「アカウントを削除する」を押します。",
+            "[アカウント](/account/) のページを開き、「プライバシー」の「アカウントを削除」を押します。",
             "確認のチェックを入れて「削除する」を押します。",
             "確認のために Google のログイン画面が開くので、同じアカウントを選びます。"
           ]
         },
         {
-          "p": "アカウントと一緒に、管理コンソールの管理グループ・接続している端末の情報・リクエスト・ペアリングコードも削除され、元に戻せません。共同管理者として参加しているグループからは抜けます。"
+          "p": "アカウントと一緒に、プロフィール・同期した設定・お知らせ、MALU の単語帳と同期した検索履歴、管理コンソールの管理グループ・接続している端末の情報・リクエスト・ペアリングコードも削除され、元に戻せません。共同管理者として参加しているグループからは抜けます。"
         },
         {
-          "note": "接続していた端末の Y-FILTER. は遠隔管理が外れ、最後に配信された設定のままフィルタリングを続けます。"
+          "note": "接続していた端末の Y-FILTER. は遠隔管理が外れ、最後に配信された設定のままフィルタリングを続けます。サービスのデータだけを消したいときは、[サービスを接続する・接続を解除する](/support/?a=account-services) をご覧ください。"
         }
       ],
       "i18n": {
         "en": {
           "title": "Delete your account or download your data",
-          "summary": "Download or delete any time from the Account page.",
+          "summary": "You can download or delete it at any time from the Account page.",
           "body": [
             {
               "h": "Download your data"
             },
             {
-              "p": "On the [Account](/account/) page, click \"Download\" under \"Data & privacy\" to get the information stored about your account as a file (JSON)."
+              "p": "Click \"Download data\" under \"Privacy\" on the [Account](/account/) page to receive the information stored about this account as a file (JSON)."
             },
             {
               "h": "Delete your account"
             },
             {
               "steps": [
-                "Open the [Account](/account/) page and click \"Delete account\" at the bottom.",
+                "Open the [Account](/account/) page and click \"Delete account\" under \"Privacy.\"",
                 "Check the confirmation box and click \"Delete.\"",
-                "The Google sign-in screen opens to confirm — choose the same account."
+                "A Google sign-in screen opens to confirm; choose the same account."
               ]
             },
             {
-              "p": "Your management group, connected devices, requests, and pairing codes in the management console are deleted along with your account, and this can't be undone. You'll leave any groups you've joined as a co-admin."
+              "p": "Along with the account, your profile, synced settings, and notices, your MALU wordbook and synced search history, and your management groups, connected device information, requests, and pairing codes in the management console are deleted and can't be restored. You'll leave any groups you joined as a co-admin."
             },
             {
-              "note": "Y-FILTER. on connected devices will stop being remotely managed and keep filtering with the last settings it received."
+              "note": "Y-FILTER. on connected devices will no longer be remotely managed and will keep filtering with the last settings sent. To delete only a service's data, see [Connect or disconnect a service](/support/?a=account-services)."
             }
           ]
         },
         "zh-CN": {
           "title": "删除账户、下载数据",
-          "summary": "可随时在账户页面下载或删除。",
+          "summary": "可以随时在账户页面下载或删除。",
           "body": [
             {
               "h": "下载数据"
             },
             {
-              "p": "在[账户](/account/)页面的“数据与隐私”中点击“下载”，即可以文件（JSON）形式获取此账户的已保存信息。"
+              "p": "在[账户](/account/)页面的“隐私”中点按“下载数据”，即可以文件（JSON）形式获取此账户保存的信息。"
             },
             {
               "h": "删除账户"
             },
             {
               "steps": [
-                "打开[账户](/account/)页面，点击最下方的“删除账户”。",
-                "勾选确认后点击“删除”。",
-                "会打开 Google 登录界面进行确认，请选择同一个账号。"
+                "打开[账户](/account/)页面，点按“隐私”中的“删除账户”。",
+                "勾选确认后点按“删除”。",
+                "为确认身份会打开 Google 登录画面，请选择同一账户。"
               ]
             },
             {
-              "p": "管理控制台中的管理群组、已连接设备的信息、请求和配对码会随账户一并删除，且无法恢复。你将退出以共同管理员身份加入的群组。"
+              "p": "账户连同个人资料、同步的设置、通知，MALU 的单词本和已同步的搜索记录，以及管理控制台的管理群组、已连接设备的信息、请求和配对码都会被删除，且无法恢复。将退出以共同管理员身份加入的群组。"
             },
             {
-              "note": "已连接设备上的 Y-FILTER. 将脱离远程管理，并按最后收到的设置继续过滤。"
+              "note": "已连接设备上的 Y-FILTER. 将解除远程管理，并按最后下发的设置继续过滤。如只想删除服务的数据，请参阅[连接服务、解除连接](/support/?a=account-services)。"
             }
           ]
         },
         "zh-TW": {
           "title": "刪除帳戶、下載資料",
-          "summary": "可隨時在帳戶頁面下載或刪除。",
+          "summary": "可以隨時在帳戶頁面下載或刪除。",
           "body": [
             {
               "h": "下載資料"
             },
             {
-              "p": "在[帳戶](/account/)頁面的「資料與隱私」中點選「下載」，即可以檔案（JSON）形式取得此帳戶已儲存的資訊。"
+              "p": "在[帳戶](/account/)頁面的「隱私權」中點按「下載資料」，即可以檔案（JSON）形式取得此帳戶儲存的資訊。"
             },
             {
               "h": "刪除帳戶"
             },
             {
               "steps": [
-                "開啟[帳戶](/account/)頁面，點選最下方的「刪除帳戶」。",
-                "勾選確認後點選「刪除」。",
-                "會開啟 Google 登入畫面進行確認，請選擇同一個帳戶。"
+                "開啟[帳戶](/account/)頁面，點按「隱私權」中的「刪除帳戶」。",
+                "勾選確認後點按「刪除」。",
+                "為確認身分會開啟 Google 登入畫面，請選擇同一帳戶。"
               ]
             },
             {
-              "p": "管理主控台中的管理群組、已連線裝置的資訊、請求和配對碼會隨帳戶一併刪除，且無法復原。你將退出以共同管理員身分加入的群組。"
+              "p": "帳戶連同個人資料、同步的設定、通知，MALU 的單字本和已同步的搜尋紀錄，以及管理主控台的管理群組、已連線裝置的資訊、請求和配對碼都會被刪除，且無法復原。將退出以共同管理員身分加入的群組。"
             },
             {
-              "note": "已連線裝置上的 Y-FILTER. 將脫離遠端管理，並依最後收到的設定繼續過濾。"
+              "note": "已連線裝置上的 Y-FILTER. 將解除遠端管理，並依最後下發的設定繼續過濾。如只想刪除服務的資料，請參閱[連接服務、解除連接](/support/?a=account-services)。"
             }
           ]
         },
@@ -2080,23 +2689,472 @@
               "h": "데이터 다운로드하기"
             },
             {
-              "p": "[계정](/account/) 페이지의 '데이터와 개인정보'에서 '다운로드'를 누르면, 이 계정에 대해 저장된 정보를 파일(JSON)로 받을 수 있습니다."
+              "p": "[계정](/account/) 페이지의 '개인정보 보호'에서 '데이터 다운로드'를 누르면, 이 계정에 대해 저장된 정보를 파일(JSON)로 받을 수 있습니다."
             },
             {
               "h": "계정 삭제하기"
             },
             {
               "steps": [
-                "[계정](/account/) 페이지를 열고 맨 아래의 '계정 삭제하기'를 누릅니다.",
-                "확인 체크를 하고 '삭제'를 누릅니다.",
-                "확인을 위해 Google 로그인 화면이 열리면 같은 계정을 선택합니다."
+                "[계정](/account/) 페이지를 열고 '개인정보 보호'의 '계정 삭제'를 누릅니다.",
+                "확인란에 체크하고 '삭제'를 누릅니다.",
+                "확인을 위해 Google 로그인 화면이 열리므로 같은 계정을 고릅니다."
               ]
             },
             {
-              "p": "계정과 함께 관리 콘솔의 관리 그룹·연결된 기기의 정보·요청·페어링 코드도 삭제되며, 되돌릴 수 없습니다. 공동 관리자로 참여 중인 그룹에서는 탈퇴합니다."
+              "p": "계정과 함께 프로필·동기화한 설정·알림, MALU의 단어장과 동기화한 검색 기록, 관리 콘솔의 관리 그룹·연결된 기기의 정보·요청·페어링 코드도 삭제되며 되돌릴 수 없습니다. 공동 관리자로 참여 중인 그룹에서는 탈퇴합니다."
             },
             {
-              "note": "연결되어 있던 기기의 Y-FILTER.는 원격 관리가 해제되고, 마지막으로 배포된 설정 그대로 필터링을 계속합니다."
+              "note": "연결되어 있던 기기의 Y-FILTER.는 원격 관리가 해제되고, 마지막으로 배포된 설정대로 필터링을 계속합니다. 서비스의 데이터만 지우려면 [서비스 연결하기·연결 해제하기](/support/?a=account-services)를 참고하세요."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "account-profile",
+      "type": "guide",
+      "date": "2026-09-27",
+      "category": "アカウント",
+      "title": "表示名とアイコンを変える",
+      "summary": "SK のサービスで表示される名前とアイコンを、Google アカウントとは別に決められます。",
+      "body": [
+        {
+          "p": "SK Hub Systems アカウントの表示名とアイコンは、Google アカウントの名前・写真とは別に決められます。サイトのヘッダーや、管理コンソールの共同管理者の一覧に表示されます。"
+        },
+        {
+          "steps": [
+            "[アカウント](/account/) のページを開きます。",
+            "「個人情報」の「名前とアイコン」を押します。",
+            "表示名を入力し、アイコンを「Google アカウントの写真」か「名前の頭文字」から選びます。頭文字のときは色も選べます。",
+            "「保存」を押します。"
+          ]
+        },
+        {
+          "p": "表示名を空欄にすると、Google アカウントの名前を使います。Google アカウントの名前や写真は変わりません。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Change your display name and icon",
+          "summary": "Choose the name and icon shown in SK services, separately from your Google account.",
+          "body": [
+            {
+              "p": "You can choose a display name and icon for your SK Hub Systems account, separate from your Google account name and picture. They're shown in the site header and in the co-admin list of the management console."
+            },
+            {
+              "steps": [
+                "Open the [Account](/account/) page.",
+                "Under \"Personal information,\" click \"Name and icon.\"",
+                "Enter a display name and choose \"Google account picture\" or \"Initial of your name\" for the icon. For an initial, you can also pick a color.",
+                "Click \"Save.\""
+              ]
+            },
+            {
+              "p": "If you leave the display name empty, your Google account name is used. Your Google account name and picture don't change."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "更改显示名称和头像",
+          "summary": "可以独立于 Google 账号，设置在 SK 服务中显示的名称和头像。",
+          "body": [
+            {
+              "p": "SK Hub Systems 账户的显示名称和头像，可以独立于 Google 账号的名称和图片进行设置。会显示在网站页眉和管理控制台的共同管理员列表中。"
+            },
+            {
+              "steps": [
+                "打开[账户](/account/)页面。",
+                "点按“个人信息”中的“名称和头像”。",
+                "输入显示名称，并从“Google 账号图片”或“名称首字母”中选择头像。选择首字母时还可以选择颜色。",
+                "点按“保存”。"
+              ]
+            },
+            {
+              "p": "显示名称留空时，将使用 Google 账号的名称。Google 账号的名称和图片不会改变。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "變更顯示名稱和大頭貼",
+          "summary": "可以獨立於 Google 帳戶，設定在 SK 服務中顯示的名稱和大頭貼。",
+          "body": [
+            {
+              "p": "SK Hub Systems 帳戶的顯示名稱和大頭貼，可以獨立於 Google 帳戶的名稱和圖片進行設定。會顯示在網站頁首和管理主控台的共同管理員清單中。"
+            },
+            {
+              "steps": [
+                "開啟[帳戶](/account/)頁面。",
+                "點按「個人資訊」中的「名稱和大頭貼」。",
+                "輸入顯示名稱，並從「Google 帳戶圖片」或「名稱首字」中選擇大頭貼。選擇首字時還可以選擇顏色。",
+                "點按「儲存」。"
+              ]
+            },
+            {
+              "p": "顯示名稱留空時，將使用 Google 帳戶的名稱。Google 帳戶的名稱和圖片不會改變。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "표시 이름과 아이콘 바꾸기",
+          "summary": "SK 서비스에 표시되는 이름과 아이콘을 Google 계정과 별도로 정할 수 있습니다.",
+          "body": [
+            {
+              "p": "SK Hub Systems 계정의 표시 이름과 아이콘은 Google 계정의 이름·사진과 별도로 정할 수 있습니다. 사이트 헤더와 관리 콘솔의 공동 관리자 목록에 표시됩니다."
+            },
+            {
+              "steps": [
+                "[계정](/account/) 페이지를 엽니다.",
+                "'개인 정보'의 '이름과 아이콘'을 누릅니다.",
+                "표시 이름을 입력하고, 아이콘을 'Google 계정 사진'과 '이름의 첫 글자' 중에서 고릅니다. 첫 글자일 때는 색도 고를 수 있습니다.",
+                "'저장'을 누릅니다."
+              ]
+            },
+            {
+              "p": "표시 이름을 비워 두면 Google 계정의 이름을 사용합니다. Google 계정의 이름이나 사진은 바뀌지 않습니다."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "account-services",
+      "type": "guide",
+      "date": "2026-09-27",
+      "category": "アカウント",
+      "title": "サービスを接続する・接続を解除する",
+      "summary": "サービスは、最初に使うときに「このアカウントで使いますか？」と確認してから接続します。",
+      "body": [
+        {
+          "p": "Y-FILTER. の管理コンソールや MALU を最初に使うときは、SK Hub Systems アカウントを接続するかどうかの確認画面が開きます。そのサービスが使う情報を確認して「続ける」を押すと接続され、サービスに戻ります。"
+        },
+        {
+          "h": "接続を解除する"
+        },
+        {
+          "steps": [
+            "[アカウント](/account/) のページの「サービス」を開きます。",
+            "解除したいサービスの「接続を解除」を押します。",
+            "サービスのデータも消したいときは、チェックを入れてから「接続を解除」を押します。"
+          ]
+        },
+        {
+          "p": "データを消さずに解除した場合は、次にそのサービスを開いたときに、もう一度接続するか確認します。"
+        },
+        {
+          "note": "管理コンソールは、ヘッダーのアカウントのメニューの「管理コンソールとの接続を解除」からも解除できます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Connect or disconnect a service",
+          "summary": "A service asks \"Use this account?\" the first time you use it, before connecting.",
+          "body": [
+            {
+              "p": "The first time you use the Y-FILTER. management console or MALU, a screen asks whether to connect your SK Hub Systems account. Review the information the service uses and click \"Continue\" to connect and return to the service."
+            },
+            {
+              "h": "Disconnect"
+            },
+            {
+              "steps": [
+                "Open \"Services\" on the [Account](/account/) page.",
+                "Click \"Disconnect\" for the service.",
+                "To delete the service's data too, check the box before clicking \"Disconnect.\""
+              ]
+            },
+            {
+              "p": "If you disconnect without deleting the data, you'll be asked again the next time you open that service."
+            },
+            {
+              "note": "You can also disconnect the management console from \"Disconnect from the management console\" in the account menu of its header."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "连接服务、解除连接",
+          "summary": "首次使用服务时，会先确认“要使用此账户吗？”再进行连接。",
+          "body": [
+            {
+              "p": "首次使用 Y-FILTER. 管理控制台或 MALU 时，会打开是否连接 SK Hub Systems 账户的确认画面。确认该服务使用的信息后点按“继续”，即可完成连接并返回服务。"
+            },
+            {
+              "h": "解除连接"
+            },
+            {
+              "steps": [
+                "打开[账户](/account/)页面的“服务”。",
+                "点按要解除的服务的“解除连接”。",
+                "如也要删除服务的数据，请勾选后再点按“解除连接”。"
+              ]
+            },
+            {
+              "p": "未删除数据而解除连接时，下次打开该服务会再次确认是否连接。"
+            },
+            {
+              "note": "管理控制台也可以从页眉账户菜单中的“解除与管理控制台的连接”解除。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "連接服務、解除連接",
+          "summary": "首次使用服務時，會先確認「要使用此帳戶嗎？」再進行連接。",
+          "body": [
+            {
+              "p": "首次使用 Y-FILTER. 管理主控台或 MALU 時，會開啟是否連接 SK Hub Systems 帳戶的確認畫面。確認該服務使用的資訊後點按「繼續」，即可完成連接並返回服務。"
+            },
+            {
+              "h": "解除連接"
+            },
+            {
+              "steps": [
+                "開啟[帳戶](/account/)頁面的「服務」。",
+                "點按要解除的服務的「解除連接」。",
+                "如也要刪除服務的資料，請勾選後再點按「解除連接」。"
+              ]
+            },
+            {
+              "p": "未刪除資料而解除連接時，下次開啟該服務會再次確認是否連接。"
+            },
+            {
+              "note": "管理主控台也可以從頁首帳戶選單中的「解除與管理主控台的連接」解除。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "서비스 연결하기·연결 해제하기",
+          "summary": "서비스는 처음 사용할 때 '이 계정을 사용할까요?'라고 확인한 뒤 연결합니다.",
+          "body": [
+            {
+              "p": "Y-FILTER. 관리 콘솔이나 MALU를 처음 사용할 때는 SK Hub Systems 계정을 연결할지 묻는 확인 화면이 열립니다. 그 서비스가 사용하는 정보를 확인하고 '계속'을 누르면 연결되고 서비스로 돌아갑니다."
+            },
+            {
+              "h": "연결 해제하기"
+            },
+            {
+              "steps": [
+                "[계정](/account/) 페이지의 '서비스'를 엽니다.",
+                "해제할 서비스의 '연결 해제'를 누릅니다.",
+                "서비스의 데이터도 지우려면 체크한 뒤 '연결 해제'를 누릅니다."
+              ]
+            },
+            {
+              "p": "데이터를 지우지 않고 해제한 경우, 다음에 그 서비스를 열 때 다시 연결할지 확인합니다."
+            },
+            {
+              "note": "관리 콘솔은 헤더의 계정 메뉴에 있는 '관리 콘솔과의 연결 해제'에서도 해제할 수 있습니다."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "account-settings-sync",
+      "type": "guide",
+      "date": "2026-09-27",
+      "category": "アカウント",
+      "title": "設定をほかの端末と同期する",
+      "summary": "表示言語や MALU・QR Drop の設定を、ログインしている端末のあいだで自動でそろえます。",
+      "body": [
+        {
+          "p": "SK Hub Systems アカウントでログインしていると、次の設定が端末のあいだで自動でそろいます。"
+        },
+        {
+          "list": [
+            "表示言語（サイト・MALU・SK's Lab）",
+            "MALU の設定（既定の辞書・結果の開き方・テーマ）",
+            "QR Drop の設定（テーマ・転送や履歴の設定）"
+          ]
+        },
+        {
+          "p": "同期はページを開いたときに行われます（アカウント以外のページでは、10 分に 1 回まで）。すぐにそろえたいときは、[アカウント](/account/) のページの「設定の同期」で「今すぐ同期」を押してください。"
+        },
+        {
+          "note": "検索履歴や転送したファイルは、この同期には含まれません。MALU の検索履歴は、[検索履歴をほかの端末と同期する](/support/?a=malu-history-sync) で別に有効にできます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "Sync your settings with other devices",
+          "summary": "Display language and MALU and QR Drop settings are kept the same across devices you're signed in to.",
+          "body": [
+            {
+              "p": "When you're signed in with an SK Hub Systems account, the following settings are automatically kept the same across devices."
+            },
+            {
+              "list": [
+                "Display language (the site, MALU, and SK's Lab)",
+                "MALU settings (default dictionary, how results open, theme)",
+                "QR Drop settings (theme, transfer and history settings)"
+              ]
+            },
+            {
+              "p": "Syncing happens when you open a page (at most once every 10 minutes on pages other than the account page). To sync right away, click \"Sync now\" under \"Settings sync\" on the [Account](/account/) page."
+            },
+            {
+              "note": "Search history and transferred files are not included in this sync. You can turn on MALU search history sync separately; see [Sync your search history with other devices](/support/?a=malu-history-sync)."
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "与其他设备同步设置",
+          "summary": "在已登录的设备之间，自动统一显示语言以及 MALU、QR Drop 的设置。",
+          "body": [
+            {
+              "p": "使用 SK Hub Systems 账户登录后，以下设置会在设备之间自动统一。"
+            },
+            {
+              "list": [
+                "显示语言（网站、MALU、SK's Lab）",
+                "MALU 的设置（默认字典、结果打开方式、主题）",
+                "QR Drop 的设置（主题、传输和记录设置）"
+              ]
+            },
+            {
+              "p": "同步在打开页面时进行（账户以外的页面最多每 10 分钟一次）。如需立即同步，请在[账户](/account/)页面的“设置同步”中点按“立即同步”。"
+            },
+            {
+              "note": "搜索记录和传输的文件不包含在此同步中。MALU 的搜索记录可以在[与其他设备同步搜索记录](/support/?a=malu-history-sync)中另行开启。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "與其他裝置同步設定",
+          "summary": "在已登入的裝置之間，自動統一顯示語言以及 MALU、QR Drop 的設定。",
+          "body": [
+            {
+              "p": "使用 SK Hub Systems 帳戶登入後，以下設定會在裝置之間自動統一。"
+            },
+            {
+              "list": [
+                "顯示語言（網站、MALU、SK's Lab）",
+                "MALU 的設定（預設字典、結果開啟方式、主題）",
+                "QR Drop 的設定（主題、傳輸和記錄設定）"
+              ]
+            },
+            {
+              "p": "同步在開啟頁面時進行（帳戶以外的頁面最多每 10 分鐘一次）。如需立即同步，請在[帳戶](/account/)頁面的「設定同步」中點按「立即同步」。"
+            },
+            {
+              "note": "搜尋紀錄和傳輸的檔案不包含在此同步中。MALU 的搜尋紀錄可以在[與其他裝置同步搜尋紀錄](/support/?a=malu-history-sync)中另行開啟。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "설정을 다른 기기와 동기화하기",
+          "summary": "표시 언어와 MALU·QR Drop의 설정을 로그인한 기기 사이에서 자동으로 맞춥니다.",
+          "body": [
+            {
+              "p": "SK Hub Systems 계정으로 로그인하면 다음 설정이 기기 사이에서 자동으로 맞춰집니다."
+            },
+            {
+              "list": [
+                "표시 언어(사이트·MALU·SK's Lab)",
+                "MALU 설정(기본 사전·결과 여는 방법·테마)",
+                "QR Drop 설정(테마·전송 및 기록 설정)"
+              ]
+            },
+            {
+              "p": "동기화는 페이지를 열 때 이루어집니다(계정 이외의 페이지에서는 10분에 한 번까지). 바로 맞추고 싶을 때는 [계정](/account/) 페이지의 '설정 동기화'에서 '지금 동기화'를 눌러 주세요."
+            },
+            {
+              "note": "검색 기록이나 전송한 파일은 이 동기화에 포함되지 않습니다. MALU의 검색 기록은 [검색 기록을 다른 기기와 동기화하기](/support/?a=malu-history-sync)에서 따로 켤 수 있습니다."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "account-notices",
+      "type": "guide",
+      "date": "2026-09-27",
+      "category": "アカウント",
+      "title": "アカウントのお知らせを見る",
+      "summary": "SK からのお知らせや、お問い合わせへの返事がアカウントに届きます。",
+      "body": [
+        {
+          "p": "[アカウント](/account/) のページの「お知らせ」に、SK からの個別のお知らせと、サポートのお知らせが新しい順に並びます。新しいものがあると、サイトの右上のアカウントに赤い点が付きます。"
+        },
+        {
+          "h": "お問い合わせの返事をアカウントで受け取る"
+        },
+        {
+          "p": "ログインした状態で [お問い合わせ](/contact/) を送るときに「返事を SK Hub Systems アカウントのお知らせで受け取る」にチェックを入れると、返事がアカウントのお知らせに届きます。メールアドレスを書かなくても返事を受け取れます。"
+        },
+        {
+          "note": "個別のお知らせは、お知らせの「削除」でいつでも消せます。"
+        }
+      ],
+      "i18n": {
+        "en": {
+          "title": "See your account notices",
+          "summary": "Notices from SK and replies to your inquiries arrive in your account.",
+          "body": [
+            {
+              "p": "\"Notices\" on the [Account](/account/) page lists notices from SK and support notices, newest first. When there's something new, a red dot appears on the account at the top right of the site."
+            },
+            {
+              "h": "Get replies to inquiries in your account"
+            },
+            {
+              "p": "When you send a message from [Contact](/contact/) while signed in, check \"Receive the reply in my SK Hub Systems account notices\" and the reply will arrive in your account notices. You can get a reply without entering an email address."
+            },
+            {
+              "note": "You can remove a notice from SK at any time with \"Delete.\""
+            }
+          ]
+        },
+        "zh-CN": {
+          "title": "查看账户通知",
+          "summary": "来自 SK 的通知和对咨询的回复会送达你的账户。",
+          "body": [
+            {
+              "p": "[账户](/account/)页面的“通知”中，会按从新到旧的顺序列出来自 SK 的个别通知和支持通知。有新通知时，网站右上角的账户上会出现红点。"
+            },
+            {
+              "h": "在账户中接收咨询的回复"
+            },
+            {
+              "p": "登录状态下从[咨询](/contact/)发送时，勾选“通过 SK Hub Systems 账户的通知接收回复”，回复就会送达账户的通知。即使不填写电子邮件地址也能收到回复。"
+            },
+            {
+              "note": "个别通知可以随时通过通知中的“删除”删除。"
+            }
+          ]
+        },
+        "zh-TW": {
+          "title": "查看帳戶通知",
+          "summary": "來自 SK 的通知和對聯絡事項的回覆會送達你的帳戶。",
+          "body": [
+            {
+              "p": "[帳戶](/account/)頁面的「通知」中，會依從新到舊的順序列出來自 SK 的個別通知和支援通知。有新通知時，網站右上角的帳戶上會出現紅點。"
+            },
+            {
+              "h": "在帳戶中接收聯絡事項的回覆"
+            },
+            {
+              "p": "登入狀態下從[聯絡我們](/contact/)傳送時，勾選「透過 SK Hub Systems 帳戶的通知接收回覆」，回覆就會送達帳戶的通知。即使不填寫電子郵件地址也能收到回覆。"
+            },
+            {
+              "note": "個別通知可以隨時透過通知中的「刪除」刪除。"
+            }
+          ]
+        },
+        "ko": {
+          "title": "계정 알림 보기",
+          "summary": "SK의 알림과 문의에 대한 답변이 계정으로 도착합니다.",
+          "body": [
+            {
+              "p": "[계정](/account/) 페이지의 '알림'에 SK의 개별 알림과 지원 알림이 최신순으로 표시됩니다. 새 알림이 있으면 사이트 오른쪽 위의 계정에 빨간 점이 붙습니다."
+            },
+            {
+              "h": "문의 답변을 계정으로 받기"
+            },
+            {
+              "p": "로그인한 상태에서 [문의](/contact/)를 보낼 때 '답변을 SK Hub Systems 계정의 알림으로 받기'에 체크하면 답변이 계정 알림으로 도착합니다. 이메일 주소를 쓰지 않아도 답변을 받을 수 있습니다."
+            },
+            {
+              "note": "개별 알림은 알림의 '삭제'로 언제든 지울 수 있습니다."
             }
           ]
         }

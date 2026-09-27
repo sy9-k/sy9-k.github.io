@@ -38,6 +38,19 @@ URL は変えずに、`/lang/` で選んだ言語でページを訳して表示�
 - `support/articles.json` は予備です（SK Hub Systems に記事が 1 件もない・届かないときだけ使われる）。記事エディターの「バックアップを書き出す」で作ったファイルと入れ替えてプッシュすると、予備も新しくなります。
 - 読み込みと本文の書き方は `support/articles.js` にまとめています。
 
+## 規約を変えるとき
+
+- 規約の文は `policies/docs/<名前>.txt`（日本語が正式）と、訳の `<名前>.<言語>.txt`（en / zh-CN / zh-TW / ko）です。日本語を直したら、訳も同じように直します。
+- `sk-hub-systems.txt`・`y-filter.txt`・`newtab.txt` は、y-filter リポジトリの `policy/` がもとです（`systems/sync-console.mjs` でコピー）。y-filter 側も同じように直します。
+- 取り扱う情報を増やすときは、`assets/hub/account.js` の `ACCOUNT_TERMS_VERSION` を上げると、次に使うときに同意し直してもらえます。附則に改定の記録を足します。
+
+## SK Hub Systems の運用メモ
+
+- **2 年以上ログインのないアカウント**（アカウント規約 第五条4）: Firebase コンソールの Authentication →「ユーザー」で「ログイン日時」の古い順に並べて確認します。削除するときは、先にそのユーザーの UID で Firestore の `accounts/<UID>`（とその下の `notices`・`maluWords`・`malu`）と、持ち主の管理グループ（`teams/<UID>`・`ownerUid` が同じ `devices`・`requests`・`pairingCodes`）を消してから、Authentication のユーザーを削除します。サーバーで動く処理（Cloud Functions）は無料プランでは使えないため、自動にはしていません。
+- **お問い合わせ・アクセスチェックの記録の保存期間**: 開発者が `/inbox/` を開いたときに、期限を過ぎたものを削除します。ときどき開いてください。
+- **Firestore のルール**: y-filter リポジトリの `systems/firestore.rules`。`systems` で `firebase deploy --only firestore:rules` で反映します。
+- **`google4b04249061c7d95f.html`（サイトの一番上）**: Google Search Console で sy9-k.github.io の持ち主であることを示すファイルです。Google のログイン画面に「SK Hub Systems」と出すためのブランドの確認に使うので、消さないでください。
+
 ## build で作らないページ
 
 次のページは、それぞれのフォルダのファイルを直接編集します。
