@@ -1,0 +1,219 @@
+    <!-- SK Hub Systems アカウントの紹介ページ（ログインや設定は /account/）。スタイルは SK Hub Systems のページと同じ hx-、このページだけのものは ha-。動きは /sk-hub-systems/hub.js -->
+    <nav class="hx-localnav" aria-label="SK Hub Systems アカウント">
+      <div class="wrap">
+        <a class="hx-localnav-title" href="#top">SK Hub Systems アカウント</a>
+        <div class="hx-localnav-links">
+          <a href="#services">サービス</a><a href="#sync">同期</a><a href="#privacy">プライバシー</a><a href="#control">データの管理</a>
+        </div>
+        <a class="hx-pill hx-pill--sm" href="/account/">ログイン</a>
+      </div>
+    </nav>
+
+    <!-- はじめ（明るい） -->
+    <section class="ha-hero" id="top">
+      <div class="wrap">
+        <div class="ha-hero-text">
+          <p class="hx-kicker">SK Hub Systems アカウント</p>
+          <h1 class="hx-display ha-display">ひとつのアカウントで、<br>ぜんぶつながる。</h1>
+          <p class="hx-sub">管理コンソールも、MALU も、Nagi も。いつもの Google アカウントでログインするだけ。パスワードを新しく作る必要はありません。</p>
+          <div class="hx-cta">
+            <a class="hx-pill" href="/account/">Google でログイン</a>
+            <a class="hx-link" href="/sk-hub-systems/">SK Hub Systems について</a>
+          </div>
+        </div>
+
+        <div class="ha-scene" aria-hidden="true">
+          <div class="ha-card">
+            <span class="ha-avatar">S</span>
+            <strong>あなたの名前</strong>
+            <small>SK Hub Systems アカウント</small>
+            <ul class="ha-card-list">
+              <li><img src="/dictionary/ico/icon-192.png" alt=""><span>MALU</span><em>接続中</em></li>
+              <li><img src="/nagi/ico/icon-192.png" alt=""><span>Nagi</span><em>接続中</em></li>
+              <li><img class="yf-tile" src="/y-filter/shared/icon.svg" alt=""><span>Y-FILTER. 管理コンソール</span><em>接続中</em></li>
+            </ul>
+          </div>
+          <span class="ha-float ha-float--1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-13.7 5.6M4 12a8 8 0 0 1 13.7-5.6"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>同期しました</span>
+          <span class="ha-float ha-float--2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>パスワードなし</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- パスワード -->
+    <section class="hx-section hx-dark ha-key">
+      <div class="wrap">
+        <header class="hx-head" data-reveal>
+          <div class="hx-lock ha-key-ico" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="32" r="11"/><path d="M33 32h22M47 32v8M53 32v6"/></svg></div>
+          <p class="hx-eyebrow">ログイン</p>
+          <h2 class="hx-title hx-title--xl">パスワードは、<br>増やさない。</h2>
+          <p class="hx-lead">ログインは Google アカウントだけ。SK がパスワードを発行・保存することはありません。2 段階認証などの安全の設定も、Google アカウントのものがそのまま守ってくれます。</p>
+        </header>
+      </div>
+    </section>
+
+    <!-- 使えるサービス -->
+    <section class="hx-section" id="services">
+      <div class="wrap">
+        <header class="hx-head" data-reveal>
+          <p class="hx-eyebrow">サービス</p>
+          <h2 class="hx-title">使うサービスに、<br>そのまま入れる。</h2>
+          <p class="hx-lead">サービスは、最初に使うときに接続するかを確認します。接続は、いつでもアカウントのページから解除できます。</p>
+        </header>
+        <div class="ha-services">
+          <a class="ha-service" href="/y-filter/" data-reveal>
+            <img class="yf-tile" src="/y-filter/shared/icon.svg" alt="" width="64" height="64">
+            <h3>Y-FILTER. 管理コンソール</h3>
+            <p>Y-FILTER. を入れた端末の設定を、まとめて管理できます。</p>
+            <span class="hx-link">開く</span>
+          </a>
+          <a class="ha-service" href="/products/malu/" data-reveal>
+            <img src="/dictionary/ico/icon-192.png" alt="" width="64" height="64">
+            <h3>MALU</h3>
+            <p>単語帳と、検索履歴の端末のあいだの同期が使えます。</p>
+            <span class="hx-link">詳しく見る</span>
+          </a>
+          <a class="ha-service" href="/products/nagi/" data-reveal>
+            <img src="/nagi/ico/icon-192.png" alt="" width="64" height="64">
+            <h3>Nagi</h3>
+            <p>集中の記録と 1 日の目標を、端末のあいだで同期できます。</p>
+            <span class="hx-link">詳しく見る</span>
+          </a>
+          <div class="ha-service ha-service--soon" data-reveal>
+            <span class="ha-service-plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+            <h3>これからのサービス</h3>
+            <p>新しいサービスも、このアカウントで使えるようになります。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 同期 -->
+    <section class="hx-section hx-soft" id="sync">
+      <div class="wrap">
+        <header class="hx-head" data-reveal>
+          <p class="hx-eyebrow">同期</p>
+          <h2 class="hx-title">どの端末でも、<br>いつもの自分。</h2>
+          <p class="hx-lead">表示言語とアプリの設定は、このアカウントでログインしている端末のあいだで、自動でそろいます。</p>
+        </header>
+        <div class="ha-sync" data-reveal>
+          <div class="ha-sync-devices" aria-hidden="true">
+            <div class="ha-screen ha-screen--laptop">
+              <div class="ha-setting"><span>表示言語</span><b>日本語</b></div>
+              <div class="ha-setting"><span>テーマ</span><i class="ha-toggle"></i></div>
+              <div class="ha-setting"><span>既定の辞書</span><b>国語</b></div>
+            </div>
+            <span class="ha-sync-beam"><i></i><i></i><i></i></span>
+            <div class="ha-screen ha-screen--phone">
+              <div class="ha-setting"><span>表示言語</span><b>日本語</b></div>
+              <div class="ha-setting"><span>テーマ</span><i class="ha-toggle"></i></div>
+              <div class="ha-setting"><span>既定の辞書</span><b>国語</b></div>
+            </div>
+          </div>
+          <ul class="ha-sync-list">
+            <li><strong>表示言語</strong><p>サイト・MALU・SK's Lab の言語。ひとつの端末で変えると、ほかの端末にも反映されます。</p></li>
+            <li><strong>アプリの設定</strong><p>MALU（既定の辞書・結果の開き方・テーマ）と QR Drop（テーマ・転送や履歴の設定）。</p></li>
+            <li><strong>サービスの記録</strong><p>MALU の単語帳と検索履歴、Nagi の集中の記録と目標は、サービスを接続したときだけ同期します。</p></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- プロフィールとお知らせ -->
+    <section class="hx-section">
+      <div class="wrap">
+        <div class="hx-bento ha-bento">
+          <article class="hx-tile ha-tile-profile" data-reveal>
+            <p class="hx-tile-kicker">プロフィール</p>
+            <h3>名前とアイコンは、<br>自分で決める。</h3>
+            <p>SK のサービスやサイトのヘッダーに出る名前とアイコンを選べます。Google アカウントの名前や写真は変わりません。</p>
+            <div class="ha-avatars" aria-hidden="true">
+              <span class="ha-avatar ha-avatar--sm" style="--c:#2563eb">A</span>
+              <span class="ha-avatar ha-avatar--sm is-on" style="--c:#db2777">ゆ</span>
+              <span class="ha-avatar ha-avatar--sm" style="--c:#16a34a">R</span>
+            </div>
+          </article>
+          <article class="hx-tile hx-tile--wide ha-tile-inbox" data-reveal>
+            <div class="hx-tile-text">
+              <p class="hx-tile-kicker">お知らせ</p>
+              <h3>SK からの返事は、<br>アカウントに届く。</h3>
+              <p>お問い合わせへの返事や、サポートのお知らせを、アカウントのページで読めます。メールアドレスを別に伝える必要はありません。</p>
+            </div>
+            <div class="ha-inbox" aria-hidden="true">
+              <div class="ha-inbox-item is-new"><span class="ha-avatar ha-avatar--xs" style="--c:#0d1014"><img src="/assets/logo.svg" alt=""></span><div><strong>お問い合わせへの返事</strong><small>ご連絡ありがとうございます。</small></div><i></i></div>
+              <div class="ha-inbox-item"><span class="ha-avatar ha-avatar--xs" style="--c:#0f766e">N</span><div><strong>Nagi を公開しました</strong><small>サポートのお知らせ</small></div></div>
+              <div class="ha-inbox-item"><span class="ha-avatar ha-avatar--xs" style="--c:#5a5fe0">M</span><div><strong>MALU の同期について</strong><small>サポートのお知らせ</small></div></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- プライバシー -->
+    <section class="hx-section" id="privacy">
+      <div class="wrap">
+        <header class="hx-head" data-reveal>
+          <p class="hx-eyebrow">プライバシー</p>
+          <h2 class="hx-title hx-title--xl">保存するのは、<br>最小限。</h2>
+          <p class="hx-lead">アカウントに保存するのは、ログインと、あなたが使うサービスに必要なものだけです。</p>
+        </header>
+        <div class="hx-privacy">
+          <ul class="hx-never" data-reveal>
+            <li>Google アカウントのパスワード</li>
+            <li>閲覧履歴・検索語</li>
+            <li>Gmail・Google ドライブなどの中身</li>
+          </ul>
+          <div class="hx-uses" data-reveal>
+            <h3>保存する情報</h3>
+            <ul>
+              <li>Google アカウントの識別子・名前・メールアドレス・アイコン（ログインに使います）</li>
+              <li>アカウントの作成日と、規約に同意した日</li>
+              <li>プロフィール（決めた場合の表示名とアイコン）と、端末のあいだで同期する設定（表示言語・アプリの設定）</li>
+              <li>SK からのお知らせ（お問い合わせへの返事など）</li>
+              <li>使ったサービスのデータ（例: 管理コンソールの管理グループ）</li>
+            </ul>
+            <p>保護者の同意が必要な年齢は、住んでいる地域によって異なります。正確な内容は <a href="/policies/#sk-hub-account">SK Hub Systems アカウント規約</a> と <a href="/policies/#sk-privacy">SK プライバシーポリシー</a> をご覧ください。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- データの管理（いつも暗い帯） -->
+    <section class="hx-section hx-dark" id="control">
+      <div class="wrap">
+        <header class="hx-head" data-reveal>
+          <p class="hx-eyebrow">データの管理</p>
+          <h2 class="hx-title">あなたのデータは、<br>あなたのもの。</h2>
+          <p class="hx-lead">保存されている情報は、いつでも確認できて、いつでも消せます。</p>
+        </header>
+        <div class="ha-controls">
+          <div class="hx-role ha-control" data-reveal>
+            <span class="ha-control-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span>
+            <h3>ダウンロード</h3>
+            <p>このアカウントについて保存されている情報を、ファイル（JSON）で受け取れます。</p>
+          </div>
+          <div class="hx-role ha-control" data-reveal>
+            <span class="ha-control-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15l6-6M10 6l1-1a4.2 4.2 0 0 1 6 6l-1 1M14 18l-1 1a4.2 4.2 0 0 1-6-6l1-1"/></svg></span>
+            <h3>接続を解除</h3>
+            <p>使わなくなったサービスは、いつでも接続を解除できます。</p>
+          </div>
+          <div class="hx-role ha-control" data-reveal>
+            <span class="ha-control-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"/></svg></span>
+            <h3>まとめて削除</h3>
+            <p>アカウントと、サービスのデータをまとめて削除できます。2 年以上ログインがないアカウントは、開発者が削除する場合があります。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- おわり -->
+    <section class="hx-section hx-end">
+      <div class="wrap" data-reveal>
+        <span class="ha-avatar ha-avatar--lg">S</span>
+        <h2 class="hx-title">さあ、<br>はじめよう。</h2>
+        <p class="hx-lead">はじめての方も、Google でログインするだけでアカウントを作成できます。</p>
+        <div class="hx-cta">
+          <a class="hx-pill" href="/account/">Google でログイン</a>
+          <a class="hx-link" href="/policies/#sk-hub-account">SK Hub Systems アカウント規約</a>
+        </div>
+      </div>
+    </section>

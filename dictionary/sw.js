@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dictionary-v11';
+const CACHE_NAME = 'dictionary-v12';
 const urlsToCache = [
   '/dictionary/',
   '/dictionary/index.html',
@@ -6,6 +6,8 @@ const urlsToCache = [
   '/dictionary/script.js',
   '/dictionary/account.js',
   '/dictionary/offline.html',
+  '/assets/hub/account-button.js',
+  '/assets/logo.svg',
   '/dictionary/manifest.json',
   '/dictionary/ico/icon-192.png',
   '/dictionary/ico/icon-512.png',

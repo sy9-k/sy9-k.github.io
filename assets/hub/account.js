@@ -99,7 +99,8 @@ function saveHint(user, account, extra) {
   const prev = readHint() || {};
   // services … 接続しているサービス（ヘッダーのメニューに出す）。アカウントを読み込む前（null）は前の値のまま
   const services = account ? Object.keys(account.services || {}).filter((k) => SERVICES[k]) : (prev.services || []);
-  const hint = { name: p.name, photo: p.photo, letter: p.letter, color: p.colorValue, unread: prev.unread || 0, services, ...extra };
+  // email … アプリ共通のアカウントの画面（assets/hub/account-button.js）に出す
+  const hint = { name: p.name, email: user.email || "", photo: p.photo, letter: p.letter, color: p.colorValue, unread: prev.unread || 0, services, ...extra };
   try { localStorage.setItem(HINT_KEY, JSON.stringify(hint)); } catch (e) { /* 保存できなくても動く */ }
   document.dispatchEvent(new CustomEvent("skhub:account"));
 }

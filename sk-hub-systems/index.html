@@ -27,8 +27,10 @@
   <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap"></script>
   <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@700&display=swap"></script>
+  <script src="/sk-hub-systems/hub.js" defer></script>
 </head>
-<body>
+<body class="hx-page">
   <a class="skip" href="#main">本文へ移動</a>
   <header class="site-header">
     <a class="hd-logo" href="/" aria-label="ホーム">
@@ -46,149 +48,217 @@
   <div class="hd-backdrop" id="hd-backdrop"></div>
 
   <main id="main">
-    <section class="p-hero band band--plain">
+    <!-- SK Hub Systems の紹介ページ（Apple の製品ページのような、スクロールで見せる 1 枚のページ）。動きは /sk-hub-systems/hub.js -->
+    <nav class="hx-localnav" aria-label="SK Hub Systems">
       <div class="wrap">
-        <div class="top">
-          <img class="icon hub-icon" src="/assets/logo.svg" alt="" width="92" height="92">
-          <div>
-            <h1>SK Hub Systems</h1>
-            <div class="kind">SK が運営するサーバー基盤</div>
-          </div>
+        <a class="hx-localnav-title" href="#top">SK Hub Systems</a>
+        <div class="hx-localnav-links">
+          <a href="#features">できること</a><a href="#how">しくみ</a><a href="#security">安全</a><a href="#privacy">プライバシー</a><a href="#history">あゆみ</a>
         </div>
-        <p class="lead">Y-FILTER. の遠隔管理、ブロックリストの配信、このサイトのアクセスチェックを支えている、SK 自身が運営するサーバー基盤です。見守りに必要な情報だけを扱い、閲覧履歴や検索語は集めません。</p>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="/status/">稼働状況を見る</a>
-          <a class="btn btn-tonal" href="/policies/#sk-hub-systems">SK Hub Systems 利用規約</a>
+        <a class="hx-pill hx-pill--sm" href="/status/">稼働状況</a>
+      </div>
+    </nav>
+
+    <!-- はじめ -->
+    <section class="hx-hero" id="top">
+      <div class="hx-orbit" aria-hidden="true">
+        <div class="hx-ring hx-ring--1"><span class="hx-planet" style="--a:0deg"><img class="yf-tile" src="/y-filter/shared/icon.svg" alt=""></span><span class="hx-planet" style="--a:180deg"><img src="/nagi/ico/icon-192.png" alt=""></span></div>
+        <div class="hx-ring hx-ring--2"><span class="hx-planet" style="--a:60deg"><img src="/dictionary/ico/icon-192.png" alt=""></span><span class="hx-planet hx-planet--svg" style="--a:250deg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span></div>
+        <div class="hx-ring hx-ring--3"><span class="hx-planet hx-planet--svg" style="--a:130deg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><span class="hx-planet hx-planet--svg" style="--a:320deg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span></div>
+        <div class="hx-core"><img src="/assets/logo.svg" alt=""></div>
+      </div>
+      <div class="wrap hx-hero-text">
+        <p class="hx-kicker">SK Hub Systems</p>
+        <h1 class="hx-display">見えないところで、<br>毎日を支える。</h1>
+        <p class="hx-sub">Y-FILTER. の遠隔管理、MALU と Nagi の同期、このサイトのアクセスチェック。SK のすべてをつなぐ、SK 自身が運営するサーバー基盤です。</p>
+        <div class="hx-cta">
+          <a class="hx-pill" href="/status/">稼働状況を見る</a>
+          <a class="hx-link" href="/policies/#sk-hub-systems">SK Hub Systems 利用規約</a>
         </div>
       </div>
     </section>
 
-    <section class="section" style="padding-top:0">
+    <!-- ひとことで -->
+    <section class="hx-section hx-statement-wrap">
       <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">What it does</span>
-          <h2>SK Hub Systems がしていること</h2>
+        <p class="hx-statement" data-hx-statement><span>ひとつの基盤が、</span><span>見守りを届け、</span><span>記録をつなぎ、</span><span>サイトを守る。</span><span class="hx-statement-em">そして、閲覧履歴は集めない。</span></p>
+      </div>
+    </section>
+
+    <!-- 数字で -->
+    <section class="hx-section hx-stats-wrap">
+      <div class="wrap">
+        <div class="hx-stats">
+          <div class="hx-stat" data-reveal><strong><small>約</small><span data-count>30</span><small>分</small></strong><p>ごとに、すべての Y-FILTER. がブロックリストを新しくします。</p></div>
+          <div class="hx-stat" data-reveal><strong><small>約</small><span data-count>2</span><small>分</small></strong><p>で、管理コンソールで変えた設定が端末に届きます。</p></div>
+          <div class="hx-stat" data-reveal><strong>東京</strong><p>データは Cloud Firestore の東京リージョンに保存します。</p></div>
+          <div class="hx-stat" data-reveal><strong><span>0</span><small>件</small></strong><p>集めている閲覧履歴と検索語。</p></div>
         </div>
-        <div class="grid-3">
-          <div class="card feature">
-            <span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
-            <h3>Y-FILTER. の遠隔管理</h3>
-            <p>保護者や先生が管理コンソール（Web）から、複数の端末に設定を配信したり、状態を確認したり、「サイトを開きたい」リクエストに返事をしたりできます。</p>
-          </div>
-          <div class="card feature">
-            <span class="tile-ico ti-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg></span>
-            <h3>ブロックリストの配信</h3>
-            <p>すべての Y-FILTER. が、カテゴリごとのブロックリストを約 30 分ごとに取得します。ログインは不要で、端末を識別する情報は送りません。</p>
-          </div>
-          <div class="card feature">
-            <span class="tile-ico ti-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
-            <h3>アクセスチェック</h3>
+      </div>
+    </section>
+
+    <!-- できること -->
+    <section class="hx-section" id="features">
+      <div class="wrap">
+        <header class="hx-head" data-reveal>
+          <p class="hx-eyebrow">できること</p>
+          <h2 class="hx-title">ひとつの基盤で、<br>いくつもの役わり。</h2>
+        </header>
+
+        <div class="hx-bento">
+          <!-- 遠隔管理 -->
+          <article class="hx-tile hx-tile--wide hx-tile--remote" data-reveal>
+            <div class="hx-tile-text">
+              <p class="hx-tile-kicker">Y-FILTER. の遠隔管理</p>
+              <h3>離れていても、<br>そっと見守る。</h3>
+              <p>保護者や先生が管理コンソールから、複数の端末に設定を配信したり、状態を確認したり、「サイトを開きたい」リクエストに返事をしたりできます。</p>
+              <a class="hx-link" href="/y-filter/">管理コンソールを開く</a>
+            </div>
+            <div class="hx-console" aria-hidden="true">
+              <div class="hx-console-bar"><i></i><i></i><i></i></div>
+              <div class="hx-console-row"><span class="hx-dot is-on"></span><strong>リビングの PC</strong><small>1時間20分 / 2時間</small><span class="hx-meter"><b style="--v:.66"></b></span></div>
+              <div class="hx-console-row"><span class="hx-dot is-on"></span><strong>学習用タブレット</strong><small>35分 / 1時間</small><span class="hx-meter"><b style="--v:.58"></b></span></div>
+              <div class="hx-console-row"><span class="hx-dot"></span><strong>教室の PC 3</strong><small>きょうは未使用</small><span class="hx-meter"><b style="--v:0"></b></span></div>
+              <div class="hx-console-req">
+                <small>リクエスト</small>
+                <strong>あと 30 分使いたい</strong>
+                <div><span class="hx-mini is-yes">許可</span><span class="hx-mini">不許可</span></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- ブロックリスト -->
+          <article class="hx-tile hx-tile--list" data-reveal>
+            <p class="hx-tile-kicker">ブロックリストの配信</p>
+            <h3>いつも、<br>新しいリストを。</h3>
+            <p>カテゴリごとのブロックリストを、すべての Y-FILTER. に配信します。ログインは不要で、端末を識別する情報は送りません。</p>
+            <div class="hx-stack" aria-hidden="true"><i></i><i></i><i></i><span class="hx-stack-badge">約30分ごと</span></div>
+          </article>
+
+          <!-- アクセスチェック -->
+          <article class="hx-tile hx-tile--shield" data-reveal>
+            <p class="hx-tile-kicker">アクセスチェック</p>
+            <h3>サイトを、<br>不正な利用から。</h3>
             <p>このサイト・MALU・管理コンソール・SK's Lab で、利用規約のお知らせと同意、不正な利用へのアクセス制限を行います。</p>
-          </div>
-        </div>
+            <div class="hx-shield" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          </article>
 
-        <a class="card lab-card hub-card" href="/account/">
-          <div class="lab-card-text">
-            <div class="lab-card-head">
-              <span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-              <div><h3>SK Hub Systems アカウント</h3><div class="kind">SK のサービスで共通のアカウント</div></div>
-              <span class="badge badge-live"><span class="dot"></span>New</span>
+          <!-- 同期 -->
+          <article class="hx-tile hx-tile--wide hx-tile--sync" data-reveal>
+            <div class="hx-tile-text">
+              <p class="hx-tile-kicker">同期</p>
+              <h3>スマホでも、<br>パソコンでも。</h3>
+              <p>MALU の単語帳と検索履歴、Nagi の集中の記録と目標を、端末のあいだでまとめます。</p>
             </div>
-            <p>管理コンソールも、これからのサービスも、ひとつの Google アカウントで。パスワードを新しく作る必要はなく、保存するのはログインに必要な情報と規約に同意した日だけです。</p>
-            <span class="more">アカウントのページへ<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-          </div>
-          <ul class="hub-card-items">
-            <li><span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></span><div><strong>Google でログイン</strong><small>ログイン方法は Google アカウントだけ</small></div></li>
-            <li><span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span><div><strong>データをダウンロード</strong><small>保存されている情報をいつでも確認</small></div></li>
-            <li><span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"/></svg></span><div><strong>自分で削除できる</strong><small>サービスのデータもまとめて削除</small></div></li>
-          </ul>
-        </a>
+            <div class="hx-devices" aria-hidden="true">
+              <span class="hx-device hx-device--phone"></span>
+              <span class="hx-sync-arrows"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-13.7 5.6M4 12a8 8 0 0 1 13.7-5.6"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></span>
+              <span class="hx-device hx-device--laptop"></span>
+            </div>
+          </article>
+
+          <!-- アカウント -->
+          <a class="hx-tile hx-tile--full hx-tile--account" href="/sk-hub-systems/account/" data-reveal>
+            <div class="hx-tile-text">
+              <p class="hx-tile-kicker">SK Hub Systems アカウント</p>
+              <h3>ひとつのアカウントで、<br>SK のすべてに。</h3>
+              <p>管理コンソールも、MALU も、Nagi も、ひとつの Google アカウントで。パスワードを新しく作る必要はありません。保存されている情報は、いつでもダウンロード・削除できます。</p>
+              <span class="hx-link">SK Hub Systems アカウントについて</span>
+            </div>
+            <div class="hx-apps" aria-hidden="true">
+              <span class="hx-app hx-app--center"><img src="/assets/logo.svg" alt=""></span>
+              <span class="hx-app" style="--i:0"><img src="/dictionary/ico/icon-192.png" alt=""></span>
+              <span class="hx-app" style="--i:1"><img src="/nagi/ico/icon-192.png" alt=""></span>
+              <span class="hx-app" style="--i:2"><img class="yf-tile" src="/y-filter/shared/icon.svg" alt=""></span>
+            </div>
+          </a>
+        </div>
       </div>
     </section>
 
-    <section class="section">
+    <!-- しくみ（左の図がスクロールに合わせて変わる） -->
+    <section class="hx-section hx-how" id="how">
       <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">How it works</span>
-          <h2>しくみ</h2>
-          <p>Google の Firebase の上で動いています。データは Cloud Firestore の東京リージョンに保存し、通信はすべて HTTPS で暗号化されます。</p>
-        </div>
-        <div class="hub-diagram" role="img" aria-label="Y-FILTER. の端末と管理コンソールが SK Hub Systems を通じてつながり、サイトと MALU もアクセスチェックで SK Hub Systems を使う図">
-          <div class="hub-node">
-            <img class="yf-tile" src="/y-filter/shared/icon.svg" alt="" width="44" height="44">
-            <strong>Y-FILTER.（端末）</strong>
-            <small>子供・生徒のブラウザ</small>
-          </div>
-          <div class="hub-arrow"><span>報告・リクエスト</span><i></i><span>設定・ブロックリスト</span></div>
-          <div class="hub-node hub-node--center">
-            <img src="/assets/logo.svg" alt="" width="56" height="56">
-            <strong>SK Hub Systems</strong>
-            <small>Cloud Firestore（東京）<br>Firebase Authentication</small>
-          </div>
-          <div class="hub-arrow hub-arrow--rev"><span>設定の配信・返事</span><i></i><span>端末の状態・リクエスト</span></div>
-          <div class="hub-node">
-            <span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
-            <strong>管理コンソール</strong>
-            <small>保護者・先生（Web）</small>
-          </div>
-          <div class="hub-below">
-            <span class="hub-below-line" aria-hidden="true"></span>
-            <div class="hub-node hub-node--small">
-              <strong>サイト・MALU・SK's Lab</strong>
-              <small>アクセスチェック（同意・アクセス制限）</small>
+        <header class="hx-head" data-reveal>
+          <p class="hx-eyebrow">しくみ</p>
+          <h2 class="hx-title">コード 1 つで、<br>つながる。</h2>
+          <p class="hx-lead">Google の Firebase の上で動いています。データは Cloud Firestore の東京リージョンに保存し、通信はすべて HTTPS で暗号化されます。</p>
+        </header>
+
+        <div class="hx-story">
+          <div class="hx-story-visual">
+            <div class="hx-flow" data-hx-flow data-step="1" aria-hidden="true">
+              <div class="hx-flow-node" data-node="console">
+                <span class="hx-flow-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
+                <div><strong>管理コンソール</strong><small>保護者・先生</small></div>
+              </div>
+              <div class="hx-flow-line" data-line="top"><i></i></div>
+              <div class="hx-flow-node hx-flow-node--hub" data-node="hub">
+                <span class="hx-flow-ico"><img src="/assets/logo.svg" alt=""></span>
+                <div><strong>SK Hub Systems</strong><small>Cloud Firestore（東京）</small></div>
+              </div>
+              <div class="hx-flow-line" data-line="bottom"><i></i></div>
+              <div class="hx-flow-node" data-node="device">
+                <span class="hx-flow-ico"><img class="yf-tile" src="/y-filter/shared/icon.svg" alt=""></span>
+                <div><strong>Y-FILTER.</strong><small>子供・生徒の端末</small></div>
+              </div>
+              <div class="hx-flow-msg" data-msg="1"><span class="hx-code">K7Q2 M9XD</span></div>
+              <div class="hx-flow-msg" data-msg="2"><span class="hx-code">K7Q2 M9XD</span><span class="hx-ok">接続しました</span></div>
+              <div class="hx-flow-msg" data-msg="3"><span class="hx-chip">新しい設定</span></div>
+              <div class="hx-flow-msg" data-msg="4"><span class="hx-chip">きょう 1時間20分</span></div>
+              <div class="hx-flow-msg" data-msg="5"><span class="hx-chip">あと 30 分使いたい</span><span class="hx-mini is-yes">許可</span></div>
             </div>
           </div>
+          <ol class="hx-steps">
+            <li class="hx-step" data-step="1"><b>1</b><h3>ペアリングコードを発行</h3><p>管理コンソールで 8 文字のコードを発行します。有効期限は 30 分で、期限内なら何台でも登録できます。</p></li>
+            <li class="hx-step" data-step="2"><b>2</b><h3>端末で入力して接続</h3><p>子供の端末の Y-FILTER. でコードを入力し、SK Hub Systems 利用規約に同意すると接続されます。</p></li>
+            <li class="hx-step" data-step="3"><b>3</b><h3>設定を配信</h3><p>端末はおおむね 2 分ごとに新しい設定がないかを確認し、あれば反映します。</p></li>
+            <li class="hx-step" data-step="4"><b>4</b><h3>状態を報告</h3><p>設定が変わったときと、おおむね 10 分ごとに、端末の設定と状態が管理者に届きます。</p></li>
+            <li class="hx-step" data-step="5"><b>5</b><h3>リクエストに返事</h3><p>ブロック画面から届く「サイトを開きたい」「あと 15・30・60 分使いたい」に、許可・不許可で返事ができます。</p></li>
+          </ol>
         </div>
-
-        <ol class="hub-steps">
-          <li><b>1</b><div><strong>ペアリングコードを発行</strong><p>管理コンソールで 8 文字のコードを発行します。有効期限は 30 分で、期限内なら何台でも登録できます。</p></div></li>
-          <li><b>2</b><div><strong>端末で入力して接続</strong><p>子供の端末の Y-FILTER. でコードを入力し、SK Hub Systems 利用規約に同意すると接続されます。</p></div></li>
-          <li><b>3</b><div><strong>設定を配信</strong><p>端末はおおむね 2 分ごとに新しい設定がないかを確認し、あれば反映します。</p></div></li>
-          <li><b>4</b><div><strong>状態を報告</strong><p>設定が変わったときと、おおむね 10 分ごとに、端末の設定と状態が管理者に届きます。</p></div></li>
-          <li><b>5</b><div><strong>リクエストに返事</strong><p>ブロック画面から届く「サイトを開きたい」「あと 15・30・60 分使いたい」に、許可・不許可で返事ができます。</p></div></li>
-        </ol>
 
         <!-- 仕組みの中の名前（Firebase のプロジェクト ID）が、以前の名前のままであることの説明 -->
-        <p class="hub-note">仕組みの中（Firebase のプロジェクト）では、以前の名前「Y-FILTER. Systems」の名残で <code>y-filter-systems</code> という ID を使っています。Google でログインするときの画面などに表示されることがありますが、SK Hub Systems と同じものです。この ID はあとから変えられず、作り直すとアカウントや端末のつながりが切れてしまうため、そのまま使っています。<a href="/support/?a=hub-internal-name">詳しく</a></p>
+        <p class="hx-note">仕組みの中（Firebase のプロジェクト）では、以前の名前「Y-FILTER. Systems」の名残で <code>y-filter-systems</code> という ID を使っています。Google でログインするときの画面などに表示されることがありますが、SK Hub Systems と同じものです。この ID はあとから変えられず、作り直すとアカウントや端末のつながりが切れてしまうため、そのまま使っています。<a href="/support/?a=hub-internal-name">詳しく</a></p>
       </div>
     </section>
 
-    <section class="section">
+    <!-- 安全（いつも暗い帯） -->
+    <section class="hx-section hx-dark" id="security">
       <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">Security</span>
-          <h2>だれが、何を読めるか</h2>
-          <p>Firestore のセキュリティルールで、読み書きできる範囲を細かく決めています。これ以外の読み書きは、すべて拒否されます。</p>
-        </div>
-        <div class="hub-roles">
-          <div class="card hub-role">
-            <span class="tile-ico ti-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="12" rx="2"/><path d="M2 20h20"/></svg></span>
-            <div><h3>端末（Y-FILTER.）</h3><small>匿名ログイン</small><p>自分の情報だけを読めます。書き込めるのは、状態の報告とリクエストだけです。</p></div>
-          </div>
-          <div class="card hub-role">
-            <span class="tile-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-            <div><h3>管理者</h3><small>Google アカウントでログイン</small><p>自分が参加している管理グループの端末とリクエストだけを読み書きできます。ほかの人のグループは見えません。</p></div>
-          </div>
-          <div class="card hub-role">
-            <span class="tile-ico ti-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 9-4 3 4 3M16 9l4 3-4 3M13.5 5l-3 14"/></svg></span>
-            <div><h3>開発者</h3><small>登録された Google アカウント</small><p>ブロックリストを編集できます。編集は開発者の PC で動く専用ツールからだけで、変更の履歴が残ります。</p></div>
-          </div>
-          <div class="card hub-role">
-            <span class="tile-ico ti-ink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></span>
-            <div><h3>ログインしていない人</h3><small>だれでも</small><p>ブロックリストを読むことと、アクセスチェックの記録を 1 件追加することだけができます。記録を読むことはできません。</p></div>
-          </div>
+        <header class="hx-head" data-reveal>
+          <div class="hx-lock" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path class="hx-lock-shackle" d="M20 28V20a12 12 0 0 1 24 0v8"/><rect x="12" y="28" width="40" height="28" rx="7"/><path d="M32 39v6"/></svg></div>
+          <p class="hx-eyebrow">安全</p>
+          <h2 class="hx-title">鍵は、<br>必要な人にだけ。</h2>
+          <p class="hx-lead">Firestore のセキュリティルールで、読み書きできる範囲を細かく決めています。これ以外の読み書きは、すべて拒否されます。</p>
+        </header>
+        <div class="hx-roles">
+          <div class="hx-role" data-reveal><small>匿名ログイン</small><h3>端末（Y-FILTER.）</h3><p>自分の情報だけを読めます。書き込めるのは、状態の報告とリクエストだけです。</p></div>
+          <div class="hx-role" data-reveal><small>Google アカウントでログイン</small><h3>管理者</h3><p>自分が参加している管理グループの端末とリクエストだけを読み書きできます。ほかの人のグループは見えません。</p></div>
+          <div class="hx-role" data-reveal><small>登録された Google アカウント</small><h3>開発者</h3><p>ブロックリストを編集できます。編集は開発者の PC で動く専用ツールからだけで、変更の履歴が残ります。</p></div>
+          <div class="hx-role" data-reveal><small>だれでも</small><h3>ログインしていない人</h3><p>ブロックリストを読むことと、アクセスチェックの記録を 1 件追加することだけができます。記録を読むことはできません。</p></div>
         </div>
       </div>
     </section>
 
-    <section class="section">
+    <!-- プライバシー -->
+    <section class="hx-section" id="privacy">
       <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">Privacy</span>
-          <h2>扱う情報・扱わない情報</h2>
-        </div>
-        <div class="grid-2">
-          <div class="card hub-data hub-data--yes">
+        <header class="hx-head" data-reveal>
+          <p class="hx-eyebrow">プライバシー</p>
+          <h2 class="hx-title hx-title--xl">閲覧履歴は、<br>集めない。</h2>
+          <p class="hx-lead">見守りに必要な情報だけを扱います。広告、販売、第三者への提供、行動の分析には使いません。</p>
+        </header>
+        <div class="hx-privacy">
+          <ul class="hx-never" data-reveal>
+            <li>閲覧履歴</li>
+            <li>検索語</li>
+            <li>見たページの内容</li>
+            <li>ブロックされたページの記録</li>
+            <li>入力した内容</li>
+            <li>位置情報</li>
+          </ul>
+          <div class="hx-uses" data-reveal>
             <h3>扱う情報（遠隔管理を使う場合）</h3>
             <ul>
               <li>Y-FILTER. の設定内容（アクセスコードは元に戻せない形に変換したもの）</li>
@@ -198,70 +268,56 @@
               <li>リクエストを送ったときの、そのページの URL とメッセージ</li>
               <li>管理者の Google アカウントの識別子・メールアドレス・表示名</li>
             </ul>
-          </div>
-          <div class="card hub-data hub-data--no">
-            <h3>扱わない情報</h3>
-            <ul>
-              <li>閲覧履歴</li>
-              <li>検索語</li>
-              <li>見たページの内容</li>
-              <li>ブロックされたページの記録</li>
-              <li>入力した内容</li>
-              <li>位置情報</li>
-            </ul>
-            <p>広告、販売、第三者への提供、行動の分析には使いません。</p>
-          </div>
-        </div>
-        <p class="hub-note">正確な内容は <a href="/policies/#sk-hub-systems">SK Hub Systems 利用規約</a> と <a href="/policies/#sk-privacy">SK プライバシーポリシー</a> をご覧ください。</p>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">Retention</span>
-          <h2>保存期間</h2>
-        </div>
-        <div class="card">
-          <div class="table-wrap">
-            <table class="hub-table">
-              <tr><th>端末の情報</th><td>接続を解除した時点で削除（1 年以上接続がない端末は、開発者が削除する場合があります）</td></tr>
-              <tr><th>ペアリングコード</th><td>発行から 30 分で無効</td></tr>
-              <tr><th>共同管理者の招待コード</th><td>発行から 24 時間で無効。1 回使うと削除</td></tr>
-              <tr><th>リクエスト</th><td>端末が返事を受け取った時点で削除（返事のないものは 30 日、受け取られないものは返事から 7 日で削除）</td></tr>
-              <tr><th>SK Hub Systems アカウント</th><td>アカウントのページで削除した時点で削除（2 年以上ログインがないアカウントは、開発者が削除する場合があります）</td></tr>
-              <tr><th>アクセスチェックの記録</th><td>保存から 1 年を過ぎたものを順次削除</td></tr>
-              <tr><th>お問い合わせ</th><td>対応が終わってから 1 年を過ぎたものを順次削除（読めるのは開発者だけ）</td></tr>
-            </table>
+            <p>正確な内容は <a href="/policies/#sk-hub-systems">SK Hub Systems 利用規約</a> と <a href="/policies/#sk-privacy">SK プライバシーポリシー</a> をご覧ください。</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section">
+    <!-- 保存期間 -->
+    <section class="hx-section hx-soft">
       <div class="wrap">
-        <div class="section-head">
-          <span class="eyebrow">History</span>
-          <h2>あゆみ</h2>
+        <header class="hx-head" data-reveal>
+          <p class="hx-eyebrow">保存期間</p>
+          <h2 class="hx-title">消すまでの時間も、<br>決めています。</h2>
+        </header>
+        <div class="hx-keep">
+          <div class="hx-keep-item" data-reveal><strong>30分</strong><h3>ペアリングコード</h3><p>発行から 30 分で無効</p></div>
+          <div class="hx-keep-item" data-reveal><strong>24時間</strong><h3>共同管理者の招待コード</h3><p>発行から 24 時間で無効。1 回使うと削除</p></div>
+          <div class="hx-keep-item" data-reveal><strong>返事まで</strong><h3>リクエスト</h3><p>端末が返事を受け取った時点で削除（返事のないものは 30 日、受け取られないものは返事から 7 日で削除）</p></div>
+          <div class="hx-keep-item" data-reveal><strong>解除まで</strong><h3>端末の情報</h3><p>接続を解除した時点で削除（1 年以上接続がない端末は、開発者が削除する場合があります）</p></div>
+          <div class="hx-keep-item" data-reveal><strong>削除まで</strong><h3>SK Hub Systems アカウント</h3><p>アカウントのページで削除した時点で削除（2 年以上ログインがないアカウントは、開発者が削除する場合があります）</p></div>
+          <div class="hx-keep-item" data-reveal><strong>1年</strong><h3>アクセスチェックの記録</h3><p>保存から 1 年を過ぎたものを順次削除</p></div>
+          <div class="hx-keep-item" data-reveal><strong>1年</strong><h3>お問い合わせ</h3><p>対応が終わってから 1 年を過ぎたものを順次削除（読めるのは開発者だけ）</p></div>
         </div>
-        <ol class="updates-list">
-          <li><time datetime="2026-09-27">2026年9月27日</time><div><span class="update-cat cat-hub">SK Hub Systems</span><strong>アカウントのページを新しくし、MALU と連携</strong><p>プロフィール・設定の同期・お知らせを追加し、サービスは最初に使うときに確認してから接続するようになりました。MALU の単語帳と検索履歴の同期も、このアカウントで使えます。</p></div></li>
-          <li><time datetime="2026-09-26">2026年9月26日</time><div><span class="update-cat cat-hub">SK Hub Systems</span><strong>SK Hub Systems アカウントを開始</strong><p>SK のサービスで共通のアカウントを始めました。管理コンソールへのログインも、このアカウントになりました。</p></div></li>
-          <li><time datetime="2026-09-25">2026年9月25日</time><div><span class="update-cat cat-hub">SK Hub Systems</span><strong>Y-FILTER. Systems から SK Hub Systems に名前を変更</strong><p>サイトのアクセスチェックも担うようになり、SK 全体のサーバー基盤として名前を変えました。仕組みの中の ID（<code>y-filter-systems</code>）は、変えずにそのまま使っています。</p></div></li>
-          <li><time datetime="2026-09-25">2026年9月25日</time><div><span class="update-cat cat-hub">SK Hub Systems</span><strong>Search3958 のシステムから、独自の Y-FILTER. Systems に移行</strong><p>それまで Search3958 のシステムを使わせてもらっていた Y-FILTER. の遠隔設定を、SK が運営する Firebase に移しました。</p></div></li>
+      </div>
+    </section>
+
+    <!-- あゆみ -->
+    <section class="hx-section" id="history">
+      <div class="wrap">
+        <header class="hx-head" data-reveal>
+          <p class="hx-eyebrow">あゆみ</p>
+          <h2 class="hx-title">小さく始めて、<br>少しずつ。</h2>
+        </header>
+        <ol class="hx-timeline">
+          <li data-reveal><time datetime="2026-09-25">2026年9月25日</time><h3>独自の Y-FILTER. Systems に移行</h3><p>それまで Search3958 のシステムを使わせてもらっていた Y-FILTER. の遠隔設定を、SK が運営する Firebase に移しました。</p></li>
+          <li data-reveal><time datetime="2026-09-25">2026年9月25日</time><h3>SK Hub Systems に名前を変更</h3><p>サイトのアクセスチェックも担うようになり、SK 全体のサーバー基盤として名前を変えました。仕組みの中の ID（<code>y-filter-systems</code>）は、変えずにそのまま使っています。</p></li>
+          <li data-reveal><time datetime="2026-09-26">2026年9月26日</time><h3>SK Hub Systems アカウントを開始</h3><p>SK のサービスで共通のアカウントを始めました。管理コンソールへのログインも、このアカウントになりました。</p></li>
+          <li data-reveal><time datetime="2026-09-27">2026年9月27日</time><h3>アカウントのページを新しくし、MALU と連携</h3><p>プロフィール・設定の同期・お知らせを追加し、サービスは最初に使うときに確認してから接続するようになりました。MALU の単語帳と検索履歴の同期も、このアカウントで使えます。</p></li>
         </ol>
       </div>
     </section>
 
-    <section class="section">
-      <div class="wrap">
-        <div class="about-teaser">
-          <img src="/assets/logo.svg" alt="" width="88" height="88">
-          <div>
-            <h2>いまの状態を確認する</h2>
-            <p>SK Hub Systems のデータベースやブロックリストの配信が動いているかを、稼働状況のページでいつでも確認できます。</p>
-          </div>
-          <a class="btn" href="/status/">稼働状況<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <!-- おわり -->
+    <section class="hx-section hx-end">
+      <div class="wrap" data-reveal>
+        <img src="/assets/logo.svg" alt="" width="72" height="72">
+        <h2 class="hx-title">いまも、<br>動いています。</h2>
+        <p class="hx-lead">データベースやブロックリストの配信が動いているかは、稼働状況のページでいつでも確認できます。</p>
+        <div class="hx-cta">
+          <a class="hx-pill" href="/status/"><span class="hx-live"></span>稼働状況を見る</a>
+          <a class="hx-link" href="/account/">SK Hub Systems アカウント</a>
         </div>
       </div>
     </section>

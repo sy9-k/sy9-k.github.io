@@ -36,6 +36,8 @@
       <!-- 拡大表示（タイマーだけを大きく。F キーでも） -->
       <button type="button" id="zen-button" class="icon-btn" aria-label="拡大表示" title="拡大表示（F）"><span class="ms" aria-hidden="true" id="zen-icon">fullscreen</span></button>
       <button type="button" id="settings-button" class="icon-btn" aria-label="設定" title="設定"><span class="ms" aria-hidden="true">settings</span></button>
+      <!-- SK Hub Systems アカウント（アプリ共通のアカウントの画面。/assets/hub/account-button.js） -->
+      <sk-account-button app="nagi" style="--ska-size:32px"></sk-account-button>
     </div>
   </header>
 
@@ -164,6 +166,7 @@
   <script src="app.js"></script>
   <!-- SK Hub Systems アカウントとの同期（ログインしている人だけ Firebase を読み込む） -->
   <script type="module" src="account.js"></script>
+  <script src="/assets/hub/account-button.js" defer></script>
   <!-- SK Hub Systems アカウントの設定の同期（ログイン中だけ） -->
   <script src="/assets/hub/sync-loader.js" defer></script>
   <script src="/frameworks/check.js" defer></script>
