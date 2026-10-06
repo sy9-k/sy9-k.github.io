@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="SK's Toolbox（Calc・Memo・Todo・Clock）に共通の設定。テーマ、テーマカラー、この端末のデータ。">
+<meta name="theme-color" content="#f9f9ff" id="theme-color">
+<title>Toolbox の設定 | SK's Toolbox</title>
+<!-- 多言語: /lang/ で選んだ言語で表示する（/assets/i18n.js。body の最後で translatePage()） -->
+<script src="/assets/i18n.js"></script>
+<script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@300;400;500;700&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>
+<link rel="stylesheet" href="/toolbox/shared/m3.css">
+<style>
+  /* 色は Calc と同じ（ブルー系）。テーマカラーを選ぶと settings.js が上書きする */
+  :root {
+    --md-primary: #415f91; --md-on-primary: #ffffff;
+    --md-secondary-container: #dae2f9; --md-on-secondary-container: #3e4759;
+    --md-error: #ba1a1a;
+    --md-surface: #f9f9ff; --md-on-surface: #191c20; --md-on-surface-variant: #44474e;
+    --md-surface-container: #ededf4; --md-surface-container-high: #e7e8ee; --md-surface-container-highest: #e2e2e9;
+    --md-outline: #74777f; --md-outline-variant: #c4c6d0;
+    --md-inverse-surface: #2e3036; --md-inverse-on-surface: #f0f0f7; --md-inverse-primary: #aac7ff;
+    --md-font: "M PLUS 1", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --md-primary: #aac7ff; --md-on-primary: #0a305f;
+      --md-secondary-container: #3e4759; --md-on-secondary-container: #dae2f9;
+      --md-error: #ffb4ab;
+      --md-surface: #111318; --md-on-surface: #e2e2e9; --md-on-surface-variant: #c4c6d0;
+      --md-surface-container: #1d2024; --md-surface-container-high: #282a2f; --md-surface-container-highest: #333539;
+      --md-outline: #8e9099; --md-outline-variant: #44474e;
+      --md-inverse-surface: #e2e2e9; --md-inverse-on-surface: #2e3036; --md-inverse-primary: #415f91;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --md-primary: #aac7ff; --md-on-primary: #0a305f;
+    --md-secondary-container: #3e4759; --md-on-secondary-container: #dae2f9;
+    --md-error: #ffb4ab;
+    --md-surface: #111318; --md-on-surface: #e2e2e9; --md-on-surface-variant: #c4c6d0;
+    --md-surface-container: #1d2024; --md-surface-container-high: #282a2f; --md-surface-container-highest: #333539;
+    --md-outline: #8e9099; --md-outline-variant: #44474e;
+    --md-inverse-surface: #e2e2e9; --md-inverse-on-surface: #2e3036; --md-inverse-primary: #415f91;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { min-height: 100dvh; background: var(--md-surface); color: var(--md-on-surface); font-family: var(--md-font); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--md-primary); outline-offset: 2px; }
+  .page { max-width: 640px; margin: 0 auto; padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
+  .app-bar { display: flex; align-items: center; min-height: 64px; padding: 0 4px; }
+  h1 { margin: 8px 16px 8px; font-size: 32px; font-weight: 400; line-height: 40px; }
+  /* ページでは、ダイアログの面の色ではなくページの色で */
+  .page .tbs-body { padding-bottom: 0; overflow: visible; }
+  @media (min-width: 601px) { .page .tbs-section__title, .page .tbs-text, .page .tbs-version { margin-left: 16px; margin-right: 16px; } .page .tbs-item { padding-left: 16px; padding-right: 16px; } }
+</style>
+<!-- SK's Toolbox の共通の設定 -->
+<script src="/toolbox/shared/settings.js" data-scope="page"></script>
+</head>
+<body>
+  <div class="page">
+    <header class="app-bar">
+      <a class="tb-back m3-state" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
+    </header>
+    <h1>Toolbox の設定</h1>
+    <div id="settings"></div>
+  </div>
+
+  <script>
+    (function () {
+      // 設定の中身は /toolbox/shared/settings.js が作る（各アプリの「設定」と同じ画面）
+      SKToolbox.renderSettings(document.getElementById("settings"));
+      var meta = document.getElementById("theme-color");
+      SKToolbox.onChange(function () { meta.content = getComputedStyle(document.documentElement).getPropertyValue("--md-surface").trim(); });
+    })();
+  </script>
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <script src="/toolbox/shared/m3.js"></script>
+  <script src="/frameworks/check.js" defer></script>
+  <script src="/assets/analytics.js" defer></script>
+</body>

@@ -98,7 +98,8 @@
       items: [
         [t("すべてのプロダクト"), lp("/products/")],
         ["SK's Brand", lp("/brand/")],
-        ["SK Hub Systems", lp("/sk-hub-systems/")]
+        ["SK Hub Systems", lp("/sk-hub-systems/")],
+        ["SK's Toolbox", lp("/toolbox/")]
       ]
     },
     // groups があると、見出しつきの列に分けて出す（スマホでは縦に並ぶ）

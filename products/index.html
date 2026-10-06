@@ -8,7 +8,7 @@
   <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
   <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
   <title>プロダクト | SK</title>
-  <meta name="description" content="SK がつくっているアプリ・ブラウザ拡張機能・サーバー基盤・実験中のツール（MALU・Nagi・Y-FILTER.・SK Hub Systems・SK's Lab）の一覧。">
+  <meta name="description" content="SK がつくっているアプリ・ブラウザ拡張機能・サーバー基盤・小さな道具・実験中のツール（MALU・Nagi・Y-FILTER.・SK Hub Systems・SK's Toolbox・SK's Lab）の一覧。">
   <meta name="theme-color" content="#ffffff" data-theme-color>
   <link rel="canonical" href="https://sy9-k.github.io/products/">
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
@@ -16,7 +16,7 @@
   <meta property="og:site_name" content="SK">
   <meta property="og:locale" content="ja_JP">
   <meta property="og:title" content="プロダクト | SK">
-  <meta property="og:description" content="SK がつくっているアプリ・ブラウザ拡張機能・サーバー基盤・実験中のツール（MALU・Nagi・Y-FILTER.・SK Hub Systems・SK's Lab）の一覧。">
+  <meta property="og:description" content="SK がつくっているアプリ・ブラウザ拡張機能・サーバー基盤・小さな道具・実験中のツール（MALU・Nagi・Y-FILTER.・SK Hub Systems・SK's Toolbox・SK's Lab）の一覧。">
   <meta property="og:url" content="https://sy9-k.github.io/products/">
   <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
   <meta property="og:image:width" content="1200">
@@ -49,7 +49,7 @@
     <section class="plist band band--plain">
       <div class="wrap">
         <h1>すべてのプロダクト</h1>
-        <p class="plist-lead">SK がつくっている、アプリ・拡張機能・サーバー基盤・実験中のツールの一覧です。</p>
+        <p class="plist-lead">SK がつくっている、アプリ・拡張機能・サーバー基盤・毎日の小さな道具・実験中のツールの一覧です。</p>
 
         <h2>アプリ</h2>
         <div class="plist-grid">
@@ -67,6 +67,15 @@
           <a class="plist-item" href="/sk-hub-systems/"><img class="plist-logo" src="/assets/logo.svg" alt="" width="44" height="44"><span><strong>SK Hub Systems</strong><small>サーバー基盤</small></span></a>
           <a class="plist-item" href="/sk-hub-systems/account/"><span class="plist-ico ti-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span><strong>SK Hub Systems アカウント</strong><small>ひとつのアカウントで</small></span></a>
           <a class="plist-item" href="/y-filter/"><img class="yf-tile" src="/y-filter/shared/icon.svg" alt="" width="44" height="44"><span><strong>Y-FILTER. 管理コンソール</strong><small>端末をまとめて管理</small></span></a>
+        </div>
+
+        <h2>SK's Toolbox <span class="plist-sub">毎日の小さな道具</span></h2>
+        <div class="plist-grid">
+          <a class="plist-item" href="/toolbox/clock/"><img src="/toolbox/clock/icon.svg" alt="" width="44" height="44"><span><strong>Clock</strong><small>空の色が変わる時計</small></span></a>
+          <a class="plist-item" href="/toolbox/calc/"><img src="/toolbox/calc/icon.svg" alt="" width="44" height="44"><span><strong>Calc</strong><small>電卓</small></span></a>
+          <a class="plist-item" href="/toolbox/memo/"><img src="/toolbox/memo/icon.svg" alt="" width="44" height="44"><span><strong>Memo</strong><small>メモ帳</small></span></a>
+          <a class="plist-item" href="/toolbox/todo/"><img src="/toolbox/todo/icon.svg" alt="" width="44" height="44"><span><strong>Todo</strong><small>ToDo リスト</small></span></a>
+          <a class="plist-item" href="/toolbox/"><img class="plist-logo" src="/assets/logo.svg" alt="" width="44" height="44"><span><strong>SK's Toolbox</strong><small>道具の一覧</small></span></a>
         </div>
 
         <h2>SK's Lab <span class="plist-sub">実験中のツール</span></h2>
@@ -89,7 +98,7 @@
         </div>
         <div>
           <h2>プロダクト</h2>
-          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/products/nagi/">Nagi</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
+          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/products/nagi/">Nagi</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/toolbox/">SK's Toolbox</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
         </div>
         <div>
           <h2>サポートと情報</h2>

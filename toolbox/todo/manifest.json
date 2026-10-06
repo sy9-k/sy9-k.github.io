@@ -1,0 +1,41 @@
+{
+  "id": "/toolbox/todo/",
+  "name": "Todo — SK's Toolbox",
+  "short_name": "Todo",
+  "description": "やることを書いて、終わったらチェック。シンプルな ToDo リスト。タスクは、この端末に保存されます。",
+  "start_url": "/toolbox/todo/",
+  "scope": "/toolbox/todo/",
+  "display": "standalone",
+  "background_color": "#f9faef",
+  "theme_color": "#f9faef",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": [
+    "productivity",
+    "utilities"
+  ]
+}

@@ -1,0 +1,234 @@
+/* Clock（SK's Toolbox）
+   空の色は clock.js が時刻から計算して --sky-top / --sky-mid / --sky-low / --orb に入れる（テーマ「空」）。
+   テーマ「夜」「紙」は <html data-theme="night|paper"> でトークンを入れ替える */
+:root {
+  --sky-top: #1f2463;
+  --sky-mid: #4a3f86;
+  --sky-low: #f59a7c;
+  --orb: #ffd2a8;
+  --orb-x: 50%;
+  --orb-y: 70%;
+  --stars: 0;
+  --ink: #ffffff;
+  --ink-soft: rgba(255, 255, 255, .72);
+  --ink-faint: rgba(255, 255, 255, .22);
+  --glass: rgba(255, 255, 255, .12);
+  --glass-line: rgba(255, 255, 255, .22);
+  --glass-on: rgba(255, 255, 255, .9);
+  --glass-on-ink: #1a1d3a;
+  --shadow: 0 2px 30px rgba(10, 12, 40, .25);
+  --num: Outfit, "Avenir Next", "Helvetica Neue", system-ui, sans-serif;
+  /* 下のツールバー（マテリアルデザイン）の色。空・夜は M3 のダーク、紙はライト */
+  --md-surface-container: #1d2024;
+  --md-on-surface-variant: #c4c6d0;
+  --md-secondary-container: #3e4759;
+  --md-on-secondary-container: #dae2f9;
+  --md-outline-variant: #44474e;
+  --md-primary: #aac7ff;
+  --tb-back-ink: rgba(255, 255, 255, .78);
+  --md-font: Roboto, system-ui, sans-serif; /* 左上の「SK's Toolbox」（Clock は Roboto のまま） */
+  --font: Outfit, "M PLUS 1", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+  color-scheme: dark;
+}
+:root[data-theme="night"] {
+  --sky-top: #000000; --sky-mid: #000000; --sky-low: #07080d;
+  --orb: #2a2f55; --stars: 0;
+  --ink: #e9e9ef; --ink-soft: rgba(233, 233, 239, .55); --ink-faint: rgba(233, 233, 239, .14);
+  --glass: rgba(255, 255, 255, .06); --glass-line: rgba(255, 255, 255, .12);
+  --shadow: none;
+}
+:root[data-theme="paper"] {
+  --sky-top: #f4f1ea; --sky-mid: #f1ede4; --sky-low: #e9e3d6;
+  --orb: #ffffff; --stars: 0;
+  --ink: #1c1b19; --ink-soft: rgba(28, 27, 25, .58); --ink-faint: rgba(28, 27, 25, .12);
+  --glass: rgba(255, 255, 255, .55); --glass-line: rgba(28, 27, 25, .1);
+  --glass-on: #1c1b19; --glass-on-ink: #f4f1ea;
+  --shadow: none;
+  --md-surface-container: #ededf4; --md-on-surface-variant: #44474e;
+  --md-secondary-container: #dae2f9; --md-on-secondary-container: #3e4759;
+  --md-outline-variant: #c4c6d0; --md-primary: #415f91;
+  --tb-back-ink: rgba(28, 27, 25, .7);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  overflow: hidden;
+  background: var(--sky-top);
+  color: var(--ink);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+body.is-idle { cursor: none; }
+
+/* ---- 空 ---- */
+.sky {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%);
+}
+.sky__orb {
+  position: absolute; left: var(--orb-x); top: var(--orb-y);
+  width: 90vmax; height: 90vmax; translate: -50% -50%;
+  background: radial-gradient(circle, var(--orb) 0%, transparent 60%);
+  opacity: .55; filter: blur(20px);
+  transition: left 2s linear, top 2s linear;
+  animation: breathe 14s ease-in-out infinite;
+}
+@keyframes breathe { 50% { scale: 1.08; opacity: .7; } }
+.sky__stars {
+  position: absolute; inset: -50%;
+  opacity: var(--stars); transition: opacity 3s linear;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 30% 65%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 55% 15%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 70% 45%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 85% 80%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 20% 85%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 45% 40%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 10%, #fff 50%, transparent 51%);
+  background-size: 420px 420px;
+  animation: drift 240s linear infinite;
+}
+@keyframes drift { to { transform: rotate(360deg); } }
+.sky__grain {
+  position: absolute; inset: 0; opacity: .09; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- 戻るリンク（/toolbox/shared/m3.css の .tb-back） ---- */
+.brand {
+  position: fixed; z-index: 2;
+  top: max(16px, env(safe-area-inset-top)); left: max(16px, env(safe-area-inset-left));
+  transition: opacity .6s ease;
+}
+
+/* ---- 時計 ---- */
+.clock {
+  position: relative; z-index: 1;
+  height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px 16px;
+  text-align: center;
+}
+.clock__date {
+  margin: 0 0 .4em;
+  font-size: clamp(15px, 2.4vw, 26px); font-weight: 400; letter-spacing: .14em;
+  color: var(--ink-soft);
+  text-shadow: var(--shadow);
+}
+.clock__time {
+  display: flex; align-items: baseline; justify-content: center;
+  font-family: var(--num); font-weight: 200;
+  line-height: 1; letter-spacing: -.02em;
+  text-shadow: var(--shadow);
+  white-space: nowrap;
+}
+.clock__hm { font-size: clamp(88px, 21vw, 300px); display: inline-flex; }
+.clock__sec { font-size: clamp(28px, 6vw, 84px); font-weight: 300; color: var(--ink-soft); margin-left: .25em; display: inline-flex; }
+.clock__ampm { font-size: clamp(16px, 2.6vw, 34px); font-weight: 500; letter-spacing: .1em; color: var(--ink-soft); margin-left: .5em; }
+.clock__ampm:empty, .clock__sec:empty { display: none; }
+.is-nosec .clock__sec { display: none; }
+.is-nosec .clock__bar { opacity: 0; }
+
+/* 1 文字ずつの枠。数字が変わると、古い数字は上へ、新しい数字は下から */
+.slot { position: relative; display: inline-grid; overflow: hidden; width: .6em; justify-items: center; }
+.slot--colon { width: .3em; animation: blink 2s steps(1) infinite; }
+.slot > span { grid-area: 1 / 1; }
+.slot > .in { animation: roll-in .7s cubic-bezier(.22, 1, .36, 1) both; }
+.slot > .out { animation: roll-out .5s cubic-bezier(.55, 0, .45, 1) both; }
+@keyframes roll-in { from { transform: translateY(60%); opacity: 0; filter: blur(6px); } }
+@keyframes roll-out { to { transform: translateY(-60%); opacity: 0; filter: blur(6px); } }
+@keyframes blink { 50% { opacity: .35; } }
+
+.clock__bar {
+  width: min(260px, 50vw); height: 2px; margin-top: clamp(18px, 3vw, 36px);
+  border-radius: 2px; background: var(--ink-faint); overflow: hidden;
+  transition: opacity .4s ease;
+}
+.clock__bar i { display: block; height: 100%; width: 100%; background: var(--ink-soft); border-radius: inherit; transform-origin: left; transform: scaleX(0); }
+.clock__part {
+  margin: 14px 0 0; min-height: 1.5em;
+  font-size: clamp(12px, 1.5vw, 15px); letter-spacing: .3em; text-transform: uppercase;
+  color: var(--ink-soft); opacity: .8;
+  text-shadow: var(--shadow);
+}
+
+/* ---- 共通の設定の画面（/toolbox/shared/settings.js）の色。空・夜は M3 のダーク、紙はライト。文字は M PLUS 1 ---- */
+.tbs-overlay, .tbs-dialog-scrim {
+  --md-font: "M PLUS 1", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+  --md-primary: #aac7ff; --md-on-primary: #0a305f;
+  --md-secondary-container: #3e4759; --md-on-secondary-container: #dae2f9;
+  --md-error: #ffb4ab;
+  --md-surface: #111318; --md-on-surface: #e2e2e9; --md-on-surface-variant: #c4c6d0;
+  --md-surface-container-high: #282a2f; --md-surface-container-highest: #333539;
+  --md-outline: #8e9099; --md-outline-variant: #44474e;
+  color: var(--md-on-surface); cursor: auto;
+}
+:root[data-theme="paper"] .tbs-overlay, :root[data-theme="paper"] .tbs-dialog-scrim {
+  --md-primary: #415f91; --md-on-primary: #ffffff;
+  --md-secondary-container: #dae2f9; --md-on-secondary-container: #3e4759;
+  --md-error: #ba1a1a;
+  --md-surface: #f9f9ff; --md-on-surface: #191c20; --md-on-surface-variant: #44474e;
+  --md-surface-container-high: #e7e8ee; --md-surface-container-highest: #e2e2e9;
+  --md-outline: #74777f; --md-outline-variant: #c4c6d0;
+}
+body.tbs-open .dock, body.tbs-open .brand { visibility: hidden; }
+
+/* ---- 下のツールバー（マテリアルデザインのフローティングツールバー。動かさないと消える） ---- */
+.dock {
+  position: fixed; z-index: 2; left: 50%; translate: -50% 0;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 4px;
+  height: 64px; padding: 0 8px; border-radius: 32px;
+  background: var(--md-surface-container); color: var(--md-on-surface-variant);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .3), 0 4px 8px 3px rgba(0, 0, 0, .15);
+  font-family: Roboto, system-ui, sans-serif;
+  transition: opacity .6s ease, transform .6s cubic-bezier(.2, 0, 0, 1);
+}
+.dock__sep { width: 1px; height: 24px; margin: 0 4px; background: var(--md-outline-variant); }
+.dock .icon-btn:focus-visible { outline: 3px solid var(--md-primary); outline-offset: 2px; }
+/* 「24h / 12h」は文字のボタン（いつも選ばれている見た目にはしない） */
+.dock .dock__text { width: auto; min-width: 56px; padding: 0 12px; border-radius: 24px; font-size: 14px; font-weight: 500; letter-spacing: .02em; }
+.dock .dock__text[aria-pressed] { background: transparent; color: var(--md-on-surface-variant); }
+/* 選んでいるボタンは、押したとき丸から角丸の四角に */
+.dock .icon-btn[aria-pressed="true"]:not(.dock__text) { border-radius: 16px; }
+
+body.is-idle .dock { opacity: 0; transform: translateY(12px); pointer-events: none; }
+body.is-idle .brand { opacity: 0; pointer-events: none; }
+
+.toast {
+  position: fixed; z-index: 3; left: 50%; top: max(20px, env(safe-area-inset-top));
+  translate: -50% 0; margin: 0;
+  padding: 8px 16px; border-radius: 999px;
+  background: var(--glass); border: 1px solid var(--glass-line); color: var(--ink);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  font-size: 13px; letter-spacing: .04em; white-space: nowrap;
+  opacity: 0; transform: translateY(-8px); pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease;
+}
+.toast.is-on { opacity: 1; transform: none; }
+
+/* 一覧ページの見本（/toolbox/ の iframe。?embed） */
+.is-embed .brand, .is-embed .dock, .is-embed .toast { display: none !important; }
+
+@media (max-width: 480px) {
+  .clock__sec { margin-left: .15em; }
+  .dock { gap: 0; padding: 0 4px; }
+  .dock .icon-btn { width: 44px; height: 44px; }
+  .dock .dock__text { min-width: 48px; padding: 0 8px; }
+}
+/* 横向きのスマホなど、高さが低いとき */
+@media (max-height: 420px) {
+  .clock { padding-bottom: 72px; }
+  .clock__hm { font-size: min(21vw, 40vh); }
+  .clock__part { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sky__orb, .sky__stars, .slot--colon { animation: none; }
+  .slot > .in, .slot > .out { animation-duration: 1ms; }
+}

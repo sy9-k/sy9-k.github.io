@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="時間帯に合わせて空の色が移り変わる、シンプルな時計。">
+<meta name="theme-color" content="#1f2463" id="theme-color">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Clock">
+<title>Clock | SK's Toolbox</title>
+<!-- 多言語: /lang/ で選んだ言語で表示する（/assets/i18n.js。body の最後で translatePage()） -->
+<script src="/assets/i18n.js"></script>
+<!-- 時計の数字は Outfit。下のツールバーは Google のマテリアルデザイン（Roboto・Material Symbols） -->
+<script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;500&family=M+PLUS+1:wght@400;500&family=Roboto:wght@500&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>
+<link rel="stylesheet" href="/toolbox/shared/m3.css">
+<link rel="stylesheet" href="clock.css">
+<!-- SK's Toolbox の共通の設定。Clock では「動きを減らす」と設定の画面だけ使う（テーマ・テーマカラーは Clock のもの） -->
+<script src="/toolbox/shared/settings.js" data-app="clock" data-scope="clock"></script>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+  <!-- 空（時間帯で色が変わる。clock.js が --sky-top などを入れる） -->
+  <div class="sky" aria-hidden="true">
+    <div class="sky__orb" id="orb"></div>
+    <div class="sky__stars"></div>
+    <div class="sky__grain"></div>
+  </div>
+
+  <a class="tb-back m3-state brand" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
+
+  <main class="clock" id="clock">
+    <p class="clock__date" id="date">&nbsp;</p>
+    <div class="clock__time" role="timer" aria-live="off" id="time">
+      <span class="clock__hm" id="hm"></span><span class="clock__sec" id="sec"></span><span class="clock__ampm" id="ampm"></span>
+    </div>
+    <div class="clock__bar" aria-hidden="true"><i id="bar"></i></div>
+    <p class="clock__part" id="part">&nbsp;</p>
+  </main>
+
+  <!-- 下のツールバー（マテリアルデザインのフローティングツールバー） -->
+  <nav class="dock" id="dock" aria-label="時計の設定">
+    <button type="button" class="icon-btn m3-state dock__text" id="btn-24h" aria-pressed="true" title="24 時間表示"><span id="fmt-label">24h</span></button>
+    <button type="button" class="icon-btn m3-state" id="btn-sec" aria-pressed="true" aria-label="秒を表示" title="秒を表示"><span class="msr" aria-hidden="true">timer</span></button>
+    <button type="button" class="icon-btn m3-state" id="btn-theme" aria-label="テーマを切り替え" title="テーマを切り替え"><span class="msr" aria-hidden="true">palette</span></button>
+    <span class="dock__sep" aria-hidden="true"></span>
+    <button type="button" class="icon-btn m3-state" id="btn-wake" aria-pressed="false" aria-label="画面をつけたままにする" title="画面をつけたままにする"><span class="msr" aria-hidden="true">lightbulb</span></button>
+    <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
+    <button type="button" class="icon-btn m3-state" id="btn-full" aria-label="全画面" title="全画面"><span class="msr" id="full-icon" aria-hidden="true">fullscreen</span></button>
+    <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
+  </nav>
+
+  <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+  <script src="clock.js"></script>
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <script src="/toolbox/shared/m3.js"></script>
+  <script src="/toolbox/shared/pwa.js"></script>
+</body>

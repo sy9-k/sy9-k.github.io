@@ -510,6 +510,33 @@ img.yf-tile.yf-tile {
   .lab-item--reverse .lab-shot { order: 0; }
 }
 
+/* ---------- SK's Toolbox ---------- */
+.tb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 24px; }
+.tb-card { position: relative; display: flex; flex-direction: column; padding: 14px; transition: transform .25s ease, box-shadow .25s ease; }
+.tb-card:not(.tb-card--soon):hover { transform: translateY(-4px); box-shadow: 0 2px 4px rgba(13, 16, 20, .04), 0 24px 48px rgba(13, 16, 20, .12); }
+/* 見本はアプリをそのまま 2 倍の大きさで開いて、半分に縮めて見せる（?embed。ボタンなし） */
+.tb-shot { position: relative; aspect-ratio: 16 / 10; border-radius: 18px; overflow: hidden; background: #1f2463; }
+.tb-shot iframe { position: absolute; top: 0; left: 0; width: 200%; height: 200%; border: 0; transform: scale(.5); transform-origin: 0 0; pointer-events: none; }
+.tb-body { display: flex; flex-direction: column; flex: 1; padding: 20px 10px 10px; }
+.tb-head { display: flex; align-items: center; gap: 14px; }
+.tb-head img { width: 44px; height: 44px; border-radius: 12px; }
+.tb-head h2 { font-size: 24px; font-weight: 800; letter-spacing: -.01em; line-height: 1.2; }
+.tb-kind { color: var(--muted); font-size: 13px; font-weight: 600; }
+.tb-body > p { color: var(--muted); margin-top: 14px; }
+.tb-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 18px; padding: 0; }
+.tb-tags li { padding: 5px 12px; border-radius: 999px; background: var(--surface-2); font-size: 13px; font-weight: 600; }
+.tb-open { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; font-size: 14px; font-weight: 700; color: var(--link); text-decoration: none; }
+.tb-open::after { content: ""; position: absolute; inset: 0; border-radius: inherit; } /* カード全体を押せるように */
+.tb-open svg { width: 16px; height: 16px; transition: transform .2s ease; }
+.tb-card:hover .tb-open svg { transform: translateX(3px); }
+.tb-open:focus-visible { outline: none; }
+.tb-open:focus-visible::after { outline: 3px solid var(--accent); outline-offset: 3px; }
+.tb-card--soon { align-items: center; justify-content: center; min-height: 280px; padding: 32px; text-align: center; border: 2px dashed var(--line-strong); border-radius: var(--radius); color: var(--muted); }
+.tb-card--soon h2 { margin-top: 14px; font-size: 18px; font-weight: 800; color: var(--ink); }
+.tb-card--soon p { margin-top: 6px; font-size: 14px; }
+.tb-soon-ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--surface-2); }
+.tb-soon-ico svg { width: 22px; height: 22px; }
+
 /* ---------- Status ---------- */
 /* 全体の状態（丸）。--st（状態の色）は @property で登録しているので、色が変わるときになめらかに移り変わる
    確認中: 青い弧がくるくる回る / 正常: 緑の丸がふくらんでチェックが描かれ、波紋がゆっくり広がる
