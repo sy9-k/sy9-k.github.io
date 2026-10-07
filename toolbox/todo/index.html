@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-<meta name="description" content="やることを書いて、終わったらチェック。シンプルな ToDo リスト。タスクは、この端末に保存されます。">
+<meta name="description" content="リスト・日時・繰り返し・フラグ・優先度・サブタスクに対応したリマインダー。タスクは、この端末に保存されます。">
 <meta name="theme-color" content="#f9faef" id="theme-color">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -17,75 +17,88 @@
 <link rel="stylesheet" href="todo.css">
 <!-- SK's Toolbox の共通の設定（テーマ・テーマカラー・動きを減らす…）。設定の画面もここ -->
 <script src="/toolbox/shared/settings.js" data-app="todo"></script>
+<!-- マテリアルデザインの部品（波紋・ダイアログ・動き） -->
+<script src="/toolbox/shared/m3.js"></script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
-  <div class="page">
-    <header class="app-bar">
-      <a class="tb-back m3-state" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
-      <span class="app-bar__space"></span>
-      <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
-      <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
-      <div class="menu-wrap">
-        <button type="button" class="icon-btn m3-state" id="btn-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="その他" title="その他"><span class="msr" aria-hidden="true">more_vert</span></button>
-        <div class="menu" id="menu" role="menu" hidden>
-          <button type="button" class="m3-state" role="menuitem" id="btn-clear-done"><span class="msr" aria-hidden="true">delete_sweep</span><span>完了したタスクを削除</span></button>
-          <button type="button" class="m3-state" role="menuitem" id="btn-export"><span class="msr" aria-hidden="true">download</span><span>バックアップを書き出す</span></button>
-          <button type="button" class="m3-state" role="menuitem" id="btn-import"><span class="msr" aria-hidden="true">upload</span><span>バックアップを読み込む</span></button>
+  <div class="app" id="app">
+    <!-- リストの一覧（スマートリストとマイリスト） -->
+    <aside class="side" aria-label="リスト">
+      <header class="app-bar">
+        <a class="tb-back m3-state" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
+        <span class="app-bar__space"></span>
+        <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
+        <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
+        <div class="menu-wrap">
+          <button type="button" class="icon-btn m3-state" id="btn-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="その他" title="その他"><span class="msr" aria-hidden="true">more_vert</span></button>
+          <div class="menu" id="menu" role="menu" hidden>
+            <button type="button" class="m3-state" role="menuitem" data-menu="notify"><span class="msr" aria-hidden="true">notifications</span><span id="notify-label" data-i18n-skip></span></button>
+            <hr>
+            <button type="button" class="m3-state" role="menuitem" data-menu="export"><span class="msr" aria-hidden="true">download</span><span>バックアップを書き出す</span></button>
+            <button type="button" class="m3-state" role="menuitem" data-menu="import"><span class="msr" aria-hidden="true">upload</span><span>バックアップを読み込む</span></button>
+          </div>
+          <input type="file" id="import-file" accept="application/json,.json" hidden>
         </div>
-        <input type="file" id="import-file" accept="application/json,.json" hidden>
+      </header>
+
+      <label class="search">
+        <span class="msr" aria-hidden="true">search</span>
+        <input type="search" id="search" placeholder="検索" aria-label="リマインダーを検索" autocomplete="off">
+      </label>
+
+      <div class="smart" id="smart" data-i18n-skip></div>
+
+      <h2 class="side__head">マイリスト</h2>
+      <div class="lists" id="lists" data-i18n-skip></div>
+      <button type="button" class="text-btn add-list m3-state" id="btn-add-list"><span class="msr" aria-hidden="true">add</span><span>リストを追加</span></button>
+
+      <p class="side__note">タスクはこの端末のブラウザにだけ保存されます。通知は、Toolbox のページを開いているあいだだけ届きます。</p>
+    </aside>
+
+    <!-- 選んだリスト -->
+    <main class="main" id="main">
+      <header class="app-bar main__bar">
+        <button type="button" class="icon-btn m3-state main__back" id="btn-back" aria-label="リストの一覧に戻る"><span class="msr" aria-hidden="true">arrow_back</span></button>
+        <span class="app-bar__space"></span>
+        <button type="button" class="icon-btn m3-state" id="btn-cal" hidden aria-pressed="false" aria-label="カレンダーで見る" title="カレンダーで見る"><span class="msr" aria-hidden="true">calendar_month</span></button>
+        <div class="menu-wrap">
+          <button type="button" class="icon-btn m3-state" id="btn-list-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="list-menu" aria-label="リストのメニュー" title="リストのメニュー"><span class="msr" aria-hidden="true">more_horiz</span></button>
+          <div class="menu" id="list-menu" role="menu" hidden>
+            <button type="button" class="m3-state" role="menuitem" data-lmenu="sort"><span class="msr" aria-hidden="true">sort</span><span>並べ替え</span></button>
+            <button type="button" class="m3-state" role="menuitem" data-lmenu="toggle-done"><span class="msr" aria-hidden="true" id="toggle-done-icon">visibility</span><span id="toggle-done-label" data-i18n-skip></span></button>
+            <button type="button" class="m3-state" role="menuitem" data-lmenu="clear-done"><span class="msr" aria-hidden="true">delete_sweep</span><span>完了済みを削除</span></button>
+            <hr data-user-list>
+            <button type="button" class="m3-state" role="menuitem" data-lmenu="edit-list" data-user-list><span class="msr" aria-hidden="true">edit</span><span>リストを編集</span></button>
+            <button type="button" class="m3-state" role="menuitem" data-lmenu="delete-list" data-user-list><span class="msr" aria-hidden="true">delete</span><span>リストを削除</span></button>
+          </div>
+        </div>
+      </header>
+      <div class="main__scroll" id="scroll">
+        <div class="main__head">
+          <h1 class="main__title" id="title" data-i18n-skip></h1>
+          <span class="main__count" id="count" data-i18n-skip></span>
+        </div>
+        <div class="done-bar" id="done-bar" hidden data-i18n-skip></div>
+        <div class="tasks" id="tasks" data-i18n-skip></div>
+        <div class="empty" id="empty" hidden>
+          <span class="msr" aria-hidden="true" id="empty-icon">task_alt</span>
+          <p id="empty-text" data-i18n-skip></p>
+        </div>
       </div>
-    </header>
-
-    <main class="main">
-      <div class="head">
-        <h1 class="head__title">Todo</h1>
-        <p class="head__count" id="count" data-i18n-skip></p>
-      </div>
-      <div class="progress" role="progressbar" aria-label="進み具合" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><i id="progress-bar"></i></div>
-
-      <!-- 追加する欄 -->
-      <form class="add" id="add-form" autocomplete="off">
-        <span class="msr add__icon" aria-hidden="true">add_task</span>
-        <input type="text" id="add-text" class="add__input" placeholder="タスクを追加" aria-label="タスクを追加" maxlength="300" enterkeyhint="done">
-        <button type="button" class="chip chip--date m3-state" id="add-due" hidden data-i18n-skip></button>
-        <button type="button" class="icon-btn m3-state" id="btn-add-date" aria-label="期限を決める" title="期限を決める"><span class="msr" aria-hidden="true">event</span></button>
-        <button type="submit" class="icon-btn add__submit m3-state" id="btn-add" aria-label="追加" title="追加" disabled><span class="msr" aria-hidden="true">arrow_upward</span></button>
-      </form>
-
-      <!-- 絞り込み（フィルターチップ） -->
-      <div class="chips" role="group" aria-label="表示するタスク">
-        <button type="button" class="chip m3-state" data-filter="all" aria-pressed="true"><span class="msr chip__check" aria-hidden="true">check</span><span>すべて</span></button>
-        <button type="button" class="chip m3-state" data-filter="open" aria-pressed="false"><span class="msr chip__check" aria-hidden="true">check</span><span>未完了</span></button>
-        <button type="button" class="chip m3-state" data-filter="done" aria-pressed="false"><span class="msr chip__check" aria-hidden="true">check</span><span>完了</span></button>
-      </div>
-
-      <ul class="tasks" id="tasks" data-i18n-skip></ul>
-
-      <details class="done-section" id="done-section" open>
-        <summary class="m3-state"><span class="msr" aria-hidden="true">expand_more</span><span id="done-title" data-i18n-skip></span></summary>
-        <ul class="tasks" id="done-tasks" data-i18n-skip></ul>
-      </details>
-
-      <div class="empty" id="empty" hidden>
-        <span class="msr" aria-hidden="true">task_alt</span>
-        <p id="empty-text" data-i18n-skip></p>
-      </div>
-
-      <p class="note">タスクはこの端末のブラウザにだけ保存されます。</p>
+      <button type="button" class="new-btn m3-state" id="btn-new"><span class="msr" aria-hidden="true">add_circle</span><span>新規リマインダー</span></button>
     </main>
   </div>
-
-  <!-- 期限を選ぶ（見えない日付の欄。showPicker() で開く） -->
-  <input type="date" id="date-picker" class="date-picker" tabindex="-1" aria-hidden="true">
 
   <!-- スナックバー（「元に戻す」つき） -->
   <div class="snackbar" id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button type="button" class="text-btn m3-state" id="toast-action" hidden>元に戻す</button></div>
 
+  <script src="/toolbox/shared/remind.js"></script>
   <script src="todo.js"></script>
   <script>window.SKI18N && SKI18N.translatePage();</script>
-  <script src="/toolbox/shared/m3.js"></script>
+  <!-- 横断検索（Ctrl+K） -->
+  <script src="/toolbox/shared/search.js"></script>
   <script src="/toolbox/shared/pwa.js"></script>
 </body>

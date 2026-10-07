@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="誕生日・テスト・旅行など、大事な日まであと何日かを数えるアプリ。この端末に保存されます。">
+<meta name="theme-color" content="#fef7ff" id="theme-color">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Countdown">
+<title>Countdown | SK's Toolbox</title>
+<!-- 多言語: /lang/ で選んだ言語で表示する（/assets/i18n.js。body の最後で translatePage()） -->
+<script src="/assets/i18n.js"></script>
+<!-- 文字は M PLUS 1、アイコンは Material Symbols（Google のマテリアルデザイン） -->
+<script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@300;400;500;700;800&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>
+<link rel="stylesheet" href="/toolbox/shared/m3.css">
+<link rel="stylesheet" href="countdown.css">
+<!-- SK's Toolbox の共通の設定（テーマ・テーマカラー・動きを減らす…）。設定の画面もここ -->
+<script src="/toolbox/shared/settings.js" data-app="countdown"></script>
+<!-- マテリアルデザインの部品（波紋・ダイアログ・動き） -->
+<script src="/toolbox/shared/m3.js"></script>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+  <div class="page">
+    <header class="app-bar">
+      <a class="tb-back m3-state" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
+      <span class="app-bar__space"></span>
+      <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
+      <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
+      <div class="menu-wrap">
+        <button type="button" class="icon-btn m3-state" id="btn-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="その他" title="その他"><span class="msr" aria-hidden="true">more_vert</span></button>
+        <div class="menu" id="menu" role="menu" hidden>
+          <button type="button" class="m3-state" role="menuitem" data-menu="past"><span class="msr" aria-hidden="true" id="past-icon">history</span><span id="past-label" data-i18n-skip></span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="export"><span class="msr" aria-hidden="true">download</span><span>バックアップを書き出す</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="import"><span class="msr" aria-hidden="true">upload</span><span>バックアップを読み込む</span></button>
+        </div>
+        <input type="file" id="import-file" accept="application/json,.json" hidden>
+      </div>
+    </header>
+
+    <main>
+      <div class="head">
+        <h1 class="head__title">Countdown</h1>
+        <p class="head__sub" id="sub" data-i18n-skip></p>
+      </div>
+      <!-- いちばん近い日（大きく） -->
+      <section class="hero" id="hero" hidden data-i18n-skip></section>
+      <div class="cards" id="cards" data-i18n-skip></div>
+      <div class="empty" id="empty" hidden>
+        <span class="msr" aria-hidden="true">event_upcoming</span>
+        <p>誕生日・テスト・旅行など、楽しみな日を追加しましょう。</p>
+      </div>
+      <p class="note">データはこの端末のブラウザにだけ保存されます。</p>
+    </main>
+  </div>
+
+  <button type="button" class="fab m3-state" id="btn-add"><span class="msr" aria-hidden="true">add</span><span>追加</span></button>
+
+  <!-- スナックバー（「元に戻す」つき） -->
+  <div class="snackbar" id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button type="button" class="text-btn m3-state" id="toast-action" hidden>元に戻す</button></div>
+
+  <script src="countdown.js"></script>
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <!-- 横断検索（Ctrl+K） -->
+  <script src="/toolbox/shared/search.js"></script>
+  <script src="/toolbox/shared/pwa.js"></script>
+</body>

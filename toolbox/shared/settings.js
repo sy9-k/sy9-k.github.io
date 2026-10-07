@@ -2,6 +2,9 @@
 //   <script src="/toolbox/shared/settings.js" data-app="calc"></script>   … Calc・Memo・Todo
 //   <script src="/toolbox/shared/settings.js" data-app="clock" data-scope="clock"></script>   … Clock（テーマとテーマカラーは使わない）
 //   <script src="/toolbox/shared/settings.js" data-scope="page"></script>   … /toolbox/settings/（設定のページ）
+//   <script src="/toolbox/shared/settings.js" data-app="home" data-scope="site"></script>   … /toolbox/（サイトのヘッダーがあるホーム画面）
+//       ライト・ダークは、Toolbox の設定が「端末に合わせる」ならサイトの「表示」（sk_theme。<head> の小さなスクリプトと assets/site.js が
+//       <html data-theme> に付ける）のまま。ライト・ダークを選んでいれば Toolbox の設定を優先する（ヘッダーもいっしょに変わる）
 //
 //   ・設定は localStorage の sk_toolbox に保存する（SK Hub Systems には送らない）
 //       { theme: "auto|light|dark", color: "app|blue|sakura|…", motion: "auto|reduce", haptics: true|false }
@@ -69,7 +72,20 @@
   var darkMq = window.matchMedia("(prefers-color-scheme: dark)");
   var listeners = [];
   var styleEl = null;
-  function isDark() { return settings.theme === "dark" || (settings.theme === "auto" && darkMq.matches); }
+  // サイトのページ（scope "site"）で、サイトの「表示」が付けた data-theme（Toolbox の設定で上書きしていないときの値）
+  var siteTheme = scope === "site" ? root.getAttribute("data-theme") : null;
+  var writing = false;
+  function isDark() {
+    if (settings.theme !== "auto") return settings.theme === "dark";
+    if (scope === "site" && siteTheme) return siteTheme === "dark";
+    return darkMq.matches;
+  }
+  function setThemeAttr(value) {
+    if (root.getAttribute("data-theme") === value || (!value && !root.hasAttribute("data-theme"))) return;
+    writing = true;
+    if (value) root.setAttribute("data-theme", value); else root.removeAttribute("data-theme");
+    writing = false;
+  }
   function paletteCss(key, dark) {
     var hex = PALETTES[key][dark ? 1 : 0];
     return ROLES.map(function (r, i) { return "--md-" + r + ":#" + hex.slice(i * 6, i * 6 + 6) + ";"; }).join("");
@@ -78,8 +94,8 @@
     if (settings.motion === "reduce") root.setAttribute("data-motion", "reduce");
     else root.removeAttribute("data-motion");
     if (scope !== "clock") {
-      if (settings.theme === "auto") root.removeAttribute("data-theme");
-      else root.setAttribute("data-theme", settings.theme);
+      if (settings.theme !== "auto") setThemeAttr(settings.theme);
+      else setThemeAttr(scope === "site" ? siteTheme : null);
       if (!styleEl) {
         styleEl = document.createElement("style");
         styleEl.id = "sk-toolbox-color";
@@ -101,6 +117,14 @@
   read();
   apply();
   darkMq.addEventListener("change", apply);
+  // サイトのページ: ヘッダーの「表示」でライト・ダークを変えたとき
+  if (scope === "site" && window.MutationObserver) {
+    new MutationObserver(function () {
+      if (writing) return;
+      siteTheme = root.getAttribute("data-theme");
+      apply();
+    }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  }
   // アカウントの状態が変わったとき（ほかのタブでログインした・assets/hub/account.js が知らせた）
   document.addEventListener("skhub:account", function () { refreshUi(); });
   window.addEventListener("storage", function (e) {
@@ -118,10 +142,11 @@
 
   // ---- この端末のデータ ----
   var APPS = [
-    { key: "sk_clock", app: "clock", name: "Clock", what: t("表示の設定") },
+    { key: "sk_clock", app: "clock", name: "Clock", what: t("表示の設定・アラーム・世界時計"), extra: ["sk_clock_tools", "sk_clock_fired"] },
     { key: "sk_calc", app: "calc", name: "Calc", what: t("計算の履歴") },
-    { key: "sk_memo", app: "memo", name: "Memo", what: t("メモ") },
-    { key: "sk_todo", app: "todo", name: "Todo", what: t("タスク") }
+    { key: "sk_memo", app: "memo", name: "Memo", what: t("メモと画像"), idb: "sk_toolbox_memo" },
+    { key: "sk_todo", app: "todo", name: "Todo", what: t("タスク"), extra: ["sk_todo_notified"] },
+    { key: "sk_countdown", app: "countdown", name: "Countdown", what: t("日の一覧") }
   ];
   var sizeFmt = new Intl.NumberFormat((I18N && I18N.locale) || "ja-JP", { maximumFractionDigits: 1 });
   function sizeOf(key) {
@@ -129,6 +154,27 @@
       var v = localStorage.getItem(key);
       return v === null ? 0 : (key.length + v.length) * 2;
     } catch (e) { return 0; }
+  }
+  // IndexedDB に入れた画像の大きさ（Memo）
+  function idbSize(name) {
+    return new Promise(function (resolve) {
+      if (!window.indexedDB) { resolve(0); return; }
+      var req = indexedDB.open(name);
+      req.onupgradeneeded = function () { req.transaction.abort(); resolve(0); };
+      req.onerror = function () { resolve(0); };
+      req.onsuccess = function () {
+        var db = req.result;
+        if (!db.objectStoreNames.contains("images")) { db.close(); resolve(0); return; }
+        var all = db.transaction("images").objectStore("images").getAll();
+        all.onsuccess = function () { db.close(); resolve((all.result || []).reduce(function (s, b) { return s + (b && b.size || 0); }, 0)); };
+        all.onerror = function () { db.close(); resolve(0); };
+      };
+    });
+  }
+  function clearApp(a) {
+    try { localStorage.removeItem(a.key); (a.extra || []).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { /* 消せないときはそのまま */ }
+    if (a.idb && window.indexedDB) return new Promise(function (resolve) { var r = indexedDB.deleteDatabase(a.idb); r.onsuccess = r.onerror = r.onblocked = function () { resolve(); }; });
+    return Promise.resolve();
   }
   function sizeText(bytes) {
     if (!bytes) return t("データなし");
@@ -141,6 +187,65 @@
     try { return JSON.parse(localStorage.getItem(HINT_KEY) || "null"); } catch (e) { return null; }
   }
   function lp(u) { return I18N && I18N.path ? I18N.path(u) : u; }
+
+  // ---- まとめてバックアップ ----
+  var BACKUP_KEYS = ["sk_toolbox", "sk_toolbox_home", "sk_clock", "sk_clock_tools", "sk_calc", "sk_memo", "sk_todo", "sk_countdown"];
+  function memoImages(mode, fn) {
+    return new Promise(function (resolve) {
+      if (!window.indexedDB) { resolve(null); return; }
+      var req = indexedDB.open("sk_toolbox_memo", 1);
+      req.onupgradeneeded = function () { req.result.createObjectStore("images"); };
+      req.onerror = function () { resolve(null); };
+      req.onsuccess = function () {
+        var db = req.result, tx = db.transaction("images", mode), store = tx.objectStore("images");
+        var result = fn(store);
+        tx.oncomplete = function () { db.close(); resolve(result && result.result !== undefined ? result.result : result); };
+        tx.onerror = function () { db.close(); resolve(null); };
+      };
+    });
+  }
+  function exportAll() {
+    var storage = {};
+    BACKUP_KEYS.forEach(function (k) { try { var v = localStorage.getItem(k); if (v !== null) storage[k] = v; } catch (e) { /* 読めないときは入れない */ } });
+    var keys = [], blobs = [];
+    memoImages("readonly", function (st) {
+      var c = st.openCursor();
+      c.onsuccess = function () { var cur = c.result; if (cur) { keys.push(cur.key); blobs.push(cur.value); cur.continue(); } };
+      return null;
+    }).then(function () {
+      return Promise.all(blobs.map(function (b) { return new Promise(function (resolve) { var r = new FileReader(); r.onload = function () { resolve(r.result); }; r.onerror = function () { resolve(null); }; r.readAsDataURL(b); }); }));
+    }).then(function (urls) {
+      var images = {};
+      keys.forEach(function (k, i) { if (urls[i]) images[k] = urls[i]; });
+      var d = new Date(), stamp = d.getFullYear() + ("0" + (d.getMonth() + 1)).slice(-2) + ("0" + d.getDate()).slice(-2);
+      var blob = new Blob([JSON.stringify({ app: "sk-toolbox", version: 1, exportedAt: d.toISOString(), storage: storage, images: images })], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "toolbox-backup-" + stamp + ".json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    });
+  }
+  function importAll(file) {
+    file.text().then(function (text) {
+      var d = JSON.parse(text);
+      if (!d || d.app !== "sk-toolbox" || !d.storage || typeof d.storage !== "object") throw new Error("not a backup");
+      return confirmDialog(t("バックアップを読み込みますか？"), t("いまの Toolbox のデータは、バックアップの内容に置きかわります。元に戻すことはできません。"), t("読み込む")).then(function (ok) {
+        if (!ok) return;
+        BACKUP_KEYS.forEach(function (k) {
+          try { if (typeof d.storage[k] === "string") localStorage.setItem(k, d.storage[k]); else localStorage.removeItem(k); } catch (e) { /* 容量がいっぱいなど */ }
+        });
+        var images = d.images && typeof d.images === "object" ? d.images : {};
+        var ids = Object.keys(images).filter(function (id) { return /^[a-z0-9]{6,40}$/.test(id) && /^data:image\//.test(images[id]); });
+        return Promise.all(ids.map(function (id) { return fetch(images[id]).then(function (r) { return r.blob(); }); })).then(function (blobs) {
+          return memoImages("readwrite", function (st) { st.clear(); ids.forEach(function (id, i) { st.put(blobs[i], id); }); return null; });
+        }).then(function () { location.reload(); });
+      });
+    }).catch(function () { alertSay(t("読み込めませんでした。Toolbox のバックアップのファイルを選んでください")); });
+  }
+  function alertSay(text) { confirmDialog(t("読み込めませんでした"), text, "OK"); }
 
   // ---- 画面の部品 ----
   function el(tag, cls, text) {
@@ -359,32 +464,61 @@
       btn.setAttribute("aria-label", t("{app} のデータを消去", { app: a.name }));
       row.appendChild(btn);
       updaters.push(function () {
-        var size = sizeOf(a.key);
+        var size = sizeOf(a.key) + (a.extra || []).reduce(function (s, k) { return s + sizeOf(k); }, 0);
         sub.textContent = a.what + " · " + sizeText(size);
         btn.disabled = !size;
+        if (a.idb) idbSize(a.idb).then(function (img) {
+          if (!img) return;
+          sub.textContent = a.what + " · " + sizeText(size + img);
+          btn.disabled = false;
+        });
       });
       btn.addEventListener("click", function () {
         confirmDialog(t("{app} のデータを消去しますか？", { app: a.name }),
           t("この端末に保存されている {app} の{what}を消去します。元に戻すことはできません。", { app: a.name, what: a.what }), t("消去"))
           .then(function (ok) {
             if (!ok) return;
-            try { localStorage.removeItem(a.key); } catch (e) { /* 消せないときはそのまま */ }
-            if (a.app === currentApp) { location.reload(); return; }
-            refreshUi();
+            clearApp(a).then(function () {
+              if (a.app === currentApp || currentApp === "home") { location.reload(); return; }
+              refreshUi();
+            });
           });
       });
       data.appendChild(row);
     });
+    // まとめてバックアップ（Clock・Calc・Memo（画像も）・Todo・Countdown・この設定）
+    var backupRow = el("div", "tbs-item tbs-item--backup");
+    backupRow.appendChild(label(t("まとめてバックアップ"), t("すべてのアプリのデータを 1 つのファイルに。ほかの端末に移すときにも使えます")));
+    var exportBtn = el("button", "m3-btn m3-btn--tonal m3-state");
+    exportBtn.type = "button";
+    exportBtn.append(icon("download"), el("span", "", t("書き出す")));
+    var importBtn = el("button", "text-btn m3-state");
+    importBtn.type = "button";
+    importBtn.append(icon("upload"), el("span", "", t("読み込む")));
+    var fileIn = el("input");
+    fileIn.type = "file";
+    fileIn.accept = "application/json,.json";
+    fileIn.hidden = true;
+    var btns = el("span", "tbs-backup__btns");
+    btns.append(exportBtn, importBtn, fileIn);
+    backupRow.appendChild(btns);
+    exportBtn.addEventListener("click", exportAll);
+    importBtn.addEventListener("click", function () { fileIn.click(); });
+    fileIn.addEventListener("change", function () {
+      var f = fileIn.files && fileIn.files[0];
+      fileIn.value = "";
+      if (f) importAll(f);
+    });
+    data.appendChild(backupRow);
     var allRow = el("div", "tbs-item tbs-item--end");
     var allBtn = el("button", "text-btn tbs-danger m3-state", t("Toolbox のデータをすべて消去"));
     allBtn.type = "button";
     allBtn.addEventListener("click", function () {
       confirmDialog(t("Toolbox のデータをすべて消去しますか？"),
-        t("Clock・Calc・Memo・Todo のデータと、この設定を消去します。元に戻すことはできません。"), t("すべて消去"))
+        t("Clock・Calc・Memo・Todo・Countdown のデータと、この設定を消去します。元に戻すことはできません。"), t("すべて消去"))
         .then(function (ok) {
           if (!ok) return;
-          APPS.concat([{ key: STORE }]).forEach(function (a) { try { localStorage.removeItem(a.key); } catch (e) { /* そのまま */ } });
-          location.reload();
+          Promise.all(APPS.concat([{ key: STORE }]).map(clearApp)).then(function () { location.reload(); });
         });
     });
     allRow.appendChild(allBtn);
@@ -473,6 +607,8 @@
     set: set,
     onChange: function (fn) { listeners.push(fn); fn(settings); },
     vibrate: vibrate,
+    // テーマカラーの一覧（SK's Brand の色。"app" は各アプリの色）。ホーム画面の「見た目」でも使う
+    colors: [{ key: "app", name: t("アプリの色"), note: t("Calc は青、Memo はオレンジ、Todo は緑") }].concat(COLORS),
     openSettings: openSettings,
     renderSettings: renderSettings
   };

@@ -7,16 +7,16 @@
   <script src="/assets/i18n.js"></script>
   <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
   <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
-  <title>SK's Toolbox | SK</title>
-  <meta name="description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。空の色が変わる時計「Clock」、電卓「Calc」、メモ帳「Memo」、ToDo リスト「Todo」。">
+  <title>SK's Toolbox</title>
+  <meta name="description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」。">
   <meta name="theme-color" content="#ffffff" data-theme-color>
   <link rel="canonical" href="https://sy9-k.github.io/toolbox/">
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SK">
   <meta property="og:locale" content="ja_JP">
-  <meta property="og:title" content="SK's Toolbox | SK">
-  <meta property="og:description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。空の色が変わる時計「Clock」、電卓「Calc」、メモ帳「Memo」、ToDo リスト「Todo」。">
+  <meta property="og:title" content="SK's Toolbox">
+  <meta property="og:description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」。">
   <meta property="og:url" content="https://sy9-k.github.io/toolbox/">
   <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
   <meta property="og:image:width" content="1200">
@@ -27,8 +27,15 @@
   <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap"></script>
   <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@300;400;500;700&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>
+  <link rel="stylesheet" href="/toolbox/shared/m3.css">
+  <link rel="stylesheet" href="/toolbox/home.css">
+  <script src="/toolbox/shared/settings.js" data-app="home" data-scope="site"></script>
+  <link rel="manifest" href="/toolbox/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SK's Toolbox">
 </head>
-<body>
+<body class="tb-home-page">
   <a class="skip" href="#main">本文へ移動</a>
   <header class="site-header">
     <a class="hd-logo" href="/" aria-label="ホーム">
@@ -46,153 +53,118 @@
   <div class="hd-backdrop" id="hd-backdrop"></div>
 
   <main id="main">
-    <section class="p-hero band band--plain">
-      <div class="wrap">
-        <span class="eyebrow">SK's Toolbox</span>
-        <h1>SK's Toolbox</h1>
-        <p class="lead">ひとつのことだけを、気持ちよく。毎日ちょっと使う、小さなアプリを集めた道具箱です。どれもブラウザですぐに開けて、ホーム画面に追加すればオフラインでも使えます。</p>
-        <div class="btn-row">
-          <a class="btn" href="/toolbox/settings/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Toolbox の設定</a>
+    <!-- SK's Toolbox のホーム画面（Bento グリッド。見た目は /toolbox/home.css、中身は /toolbox/home.js。クラスは tbh- で始める） -->
+    <div class="tbh">
+      <div class="tbh-top">
+        <div class="tbh-top__text">
+          <p class="tbh-top__brand"><img src="/toolbox/icon.svg" alt="" width="24" height="24"><span>SK's Toolbox</span></p>
+          <h1 class="tbh-greet" id="greet" data-i18n-skip>&nbsp;</h1>
         </div>
+        <button type="button" class="icon-btn m3-state" data-open-search aria-label="Toolbox を検索（Ctrl+K）" title="Toolbox を検索（Ctrl+K）"><span class="msr" aria-hidden="true">search</span></button>
+        <button type="button" class="icon-btn m3-state" id="home-edit" aria-pressed="false" aria-label="ホームを編集" title="ホームを編集"><span class="msr" aria-hidden="true">dashboard_customize</span></button>
+        <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
+        <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
       </div>
-    </section>
 
-    <section class="section" style="padding-top:0">
-      <div class="wrap tb-grid">
-        <article class="card tb-card">
-          <div class="tb-shot" aria-hidden="true">
-            <iframe src="/toolbox/clock/?embed" title="" tabindex="-1" loading="lazy"></iframe>
-          </div>
-          <div class="tb-body">
-            <div class="tb-head">
-              <img src="/toolbox/clock/icon.svg" alt="" width="44" height="44">
-              <div>
-                <h2>Clock</h2>
-                <span class="tb-kind">時計</span>
-              </div>
-            </div>
-            <p>時間帯に合わせて、空の色が移り変わる時計です。朝焼け・青空・夕焼け・星空。置いておくだけで、部屋の雰囲気が少し変わります。</p>
-            <ul class="tb-tags">
-              <li>24 時間・12 時間</li>
-              <li>3 つのテーマ</li>
-              <li>画面をつけたまま</li>
-              <li>全画面</li>
-            </ul>
-            <a class="tb-open" href="/toolbox/clock/">Clock を開く<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          </div>
-        </article>
-
-        <article class="card tb-card">
-          <div class="tb-shot" style="background:#f9f9ff" aria-hidden="true">
-            <iframe src="/toolbox/calc/?embed" title="" tabindex="-1" loading="lazy"></iframe>
-          </div>
-          <div class="tb-body">
-            <div class="tb-head">
-              <img src="/toolbox/calc/icon.svg" alt="" width="44" height="44">
-              <div>
-                <h2>Calc</h2>
-                <span class="tb-kind">電卓</span>
-              </div>
-            </div>
-            <p>Google のマテリアルデザインでつくった、押しやすい電卓です。かけ算・わり算の順番やかっこもそのまま計算。計算の履歴は、この端末に残ります。</p>
-            <ul class="tb-tags">
-              <li>かっこ・%</li>
-              <li>途中の答えを表示</li>
-              <li>計算の履歴</li>
-              <li>キーボード対応</li>
-            </ul>
-            <a class="tb-open" href="/toolbox/calc/">Calc を開く<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          </div>
-        </article>
-
-        <article class="card tb-card">
-          <div class="tb-shot" style="background:#faebe0" aria-hidden="true">
-            <iframe src="/toolbox/memo/?embed" title="" tabindex="-1" loading="lazy"></iframe>
-          </div>
-          <div class="tb-body">
-            <div class="tb-head">
-              <img src="/toolbox/memo/icon.svg" alt="" width="44" height="44">
-              <div>
-                <h2>Memo</h2>
-                <span class="tb-kind">メモ帳</span>
-              </div>
-            </div>
-            <p>思いついたことを、すぐに書きとめるメモ帳です。書いたそばから自動で保存。メモはこの端末のブラウザだけに保存され、どこにも送られません。</p>
-            <ul class="tb-tags">
-              <li>自動で保存</li>
-              <li>ピン留め・検索</li>
-              <li>テキストで保存</li>
-              <li>バックアップ</li>
-            </ul>
-            <a class="tb-open" href="/toolbox/memo/">Memo を開く<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          </div>
-        </article>
-
-        <article class="card tb-card">
-          <div class="tb-shot" style="background:#f9faef" aria-hidden="true">
-            <iframe src="/toolbox/todo/?embed" title="" tabindex="-1" loading="lazy"></iframe>
-          </div>
-          <div class="tb-body">
-            <div class="tb-head">
-              <img src="/toolbox/todo/icon.svg" alt="" width="44" height="44">
-              <div>
-                <h2>Todo</h2>
-                <span class="tb-kind">ToDo リスト</span>
-              </div>
-            </div>
-            <p>やることを書いて、終わったらチェック。大事なものには ★、期限が近いものから順に並びます。タスクはこの端末のブラウザだけに保存されます。</p>
-            <ul class="tb-tags">
-              <li>★ 重要</li>
-              <li>期限・今日・明日</li>
-              <li>進み具合</li>
-              <li>バックアップ</li>
-            </ul>
-            <a class="tb-open" href="/toolbox/todo/">Todo を開く<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          </div>
-        </article>
-
-        <div class="tb-card tb-card--soon">
-          <span class="tb-soon-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
-          <h2>次の道具を準備中</h2>
-          <p>Toolbox には、これから少しずつ道具が増えていきます。</p>
-        </div>
+      <!-- ホームの編集中: タイルの並べ替え・表示と非表示 -->
+      <div class="tbh-editbar" id="home-editbar" hidden>
+        <span class="msr" aria-hidden="true">dashboard_customize</span>
+        <span>タイルの順番と、表示するかどうかを選べます。</span>
+        <button type="button" class="text-btn m3-state" id="home-reset">元に戻す</button>
+        <button type="button" class="m3-btn m3-state" id="home-done">完了</button>
       </div>
-    </section>
 
-    <section class="section">
-      <div class="wrap">
-        <div class="about-teaser">
-          <img src="/assets/logo.svg" alt="" width="88" height="88">
-          <div>
-            <h2>アイデアも募集中</h2>
-            <p>「こんな道具があったら便利」というアイデアがあれば、気軽に送ってください。Toolbox に入るかもしれません。</p>
+      <div class="tbh-bento" id="bento">
+        <!-- 時計（Clock をそのまま。押すと Clock を開く） -->
+        <a class="tbh-tile tbh-tile--clock" data-tile="clock" href="/toolbox/clock/" aria-label="Clock を開く">
+          <span class="tbh-tile--clock__frame" aria-hidden="true"><iframe src="/toolbox/clock/?embed" title="" tabindex="-1"></iframe></span>
+          <span class="tbh-tile__badge"><img src="/toolbox/clock/icon.svg" alt="" width="20" height="20">Clock</span>
+        </a>
+
+        <!-- Todo（やること・その場で追加） -->
+        <section class="tbh-tile tbh-tile--todo" data-tile="todo" aria-labelledby="w-todo-title">
+          <a class="tbh-tile__head m3-state" href="/toolbox/todo/">
+            <img src="/toolbox/todo/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-todo-title">Todo</h2><span class="tbh-tile__meta" id="todo-meta" data-i18n-skip></span></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </a>
+          <div class="tbh-stats" id="todo-stats" data-i18n-skip></div>
+          <ul class="w-tasks" id="todo-list" data-i18n-skip></ul>
+          <p class="tbh-tile__empty" id="todo-empty" hidden data-i18n-skip></p>
+          <form class="tbh-add" id="todo-add" autocomplete="off">
+            <span class="msr" aria-hidden="true">add_task</span>
+            <input type="text" id="todo-add-text" placeholder="タスクを追加" aria-label="タスクを追加" maxlength="300" enterkeyhint="done">
+            <button type="submit" class="icon-btn m3-state" aria-label="追加" title="追加"><span class="msr" aria-hidden="true">arrow_upward</span></button>
+          </form>
+        </section>
+
+        <!-- Memo（最近のメモ） -->
+        <section class="tbh-tile tbh-tile--memo" data-tile="memo" aria-labelledby="w-memo-title">
+          <a class="tbh-tile__head m3-state" href="/toolbox/memo/">
+            <img src="/toolbox/memo/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-memo-title">Memo</h2><span class="tbh-tile__meta" id="memo-meta" data-i18n-skip></span></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </a>
+          <div class="w-notes" id="memo-list" data-i18n-skip></div>
+          <p class="tbh-tile__empty" id="memo-empty" hidden>メモはまだありません。</p>
+          <a class="m3-btn tbh-tile__action m3-state" href="/toolbox/memo/#new"><span class="msr" aria-hidden="true">edit_square</span><span>新しいメモ</span></a>
+        </section>
+
+        <!-- Countdown（近い日） -->
+        <section class="tbh-tile tbh-tile--countdown" data-tile="countdown" aria-labelledby="w-cd-title">
+          <a class="tbh-tile__head m3-state" href="/toolbox/countdown/">
+            <img src="/toolbox/countdown/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-cd-title">Countdown</h2><span class="tbh-tile__meta" id="cd-meta" data-i18n-skip></span></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </a>
+          <div class="w-cds" id="cd-list" data-i18n-skip></div>
+          <p class="tbh-tile__empty" id="cd-empty" hidden>楽しみな日を追加して、あと何日かを数えましょう。</p>
+          <a class="m3-btn tbh-tile__action m3-state" href="/toolbox/countdown/#new"><span class="msr" aria-hidden="true">add</span><span>日を追加</span></a>
+        </section>
+
+        <!-- Calc（最後の計算） -->
+        <a class="tbh-tile tbh-tile--calc m3-state" data-tile="calc" href="/toolbox/calc/" aria-labelledby="w-calc-title">
+          <span class="tbh-tile__head">
+            <img src="/toolbox/calc/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-calc-title">Calc</h2></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </span>
+          <span class="w-calc__expr" id="calc-expr" data-i18n-skip></span>
+          <span class="w-calc__res" id="calc-res" data-i18n-skip></span>
+        </a>
+
+        <!-- 見た目（テーマカラー・ライト／ダークをその場で） -->
+        <section class="tbh-tile tbh-tile--look" data-tile="look" aria-labelledby="w-look-title">
+          <div class="tbh-tile__head">
+            <span class="tbh-look__icon"><span class="msr" aria-hidden="true">palette</span></span>
+            <span class="tbh-tile__name"><h2 id="w-look-title">見た目</h2><span class="tbh-tile__meta" id="look-meta" data-i18n-skip></span></span>
+            <button type="button" class="icon-btn m3-state" id="look-theme" aria-label="ライト・ダークを切り替え" title="ライト・ダークを切り替え"><span class="msr" id="look-theme-icon" aria-hidden="true">brightness_auto</span></button>
           </div>
-          <a class="btn" href="/contact/">お問い合わせ<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        </div>
+          <div class="tbh-look__swatches" id="look-swatches" role="radiogroup" aria-label="テーマカラー" data-i18n-skip></div>
+          <button type="button" class="text-btn tbh-look__more m3-state" data-open-settings><span class="msr" aria-hidden="true">tune</span><span>すべての設定</span></button>
+        </section>
       </div>
-    </section>
+
+      <footer class="tbh-foot">
+        <ul class="tbh-tips">
+          <li><span class="msr" aria-hidden="true">search</span><span><kbd>Ctrl</kbd> + <kbd>K</kbd>（Mac は <kbd>⌘</kbd> + <kbd>K</kbd>）で、メモ・タスク・予定をまとめて検索</span></li>
+          <li><span class="msr" aria-hidden="true">dashboard_customize</span><span>右上の「ホームを編集」で、タイルの順番と表示を変えられます</span></li>
+          <li><span class="msr" aria-hidden="true">install_mobile</span><span>ホーム画面に追加すると、アプリのように開いてオフラインでも使えます</span></li>
+          <li><span class="msr" aria-hidden="true">shield</span><span>データはこの端末のブラウザにだけ保存され、どこにも送られません</span></li>
+        </ul>
+        <p class="tbh-note"><a href="/toolbox/settings/">Toolbox の設定</a> · <a href="/products/">SK のプロダクト</a> · <a href="/policies/">利用規約・プライバシーポリシー</a></p>
+      </footer>
+    </div>
+    <!-- リマインダー（Todo）の共通: データの形・完了・時刻の通知 -->
+    <script src="/toolbox/shared/m3.js"></script>
+    <script src="/toolbox/shared/remind.js"></script>
+    <script src="/toolbox/home.js"></script>
+    <!-- 横断検索（Ctrl+K） -->
+    <script src="/toolbox/shared/search.js"></script>
+    <!-- アクセスチェック・アクセス解析は、ページの最後でサイトと同じように読み込むので、ここでは読み込まない -->
+    <script src="/toolbox/shared/pwa.js" data-no-check></script>
   </main>
 
-  <footer class="site-footer">
-    <div class="wrap">
-      <div class="cols">
-        <div>
-          <a class="logo" href="/" aria-label="SK ホーム"><img src="/assets/logo.svg" alt="" width="36" height="36">SK</a>
-          <p class="about">毎日のネットを、もう少し安心で便利に。Y-FILTER. と MALU を開発しています。</p>
-        </div>
-        <div>
-          <h2>プロダクト</h2>
-          <ul><li><a href="/products/y-filter/">Y-FILTER.</a></li><li><a href="/products/malu/">MALU</a></li><li><a href="/products/nagi/">Nagi</a></li><li><a href="/sk-hub-systems/">SK Hub Systems</a></li><li><a href="/toolbox/">SK's Toolbox</a></li><li><a href="/lab/">SK's Lab</a></li></ul>
-        </div>
-        <div>
-          <h2>サポートと情報</h2>
-          <ul><li><a href="/support/">サポート記事</a></li><li><a href="/support/?type=news">お知らせ</a></li><li><a href="/contact/">お問い合わせ</a></li><li><a href="/status/">システム稼働状況</a></li><li><a href="/updates/">アップデート</a></li><li><a href="/policies/">利用規約・プライバシー</a></li><li data-analytics-settings hidden><a href="#analytics">アクセス解析の設定</a></li><li><a href="/brand/">SK's Brand</a></li><li><a href="/credits/">Link &amp; Credit</a></li><li><a href="/about/">私について</a></li><li><a href="https://github.com/sy9-k" target="_blank" rel="noopener">私のGitHub</a></li></ul>
-        </div>
-      </div>
-      <div class="wordmark" aria-hidden="true">SK</div>
-      <div class="legal"><span>© 2026 SK</span><span>サーバー基盤: SK Hub Systems</span></div>
-    </div>
-  </footer>
 
   <!-- ページを選んだ言語に訳す（ほかのスクリプトが動く前に。assets/i18n.js） -->
   <script>window.SKI18N && SKI18N.translatePage();</script>

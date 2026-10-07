@@ -1,5 +1,23 @@
-const CACHE_NAME = 'sk-clock-v10';
+// SK's Toolbox のホーム画面（/toolbox/）の Service Worker。スコープは /toolbox/ 全体
+// 各アプリは自分のフォルダに自分の sw.js を持つ（スコープがせまいほうが使われる）。まだ開いたことのないアプリは、ここで開ける
+const CACHE_NAME = 'sk-toolbox-v6';
 const ASSETS = [
+  // ホーム画面と、4 つのアプリ（ホーム画面から開いたことがなくても、オフラインで開けるように）
+  '/toolbox/',
+  '/toolbox/index.html',
+  '/toolbox/home.css',
+  '/toolbox/home.js',
+  '/toolbox/manifest.json',
+  '/toolbox/icon.svg',
+  '/toolbox/icon-192.png',
+  '/toolbox/icon-512.png',
+  '/toolbox/shared/pwa.js',
+  '/toolbox/shared/m3.css',
+  '/toolbox/shared/m3.js',
+  '/toolbox/shared/settings.js',
+  '/toolbox/shared/remind.js',
+  '/toolbox/shared/search.js',
+  '/toolbox/settings/',
   '/toolbox/clock/',
   '/toolbox/clock/index.html',
   '/toolbox/clock/clock.css',
@@ -8,18 +26,40 @@ const ASSETS = [
   '/toolbox/clock/manifest.json',
   '/toolbox/clock/icon.svg',
   '/toolbox/clock/icon-192.png',
-  '/toolbox/clock/icon-512.png',
-  '/toolbox/shared/pwa.js',
-  '/toolbox/shared/m3.css',
-  '/toolbox/shared/m3.js',
-  '/toolbox/shared/settings.js',
-  '/toolbox/shared/remind.js',
-  '/toolbox/shared/search.js',
-  // 設定の画面で出す、ほかのアプリのアイコン
-  '/toolbox/countdown/icon.svg',
+  '/toolbox/calc/',
+  '/toolbox/calc/index.html',
+  '/toolbox/calc/calc.css',
+  '/toolbox/calc/calc.js',
+  '/toolbox/calc/manifest.json',
   '/toolbox/calc/icon.svg',
+  '/toolbox/calc/icon-192.png',
+  '/toolbox/memo/',
+  '/toolbox/memo/index.html',
+  '/toolbox/memo/memo.css',
+  '/toolbox/memo/memo.js',
+  '/toolbox/memo/manifest.json',
   '/toolbox/memo/icon.svg',
+  '/toolbox/memo/icon-192.png',
+  '/toolbox/todo/',
+  '/toolbox/todo/index.html',
+  '/toolbox/todo/todo.css',
+  '/toolbox/todo/todo.js',
+  '/toolbox/countdown/',
+  '/toolbox/countdown/index.html',
+  '/toolbox/countdown/countdown.css',
+  '/toolbox/countdown/countdown.js',
+  '/toolbox/countdown/manifest.json',
+  '/toolbox/countdown/icon.svg',
+  '/toolbox/countdown/icon-192.png',
+  '/toolbox/todo/manifest.json',
   '/toolbox/todo/icon.svg',
+  '/toolbox/todo/icon-192.png',
+  // ホーム画面はサイトのページ（上にサイト共通のヘッダー）
+  '/assets/header.css',
+  '/assets/site.css',
+  '/assets/site.js',
+  '/assets/logo.svg',
+  '/assets/favicon.svg',
   // 多言語（オフラインでも選んだ言語で表示できるように）
   '/assets/i18n.js',
   '/assets/i18n/en.js',
@@ -40,7 +80,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => Promise.all(keys.map((key) => {
-      if (key.startsWith('sk-clock-') && key !== CACHE_NAME) return caches.delete(key);
+      if (key.startsWith('sk-toolbox-') && key !== CACHE_NAME) return caches.delete(key);
     })))
   );
   self.clients.claim();

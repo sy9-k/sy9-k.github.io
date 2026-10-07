@@ -2,10 +2,12 @@
 //   ・sw.js（アプリのフォルダにある）を登録して、オフラインでも開けるようにする
 //   ・ホーム画面に追加できるとき（beforeinstallprompt）、[data-install] のボタンを出す
 //   ・SK Hub Systems のアクセスチェックと、アクセス解析（許可した人だけ）を読み込む。ほかのページと同じ
-//   ・?embed（/toolbox/ の見本の iframe）のときは何もしない
+//   ・?embed（ホーム画面の時計など、iframe の見本）のときは何もしない
+//   ・<script ... data-no-check> … アクセスチェックとアクセス解析は読み込まない（サイトのページの最後で読み込むとき。/toolbox/）
 // アプリのデータは SK Hub Systems には送らず、それぞれのアプリが localStorage に保存する
 (function () {
   "use strict";
+  var script = document.currentScript;
   if (/[?&]embed\b/.test(location.search)) return;
 
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
@@ -27,6 +29,7 @@
     deferred.userChoice.then(function () { deferred = null; show(false); });
   });
 
+  if (script && script.hasAttribute("data-no-check")) return;
   ["/frameworks/check.js", "/assets/analytics.js"].forEach(function (src) {
     var s = document.createElement("script");
     s.src = src;

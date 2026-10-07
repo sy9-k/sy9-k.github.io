@@ -23,7 +23,7 @@ home_body, tail = rest.split("  </main>\n", 1)
 pages = [
     ("sk-hub-systems.html", "sk-hub-systems/index.html", "SK Hub Systems | SK", "Y-FILTER. の遠隔管理・ブロックリストの配信・アクセスチェックを支える、SK が運営するサーバー基盤「SK Hub Systems」。", True, True),
     ("updates.html", "updates/index.html", "アップデート | SK", "SK のサイトとプロダクト（Y-FILTER.・SK Hub Systems・SK's Lab）のアップデート情報。", True, True),
-    ("toolbox.html", "toolbox/index.html", "SK's Toolbox | SK", "毎日ちょっと使う、小さなアプリを集めた SK の道具箱。空の色が変わる時計「Clock」、電卓「Calc」、メモ帳「Memo」、ToDo リスト「Todo」。", False, True),
+    ("toolbox.html", "toolbox/index.html", "SK's Toolbox", "毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」。", False, True),
     ("lab.html", "lab/index.html", "SK's Lab | SK", "SK の実験的なツールを置いている場所。QR Drop やスマートダッシュボードなど。", False, True),
     ("status.html", "status/index.html", "システム稼働状況 | SK", "SK のサイトとプロダクト（SK Hub Systems・Y-FILTER.・MALU）のシステム稼働状況。", True, True),
     ("credits.html", "credits/index.html", "Link & Credit | SK", "SK のサイトとプロダクトで使わせてもらっているもの（RedCheck など）と、つながりのあるサイト。", True, True),
@@ -43,6 +43,8 @@ pages = [
     ("studio.html", "studio/index.html", "記事エディター | SK", "サポートのお知らせと記事を書くページ（開発者用）。", True, False),
     ("404.html", "404.html", "ページが見つかりません | SK", "お探しのページは見つかりませんでした。", True, False),
 ]
+# フッターを出さないページ（SK's Toolbox のホーム画面。下にドックがある）
+NO_FOOTER = {"toolbox.html"}
 # 訳さないページ（開発者だけが使う）
 NOT_TRANSLATED = {"inbox.html", "studio.html"}
 
@@ -69,6 +71,17 @@ EXTRA = {
         '  <script src="/brand/brand.js" defer></script>\n',
         None,
     ),
+    # SK's Toolbox のホーム画面（マテリアルデザイン。共通の設定・PWA。/toolbox/home.css・home.js）
+    "toolbox.html": (
+        '  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@300;400;500;700&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>\n'
+        '  <link rel="stylesheet" href="/toolbox/shared/m3.css">\n'
+        '  <link rel="stylesheet" href="/toolbox/home.css">\n'
+        '  <script src="/toolbox/shared/settings.js" data-app="home" data-scope="site"></script>\n'
+        '  <link rel="manifest" href="/toolbox/manifest.json">\n'
+        '  <meta name="apple-mobile-web-app-capable" content="yes">\n'
+        '  <meta name="apple-mobile-web-app-title" content="SK\'s Toolbox">\n',
+        "tb-home-page",
+    ),
     "credits.html": ('  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap"></script>\n', None),
     "y-filter.html": (
         '  <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@900&display=swap"></script>\n'
@@ -83,17 +96,23 @@ RUNTIME_SOURCES = [
     "contact/contact.js", "status/status.js", "frameworks/check.js",
     "dictionary/script.js", "dictionary/account.js", "assets/hub/sync-loader.js", "assets/analytics.js", "assets/nf-secret.js", "assets/terminal.js",
     "nagi/app.js", "nagi/account.js", "brand/brand.js", "assets/hub/account-button.js",
-    "toolbox/clock/clock.js", "toolbox/calc/calc.js", "toolbox/memo/memo.js", "toolbox/todo/todo.js", "toolbox/shared/settings.js",
+    "toolbox/clock/clock.js", "toolbox/calc/calc.js", "toolbox/memo/memo.js", "toolbox/todo/todo.js", "toolbox/countdown/countdown.js", "toolbox/clock/clock-tools.js", "toolbox/shared/settings.js", "toolbox/shared/m3.js", "toolbox/shared/remind.js", "toolbox/home.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
 STANDALONE_PAGES = [
     "usercheck/blocked.html", "usercheck/terms_not_accepted.html",
     "dictionary/index.html", "dictionary/offline.html",
     "nagi/index.html",
-    "toolbox/clock/index.html", "toolbox/calc/index.html", "toolbox/memo/index.html", "toolbox/todo/index.html", "toolbox/settings/index.html",
+    "toolbox/clock/index.html", "toolbox/calc/index.html", "toolbox/memo/index.html", "toolbox/todo/index.html", "toolbox/countdown/index.html", "toolbox/settings/index.html",
 ]
 # 英語だけに訳すページ（SK's Lab のツール。<html data-i18n-langs="ja en">）。ページの文とスクリプトの t("…") の両方を探す
 EN_ONLY_PAGES = ["qr-prj/index.html", "smart-dash/index.html"]
+
+
+def write(path, text):
+    # 改行は LF で書く（Path.write_text の newline= は Python 3.10 からなので、3.9 でも動くように open で）
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
 
 
 def page_url(dst):
@@ -126,6 +145,9 @@ def assemble(body, dst, title, desc, no_redirect, indexable, src=None):
     if no_redirect:
         # ブロック中・同意撤回中の人も読めるように、リダイレクトしないモードで読み込む
         t = t.replace('/frameworks/check.js"', '/frameworks/check.js?check=none"')
+    if src in NO_FOOTER:
+        # 下にアプリのドックがあるページ: フッターは出さない
+        t = re.sub(r'  <footer class="site-footer">[\s\S]*?</footer>\n', "", t, count=1)
     if src in NOT_TRANSLATED:
         # 開発者用のページは訳さない
         t = t.replace("<script>window.SKI18N && SKI18N.translatePage();</script>", "")
@@ -141,7 +163,7 @@ for src, dst, title, desc, no_redirect, indexable in pages:
     text = assemble(body, dst, title, desc, no_redirect, indexable, src)
     out = REPO / dst
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(text, encoding="utf-8", newline="\n")
+    write(out, text)
     if indexable:
         sitemap.append(page_url(dst))
     if src not in NOT_TRANSLATED:
@@ -181,7 +203,7 @@ for code, tr in translators.items():
 for code, tr in translators.items():
     js = ("// build が作るファイル（_build/i18n/%s.json から）。直接編集しない\nwindow.SK_I18N_DICT = %s;\n"
           % (code, json.dumps(dict(sorted(tr.table.items())), ensure_ascii=False, separators=(",", ":"))))
-    (REPO / "assets" / "i18n" / f"{code}.js").write_text(js, encoding="utf-8", newline="\n")
+    write(REPO / "assets" / "i18n" / f"{code}.js", js)
 
 # 訳がない文の一覧
 missing_dir = I18N / "missing"
@@ -189,16 +211,16 @@ missing_dir.mkdir(parents=True, exist_ok=True)
 for code, tr in translators.items():
     path = missing_dir / f"{code}.json"
     if tr.missing:
-        path.write_text(json.dumps({k: "" for k in sorted(tr.missing)}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+        write(path, json.dumps({k: "" for k in sorted(tr.missing)}, ensure_ascii=False, indent=2) + "\n")
         print(f"missing {code}: {len(tr.missing)}")
     elif path.exists():
         path.unlink()
 
 # サイトマップ（このスクリプトで作るページ ＋ 別に作っているアプリ）
-sitemap += [ORIGIN + "/dictionary/", ORIGIN + "/nagi/", ORIGIN + "/y-filter/", ORIGIN + "/qr-prj/", ORIGIN + "/smart-dash/", ORIGIN + "/toolbox/clock/", ORIGIN + "/toolbox/calc/", ORIGIN + "/toolbox/memo/", ORIGIN + "/toolbox/todo/"]
+sitemap += [ORIGIN + "/dictionary/", ORIGIN + "/nagi/", ORIGIN + "/y-filter/", ORIGIN + "/qr-prj/", ORIGIN + "/smart-dash/", ORIGIN + "/toolbox/clock/", ORIGIN + "/toolbox/calc/", ORIGIN + "/toolbox/memo/", ORIGIN + "/toolbox/todo/", ORIGIN + "/toolbox/countdown/"]
 today = datetime.date.today().isoformat()
 xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
 xml += [f"  <url><loc>{u}</loc><lastmod>{today}</lastmod></url>" for u in sitemap]
 xml.append("</urlset>")
-(REPO / "sitemap.xml").write_text("\n".join(xml) + "\n", encoding="utf-8", newline="\n")
+write(REPO / "sitemap.xml", "\n".join(xml) + "\n")
 print("wrote sitemap.xml", len(sitemap), "urls")

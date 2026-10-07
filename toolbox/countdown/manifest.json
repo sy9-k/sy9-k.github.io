@@ -1,0 +1,41 @@
+{
+  "id": "/toolbox/countdown/",
+  "name": "Countdown — SK's Toolbox",
+  "short_name": "Countdown",
+  "description": "誕生日・テスト・旅行など、大事な日まであと何日かを数えるアプリ。この端末に保存されます。",
+  "start_url": "/toolbox/countdown/",
+  "scope": "/toolbox/countdown/",
+  "display": "standalone",
+  "background_color": "#fef7ff",
+  "theme_color": "#fef7ff",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": [
+    "lifestyle",
+    "utilities"
+  ]
+}

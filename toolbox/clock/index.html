@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="description" content="時間帯に合わせて空の色が移り変わる、シンプルな時計。">
+<meta name="description" content="時間帯に合わせて空の色が移り変わる時計。世界時計・アラーム・タイマー・ストップウォッチつき。">
 <meta name="theme-color" content="#1f2463" id="theme-color">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,6 +17,8 @@
 <link rel="stylesheet" href="clock.css">
 <!-- SK's Toolbox の共通の設定。Clock では「動きを減らす」と設定の画面だけ使う（テーマ・テーマカラーは Clock のもの） -->
 <script src="/toolbox/shared/settings.js" data-app="clock" data-scope="clock"></script>
+<!-- マテリアルデザインの部品（波紋・ダイアログ・動き） -->
+<script src="/toolbox/shared/m3.js"></script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -29,23 +31,109 @@
     <div class="sky__grain"></div>
   </div>
 
+  <!-- 夜モード（夜のあいだ画面を暗くする） -->
+  <div class="night-dim" aria-hidden="true"></div>
+
   <a class="tb-back m3-state brand" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
 
-  <main class="clock" id="clock">
+  <!-- 機能の切りかえ（clock-tools.js） -->
+  <nav class="modes" id="modes" role="tablist" aria-label="時計の機能">
+    <button type="button" class="modes__btn m3-state" role="tab" data-mode="clock" aria-selected="true"><span class="msr" aria-hidden="true">schedule</span><span class="modes__label">時計</span></button>
+    <button type="button" class="modes__btn m3-state" role="tab" data-mode="world" aria-selected="false"><span class="msr" aria-hidden="true">public</span><span class="modes__label">世界時計</span></button>
+    <button type="button" class="modes__btn m3-state" role="tab" data-mode="alarm" aria-selected="false"><span class="msr" aria-hidden="true">alarm</span><span class="modes__label">アラーム</span></button>
+    <button type="button" class="modes__btn m3-state" role="tab" data-mode="timer" aria-selected="false"><span class="msr" aria-hidden="true">hourglass_top</span><span class="modes__label">タイマー</span></button>
+    <button type="button" class="modes__btn m3-state" role="tab" data-mode="stopwatch" aria-selected="false"><span class="msr" aria-hidden="true">timer</span><span class="modes__label">ストップウォッチ</span></button>
+  </nav>
+
+  <main class="clock" id="clock" data-panel="clock">
     <p class="clock__date" id="date">&nbsp;</p>
     <div class="clock__time" role="timer" aria-live="off" id="time">
       <span class="clock__hm" id="hm"></span><span class="clock__sec" id="sec"></span><span class="clock__ampm" id="ampm"></span>
     </div>
     <div class="clock__bar" aria-hidden="true"><i id="bar"></i></div>
     <p class="clock__part" id="part">&nbsp;</p>
+    <p class="clock__next" id="next-alarm" hidden data-i18n-skip></p>
   </main>
+
+  <!-- 世界時計 -->
+  <section class="panel" data-panel="world" hidden aria-labelledby="world-title">
+    <div class="panel__card">
+      <header class="panel__head"><h2 id="world-title">世界時計</h2><button type="button" class="pbtn pbtn--tonal m3-state" id="world-add"><span class="msr" aria-hidden="true">add</span><span>都市を追加</span></button></header>
+      <ul class="zones" id="zones" data-i18n-skip></ul>
+      <p class="panel__empty" id="zones-empty" hidden>都市を追加すると、その街の時刻を並べて見られます。</p>
+    </div>
+  </section>
+
+  <!-- アラーム -->
+  <section class="panel" data-panel="alarm" hidden aria-labelledby="alarm-title">
+    <div class="panel__card">
+      <header class="panel__head"><h2 id="alarm-title">アラーム</h2><button type="button" class="pbtn pbtn--tonal m3-state" id="alarm-add"><span class="msr" aria-hidden="true">add</span><span>アラームを追加</span></button></header>
+      <ul class="alarms" id="alarms" data-i18n-skip></ul>
+      <p class="panel__empty" id="alarms-empty" hidden>アラームはまだありません。</p>
+      <p class="panel__note">アラームは、Clock を開いているときに音で鳴ります。ほかの Toolbox のページでは通知でお知らせします（通知を許可したとき）。Toolbox をすべて閉じていると鳴りません。</p>
+    </div>
+  </section>
+
+  <!-- タイマー -->
+  <section class="panel" data-panel="timer" hidden aria-labelledby="timer-title">
+    <div class="panel__card panel__card--center">
+      <h2 class="panel__title" id="timer-title">タイマー</h2>
+      <div id="timer-setup">
+        <div class="tset" role="group" aria-label="時間">
+          <label class="tset__field"><input type="number" id="tm-h" min="0" max="23" value="0" inputmode="numeric" aria-label="時間"><span>時間</span></label>
+          <span class="tset__colon">:</span>
+          <label class="tset__field"><input type="number" id="tm-m" min="0" max="59" value="5" inputmode="numeric" aria-label="分"><span>分</span></label>
+          <span class="tset__colon">:</span>
+          <label class="tset__field"><input type="number" id="tm-s" min="0" max="59" value="0" inputmode="numeric" aria-label="秒"><span>秒</span></label>
+        </div>
+        <div class="presets" id="presets" data-i18n-skip></div>
+        <button type="button" class="pbtn pbtn--big m3-state" id="timer-start"><span class="msr" aria-hidden="true">play_arrow</span><span>スタート</span></button>
+      </div>
+      <div id="timer-run" hidden>
+        <div class="tring">
+          <svg viewBox="0 0 200 200" aria-hidden="true"><circle class="tring__track" cx="100" cy="100" r="90"/><circle class="tring__bar" id="tring-bar" cx="100" cy="100" r="90"/></svg>
+          <div class="tring__text"><span class="tring__left" id="tm-left" data-i18n-skip>0:00</span><span class="tring__end" id="tm-end" data-i18n-skip></span></div>
+        </div>
+        <div class="pbtns">
+          <button type="button" class="pbtn pbtn--tonal m3-state" id="timer-cancel"><span>キャンセル</span></button>
+          <button type="button" class="pbtn pbtn--tonal m3-state" id="timer-plus"><span>+1 分</span></button>
+          <button type="button" class="pbtn m3-state" id="timer-pause"><span class="msr" aria-hidden="true" id="timer-pause-icon">pause</span><span id="timer-pause-label" data-i18n-skip></span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ストップウォッチ -->
+  <section class="panel" data-panel="stopwatch" hidden aria-labelledby="sw-title">
+    <div class="panel__card panel__card--center">
+      <h2 class="panel__title" id="sw-title">ストップウォッチ</h2>
+      <div class="sw__time" id="sw-time" role="timer" data-i18n-skip>00:00.00</div>
+      <div class="pbtns">
+        <button type="button" class="pbtn pbtn--tonal m3-state" id="sw-lap"><span id="sw-lap-label" data-i18n-skip></span></button>
+        <button type="button" class="pbtn m3-state" id="sw-start"><span class="msr" aria-hidden="true" id="sw-start-icon">play_arrow</span><span id="sw-start-label" data-i18n-skip></span></button>
+      </div>
+      <ol class="laps" id="sw-laps" data-i18n-skip></ol>
+    </div>
+  </section>
+
+  <!-- 鳴っているとき -->
+  <div class="ring" id="ring" role="alertdialog" aria-modal="true" aria-labelledby="ring-title" hidden>
+    <span class="msr ring__icon" id="ring-icon" aria-hidden="true">alarm</span>
+    <p class="ring__time" id="ring-time" data-i18n-skip></p>
+    <h2 class="ring__title" id="ring-title" data-i18n-skip></h2>
+    <div class="pbtns">
+      <button type="button" class="pbtn pbtn--tonal m3-state" id="ring-snooze"><span class="msr" aria-hidden="true">snooze</span><span>スヌーズ（5 分）</span></button>
+      <button type="button" class="pbtn pbtn--big m3-state" id="ring-stop"><span class="msr" aria-hidden="true">stop</span><span>止める</span></button>
+    </div>
+  </div>
 
   <!-- 下のツールバー（マテリアルデザインのフローティングツールバー） -->
   <nav class="dock" id="dock" aria-label="時計の設定">
     <button type="button" class="icon-btn m3-state dock__text" id="btn-24h" aria-pressed="true" title="24 時間表示"><span id="fmt-label">24h</span></button>
-    <button type="button" class="icon-btn m3-state" id="btn-sec" aria-pressed="true" aria-label="秒を表示" title="秒を表示"><span class="msr" aria-hidden="true">timer</span></button>
+    <button type="button" class="icon-btn m3-state" id="btn-sec" aria-pressed="true" aria-label="秒を表示" title="秒を表示"><span class="msr" aria-hidden="true">pace</span></button>
     <button type="button" class="icon-btn m3-state" id="btn-theme" aria-label="テーマを切り替え" title="テーマを切り替え"><span class="msr" aria-hidden="true">palette</span></button>
     <span class="dock__sep" aria-hidden="true"></span>
+    <button type="button" class="icon-btn m3-state" id="btn-night" aria-pressed="false" aria-label="夜モード（夜は画面を暗くする）" title="夜モード（夜は画面を暗くする）"><span class="msr" aria-hidden="true">bedtime</span></button>
     <button type="button" class="icon-btn m3-state" id="btn-wake" aria-pressed="false" aria-label="画面をつけたままにする" title="画面をつけたままにする"><span class="msr" aria-hidden="true">lightbulb</span></button>
     <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
     <button type="button" class="icon-btn m3-state" id="btn-full" aria-label="全画面" title="全画面"><span class="msr" id="full-icon" aria-hidden="true">fullscreen</span></button>
@@ -54,8 +142,13 @@
 
   <p class="toast" id="toast" role="status" aria-live="polite"></p>
 
+  <!-- リマインダー（Todo）の時刻の通知。Clock を開いておけば、時刻にお知らせが届く -->
+  <script src="/toolbox/shared/remind.js"></script>
   <script src="clock.js"></script>
+  <!-- 世界時計・アラーム・タイマー・ストップウォッチ -->
+  <script src="clock-tools.js"></script>
   <script>window.SKI18N && SKI18N.translatePage();</script>
-  <script src="/toolbox/shared/m3.js"></script>
+  <!-- 横断検索（Ctrl+K） -->
+  <script src="/toolbox/shared/search.js"></script>
   <script src="/toolbox/shared/pwa.js"></script>
 </body>

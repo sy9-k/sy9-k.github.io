@@ -1,7 +1,9 @@
 // Clock（SK's Toolbox）
 //   ・時刻と日付を表示する。数字は 1 文字ずつ枠（.slot）に入れて、変わった文字だけ入れ替える
 //   ・テーマ「空」では、時刻から空の色（--sky-top など）と太陽・月の位置（--orb-x / --orb-y）を計算する
-//   ・設定（24 時間表示・秒・テーマ）は localStorage の sk_clock に保存する
+//   ・設定（24 時間表示・秒・テーマ・夜モード）は localStorage の sk_clock に保存する
+//   ・夜モード: 22 時〜6 時は画面を暗くする（body.is-night-dim）
+//   ・世界時計・アラーム・タイマー・ストップウォッチは clock-tools.js
 //   ・?embed のときは /toolbox/ の見本として表示だけする（ボタン・保存なし）
 (function () {
   "use strict";
@@ -17,7 +19,7 @@
   var STORE = "sk_clock";
   var THEMES = ["sky", "night", "paper"];
   var THEME_NAMES = { sky: t("空のテーマ"), night: t("夜のテーマ"), paper: t("紙のテーマ") };
-  var settings = { h24: true, sec: true, theme: "sky" };
+  var settings = { h24: true, sec: true, theme: "sky", night: false };
   try { Object.assign(settings, JSON.parse(localStorage.getItem(STORE) || "{}")); } catch (e) { /* 初期値のまま */ }
   if (THEMES.indexOf(settings.theme) < 0) settings.theme = "sky";
   if (embed) { settings = { h24: true, sec: true, theme: "sky" }; root.classList.add("is-embed"); }
@@ -130,7 +132,8 @@
       partEl.textContent = partOfDay(h);
       var top = settings.theme === "sky" ? paintSky(now) : null;
       if (themeColor) themeColor.content = top || (settings.theme === "paper" ? "#f4f1ea" : "#000000");
-      document.title = hh + ":" + pad(m) + (settings.h24 ? "" : " " + ampm.textContent) + " · Clock";
+      if (!document.body.dataset.mode || document.body.dataset.mode === "clock") document.title = hh + ":" + pad(m) + (settings.h24 ? "" : " " + ampm.textContent) + " · Clock";
+      document.body.classList.toggle("is-night-dim", !!settings.night && (h >= 22 || h < 6));
     }
   }
 
@@ -156,6 +159,7 @@
     b24.setAttribute("aria-pressed", String(settings.h24));
     $("fmt-label").textContent = settings.h24 ? "24h" : "12h";
     $("btn-sec").setAttribute("aria-pressed", String(settings.sec));
+    $("btn-night").setAttribute("aria-pressed", String(!!settings.night));
     lastMinute = -1;
     render();
   }
@@ -172,6 +176,11 @@
   // ---- ボタン ----
   function toggle24() { settings.h24 = !settings.h24; save(); applySettings(); say(settings.h24 ? t("24 時間表示") : t("12 時間表示")); }
   function toggleSec() { settings.sec = !settings.sec; save(); applySettings(); say(settings.sec ? t("秒を表示") : t("秒を隠す")); }
+  function toggleNight() {
+    settings.night = !settings.night;
+    save(); applySettings();
+    say(settings.night ? t("夜モード: 22 時〜6 時は画面を暗くします") : t("夜モードをオフにしました"));
+  }
   function nextTheme() {
     settings.theme = THEMES[(THEMES.indexOf(settings.theme) + 1) % THEMES.length];
     save(); applySettings(); say(THEME_NAMES[settings.theme]);
@@ -230,6 +239,9 @@
     document.body.classList.remove("is-idle");
     clearTimeout(idleTimer);
     idleTimer = setTimeout(function () {
+      // 隠すのは「時計」の画面だけ（タイマーなどは操作するので出したまま）
+      var mode = document.body.dataset.mode;
+      if (mode && mode !== "clock") return;
       if (dock.matches(":hover") || dock.contains(document.activeElement)) { wake(); return; }
       document.body.classList.add("is-idle");
     }, 3000);
@@ -246,9 +258,11 @@
   $("btn-theme").addEventListener("click", nextTheme);
   $("btn-wake").addEventListener("click", toggleWake);
   $("btn-full").addEventListener("click", toggleFull);
+  $("btn-night").addEventListener("click", toggleNight);
   ["mousemove", "pointerdown", "keydown", "focusin"].forEach(function (ev) { document.addEventListener(ev, wake, { passive: true }); });
   document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest("button, a, input") || document.body.classList.contains("tbs-open")) return;
+    if (document.body.dataset.mode && document.body.dataset.mode !== "clock") return;
     var k = e.key.toLowerCase();
     if (k === "f") toggleFull();
     else if (k === "s") toggleSec();
@@ -256,5 +270,7 @@
     else if (k === "t") nextTheme();
   });
   wake();
+  // clock-tools.js から使う
+  window.SKClock = { say: say, settings: function () { return settings; }, wake: wake };
   // オフライン・ホーム画面への追加・アクセスチェックは /toolbox/shared/pwa.js
 })();

@@ -135,6 +135,19 @@ button { font: inherit; color: inherit; }
 .key--op { background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: clamp(28px, 4.4dvh, 36px); }
 .key--eq { background: var(--md-primary); color: var(--md-on-primary); font-size: clamp(28px, 4.4dvh, 36px); }
 
+/* 関数電卓のキー（body.is-sci のときだけ） */
+.sci-keys { display: none; grid-template-columns: repeat(5, 1fr); gap: clamp(6px, 1dvh, 10px); margin-bottom: clamp(8px, 1.4dvh, 12px); }
+.is-sci .sci-keys { display: grid; }
+.key--sci { height: clamp(36px, 5.6dvh, 48px); font-size: clamp(15px, 2.2dvh, 18px); background: var(--md-surface-container-high); color: var(--md-on-surface-variant); }
+.key--angle { font-size: 13px; font-weight: 500; letter-spacing: .04em; background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+.is-sci .keys .key { height: clamp(46px, 7.6dvh, 70px); }
+.is-sci .display { min-height: 96px; }
+/* 履歴のコピー */
+.h-item { display: flex; align-items: center; gap: 2px; }
+.h-item > button:first-child { flex: 1; min-width: 0; }
+.history__list .h-copy { display: grid; place-items: center; width: 40px; height: 40px; flex: none; padding: 0; border-radius: 50%; }
+.h-copy .msr { font-size: 18px; }
+
 /* ---- 履歴 ---- */
 .history {
   display: flex; flex-direction: column;

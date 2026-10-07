@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-memo-v5';
+const CACHE_NAME = 'sk-memo-v9';
 const ASSETS = [
   '/toolbox/memo/',
   '/toolbox/memo/index.html',
@@ -12,7 +12,10 @@ const ASSETS = [
   '/toolbox/shared/m3.css',
   '/toolbox/shared/m3.js',
   '/toolbox/shared/settings.js',
+  '/toolbox/shared/remind.js',
+  '/toolbox/shared/search.js',
   // 設定の画面で出す、ほかのアプリのアイコン
+  '/toolbox/countdown/icon.svg',
   '/toolbox/clock/icon.svg',
   '/toolbox/calc/icon.svg',
   '/toolbox/todo/icon.svg',
@@ -76,5 +79,19 @@ self.addEventListener('fetch', (e) => {
       }
       return response;
     }))
+  );
+});
+
+// リマインダー（Todo）の通知を押したら、Todo を開く（開いていれば前に出す）
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || '/toolbox/todo/';
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if (new URL(c.url).pathname.startsWith('/toolbox/todo/') && 'focus' in c) return c.focus();
+      }
+      return self.clients.openWindow(url);
+    })
   );
 });

@@ -1,14 +1,13 @@
-const CACHE_NAME = 'sk-clock-v10';
+const CACHE_NAME = 'sk-countdown-v2';
 const ASSETS = [
-  '/toolbox/clock/',
-  '/toolbox/clock/index.html',
-  '/toolbox/clock/clock.css',
-  '/toolbox/clock/clock.js',
-  '/toolbox/clock/clock-tools.js',
-  '/toolbox/clock/manifest.json',
-  '/toolbox/clock/icon.svg',
-  '/toolbox/clock/icon-192.png',
-  '/toolbox/clock/icon-512.png',
+  '/toolbox/countdown/',
+  '/toolbox/countdown/index.html',
+  '/toolbox/countdown/countdown.css',
+  '/toolbox/countdown/countdown.js',
+  '/toolbox/countdown/manifest.json',
+  '/toolbox/countdown/icon.svg',
+  '/toolbox/countdown/icon-192.png',
+  '/toolbox/countdown/icon-512.png',
   '/toolbox/shared/pwa.js',
   '/toolbox/shared/m3.css',
   '/toolbox/shared/m3.js',
@@ -16,7 +15,7 @@ const ASSETS = [
   '/toolbox/shared/remind.js',
   '/toolbox/shared/search.js',
   // 設定の画面で出す、ほかのアプリのアイコン
-  '/toolbox/countdown/icon.svg',
+  '/toolbox/clock/icon.svg',
   '/toolbox/calc/icon.svg',
   '/toolbox/memo/icon.svg',
   '/toolbox/todo/icon.svg',
@@ -40,7 +39,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => Promise.all(keys.map((key) => {
-      if (key.startsWith('sk-clock-') && key !== CACHE_NAME) return caches.delete(key);
+      if (key.startsWith('sk-countdown-') && key !== CACHE_NAME) return caches.delete(key);
     })))
   );
   self.clients.claim();
