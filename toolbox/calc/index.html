@@ -17,6 +17,8 @@
 <link rel="stylesheet" href="calc.css">
 <!-- SK's Toolbox の共通の設定（テーマ・テーマカラー・動きを減らす…）。設定の画面もここ -->
 <script src="/toolbox/shared/settings.js" data-app="calc"></script>
+<!-- マテリアルデザインの部品（波紋・ダイアログ・動き） -->
+<script src="/toolbox/shared/m3.js"></script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -29,6 +31,7 @@
         <a class="tb-back m3-state" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
         <span class="app-bar__space"></span>
         <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
+        <button type="button" class="icon-btn m3-state" id="btn-sci" aria-pressed="false" aria-label="関数電卓" title="関数電卓"><span class="msr" aria-hidden="true">function</span></button>
         <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
         <button type="button" class="icon-btn m3-state history-toggle" id="btn-history" aria-controls="history" aria-expanded="false" aria-label="計算の履歴" title="計算の履歴"><span class="msr" aria-hidden="true">history</span></button>
       </header>
@@ -40,6 +43,24 @@
         </div>
       </section>
 
+      <!-- 関数電卓のキー（上の「関数電卓」ボタンで出す） -->
+      <div class="sci-keys" id="sci-keys" role="group" aria-label="関数">
+        <button type="button" class="key key--sci key--angle m3-state" data-k="angle" data-i18n-skip>DEG</button>
+        <button type="button" class="key key--sci m3-state" data-k="fn:sin" data-i18n-skip>sin</button>
+        <button type="button" class="key key--sci m3-state" data-k="fn:cos" data-i18n-skip>cos</button>
+        <button type="button" class="key key--sci m3-state" data-k="fn:tan" data-i18n-skip>tan</button>
+        <button type="button" class="key key--sci m3-state" data-k="π" aria-label="円周率">π</button>
+        <button type="button" class="key key--sci m3-state" data-k="fn:ln" data-i18n-skip>ln</button>
+        <button type="button" class="key key--sci m3-state" data-k="fn:log" data-i18n-skip>log</button>
+        <button type="button" class="key key--sci m3-state" data-k="fn:√" aria-label="平方根">√</button>
+        <button type="button" class="key key--sci m3-state" data-k="x2" aria-label="2 乗">x²</button>
+        <button type="button" class="key key--sci m3-state" data-k="^" aria-label="累乗">xʸ</button>
+        <button type="button" class="key key--sci m3-state" data-k="e" aria-label="ネイピア数">e</button>
+        <button type="button" class="key key--sci m3-state" data-k="!" aria-label="階乗">x!</button>
+        <button type="button" class="key key--sci m3-state" data-k="inv" aria-label="逆数">1/x</button>
+        <button type="button" class="key key--sci m3-state" data-k="(" aria-label="開きかっこ">(</button>
+        <button type="button" class="key key--sci m3-state" data-k=")" aria-label="閉じかっこ">)</button>
+      </div>
       <div class="keys" id="keys" role="group" aria-label="キー">
         <button type="button" class="key m3-state key--clear" data-k="clear" aria-label="すべて消去">AC</button>
         <button type="button" class="key m3-state key--fn" data-k="paren" aria-label="かっこ">( )</button>
@@ -87,6 +108,7 @@
 
   <script src="calc.js"></script>
   <script>window.SKI18N && SKI18N.translatePage();</script>
-  <script src="/toolbox/shared/m3.js"></script>
+  <!-- 横断検索（Ctrl+K） -->
+  <script src="/toolbox/shared/search.js"></script>
   <script src="/toolbox/shared/pwa.js"></script>
 </body>

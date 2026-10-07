@@ -201,6 +201,23 @@ body.tbs-open { overflow: hidden; }
 .tbs-dialog__title { margin: 16px 0; font-size: 24px; font-weight: 400; line-height: 32px; }
 .tbs-dialog__text { margin: 0; text-align: left; font-size: 14px; line-height: 20px; color: var(--md-on-surface-variant); }
 .tbs-dialog__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+/* M3 のダイアログ（/toolbox/shared/m3.js の M3.prompt・choose・confirm） */
+.m3-dialog { text-align: left; max-height: calc(100dvh - 48px); display: flex; flex-direction: column; }
+.m3-dialog > .msr { align-self: center; color: var(--md-on-surface-variant); }
+.m3-dialog .tbs-dialog__title { text-align: center; }
+.m3-dialog .tbs-dialog__actions { flex: none; }
+.m3-field { display: flex; flex-direction: column; gap: 4px; padding: 8px 16px 6px; border-radius: 4px 4px 0 0; background: var(--md-surface-container-highest); box-shadow: inset 0 -1px 0 var(--md-on-surface-variant); }
+.m3-field:focus-within { box-shadow: inset 0 -2px 0 var(--md-primary); }
+.m3-field__label { font-size: 12px; color: var(--md-on-surface-variant); }
+.m3-field:focus-within .m3-field__label { color: var(--md-primary); }
+.m3-field__input, .m3-field textarea, .m3-field select { width: 100%; min-height: 28px; border: 0; outline: 0; padding: 0; background: none; color: var(--md-on-surface); font: inherit; font-size: 16px; }
+.m3-field textarea { resize: vertical; min-height: 64px; line-height: 1.6; }
+.m3-choice { display: flex; flex-direction: column; margin: 0 -24px; overflow-y: auto; }
+.m3-choice__item { display: flex; align-items: center; gap: 16px; min-height: 56px; padding: 0 24px; border: 0; background: none; cursor: pointer; text-align: left; font-size: 16px; color: var(--md-on-surface); }
+.m3-choice__item > span:not(.msr) { flex: 1; }
+.m3-choice__check { visibility: hidden; color: var(--md-primary); }
+.m3-choice__item[aria-checked="true"] .m3-choice__check { visibility: visible; }
+.m3-choice__item[aria-checked="true"] { color: var(--md-primary); font-weight: 500; }
 @keyframes tbs-fade { from { opacity: 0; } }
 @keyframes tbs-rise { from { opacity: 0; transform: translateY(24px); } }
 
@@ -214,10 +231,71 @@ body.tbs-open { overflow: hidden; }
   .tbs-account { margin-left: 16px; margin-right: 16px; }
 }
 
+/* ---- 横断検索（/toolbox/shared/search.js。Ctrl+K）---- */
+.sks-overlay { position: fixed; z-index: 70; inset: 0; display: flex; justify-content: center; align-items: flex-start; padding: max(10vh, 24px) 16px 16px; background: rgba(0, 0, 0, .32); animation: tbs-fade .15s linear; }
+.sks-panel {
+  width: min(640px, 100%); max-height: min(70vh, 640px); display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 28px; background: var(--md-surface-container-high, #ececf4); color: var(--md-on-surface, #1b1b21);
+  font-family: var(--md-font, system-ui, sans-serif);
+  box-shadow: 0 8px 12px 6px rgba(0, 0, 0, .15), 0 4px 4px rgba(0, 0, 0, .3);
+  animation: sks-in .28s cubic-bezier(.2, 0, 0, 1);
+}
+@keyframes sks-in { from { opacity: 0; transform: translateY(-12px) scale(.98); } }
+.sks-bar { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 0 16px 0 20px; border-bottom: 1px solid var(--md-outline-variant, #c7c5d0); }
+.sks-bar input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; color: inherit; font: inherit; font-size: 17px; }
+.sks-bar .msr { color: var(--md-on-surface-variant, #46464f); }
+.sks-kbd { padding: 2px 8px; border-radius: 6px; border: 1px solid var(--md-outline-variant, #c7c5d0); color: var(--md-on-surface-variant, #46464f); font: 500 11px/1.6 system-ui, sans-serif; }
+.sks-list { overflow-y: auto; padding: 8px; }
+.sks-group { margin: 10px 12px 4px; font-size: 12px; font-weight: 500; letter-spacing: .04em; color: var(--md-primary, #415f91); }
+.sks-hint { margin: 20px 16px; text-align: center; font-size: 14px; color: var(--md-on-surface-variant, #46464f); }
+.sks-item { display: flex; align-items: center; gap: 14px; width: 100%; padding: 10px 12px; border: 0; border-radius: 16px; background: none; color: inherit; text-align: left; text-decoration: none; cursor: pointer; font: inherit; }
+.sks-item img { width: 32px; height: 32px; flex: none; border-radius: 9px; }
+.sks-item__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sks-item__title { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sks-item__sub { font-size: 12px; color: var(--md-on-surface-variant, #46464f); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sks-item__sub:empty { display: none; }
+.sks-item > .msr { font-size: 18px; color: var(--md-on-surface-variant, #46464f); opacity: 0; }
+.sks-item[aria-selected="true"] { background: var(--md-secondary-container, #dde1f9); color: var(--md-on-secondary-container, #141b2c); }
+.sks-item[aria-selected="true"] > .msr { opacity: 1; }
+.sks-item.is-done .sks-item__title { text-decoration: line-through; opacity: .7; }
+
+/* ---- 動き（MALU・Nagi と同じ雰囲気。/toolbox/shared/m3.js の M3.enter・stagger と組み合わせる）---- */
+:root { --m3-decel: cubic-bezier(.05, .7, .1, 1); --m3-accel: cubic-bezier(.3, 0, .8, .15); --m3-spring: cubic-bezier(.34, 1.4, .64, 1); }
+.m3-enter { animation: m3-view-in .42s var(--m3-decel) both; }
+.m3-stagger > * { animation: m3-fade-up .5s var(--m3-decel) both; animation-delay: calc(min(var(--i, 0), 14) * 35ms); }
+@keyframes m3-view-in { from { opacity: 0; transform: translateY(14px); } }
+@keyframes m3-fade-up { from { opacity: 0; transform: translateY(10px); } }
+@keyframes m3-pop { 0% { transform: scale(.94); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+/* 選んだものが軽く弾む（作り直さないボタンだけ） */
+.tbs-seg__btn[aria-checked="true"], .modes__btn[aria-selected="true"], .fmt__btn[aria-pressed="true"], .tbs-swatch[aria-checked="true"], .day[aria-pressed="true"], .chip[aria-pressed="true"] { animation: m3-pop .32s var(--m3-spring); }
+/* 押したときに少し縮む */
+.m3-btn, .fab, .text-btn, .icon-btn { transition: transform .18s var(--m3-spring), background-color .2s linear, color .2s linear, border-radius .3s cubic-bezier(.2, 0, 0, 1); }
+.m3-btn:active, .fab:active { transform: scale(.95); }
+.icon-btn:active { transform: scale(.9); }
+/* ページの移動をなめらかに（同じサイトの中。対応しているブラウザだけ） */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: m3-vt-out .2s var(--m3-accel) both; }
+::view-transition-new(root) { animation: m3-vt-in .42s var(--m3-decel) both; }
+@keyframes m3-vt-out { to { opacity: 0; transform: translateY(-6px) scale(.995); } }
+@keyframes m3-vt-in { from { opacity: 0; transform: translateY(12px) scale(.995); } }
+/* まとめてバックアップ（設定の画面） */
+.tbs-item--backup { flex-wrap: wrap; }
+.tbs-backup__btns { display: flex; align-items: center; gap: 8px; }
+.tbs-backup__btns .msr { font-size: 18px; }
+.tbs-backup__btns .text-btn .msr { margin-right: 4px; }
+/* 設定の画面: 中を少しずつ登場 */
+.tbs-panel .tbs-section { animation: m3-fade-up .45s var(--m3-decel) both; }
+.tbs-panel .tbs-section:nth-child(2) { animation-delay: .04s; }
+.tbs-panel .tbs-section:nth-child(3) { animation-delay: .08s; }
+.tbs-panel .tbs-section:nth-child(4) { animation-delay: .12s; }
+.tbs-panel .tbs-section:nth-child(5) { animation-delay: .16s; }
+
 /* 動きを減らす（設定、または端末の設定） */
 :root[data-motion="reduce"] *, :root[data-motion="reduce"] *::before, :root[data-motion="reduce"] *::after {
   animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important;
 }
 @media (prefers-reduced-motion: reduce) {
   .ripple { animation-duration: 1ms; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
+:root[data-motion="reduce"]::view-transition-old(root), :root[data-motion="reduce"]::view-transition-new(root) { animation: none; }

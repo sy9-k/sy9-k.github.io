@@ -200,6 +200,155 @@ body.tbs-open .dock, body.tbs-open .brand { visibility: hidden; }
 
 body.is-idle .dock { opacity: 0; transform: translateY(12px); pointer-events: none; }
 body.is-idle .brand { opacity: 0; pointer-events: none; }
+body.is-idle .modes { opacity: 0; transform: translate(-50%, -12px); pointer-events: none; }
+
+/* ---- 機能の切りかえ（時計・世界時計・アラーム・タイマー・ストップウォッチ） ---- */
+.modes {
+  position: fixed; z-index: 3; left: 50%; top: max(14px, env(safe-area-inset-top)); transform: translateX(-50%);
+  display: flex; gap: 2px; padding: 4px; border-radius: 28px;
+  background: var(--md-surface-container); color: var(--md-on-surface-variant);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .3), 0 4px 8px 3px rgba(0, 0, 0, .15);
+  font-family: var(--font);
+  transition: opacity .6s ease, transform .6s cubic-bezier(.2, 0, 0, 1);
+}
+.modes__btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border: 0; border-radius: 20px;
+  background: none; cursor: pointer; font-size: 13px; font-weight: 500; white-space: nowrap;
+}
+.modes__btn .msr { font-size: 20px; }
+.modes__btn[aria-selected="true"] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+.modes__btn[aria-selected="true"] .msr { font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24; }
+.modes__btn:focus-visible { outline: 3px solid var(--md-primary); outline-offset: 1px; }
+/* 時計の画面では、上の帯が重ならないように「戻る」を下げない（左上）。せまい画面では文字を隠す */
+@media (max-width: 760px) {
+  .modes__label { display: none; }
+  .modes__btn { padding: 0 12px; }
+  .modes__btn[aria-selected="true"] .modes__label { display: inline; }
+}
+/* 上のタブと重ならないように、せまいときは「戻る」を矢印だけに */
+@media (max-width: 900px) {
+  .brand > span:last-child { display: none; }
+  .brand { padding-right: 10px; }
+}
+@media (max-width: 400px) { .modes__btn[aria-selected="true"] .modes__label { display: none; } }
+
+/* 次のアラーム（時計の画面） */
+.clock__next { display: inline-flex; align-items: center; gap: 4px; margin: 10px 0 0; padding: 4px 12px; border-radius: 999px; background: var(--glass); border: 1px solid var(--glass-line); color: var(--ink-soft); font-size: 13px; }
+.clock__next .msr { font-size: 16px; }
+
+/* ---- パネル（すりガラスのカード） ---- */
+.panel {
+  position: relative; z-index: 1; height: 100%; overflow-y: auto;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: calc(max(14px, env(safe-area-inset-top)) + 72px) 16px calc(max(24px, env(safe-area-inset-bottom)) + 96px);
+  font-family: var(--font); color: var(--ink);
+}
+.panel__card {
+  width: min(560px, 100%); padding: 20px; border-radius: 32px;
+  background: color-mix(in srgb, var(--glass) 80%, rgba(8, 10, 30, .25)); border: 1px solid var(--glass-line);
+  backdrop-filter: blur(24px) saturate(1.3); -webkit-backdrop-filter: blur(24px) saturate(1.3);
+}
+:root[data-theme="paper"] .panel__card { background: rgba(255, 255, 255, .62); }
+.panel__card--center { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.panel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.panel__head h2, .panel__title { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: .02em; }
+.panel__title { margin-bottom: 18px; }
+.panel__empty { margin: 24px 8px; color: var(--ink-soft); font-size: 14px; text-align: center; }
+.panel__note { margin: 16px 4px 0; color: var(--ink-soft); font-size: 12px; line-height: 1.7; }
+
+/* パネルのボタン */
+.pbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 20px; border: 0; border-radius: 22px; cursor: pointer;
+  background: var(--glass-on); color: var(--glass-on-ink);
+  font: 500 15px/1 var(--font); letter-spacing: .02em; white-space: nowrap;
+}
+.pbtn .msr { font-size: 20px; }
+.pbtn--tonal { background: var(--glass); color: var(--ink); border: 1px solid var(--glass-line); }
+.pbtn--big { height: 56px; padding: 0 32px; border-radius: 28px; font-size: 17px; }
+.pbtn:disabled { opacity: .4; cursor: default; }
+.pbtns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 20px; }
+
+/* 世界時計 */
+.zones { list-style: none; margin: 0; padding: 0; }
+.zone { display: flex; align-items: center; gap: 12px; padding: 12px 4px; border-top: 1px solid var(--glass-line); }
+.zone:first-child { border-top: 0; }
+.zone__sun { font-size: 22px; color: var(--ink-soft); font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24; }
+.zone__info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.zone__rel { font-size: 12px; color: var(--ink-soft); }
+.zone__name { font-size: 18px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zone__time { font-family: var(--num); font-size: 36px; font-weight: 300; letter-spacing: -.01em; }
+.zone__del { color: var(--ink-soft); width: 40px; height: 40px; }
+
+/* アラーム */
+.alarms { list-style: none; margin: 0; padding: 0; }
+.alarm { display: flex; align-items: center; gap: 12px; padding: 4px 4px 4px 0; border-top: 1px solid var(--glass-line); }
+.alarm:first-child { border-top: 0; }
+.alarm__main { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border: 0; border-radius: 18px; background: none; color: inherit; text-align: left; cursor: pointer; }
+.alarm__time { font-family: var(--num); font-size: 42px; font-weight: 300; line-height: 1.1; }
+.alarm__sub { font-size: 13px; color: var(--ink-soft); }
+.alarm__next { font-size: 12px; color: var(--ink-soft); opacity: .8; }
+.alarm.is-off .alarm__time, .alarm.is-off .alarm__sub { opacity: .45; }
+.alarm-dialog .alarm-edit { display: flex; flex-direction: column; gap: 16px; }
+.alarm-edit__time { align-self: center; height: 64px; padding: 0 16px; border: 0; border-radius: 16px; background: var(--md-surface-container-highest); color: var(--md-on-surface); font: 300 40px/1 var(--num, inherit); }
+.alarm-edit__days { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
+.day { width: 40px; height: 40px; border: 1px solid var(--md-outline-variant); border-radius: 50%; background: none; color: var(--md-on-surface); cursor: pointer; font-size: 13px; }
+.day[aria-pressed="true"] { border-color: transparent; background: var(--md-primary); color: var(--md-on-primary); }
+.alarm-edit__hint { margin: -4px 0 0; text-align: center; font-size: 13px; color: var(--md-on-surface-variant); }
+/* ダイアログ（M3）の色: Clock のパネルとは別に、共通の設定の画面と同じ */
+.tbs-dialog-scrim .m3-field { background: var(--md-surface-container-highest); }
+
+/* タイマー */
+.tset { display: flex; align-items: flex-end; justify-content: center; gap: 6px; }
+.tset__field { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; color: var(--ink-soft); }
+.tset__field input {
+  width: 92px; height: 84px; border: 1px solid var(--glass-line); border-radius: 20px; background: var(--glass); color: var(--ink);
+  text-align: center; font: 300 48px/1 var(--num); -moz-appearance: textfield;
+}
+.tset__field input::-webkit-inner-spin-button, .tset__field input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.tset__field input:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
+.tset__colon { padding-bottom: 38px; font: 300 40px/1 var(--num); color: var(--ink-soft); }
+.presets { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 20px 0 24px; }
+.chip { height: 34px; padding: 0 14px; border: 1px solid var(--glass-line); border-radius: 17px; background: var(--glass); color: var(--ink); cursor: pointer; font: 500 13px/1 var(--font); }
+.tring { position: relative; width: min(280px, 70vw); aspect-ratio: 1; }
+.tring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.tring__track { fill: none; stroke: var(--ink-faint); stroke-width: 6; }
+.tring__bar { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset .3s linear; }
+.tring__text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+.tring__left { font: 200 clamp(48px, 13vw, 68px)/1 var(--num); letter-spacing: -.01em; }
+.tring__end { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: var(--ink-soft); }
+.tring__end .msr { font-size: 16px; }
+.tring__end.is-paused { opacity: .5; }
+
+/* ストップウォッチ */
+.sw__time { font: 200 clamp(56px, 15vw, 96px)/1 var(--num); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.laps { list-style: none; width: 100%; margin: 20px 0 0; padding: 0; max-height: 40vh; overflow-y: auto; text-align: left; }
+.lap { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; padding: 10px 8px; border-top: 1px solid var(--glass-line); font-size: 15px; font-variant-numeric: tabular-nums; }
+.lap__no { color: var(--ink-soft); }
+.lap__total { color: var(--ink-soft); min-width: 92px; text-align: right; }
+.lap.is-best .lap__split { color: #7ee2a8; }
+.lap.is-worst .lap__split { color: #ff9e9e; }
+:root[data-theme="paper"] .lap.is-best .lap__split { color: #15803d; }
+:root[data-theme="paper"] .lap.is-worst .lap__split { color: #b91c1c; }
+
+/* ---- 鳴っているとき ---- */
+.ring {
+  position: fixed; z-index: 30; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  padding: 24px; text-align: center; color: #fff; font-family: var(--font);
+  background: radial-gradient(circle at 50% 38%, rgba(110, 120, 255, .45), rgba(8, 10, 30, .92) 70%);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.ring__icon { font-size: 72px; animation: ring-shake 1.2s ease-in-out infinite; font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48; }
+@keyframes ring-shake { 0%, 50%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(-14deg); } 20%, 40% { transform: rotate(14deg); } }
+.ring__time { margin: 8px 0 0; font: 200 clamp(56px, 16vw, 120px)/1 var(--num); }
+.ring__title { margin: 0; font-size: 22px; font-weight: 500; }
+.ring .pbtn { background: #fff; color: #1a1d3a; }
+.ring .pbtn--tonal { background: rgba(255, 255, 255, .16); color: #fff; border-color: rgba(255, 255, 255, .3); }
+
+/* ---- 夜モード（22 時〜6 時は画面を暗くする） ---- */
+.night-dim { position: fixed; z-index: 25; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity 2s ease; }
+body.is-night-dim .night-dim { opacity: .55; }
+body.is-night-dim.is-ringing .night-dim { opacity: 0; }
 
 .toast {
   position: fixed; z-index: 3; left: 50%; top: max(20px, env(safe-area-inset-top));
@@ -214,7 +363,7 @@ body.is-idle .brand { opacity: 0; pointer-events: none; }
 .toast.is-on { opacity: 1; transform: none; }
 
 /* 一覧ページの見本（/toolbox/ の iframe。?embed） */
-.is-embed .brand, .is-embed .dock, .is-embed .toast { display: none !important; }
+.is-embed .brand, .is-embed .dock, .is-embed .toast, .is-embed .modes, .is-embed .clock__next { display: none !important; }
 
 @media (max-width: 480px) {
   .clock__sec { margin-left: .15em; }
