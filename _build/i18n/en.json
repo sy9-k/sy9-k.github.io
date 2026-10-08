@@ -2174,5 +2174,18 @@
   "更新しています…": "Updating…",
   "最新の版に更新": "Update to the latest version",
   "SK's Toolbox のホーム": "SK's Toolbox home",
-  "アプリの切りかえ": "Switch apps"
+  "アプリの切りかえ": "Switch apps",
+  "「朝」「昼」「夜」などの文字": "Labels such as \"Morning\", \"Afternoon\", and \"Night\"",
+  "ゆらぎ": "Flow",
+  "オーロラ": "Aurora",
+  "大きさを元に戻す": "Reset sizes",
+  "日付の大きさ": "Date size",
+  "日付を表示": "Show date",
+  "時計の大きさ": "Clock size",
+  "時間帯を表示": "Show time of day",
+  "森": "Forest",
+  "海": "Ocean",
+  "紙": "Paper",
+  "背景: {name}": "Background: {name}",
+  "表示（背景・大きさ）": "Display (background, size)"
 }

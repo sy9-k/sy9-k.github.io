@@ -1,7 +1,10 @@
 // Clock（SK's Toolbox）
 //   ・時刻と日付を表示する。数字は 1 文字ずつ枠（.slot）に入れて、変わった文字だけ入れ替える
 //   ・テーマ「空」では、時刻から空の色（--sky-top など）と太陽・月の位置（--orb-x / --orb-y）を計算する
-//   ・設定（24 時間表示・秒・テーマ・夜モード）は localStorage の sk_clock に保存する
+//   ・設定は localStorage の sk_clock に保存する
+//       { h24, sec, theme, night, date: 日付を出すか, part: 時間帯（朝・昼…）を出すか, timeSize: 時計の大きさ（%）, dateSize: 日付の大きさ（%）}
+//   ・テーマ（背景）: 空（時刻で変わる）・オーロラ・海・さくら・森・ゆらぎ・夜・紙。見た目は clock.css（<html data-theme>）
+//   ・「表示」のパネル（下のツールバーのパレット）で、背景・大きさ・日付と時間帯を出すかを変えられる
 //   ・夜モード: 22 時〜6 時は画面を暗くする（body.is-night-dim）
 //   ・世界時計・アラーム・タイマー・ストップウォッチは clock-tools.js
 //   ・?embed のときは /toolbox/ の見本として表示だけする（ボタン・保存なし）
@@ -17,12 +20,30 @@
 
   // ---- 設定 ----
   var STORE = "sk_clock";
-  var THEMES = ["sky", "night", "paper"];
-  var THEME_NAMES = { sky: t("空のテーマ"), night: t("夜のテーマ"), paper: t("紙のテーマ") };
-  var settings = { h24: true, sec: true, theme: "sky", night: false };
+  // [key, 名前, 見本の色（パネルのボタン）]
+  var THEME_LIST = [
+    ["sky", t("空"), "linear-gradient(180deg, #2a66c8, #5592df 55%, #f2bd8c)"],
+    ["aurora", t("オーロラ"), "radial-gradient(120% 80% at 30% 20%, #3ddc97 0%, transparent 55%), radial-gradient(90% 70% at 80% 30%, #8a5cff 0%, transparent 60%), #06101f"],
+    ["ocean", t("海"), "linear-gradient(180deg, #0a6aa1, #053d6b 55%, #021a33)"],
+    ["sakura", t("さくら"), "linear-gradient(180deg, #fff3f6, #ffdce6 55%, #ffc6d6)"],
+    ["forest", t("森"), "linear-gradient(180deg, #2c5a33, #12351f 55%, #0b1f14)"],
+    ["mesh", t("ゆらぎ"), "radial-gradient(80% 80% at 20% 30%, #ff6fb1 0%, transparent 60%), radial-gradient(80% 80% at 80% 70%, #4f8dff 0%, transparent 60%), radial-gradient(70% 70% at 70% 20%, #ffb35c 0%, transparent 60%), #1a1238"],
+    ["night", t("夜"), "#000"],
+    ["paper", t("紙"), "linear-gradient(180deg, #f4f1ea, #e9e3d6)"]
+  ];
+  var THEMES = THEME_LIST.map(function (x) { return x[0]; });
+  function themeName(key) { for (var i = 0; i < THEME_LIST.length; i++) if (THEME_LIST[i][0] === key) return THEME_LIST[i][1]; return key; }
+  var SIZE = { timeSize: [60, 140], dateSize: [60, 200] };
+  var settings = { h24: true, sec: true, theme: "sky", night: false, date: true, part: true, timeSize: 100, dateSize: 100 };
   try { Object.assign(settings, JSON.parse(localStorage.getItem(STORE) || "{}")); } catch (e) { /* 初期値のまま */ }
   if (THEMES.indexOf(settings.theme) < 0) settings.theme = "sky";
-  if (embed) { settings = { h24: true, sec: true, theme: "sky" }; root.classList.add("is-embed"); }
+  Object.keys(SIZE).forEach(function (k) {
+    var v = Math.round(Number(settings[k]));
+    settings[k] = isFinite(v) ? Math.max(SIZE[k][0], Math.min(SIZE[k][1], v)) : 100;
+  });
+  settings.date = settings.date !== false;
+  settings.part = settings.part !== false;
+  if (embed) { settings = { h24: true, sec: true, theme: "sky", date: true, part: true, timeSize: 100, dateSize: 100 }; root.classList.add("is-embed"); }
   function save() {
     if (embed) return;
     try { localStorage.setItem(STORE, JSON.stringify(settings)); } catch (e) { /* 保存できなくても動く */ }
@@ -130,8 +151,8 @@
       lastMinute = minute;
       dateEl.textContent = dateFmt.format(now);
       partEl.textContent = partOfDay(h);
-      var top = settings.theme === "sky" ? paintSky(now) : null;
-      if (themeColor) themeColor.content = top || (settings.theme === "paper" ? "#f4f1ea" : "#000000");
+      var top = settings.theme === "sky" ? paintSky(now) : getComputedStyle(root).getPropertyValue("--sky-top").trim();
+      if (themeColor) themeColor.content = top || "#000000";
       if (!document.body.dataset.mode || document.body.dataset.mode === "clock") document.title = hh + ":" + pad(m) + (settings.h24 ? "" : " " + ampm.textContent) + " · Clock";
       document.body.classList.toggle("is-night-dim", !!settings.night && (h >= 22 || h < 6));
     }
@@ -155,6 +176,10 @@
     root.setAttribute("data-theme", settings.theme);
     if (settings.theme !== "sky") clearSky();
     document.body.classList.toggle("is-nosec", !settings.sec);
+    document.body.classList.toggle("is-nodate", !settings.date);
+    document.body.classList.toggle("is-nopart", !settings.part);
+    root.style.setProperty("--time-scale", String(settings.timeSize / 100));
+    root.style.setProperty("--date-scale", String(settings.dateSize / 100));
     var b24 = $("btn-24h");
     b24.setAttribute("aria-pressed", String(settings.h24));
     $("fmt-label").textContent = settings.h24 ? "24h" : "12h";
@@ -181,9 +206,69 @@
     save(); applySettings();
     say(settings.night ? t("夜モード: 22 時〜6 時は画面を暗くします") : t("夜モードをオフにしました"));
   }
+  function setTheme(key) {
+    settings.theme = key;
+    save(); applySettings(); renderLook();
+  }
   function nextTheme() {
-    settings.theme = THEMES[(THEMES.indexOf(settings.theme) + 1) % THEMES.length];
-    save(); applySettings(); say(THEME_NAMES[settings.theme]);
+    setTheme(THEMES[(THEMES.indexOf(settings.theme) + 1) % THEMES.length]);
+    say(t("背景: {name}").replace("{name}", themeName(settings.theme)));
+  }
+
+  // ---- 表示のパネル（背景・大きさ・日付と時間帯）----
+  var look = $("look"), lookBtn = $("btn-theme");
+  var lookThemes = $("look-themes"), lookTime = $("look-time"), lookDate = $("look-date");
+  var lookTimeOut = $("look-time-out"), lookDateOut = $("look-date-out");
+  var lookShowDate = $("look-show-date"), lookShowPart = $("look-show-part");
+  var themeButtons = THEME_LIST.map(function (th) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "look__theme m3-state";
+    b.setAttribute("role", "radio");
+    var sw = document.createElement("span");
+    sw.className = "look__swatch";
+    sw.style.background = th[2];
+    var name = document.createElement("span");
+    name.className = "look__theme-name";
+    name.textContent = th[1];
+    b.append(sw, name);
+    b.addEventListener("click", function () { setTheme(th[0]); });
+    lookThemes.appendChild(b);
+    return b;
+  });
+  function renderLook() {
+    THEME_LIST.forEach(function (th, i) {
+      var on = th[0] === settings.theme;
+      themeButtons[i].setAttribute("aria-checked", String(on));
+      themeButtons[i].tabIndex = on ? 0 : -1;
+    });
+    lookTime.value = settings.timeSize;
+    lookDate.value = settings.dateSize;
+    lookTimeOut.textContent = settings.timeSize + "%";
+    lookDateOut.textContent = settings.dateSize + "%";
+    lookShowDate.checked = settings.date;
+    lookShowPart.checked = settings.part;
+  }
+  function openLook() {
+    renderLook();
+    look.hidden = false;
+    lookBtn.setAttribute("aria-expanded", "true");
+    var cur = lookThemes.querySelector('[aria-checked="true"]');
+    if (cur) cur.focus();
+  }
+  function closeLook(focusBack) {
+    if (look.hidden) return;
+    look.hidden = true;
+    lookBtn.setAttribute("aria-expanded", "false");
+    if (focusBack) lookBtn.focus();
+  }
+  function onRange(input, key) {
+    input.addEventListener("input", function () {
+      settings[key] = Number(input.value);
+      applySettings();
+      renderLook();
+    });
+    input.addEventListener("change", save);
   }
 
   // 画面をつけたままにする（Screen Wake Lock。タブを離れると外れるので、戻ったら取り直す）
@@ -242,7 +327,7 @@
       // 隠すのは「時計」の画面だけ（タイマーなどは操作するので出したまま）
       var mode = document.body.dataset.mode;
       if (mode && mode !== "clock") return;
-      if (dock.matches(":hover") || dock.contains(document.activeElement)) { wake(); return; }
+      if (dock.matches(":hover") || dock.contains(document.activeElement) || !look.hidden) { wake(); return; }
       document.body.classList.add("is-idle");
     }, 3000);
   }
@@ -255,7 +340,6 @@
 
   $("btn-24h").addEventListener("click", toggle24);
   $("btn-sec").addEventListener("click", toggleSec);
-  $("btn-theme").addEventListener("click", nextTheme);
   $("btn-wake").addEventListener("click", toggleWake);
   $("btn-full").addEventListener("click", toggleFull);
   $("btn-night").addEventListener("click", toggleNight);
@@ -268,6 +352,28 @@
     else if (k === "s") toggleSec();
     else if (k === "h") toggle24();
     else if (k === "t") nextTheme();
+  });
+
+  // 表示のパネル
+  lookBtn.addEventListener("click", function () { if (look.hidden) openLook(); else closeLook(false); });
+  $("look-close").addEventListener("click", function () { closeLook(true); });
+  onRange(lookTime, "timeSize");
+  onRange(lookDate, "dateSize");
+  lookShowDate.addEventListener("change", function () { settings.date = lookShowDate.checked; save(); applySettings(); });
+  lookShowPart.addEventListener("change", function () { settings.part = lookShowPart.checked; save(); applySettings(); });
+  $("look-reset").addEventListener("click", function () { settings.timeSize = 100; settings.dateSize = 100; save(); applySettings(); renderLook(); });
+  // 背景のボタンは矢印キーでも選べる（ラジオボタンと同じ）
+  lookThemes.addEventListener("keydown", function (e) {
+    var d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    var i = (THEMES.indexOf(settings.theme) + d + THEMES.length) % THEMES.length;
+    setTheme(THEMES[i]);
+    themeButtons[i].focus();
+  });
+  look.addEventListener("keydown", function (e) { if (e.key === "Escape") { e.stopPropagation(); closeLook(true); } });
+  document.addEventListener("pointerdown", function (e) {
+    if (!look.hidden && !look.contains(e.target) && !lookBtn.contains(e.target)) closeLook(false);
   });
   wake();
   // clock-tools.js から使う

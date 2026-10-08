@@ -26,10 +26,11 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
-  <!-- 空（時間帯で色が変わる。clock.js が --sky-top などを入れる） -->
+  <!-- 背景（テーマ「空」は時間帯で色が変わる。clock.js が --sky-top などを入れる）。sky__fx はテーマごとの動き（オーロラ・波・花びら…） -->
   <div class="sky" aria-hidden="true">
     <div class="sky__orb" id="orb"></div>
     <div class="sky__stars"></div>
+    <div class="sky__fx"></div>
     <div class="sky__grain"></div>
   </div>
 
@@ -133,7 +134,7 @@
   <nav class="dock" id="dock" aria-label="時計の設定">
     <button type="button" class="icon-btn m3-state dock__text" id="btn-24h" aria-pressed="true" title="24 時間表示"><span id="fmt-label">24h</span></button>
     <button type="button" class="icon-btn m3-state" id="btn-sec" aria-pressed="true" aria-label="秒を表示" title="秒を表示"><span class="msr" aria-hidden="true">pace</span></button>
-    <button type="button" class="icon-btn m3-state" id="btn-theme" aria-label="テーマを切り替え" title="テーマを切り替え"><span class="msr" aria-hidden="true">palette</span></button>
+    <button type="button" class="icon-btn m3-state" id="btn-theme" aria-haspopup="dialog" aria-expanded="false" aria-controls="look" aria-label="表示（背景・大きさ）" title="表示（背景・大きさ）"><span class="msr" aria-hidden="true">palette</span></button>
     <span class="dock__sep" aria-hidden="true"></span>
     <button type="button" class="icon-btn m3-state" id="btn-night" aria-pressed="false" aria-label="夜モード（夜は画面を暗くする）" title="夜モード（夜は画面を暗くする）"><span class="msr" aria-hidden="true">bedtime</span></button>
     <button type="button" class="icon-btn m3-state" id="btn-wake" aria-pressed="false" aria-label="画面をつけたままにする" title="画面をつけたままにする"><span class="msr" aria-hidden="true">lightbulb</span></button>
@@ -143,6 +144,27 @@
   </nav>
 
   <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+  <!-- 表示（背景・時計と日付の大きさ・日付と時間帯を出すか）。下のツールバーのパレットのボタンで開く。変えるとすぐ反映して保存する -->
+  <section class="look" id="look" role="dialog" aria-labelledby="look-title" hidden>
+    <header class="look__head">
+      <h2 class="look__title" id="look-title">表示</h2>
+      <button type="button" class="icon-btn m3-state" id="look-close" aria-label="閉じる" title="閉じる"><span class="msr" aria-hidden="true">close</span></button>
+    </header>
+    <p class="look__label" id="look-bg-label">背景</p>
+    <div class="look__themes" id="look-themes" role="radiogroup" aria-labelledby="look-bg-label" data-i18n-skip></div>
+    <label class="look__range">
+      <span class="look__range-head"><span>時計の大きさ</span><output id="look-time-out" data-i18n-skip></output></span>
+      <input type="range" id="look-time" min="60" max="140" step="5">
+    </label>
+    <label class="look__range">
+      <span class="look__range-head"><span>日付の大きさ</span><output id="look-date-out" data-i18n-skip></output></span>
+      <input type="range" id="look-date" min="60" max="200" step="10">
+    </label>
+    <label class="look__switch m3-state"><span>日付を表示</span><input type="checkbox" class="tbs-switch" role="switch" id="look-show-date"></label>
+    <label class="look__switch m3-state"><span class="look__switch-text"><span>時間帯を表示</span><small>「朝」「昼」「夜」などの文字</small></span><input type="checkbox" class="tbs-switch" role="switch" id="look-show-part"></label>
+    <div class="look__foot"><button type="button" class="text-btn m3-state" id="look-reset">大きさを元に戻す</button></div>
+  </section>
 
   <!-- リマインダー（Todo）の時刻の通知。Clock を開いておけば、時刻にお知らせが届く -->
   <script src="/toolbox/shared/remind.js"></script>

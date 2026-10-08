@@ -315,8 +315,8 @@ body.tbs-open { overflow: hidden; }
   @container (max-width: 480px) { .tbt-apps { display: none; } }
   @container (max-width: 280px) { .tbt-sep, .tbt-cur { display: none; } }
   /* Clock: 空の上にそのまま重ねる */
-  html[data-tbt="overlay"] .tbt { background: transparent; color: rgba(255, 255, 255, .92); }
-  html[data-tbt="overlay"] .tbt-sep, html[data-tbt="overlay"] .tbt-cur { color: rgba(255, 255, 255, .7); }
+  html[data-tbt="overlay"] .tbt { background: transparent; color: var(--tbt-ink, rgba(255, 255, 255, .92)); }
+  html[data-tbt="overlay"] .tbt-sep, html[data-tbt="overlay"] .tbt-cur { color: var(--tbt-ink, rgba(255, 255, 255, .92)); opacity: .75; }
   html[data-tbt="overlay"] .tbt-apps { background: rgba(255, 255, 255, .14); }
   html[data-tbt="overlay"] .tbt-app[aria-current="page"] { background: rgba(255, 255, 255, .28); box-shadow: none; }
   html[data-tbt="overlay"] .tbt-brand:hover, html[data-tbt="overlay"] .tbt-app:not([aria-current="page"]):hover, html[data-tbt="overlay"] .tbt-btn:hover { background: rgba(255, 255, 255, .16); }
