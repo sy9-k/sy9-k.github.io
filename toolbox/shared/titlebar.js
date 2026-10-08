@@ -5,7 +5,8 @@
 //     何もないところをドラッグすると、ウィンドウを動かせる（app-region: drag）
 //   ・見た目と、中身をタイトルバーの分だけ下げるのは /toolbox/shared/m3.css（@media (display-mode: window-controls-overlay)）。
 //     Clock は空をタイトルバーの下まで広げる（<html data-tbt="overlay">）
-//   ・/toolbox/shared/settings.js が、Window Controls Overlay に対応したブラウザでだけ読み込む
+//   ・各ページの <head> で、/toolbox/shared/settings.js のあとに読み込む（対応していないブラウザでは何もしない）
+//   ・画面の切りかえ（View Transitions）では、タイトルバーだけ切り出して動かさない（/toolbox/shared/m3.css）
 (function () {
   "use strict";
   if (!navigator.windowControlsOverlay || document.querySelector(".tbt")) return;
@@ -94,5 +95,11 @@
     }
   }
 
-  if (document.body) build(); else document.addEventListener("DOMContentLoaded", build);
+  // <head> で読み込むので、<body> ができたらすぐ入れる（画面の切りかえで、新しい画面にも最初からタイトルバーがあるように）
+  if (document.body) build();
+  else new MutationObserver(function (m, obs) {
+    if (!document.body) return;
+    obs.disconnect();
+    build();
+  }).observe(document.documentElement, { childList: true });
 })();

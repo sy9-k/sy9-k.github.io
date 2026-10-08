@@ -77,6 +77,7 @@ EXTRA = {
         '  <link rel="stylesheet" href="/toolbox/shared/m3.css">\n'
         '  <link rel="stylesheet" href="/toolbox/home.css">\n'
         '  <script src="/toolbox/shared/settings.js" data-app="home" data-scope="site"></script>\n'
+        '  <script src="/toolbox/shared/titlebar.js"></script>\n'
         '  <link rel="manifest" href="/toolbox/manifest.json">\n'
         '  <meta name="apple-mobile-web-app-capable" content="yes">\n'
         '  <meta name="apple-mobile-web-app-title" content="SK\'s Toolbox">\n',

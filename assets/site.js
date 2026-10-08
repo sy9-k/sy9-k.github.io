@@ -165,8 +165,9 @@
     let closeTimer = null;
     let switchTimer = null;
 
-    const isMobile = () => window.innerWidth <= MOBILE_BREAKPOINT;
-    const fitHeight = () => { menu.style.height = `${inner.scrollHeight + 52}px`; };
+    // 細いヘッダー（<html class="hd-compact">。SK's Toolbox をアプリとして開いたとき）は、幅によらずスマホと同じ
+    const isMobile = () => window.innerWidth <= MOBILE_BREAKPOINT || document.documentElement.classList.contains("hd-compact");
+    const fitHeight = () => { menu.style.height = `${inner.scrollHeight + (header.offsetHeight || 52)}px`; };
     const setExpanded = active => triggers.forEach(t => t.setAttribute("aria-expanded", String(t === active)));
 
     // start … 順番に出てくる動きの何番目から始めるか（列に分けたとき、前の列の続きから）
