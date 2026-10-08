@@ -6,7 +6,7 @@
 //     % は iPhone と同じ: 「A + B%」「A − B%」は A の B%（200 + 10% = 220）、それ以外は 100 で割る
 //   ・関数電卓のキー（sin・√ など）は、上のボタンで出す（data.sci）。角度は度とラジアンを切りかえ（data.angle）
 //   ・小数の誤差（0.1 + 0.2 など）は有効数字 14 桁で丸める
-//   ・履歴は localStorage の sk_calc に保存する（SK Hub Systems には送らない）。テーマなどは共通の設定（/toolbox/shared/settings.js）
+//   ・履歴は localStorage の sk_calc に保存する（オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する。/toolbox/shared/sync.js）。テーマなどは共通の設定（/toolbox/shared/settings.js）
 //   ・?embed のときは /toolbox/ の見本として表示だけする
 (function () {
   "use strict";

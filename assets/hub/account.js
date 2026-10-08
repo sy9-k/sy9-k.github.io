@@ -20,7 +20,7 @@ import { firebaseConfig } from "/y-filter/firebase-config.js";
 
 export const ACCOUNT_NAME = "SK Hub Systems アカウント";
 // アカウント規約（/policies/docs/sk-hub-account.txt）の版。変えると、次に使うときに同意し直してもらう
-export const ACCOUNT_TERMS_VERSION = "2026-09-27";
+export const ACCOUNT_TERMS_VERSION = "2026-10-08";
 
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
@@ -70,7 +70,10 @@ export const SERVICES = {
   yfilter: { name: "Y-FILTER. 管理コンソール", url: "/y-filter/", icon: "/y-filter/shared/icon.svg", terms: "/policies/#sk-hub-systems" },
   malu: { name: "MALU", url: "/dictionary/", icon: "/dictionary/ico/icon-192.png", terms: "/policies/#sk-terms" },
   // Nagi のデータ: 集中の記録と 1 日の目標 accounts/{UID}/nagi/data（nagi/account.js）
-  nagi: { name: "Nagi", url: "/nagi/", icon: "/nagi/ico/icon-192.png", terms: "/policies/#sk-terms" }
+  nagi: { name: "Nagi", url: "/nagi/", icon: "/nagi/ico/icon-192.png", terms: "/policies/#sk-terms" },
+  // SK's Toolbox のオンライン同期（任意）: accounts/{UID}/toolbox/{key|settings|todo|memo|countdown|calc}（toolbox/shared/sync-core.js）
+  //   中身は端末で暗号化したものだけ（同期用のパスフレーズは本人だけが知っている）。接続しても、Toolbox の設定で同期を始めるまでは何も保存しない
+  toolbox: { name: "SK's Toolbox", url: "/toolbox/", icon: "/toolbox/icon-192.png", terms: "/policies/#sk-terms" }
 };
 
 export function isConnected(account, key) {
@@ -141,9 +144,12 @@ export function signIn() {
   return signInWithPopup(auth, provider());
 }
 
+// SK's Toolbox のオンライン同期の、この端末の設定（暗号化の鍵を含む）。ログアウトしたら消す
+const TOOLBOX_SYNC_KEY = "sk_toolbox_sync";
+
 export function signOutAccount() {
   clearHint();
-  try { localStorage.removeItem(SYNC_BASE_KEY); } catch (e) { /* 同上 */ }
+  try { localStorage.removeItem(SYNC_BASE_KEY); localStorage.removeItem(TOOLBOX_SYNC_KEY); } catch (e) { /* 同上 */ }
   return signOut(auth);
 }
 
@@ -155,7 +161,7 @@ export function confirmWithGoogle(user) {
 export async function deleteLogin(user) {
   await deleteUser(user);
   clearHint();
-  try { localStorage.removeItem(SYNC_BASE_KEY); } catch (e) { /* 同上 */ }
+  try { localStorage.removeItem(SYNC_BASE_KEY); localStorage.removeItem(TOOLBOX_SYNC_KEY); } catch (e) { /* 同上 */ }
 }
 
 // ---------- 設定の同期 ----------

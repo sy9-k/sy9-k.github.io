@@ -21,8 +21,9 @@ Article 3 Information Handled
 (e) Notices: notices the Developer sends to the Account (such as replies to inquiries), and the date and time notices were last opened
 (f) MALU data: words saved to the wordbook when connected to MALU, and search history when search history sync is turned on in MALU
 (g) Nagi data: focus records (when you started focusing and how long you focused) and the daily goal, when connected to Nagi
+(h) SK's Toolbox data: when connected to SK's Toolbox and online sync is started, the data of the apps chosen for sync (Toolbox settings, Todo, Memo text, Countdown, and Calc history) encrypted on the user's device, and a value used to check that the sync passphrase is correct (the sync passphrase and the decryption key are not stored)
 2. When services are used with the Account, their data is stored linked to the Account. Details are set out in each service's Service Terms.
-3. The Developer does not obtain Google account passwords, the contents of Google services such as Gmail or Google Drive, browsing history, or search terms. However, the MALU data in paragraph 1 (f) and the Nagi data in (g) are stored in the Account only when the user chooses it, and only the account holder can read it.
+3. The Developer does not obtain Google account passwords, the contents of Google services such as Gmail or Google Drive, browsing history, or search terms. However, the MALU data in paragraph 1 (f), the Nagi data in (g), and the SK's Toolbox data in (h) are stored in the Account only when the user chooses it, and only the account holder can read it. Because the SK's Toolbox data in (h) is encrypted on the user's device with a sync passphrase chosen by the user before it is stored, not even the Developer can read its contents.
 4. To show in the site header that the user is signed in, the display name, profile picture URL (or initial and color), and number of unread notices are stored in the browser used to sign in. This information is not sent to the server and is deleted on sign-out or account deletion.
 5. If the user chooses to receive a reply to an inquiry through the Account's notices, the Account identifier (UID) is stored together with the inquiry.
 6. This information is used only to provide the Account and each service, verify identity, respond to inquiries, and respond to abuse. It is never used for advertising, sale, provision to third parties, or behavior analysis.
@@ -78,3 +79,4 @@ Supplementary Provisions
 3. On September 27, 2026, Articles 3 and 4 were revised to add profiles, settings sync, notices, service connections, and MALU integration.
 4. On September 27, 2026, Article 6 was revised to set, by region, the age below which parental consent is required.
 5. On September 27, 2026, Article 3 was revised to add Nagi integration.
+6. On October 8, 2026, Article 3 was revised to add online sync for SK's Toolbox.

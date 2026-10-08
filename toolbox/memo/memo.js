@@ -1,5 +1,5 @@
 // Memo（SK's Toolbox）— Apple のメモのような、書式つきのメモ帳
-//   ・メモは localStorage の sk_memo に保存する（SK Hub Systems には送らない）
+//   ・メモは localStorage の sk_memo に保存する（オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する。/toolbox/shared/sync.js）。画像は同期しない
 //       { version: 2, sort: "updated|created|title", view: フォルダの id,
 //         folders: [{ id, name }],
 //         notes: [{ id, html, text, folder, pinned, created, updated, deleted? }] }

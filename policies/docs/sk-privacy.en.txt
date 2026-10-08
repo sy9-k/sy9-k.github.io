@@ -13,6 +13,7 @@ Article 2 Overview by Service
 (d) Contact: stores what is entered in the contact form in SK Hub Systems.
 (e) SK Hub Systems account: only when an account is created, stores the Google account information used to sign in (ID, name, email address, profile picture) and the date the terms were agreed to, among other things.
 (f) Nagi: focus records (when you started focusing and how long you focused) and settings are stored only in the browser and are not sent. However, when you connect Nagi to your SK Hub Systems account, your focus records and daily goal are stored in your account. What you studied and the sites you view are not recorded.
+(g) SK's Toolbox: the data and settings of Clock, Calc, Memo, Todo, and Countdown are stored only in the browser and are not sent. However, when you connect SK's Toolbox to your SK Hub Systems account and start online sync, the data of the apps you choose is encrypted on your device with a sync passphrase you choose and then stored in your account. The decryption key exists only on your devices, so the Developer cannot read the contents. Memo images are not sent.
 
 Article 3 Information Handled by the Access Check
 1. The Site (including SK's Lab tools), MALU, Nagi, and the Y-FILTER. management console perform an access check to respond to abuse and understand usage.
@@ -94,3 +95,4 @@ Supplementary Provisions
 7. On September 27, 2026, Article 4-2 was revised as the default state of the analytics switch now depends on the region, and Article 11-2 for residents of the EEA, the UK, and similar regions was added.
 8. On September 27, 2026, Article 2 was revised with the addition of Y-FILTER.'s personal device feature (settings backups).
 9. On September 27, 2026, Articles 2, 3, and 4-2 were revised with the launch of the focus timer "Nagi."
+10. On October 8, 2026, Article 2 was revised with the launch of online sync for SK's Toolbox.

@@ -493,7 +493,7 @@ $("[data-acct-sync]").addEventListener("click", async (e) => {
 // ---------- サービス（接続しているものだけ出す） ----------
 
 // サービスごとの文言（接続の確認・接続の解除）
-const SERVICE_NAMES = { yfilter: t("Y-FILTER. 管理コンソール"), malu: "MALU", nagi: "Nagi" };
+const SERVICE_NAMES = { yfilter: t("Y-FILTER. 管理コンソール"), malu: "MALU", nagi: "Nagi", toolbox: "SK's Toolbox" };
 const SERVICE_TEXT = {
   yfilter: {
     lead: t("このアカウントを管理コンソールに接続すると、端末の設定をまとめて管理できるようになります。"),
@@ -524,6 +524,16 @@ const SERVICE_TEXT = {
     disconnect: t("解除すると、記録の同期が止まります。アカウントに保存した記録は、そのまま残ります。"),
     wipe: t("アカウントに保存した集中の記録も削除する"),
     wipeNote: t("元に戻せません。端末に保存されている記録は消えません")
+  },
+  toolbox: {
+    lead: t("このアカウントを SK's Toolbox に接続すると、Todo・Memo・Countdown・Calc の履歴・Toolbox の設定を、スマホやパソコンなどのあいだで同期できるようになります。同期は任意で、Toolbox の設定で始めるまでは何も保存しません。"),
+    usesTitle: t("SK's Toolbox が使う情報"),
+    uses: [t("同期を始めたアプリのデータ（端末で暗号化したもの）"), t("同期用のパスフレーズが合っているかを確かめるための値（パスフレーズそのものは送りません）")],
+    note: t("データは同期用のパスフレーズで暗号化してから保存するので、あなた以外（SK を含みます）は中身を読めません。Memo の画像と Clock は同期しません。接続は、アカウントのページの「サービス」からいつでも解除できます。"),
+    termsName: t("SK 利用規約"),
+    disconnect: t("解除すると、Toolbox の同期が止まります。アカウントに保存した暗号化されたデータは、そのまま残ります。"),
+    wipe: t("アカウントに保存した Toolbox の同期のデータも削除する"),
+    wipeNote: t("元に戻せません。端末に保存されている Toolbox のデータは消えません")
   }
 };
 
@@ -557,6 +567,20 @@ function renderServices(user, account) {
   if (isConnected(account, "yfilter")) renderConsole(user);
   if (isConnected(account, "malu")) renderMalu(user, account);
   if (isConnected(account, "nagi")) renderNagi(user);
+  if (isConnected(account, "toolbox")) renderToolbox(user);
+}
+
+// SK's Toolbox: 同期を始めているか（中身は暗号化されているので、ここでは読めない）
+async function renderToolbox(user) {
+  const elToolbox = $("[data-acct-toolbox]");
+  try {
+    const snap = await getDoc(doc(db, "accounts", user.uid, "toolbox", "key"));
+    elToolbox.textContent = snap.exists()
+      ? t("同期を使っています（暗号化）")
+      : t("まだ同期を始めていません");
+  } catch (e) {
+    elToolbox.textContent = t("同期の状態を確認できませんでした");
+  }
 }
 
 // Nagi: 同期している集中の記録の合計と、1 日の目標
@@ -637,6 +661,7 @@ disconnectDialog.addEventListener("close", async () => {
     // MALU は、接続を外すと単語帳に書けなくなるので、先に消す（消すのは接続していなくてもできる）
     if (wipe && disconnectKey === "malu") await deleteMaluData(user.uid);
     if (wipe && disconnectKey === "nagi") await deleteNagiData(user.uid);
+    if (wipe && disconnectKey === "toolbox") await deleteToolboxData(user.uid);
     await disconnectService(user, disconnectKey);
     const services = { ...(account.services || {}) };
     delete services[disconnectKey];
@@ -648,6 +673,7 @@ disconnectDialog.addEventListener("close", async () => {
     message(!wipe ? t("接続を解除しました。")
       : disconnectKey === "malu" ? t("接続を解除し、単語帳と同期した検索履歴を削除しました。")
         : disconnectKey === "nagi" ? t("接続を解除し、アカウントに保存した集中の記録を削除しました。")
+          : disconnectKey === "toolbox" ? t("接続を解除し、アカウントに保存した Toolbox の同期のデータを削除しました。")
           : t("接続を解除し、管理コンソールのデータを削除しました。"));
   } catch (err) {
     message(errText(err));
@@ -720,16 +746,23 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
   if (busy || !user) return;
   setBusy(true, btn);
   try {
-    const [teams, devices, notices, maluWords, maluHistory, backups, nagiData] = await Promise.all([
+    const [teams, devices, notices, maluWords, maluHistory, backups, nagiData, ...toolboxDocs] = await Promise.all([
       getDocs(query(collection(db, "teams"), where("members", "array-contains", user.uid))),
       getDocs(query(collection(db, "devices"), where("ownerUid", "==", user.uid))),
       getDocs(collection(db, "accounts", user.uid, "notices")),
       getDocs(collection(db, "accounts", user.uid, "maluWords")),
       getDoc(doc(db, "accounts", user.uid, "malu", "history")),
       getDocs(collection(db, "teams", user.uid, "backups")),
-      getDoc(doc(db, "accounts", user.uid, "nagi", "data"))
+      getDoc(doc(db, "accounts", user.uid, "nagi", "data")),
+      ...TOOLBOX_DOCS.map((id) => getDoc(doc(db, "accounts", user.uid, "toolbox", id)))
     ]);
-    const plain = (v) => JSON.parse(JSON.stringify(v, (k, x) => (x && typeof x.toDate === "function" ? x.toDate().toISOString() : x)));
+    // 日時は ISO 8601、バイト列（Toolbox の暗号文）は Base64 にする
+    const plain = (v) => JSON.parse(JSON.stringify(v, function (k, x) {
+      const raw = this[k];
+      if (raw && typeof raw.toBase64 === "function") return raw.toBase64();
+      if (raw && typeof raw.toDate === "function") return raw.toDate().toISOString();
+      return x;
+    }));
     const data = {
       exportedAt: new Date().toISOString(),
       service: "SK Hub Systems アカウント",
@@ -751,6 +784,8 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
       },
       // Nagi の集中の記録（s = 始めた時刻（ミリ秒）、m = 集中した分）と 1 日の目標
       nagi: nagiData.exists() ? plain(nagiData.data()) : null,
+      // SK's Toolbox の同期のデータ（端末で暗号化したもの。同期用のパスフレーズがないと読めません）
+      toolbox: Object.fromEntries(toolboxDocs.filter((d) => d.exists()).map((d) => [d.id, plain(d.data())])),
       yFilterConsole: {
         teams: teams.docs.map((d) => ({ id: d.id, role: d.id === user.uid ? "owner" : "co-admin", ...plain(d.data()) })),
         devices: devices.docs.map((d) => ({ id: d.id, ...plain(d.data()) })),
@@ -814,7 +849,14 @@ async function deleteServiceData(uid) {
   await deleteRefs(notices.docs.map((d) => d.ref));
   await deleteMaluData(uid);
   await deleteNagiData(uid);
+  await deleteToolboxData(uid);
   await deleteConsoleData(uid);
+}
+
+// SK's Toolbox のデータ: 同期した暗号化されたデータと、パスフレーズを確かめるための値
+const TOOLBOX_DOCS = ["key", "settings", "todo", "memo", "countdown", "calc"];
+async function deleteToolboxData(uid) {
+  await deleteRefs(TOOLBOX_DOCS.map((id) => doc(db, "accounts", uid, "toolbox", id)));
 }
 
 // Nagi のデータ: 同期した集中の記録と目標

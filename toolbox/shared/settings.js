@@ -6,7 +6,7 @@
 //       ライト・ダークは、Toolbox の設定が「端末に合わせる」ならサイトの「表示」（sk_theme。<head> の小さなスクリプトと assets/site.js が
 //       <html data-theme> に付ける）のまま。ライト・ダークを選んでいれば Toolbox の設定を優先する（ヘッダーもいっしょに変わる）
 //
-//   ・設定は localStorage の sk_toolbox に保存する（SK Hub Systems には送らない）
+//   ・設定は localStorage の sk_toolbox に保存する（オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する）
 //       { theme: "auto|light|dark", color: "app|blue|sakura|…", motion: "auto|reduce", haptics: true|false }
 //   ・テーマ: <html data-theme="light|dark">（auto のときは付けない。各アプリの CSS が端末の設定に合わせる）
 //   ・テーマカラー: SK's Brand のテーマカラー（SK's Blue など 7 色）から作った Material 3 の配色で --md-* を上書きする
@@ -16,8 +16,8 @@
 //   ・設定の画面: SKToolbox.openSettings()（全画面のダイアログ）。/toolbox/settings/ では SKToolbox.renderSettings(要素)
 //   ・ほかのタブで変えたときも、storage イベントで反映する
 //   ・設定の画面のいちばん上に、SK Hub Systems アカウントのログインの状態を出す（MALU・Nagi のアカウントの画面と同じ情報）
-//       Firebase は読み込まない。assets/hub/account.js がこのブラウザに保存したもの（skhub_account）を読むだけ。
-//       Toolbox はアカウントと連携しない（データは同期しない）。ログイン・ログアウトは /account/ で行う
+//       Firebase は読み込まない。assets/hub/account.js がこのブラウザに保存したもの（skhub_account）を読むだけ。ログイン・ログアウトは /account/ で行う
+//   ・その下に「オンライン同期」（任意。最初はオフ）。中身は /toolbox/shared/sync.js（ここで読み込む）
 (function () {
   "use strict";
 
@@ -171,8 +171,11 @@
       };
     });
   }
+  function syncOn() { return !!(window.SKToolboxSync && SKToolboxSync.isOn()); }
   function clearApp(a) {
     try { localStorage.removeItem(a.key); (a.extra || []).forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { /* 消せないときはそのまま */ }
+    // オンライン同期をしていれば、次に同期するときにアカウントから読み込み直す（消したことを、ほかの端末に広げない）
+    if (window.SKToolboxSync) SKToolboxSync.forget([a.key]);
     if (a.idb && window.indexedDB) return new Promise(function (resolve) { var r = indexedDB.deleteDatabase(a.idb); r.onsuccess = r.onerror = r.onblocked = function () { resolve(); }; });
     return Promise.resolve();
   }
@@ -237,6 +240,8 @@
         BACKUP_KEYS.forEach(function (k) {
           try { if (typeof d.storage[k] === "string") localStorage.setItem(k, d.storage[k]); else localStorage.removeItem(k); } catch (e) { /* 容量がいっぱいなど */ }
         });
+        // オンライン同期をしていれば、次に同期するときにアカウントのデータとまとめる（古いバックアップで、ほかの端末のデータを消さない）
+        if (window.SKToolboxSync) SKToolboxSync.forget(BACKUP_KEYS);
         var images = d.images && typeof d.images === "object" ? d.images : {};
         var ids = Object.keys(images).filter(function (id) { return /^[a-z0-9]{6,40}$/.test(id) && /^data:image\//.test(images[id]); });
         return Promise.all(ids.map(function (id) { return fetch(images[id]).then(function (r) { return r.blob(); }); })).then(function (blobs) {
@@ -374,9 +379,6 @@
         btn("text-btn", t("詳しく"), lp("/sk-hub-systems/account/"));
       }
       card.appendChild(actions);
-      var note = el("p", "tbs-account__note");
-      note.append(icon("info"), document.createTextNode(t("Toolbox は SK Hub Systems アカウントと連携していません。ログインしていても、Toolbox のデータはこの端末にだけ保存されます。")));
-      card.appendChild(note);
     }
     updaters.push(draw);
     return sec;
@@ -386,6 +388,14 @@
     updaters = [];
     var body = el("div", "tbs-body");
     body.appendChild(accountSection());
+
+    // オンライン同期（任意。中身は /toolbox/shared/sync.js）
+    var syncSec = section(t("オンライン同期"));
+    var syncBox = el("div");
+    syncBox.setAttribute("data-tb-sync", "");
+    syncSec.appendChild(syncBox);
+    if (window.SKToolboxSync) SKToolboxSync.mount(syncBox);
+    body.appendChild(syncSec);
 
     // 見た目
     var look = section(t("見た目"));
@@ -448,7 +458,13 @@
 
     // この端末のデータ
     var data = section(t("この端末のデータ"));
-    data.appendChild(el("p", "tbs-text", t("Toolbox のデータは、この端末のブラウザにだけ保存されます。SK Hub Systems などには送られません。ブラウザのデータを消すと、Toolbox のデータも消えます。")));
+    var dataNote = el("p", "tbs-text");
+    data.appendChild(dataNote);
+    updaters.push(function () {
+      dataNote.textContent = syncOn()
+        ? t("Toolbox のデータは、この端末のブラウザに保存し、オンライン同期で暗号化して SK Hub Systems アカウントにも保存しています。ここで消去しても、次に同期するときにアカウントから読み込み直します。")
+        : t("Toolbox のデータは、この端末のブラウザにだけ保存されます。SK Hub Systems などには送られません。ブラウザのデータを消すと、Toolbox のデータも消えます。");
+    });
     APPS.forEach(function (a) {
       var row = el("div", "tbs-item tbs-item--data");
       var img = el("img", "tbs-app-icon");
@@ -612,4 +628,11 @@
     openSettings: openSettings,
     renderSettings: renderSettings
   };
+
+  // オンライン同期（任意）。見本（?embed）では読み込まない
+  if (!/[?&]embed\b/.test(location.search)) {
+    var sync = document.createElement("script");
+    sync.src = "/toolbox/shared/sync.js";
+    (document.head || document.documentElement).appendChild(sync);
+  }
 })();
