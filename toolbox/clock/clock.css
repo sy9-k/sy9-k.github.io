@@ -1,6 +1,7 @@
 /* Clock（SK's Toolbox）
    空の色は clock.js が時刻から計算して --sky-top / --sky-mid / --sky-low / --orb に入れる（テーマ「空」）。
-   テーマ「夜」「紙」は <html data-theme="night|paper"> でトークンを入れ替える */
+   ほかのテーマ（オーロラ・海・さくら・森・ゆらぎ・夜・紙）は <html data-theme="…"> でトークンを入れ替え、.sky__fx で動きを付ける。
+   時計と日付の大きさは --time-scale / --date-scale（clock.js が「表示」のパネルの値を入れる） */
 :root {
   --sky-top: #1f2463;
   --sky-mid: #4a3f86;
@@ -26,6 +27,9 @@
   --md-outline-variant: #44474e;
   --md-primary: #aac7ff;
   --tb-back-ink: rgba(255, 255, 255, .78);
+  --tbt-ink: rgba(255, 255, 255, .92); /* パソコンのタイトルバーの文字（/toolbox/shared/m3.css） */
+  --md-on-surface: #e2e2e9;
+  --md-on-primary: #0a305f; --md-outline: #8e9099; --md-surface-container-highest: #333539; /* 「表示」のパネルのスイッチ */
   --md-font: Roboto, system-ui, sans-serif; /* 左上の「SK's Toolbox」（Clock は Roboto のまま） */
   --font: Outfit, "M PLUS 1", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
   color-scheme: dark;
@@ -48,6 +52,9 @@
   --md-secondary-container: #dae2f9; --md-on-secondary-container: #3e4759;
   --md-outline-variant: #c4c6d0; --md-primary: #415f91;
   --tb-back-ink: rgba(28, 27, 25, .7);
+  --tbt-ink: rgba(28, 27, 25, .85);
+  --md-on-surface: #191c20;
+  --md-on-primary: #ffffff; --md-outline: #74777f; --md-surface-container-highest: #e2e2e9;
   color-scheme: light;
 }
 
@@ -117,7 +124,7 @@ body.is-idle { cursor: none; }
 }
 .clock__date {
   margin: 0 0 .4em;
-  font-size: clamp(15px, 2.4vw, 26px); font-weight: 400; letter-spacing: .14em;
+  font-size: min(calc(clamp(15px, 2.4vw, 26px) * var(--date-scale, 1)), 7vw); font-weight: 400; letter-spacing: .14em;
   color: var(--ink-soft);
   text-shadow: var(--shadow);
 }
@@ -128,11 +135,14 @@ body.is-idle { cursor: none; }
   text-shadow: var(--shadow);
   white-space: nowrap;
 }
-.clock__hm { font-size: clamp(88px, 21vw, 300px); display: inline-flex; }
-.clock__sec { font-size: clamp(28px, 6vw, 84px); font-weight: 300; color: var(--ink-soft); margin-left: .25em; display: inline-flex; }
-.clock__ampm { font-size: clamp(16px, 2.6vw, 34px); font-weight: 500; letter-spacing: .1em; color: var(--ink-soft); margin-left: .5em; }
+/* 大きくしても、画面の幅からはみ出さないように（28vw・8vw が上限） */
+.clock__hm { font-size: min(calc(clamp(88px, 21vw, 300px) * var(--time-scale, 1)), 28vw); display: inline-flex; }
+.clock__sec { font-size: min(calc(clamp(28px, 6vw, 84px) * var(--time-scale, 1)), 8vw); font-weight: 300; color: var(--ink-soft); margin-left: .25em; display: inline-flex; }
+.clock__ampm { font-size: min(calc(clamp(16px, 2.6vw, 34px) * var(--time-scale, 1)), 4vw); font-weight: 500; letter-spacing: .1em; color: var(--ink-soft); margin-left: .5em; }
 .clock__ampm:empty, .clock__sec:empty { display: none; }
 .is-nosec .clock__sec { display: none; }
+.is-nodate .clock__date { display: none; }
+.is-nopart .clock__part { visibility: hidden; }
 .is-nosec .clock__bar { opacity: 0; }
 
 /* 1 文字ずつの枠。数字が変わると、古い数字は上へ、新しい数字は下から */
@@ -388,3 +398,162 @@ body.is-night-dim.is-ringing .night-dim { opacity: 0; }
   .modes { top: calc(var(--tbt-h) + 10px); }
   .toast { top: calc(var(--tbt-h) + 16px); }
 }
+
+/* ================================================================
+   テーマ（背景）。--sky-top などで色を、.sky__fx の ::before / ::after で動きを付ける
+   ================================================================ */
+.sky__fx { position: absolute; inset: 0; display: none; pointer-events: none; }
+.sky__fx::before, .sky__fx::after { content: ""; position: absolute; }
+
+/* オーロラ: 夜空に、緑と紫の光の帯がゆっくり揺れる */
+:root[data-theme="aurora"] {
+  --sky-top: #040914; --sky-mid: #07152a; --sky-low: #0a2430;
+  --orb: #1f6f6a; --stars: .7;
+  --shadow: 0 2px 30px rgba(0, 10, 20, .4);
+}
+:root[data-theme="aurora"] .sky__fx { display: block; filter: blur(32px) saturate(1.3); }
+:root[data-theme="aurora"] .sky__fx::before {
+  left: -20%; right: -20%; top: 8%; height: 46%;
+  background: linear-gradient(100deg, transparent 8%, rgba(61, 230, 160, .85) 28%, rgba(61, 220, 151, .4) 44%, transparent 58%, rgba(80, 240, 180, .6) 74%, transparent 90%);
+  border-radius: 50%; transform-origin: 50% 100%;
+  animation: aurora-a 18s ease-in-out infinite alternate;
+}
+:root[data-theme="aurora"] .sky__fx::after {
+  left: -10%; right: -30%; top: 18%; height: 40%;
+  background: linear-gradient(80deg, transparent 15%, rgba(150, 100, 255, .7) 35%, transparent 55%, rgba(90, 170, 255, .55) 70%, transparent 85%);
+  border-radius: 50%;
+  animation: aurora-b 24s ease-in-out infinite alternate;
+}
+@keyframes aurora-a { from { transform: translateX(-6%) skewX(-12deg) scaleY(.85); } to { transform: translateX(8%) skewX(10deg) scaleY(1.15); } }
+@keyframes aurora-b { from { transform: translateX(6%) skewX(8deg); opacity: .6; } to { transform: translateX(-8%) skewX(-10deg); opacity: 1; } }
+
+/* 海: 深い青。下のほうで光がゆらゆら */
+:root[data-theme="ocean"] {
+  --sky-top: #0a5f93; --sky-mid: #053d6b; --sky-low: #021a33;
+  --orb: #7fd3ff; --orb-x: 50%; --orb-y: 0%; --stars: 0;
+  --shadow: 0 2px 30px rgba(0, 20, 50, .35);
+}
+:root[data-theme="ocean"] .sky__fx { display: block; overflow: hidden; }
+:root[data-theme="ocean"] .sky__fx::before, :root[data-theme="ocean"] .sky__fx::after {
+  left: -50%; width: 200%; height: 40%; bottom: -8%;
+  background: radial-gradient(60% 30% at 25% 50%, rgba(127, 211, 255, .18), transparent 70%), radial-gradient(50% 25% at 70% 40%, rgba(127, 211, 255, .14), transparent 70%);
+  filter: blur(18px);
+  animation: wave 16s ease-in-out infinite alternate;
+}
+:root[data-theme="ocean"] .sky__fx::after { bottom: 10%; opacity: .7; animation-duration: 22s; animation-direction: alternate-reverse; }
+@keyframes wave { from { transform: translateX(-10%) translateY(0); } to { transform: translateX(10%) translateY(-6%); } }
+
+/* さくら: 明るいピンク。花びらがゆっくり舞う */
+:root[data-theme="sakura"] {
+  --sky-top: #fff4f7; --sky-mid: #ffe3ec; --sky-low: #ffccdb;
+  --orb: #ffffff; --orb-x: 70%; --orb-y: 10%; --stars: 0;
+  --ink: #3a1d27; --ink-soft: rgba(58, 29, 39, .6); --ink-faint: rgba(58, 29, 39, .14);
+  --glass: rgba(255, 255, 255, .55); --glass-line: rgba(58, 29, 39, .1);
+  --glass-on: #3a1d27; --glass-on-ink: #fff4f7;
+  --shadow: none;
+  --md-surface-container: #fff0f3; --md-on-surface-variant: #524347;
+  --md-secondary-container: #ffd9e2; --md-on-secondary-container: #5b3f46;
+  --md-outline-variant: #d6c2c6; --md-primary: #8c4a5b; --md-on-surface: #22191b;
+  --md-on-primary: #ffffff; --md-outline: #847377; --md-surface-container-highest: #f6e1e6;
+  --tb-back-ink: rgba(58, 29, 39, .7);
+  --tbt-ink: rgba(58, 29, 39, .85);
+  color-scheme: light;
+}
+:root[data-theme="sakura"] .sky__fx { display: block; overflow: hidden; }
+:root[data-theme="sakura"] .sky__fx::before, :root[data-theme="sakura"] .sky__fx::after {
+  inset: -20% -20% 0 -20%;
+  background-image:
+    radial-gradient(7px 4px at 10% 10%, #ffb7c9 60%, transparent 62%),
+    radial-gradient(6px 3.5px at 35% 30%, #ffc4d3 60%, transparent 62%),
+    radial-gradient(8px 4.5px at 62% 18%, #ffaec3 60%, transparent 62%),
+    radial-gradient(6px 3.5px at 80% 45%, #ffc9d6 60%, transparent 62%),
+    radial-gradient(7px 4px at 22% 62%, #ffb3c6 60%, transparent 62%),
+    radial-gradient(5px 3px at 55% 75%, #ffd0db 60%, transparent 62%),
+    radial-gradient(7px 4px at 90% 85%, #ffbccd 60%, transparent 62%);
+  background-size: 520px 520px;
+  animation: petals 38s linear infinite;
+}
+:root[data-theme="sakura"] .sky__fx::after { background-size: 760px 760px; opacity: .6; animation-duration: 56s; filter: blur(1.5px); }
+@keyframes petals { from { background-position: 0 0; } to { background-position: 520px 1040px; } }
+
+/* 森: 深い緑。木もれ日の光がゆっくり回る */
+:root[data-theme="forest"] {
+  --sky-top: #24502c; --sky-mid: #12351f; --sky-low: #081a10;
+  --orb: #d9f2b4; --orb-x: 30%; --orb-y: 0%; --stars: 0;
+  --shadow: 0 2px 30px rgba(0, 20, 5, .4);
+}
+:root[data-theme="forest"] .sky__fx { display: block; overflow: hidden; }
+:root[data-theme="forest"] .sky__fx::before {
+  left: -40%; top: -60%; width: 180%; height: 180%;
+  background: repeating-conic-gradient(from 0deg at 30% 0%, rgba(217, 242, 180, .09) 0deg 4deg, transparent 4deg 13deg);
+  filter: blur(6px);
+  animation: rays 60s ease-in-out infinite alternate;
+}
+:root[data-theme="forest"] .sky__fx::after {
+  inset: 0;
+  background-image: radial-gradient(3px 3px at 20% 40%, rgba(230, 255, 190, .5) 50%, transparent 51%), radial-gradient(2px 2px at 60% 70%, rgba(230, 255, 190, .4) 50%, transparent 51%), radial-gradient(2.5px 2.5px at 80% 30%, rgba(230, 255, 190, .45) 50%, transparent 51%);
+  background-size: 380px 380px;
+  animation: float-up 50s linear infinite;
+}
+@keyframes rays { from { transform: rotate(-4deg); } to { transform: rotate(5deg); } }
+@keyframes float-up { to { background-position: 120px -760px; } }
+
+/* ゆらぎ: いくつもの色が、ゆっくり混ざりながら動く */
+:root[data-theme="mesh"] {
+  --sky-top: #1a1238; --sky-mid: #1a1238; --sky-low: #1a1238;
+  --orb: #ff6fb1; --orb-x: 75%; --orb-y: 75%; --stars: 0;
+  --shadow: 0 2px 30px rgba(10, 5, 30, .35);
+}
+:root[data-theme="mesh"] .sky__fx { display: block; overflow: hidden; filter: blur(60px) saturate(1.2); }
+:root[data-theme="mesh"] .sky__fx::before {
+  width: 70vmax; height: 70vmax; left: -15vmax; top: -15vmax; border-radius: 50%;
+  background: radial-gradient(circle, rgba(79, 141, 255, .85), transparent 65%);
+  animation: blob-a 26s ease-in-out infinite alternate;
+}
+:root[data-theme="mesh"] .sky__fx::after {
+  width: 60vmax; height: 60vmax; right: -10vmax; top: 10vmax; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 179, 92, .75), transparent 65%);
+  animation: blob-b 32s ease-in-out infinite alternate;
+}
+@keyframes blob-a { to { transform: translate(35vw, 30vh) scale(1.2); } }
+@keyframes blob-b { to { transform: translate(-40vw, 20vh) scale(.85); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sky__fx::before, .sky__fx::after { animation: none !important; }
+}
+
+/* ---- 表示のパネル（背景・大きさ。下のツールバーの上に出る） ---- */
+.look {
+  position: fixed; z-index: 4; left: 50%; translate: -50% 0;
+  bottom: calc(max(24px, env(safe-area-inset-bottom)) + 76px);
+  width: min(440px, calc(100vw - 24px)); max-height: calc(100dvh - 180px); overflow-y: auto;
+  padding: 8px 20px 12px; border-radius: 28px;
+  background: var(--md-surface-container); color: var(--md-on-surface);
+  box-shadow: 0 4px 8px 3px rgba(0, 0, 0, .15), 0 1px 3px rgba(0, 0, 0, .3);
+  font-family: "M PLUS 1", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+  cursor: auto; user-select: none;
+  animation: look-in .3s cubic-bezier(.2, 0, 0, 1);
+}
+@keyframes look-in { from { opacity: 0; transform: translateY(12px) scale(.98); } }
+.look[hidden] { display: none; }
+.look__head { display: flex; align-items: center; justify-content: space-between; margin: 0 -12px 0 0; }
+.look__title { margin: 0; font-size: 18px; font-weight: 500; }
+.look .icon-btn { color: var(--md-on-surface-variant); }
+.look__label { margin: 4px 0 8px; font-size: 13px; font-weight: 500; color: var(--md-primary); }
+.look__themes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.look__theme { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px; border: 0; border-radius: 16px; background: none; color: var(--md-on-surface-variant); font: inherit; font-size: 12px; cursor: pointer; }
+.look__swatch { width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; box-shadow: inset 0 0 0 1px rgba(127, 127, 127, .25); transition: box-shadow .2s ease, transform .2s cubic-bezier(.2, 0, 0, 1); }
+.look__theme[aria-checked="true"] { color: var(--md-on-surface); font-weight: 500; }
+.look__theme[aria-checked="true"] .look__swatch { box-shadow: 0 0 0 2px var(--md-surface-container), 0 0 0 4px var(--md-primary); transform: scale(.94); }
+.look__theme:focus-visible { outline: 2px solid var(--md-primary); outline-offset: 1px; }
+.look__range { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; }
+.look__range-head { display: flex; justify-content: space-between; font-size: 14px; }
+.look__range output { color: var(--md-on-surface-variant); font-variant-numeric: tabular-nums; }
+.look__range input { width: 100%; accent-color: var(--md-primary); }
+.look__switch { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; margin: 8px -12px 0; padding: 0 12px; border-radius: 16px; font-size: 14px; cursor: pointer; }
+.look__switch-text { display: flex; flex-direction: column; gap: 2px; }
+.look__switch small { font-size: 12px; color: var(--md-on-surface-variant); }
+.look__switch + .look__switch { margin-top: 0; }
+.look__foot { display: flex; justify-content: flex-end; margin: 4px -8px 0 0; }
+.look .text-btn { color: var(--md-primary); }
+body.tbs-open .look { display: none; }
