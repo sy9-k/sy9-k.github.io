@@ -26,6 +26,14 @@
   var currentApp = (script && script.dataset.app) || "";
   var root = document.documentElement;
   var I18N = window.SKI18N;
+
+  // /toolbox/ のホームをアプリとして開いたとき（PWA）は、サイトのヘッダーを細くする（<html class="hd-compact">。見た目は assets/header.css）
+  if (scope === "site" && window.matchMedia) {
+    var appMode = window.matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: fullscreen), (display-mode: minimal-ui)");
+    var compact = function () { root.classList.toggle("hd-compact", appMode.matches || navigator.standalone === true); };
+    compact();
+    if (appMode.addEventListener) appMode.addEventListener("change", compact);
+  }
   function t(s, p) { return I18N ? I18N.t(s, p) : s.replace(/\{(\w+)\}/g, function (m, k) { return p && k in p ? p[k] : m; }); }
 
   // ---- テーマカラー（SK's Brand の 7 色。[ライト, ダーク] の順に ROLES の色を 6 桁ずつつなげたもの）----

@@ -322,9 +322,10 @@ body.tbs-open { overflow: hidden; }
   html[data-tbt="overlay"] .tbt-brand:hover, html[data-tbt="overlay"] .tbt-app:not([aria-current="page"]):hover, html[data-tbt="overlay"] .tbt-btn:hover { background: rgba(255, 255, 255, .16); }
   /* 設定・ダイアログ・検索は、タイトルバーの下から（開いていても、ウィンドウを動かせるように） */
   .tbs-overlay, .tbs-dialog-scrim, .sks-overlay { top: var(--tbt-h); }
-  /* /toolbox/ のホーム: サイトのヘッダーもタイトルバーの下に */
+  /* /toolbox/ のホーム: サイトのヘッダー（ふつうは 52px・細いときは 44px）もタイトルバーの下に */
+  html:not([data-tbt="overlay"]) body.tb-home-page { padding-top: calc(var(--hd-h, 52px) + var(--tbt-h)); }
   .site-header { top: calc(var(--tbt-h) - 1px); }
-  .hd-backdrop { top: calc(51px + var(--tbt-h)); }
+  .hd-backdrop { top: calc(var(--hd-h, 52px) - 1px + var(--tbt-h)); }
   .hd-menu { top: var(--tbt-h); }
 }
 
