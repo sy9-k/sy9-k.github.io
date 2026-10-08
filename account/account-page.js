@@ -746,7 +746,7 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
   if (busy || !user) return;
   setBusy(true, btn);
   try {
-    const [teams, devices, notices, maluWords, maluHistory, backups, nagiData, ...toolboxDocs] = await Promise.all([
+    const [teams, devices, notices, maluWords, maluHistory, backups, nagiData, timetableInbox, ...toolboxDocs] = await Promise.all([
       getDocs(query(collection(db, "teams"), where("members", "array-contains", user.uid))),
       getDocs(query(collection(db, "devices"), where("ownerUid", "==", user.uid))),
       getDocs(collection(db, "accounts", user.uid, "notices")),
@@ -754,6 +754,7 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
       getDoc(doc(db, "accounts", user.uid, "malu", "history")),
       getDocs(collection(db, "teams", user.uid, "backups")),
       getDoc(doc(db, "accounts", user.uid, "nagi", "data")),
+      getDoc(inboxRef()).catch(() => null),
       ...TOOLBOX_DOCS.map((id) => getDoc(doc(db, "accounts", user.uid, "toolbox", id)))
     ]);
     // 日時は ISO 8601、バイト列（Toolbox の暗号文）は Base64 にする
@@ -786,6 +787,8 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
       nagi: nagiData.exists() ? plain(nagiData.data()) : null,
       // SK's Toolbox の同期のデータ（端末で暗号化したもの。同期用のパスフレーズがないと読めません）
       toolbox: Object.fromEntries(toolboxDocs.filter((d) => d.exists()).map((d) => [d.id, plain(d.data())])),
+      // SK's Toolbox の時間割の配信で、このアカウントのメールアドレスあてに配信された時間割の ID
+      timetableInbox: timetableInbox && timetableInbox.exists() ? plain(timetableInbox.data()) : null,
       yFilterConsole: {
         teams: teams.docs.map((d) => ({ id: d.id, role: d.id === user.uid ? "owner" : "co-admin", ...plain(d.data()) })),
         devices: devices.docs.map((d) => ({ id: d.id, ...plain(d.data()) })),
@@ -850,11 +853,19 @@ async function deleteServiceData(uid) {
   await deleteMaluData(uid);
   await deleteNagiData(uid);
   await deleteToolboxData(uid);
+  await deleteTimetableInbox();
   await deleteConsoleData(uid);
 }
 
+// SK's Toolbox の時間割の配信: 自分のメールアドレスあての受け取り箱（配信された時間割の ID の一覧）
+const inboxRef = () => doc(db, "timetableInbox", String(current.user?.email || "").toLowerCase() || "-");
+async function deleteTimetableInbox() {
+  if (!current.user?.email) return;
+  await deleteRefs([inboxRef()]).catch(() => { /* ない・確認していないメールアドレス */ });
+}
+
 // SK's Toolbox のデータ: 同期した暗号化されたデータと、パスフレーズを確かめるための値
-const TOOLBOX_DOCS = ["key", "settings", "todo", "memo", "countdown", "calc"];
+const TOOLBOX_DOCS = ["key", "settings", "todo", "memo", "countdown", "calc", "timetable", "roulette"];
 async function deleteToolboxData(uid) {
   await deleteRefs(TOOLBOX_DOCS.map((id) => doc(db, "accounts", uid, "toolbox", id)));
 }

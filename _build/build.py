@@ -23,7 +23,7 @@ home_body, tail = rest.split("  </main>\n", 1)
 pages = [
     ("sk-hub-systems.html", "sk-hub-systems/index.html", "SK Hub Systems | SK", "Y-FILTER. の遠隔管理・ブロックリストの配信・アクセスチェックを支える、SK が運営するサーバー基盤「SK Hub Systems」。", True, True),
     ("updates.html", "updates/index.html", "アップデート | SK", "SK のサイトとプロダクト（Y-FILTER.・SK Hub Systems・SK's Lab）のアップデート情報。", True, True),
-    ("toolbox.html", "toolbox/index.html", "SK's Toolbox", "毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」。", False, True),
+    ("toolbox.html", "toolbox/index.html", "SK's Toolbox", "毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」、時間割の「Timetable」、回して決める「Roulette」。", False, True),
     ("lab.html", "lab/index.html", "SK's Lab | SK", "SK の実験的なツールを置いている場所。QR Drop やスマートダッシュボードなど。", False, True),
     ("status.html", "status/index.html", "システム稼働状況 | SK", "SK のサイトとプロダクト（SK Hub Systems・Y-FILTER.・MALU）のシステム稼働状況。", True, True),
     ("credits.html", "credits/index.html", "Link & Credit | SK", "SK のサイトとプロダクトで使わせてもらっているもの（RedCheck など）と、つながりのあるサイト。", True, True),
@@ -99,6 +99,7 @@ RUNTIME_SOURCES = [
     "nagi/app.js", "nagi/account.js", "brand/brand.js", "assets/hub/account-button.js",
     "toolbox/clock/clock.js", "toolbox/calc/calc.js", "toolbox/memo/memo.js", "toolbox/todo/todo.js", "toolbox/countdown/countdown.js", "toolbox/clock/clock-tools.js", "toolbox/shared/settings.js", "toolbox/shared/m3.js", "toolbox/shared/remind.js", "toolbox/home.js",
     "toolbox/shared/sync.js", "toolbox/shared/titlebar.js",
+    "toolbox/timetable/timetable.js", "toolbox/roulette/roulette.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
 STANDALONE_PAGES = [
@@ -106,6 +107,7 @@ STANDALONE_PAGES = [
     "dictionary/index.html", "dictionary/offline.html",
     "nagi/index.html",
     "toolbox/clock/index.html", "toolbox/calc/index.html", "toolbox/memo/index.html", "toolbox/todo/index.html", "toolbox/countdown/index.html", "toolbox/settings/index.html",
+    "toolbox/timetable/index.html", "toolbox/roulette/index.html",
 ]
 # 英語だけに訳すページ（SK's Lab のツール。<html data-i18n-langs="ja en">）。ページの文とスクリプトの t("…") の両方を探す
 EN_ONLY_PAGES = ["qr-prj/index.html", "smart-dash/index.html"]
@@ -219,7 +221,7 @@ for code, tr in translators.items():
         path.unlink()
 
 # サイトマップ（このスクリプトで作るページ ＋ 別に作っているアプリ）
-sitemap += [ORIGIN + "/dictionary/", ORIGIN + "/nagi/", ORIGIN + "/y-filter/", ORIGIN + "/qr-prj/", ORIGIN + "/smart-dash/", ORIGIN + "/toolbox/clock/", ORIGIN + "/toolbox/calc/", ORIGIN + "/toolbox/memo/", ORIGIN + "/toolbox/todo/", ORIGIN + "/toolbox/countdown/"]
+sitemap += [ORIGIN + "/dictionary/", ORIGIN + "/nagi/", ORIGIN + "/y-filter/", ORIGIN + "/qr-prj/", ORIGIN + "/smart-dash/", ORIGIN + "/toolbox/clock/", ORIGIN + "/toolbox/calc/", ORIGIN + "/toolbox/memo/", ORIGIN + "/toolbox/todo/", ORIGIN + "/toolbox/countdown/", ORIGIN + "/toolbox/timetable/", ORIGIN + "/toolbox/roulette/"]
 today = datetime.date.today().isoformat()
 xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
 xml += [f"  <url><loc>{u}</loc><lastmod>{today}</lastmod></url>" for u in sitemap]

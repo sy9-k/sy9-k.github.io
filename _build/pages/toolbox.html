@@ -43,6 +43,18 @@
           </form>
         </section>
 
+        <!-- Timetable（今日の授業。いまの授業を強調） -->
+        <section class="tbh-tile tbh-tile--timetable" data-tile="timetable" aria-labelledby="w-tt-title">
+          <a class="tbh-tile__head m3-state" href="/toolbox/timetable/">
+            <img src="/toolbox/timetable/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-tt-title">Timetable</h2><span class="tbh-tile__meta" id="tt-meta" data-i18n-skip></span></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </a>
+          <ol class="w-tt" id="tt-list" data-i18n-skip></ol>
+          <p class="tbh-tile__empty" id="tt-empty" hidden data-i18n-skip></p>
+          <a class="m3-btn tbh-tile__action m3-state" id="tt-action" href="/toolbox/timetable/" hidden><span class="msr" aria-hidden="true">edit_calendar</span><span>時間割を作る</span></a>
+        </section>
+
         <!-- Memo（最近のメモ） -->
         <section class="tbh-tile tbh-tile--memo" data-tile="memo" aria-labelledby="w-memo-title">
           <a class="tbh-tile__head m3-state" href="/toolbox/memo/">
@@ -76,6 +88,17 @@
           </span>
           <span class="w-calc__expr" id="calc-expr" data-i18n-skip></span>
           <span class="w-calc__res" id="calc-res" data-i18n-skip></span>
+        </a>
+
+        <!-- Roulette（いまのルーレットと、最後の結果） -->
+        <a class="tbh-tile tbh-tile--roulette m3-state" data-tile="roulette" href="/toolbox/roulette/" aria-labelledby="w-rl-title">
+          <span class="tbh-tile__head">
+            <img src="/toolbox/roulette/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-rl-title">Roulette</h2><span class="tbh-tile__meta" id="rl-meta" data-i18n-skip></span></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </span>
+          <span class="w-rl" aria-hidden="true"><span class="w-rl__wheel"></span></span>
+          <span class="w-rl__last" id="rl-last" data-i18n-skip></span>
         </a>
 
         <!-- 見た目（テーマカラー・ライト／ダークをその場で） -->

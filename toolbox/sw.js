@@ -1,6 +1,6 @@
 // SK's Toolbox のホーム画面（/toolbox/）の Service Worker。スコープは /toolbox/ 全体
 // 各アプリは自分のフォルダに自分の sw.js を持つ（スコープがせまいほうが使われる）。まだ開いたことのないアプリは、ここで開ける
-const CACHE_NAME = 'sk-toolbox-v10';
+const CACHE_NAME = 'sk-toolbox-v11';
 const ASSETS = [
   // ホーム画面と、4 つのアプリ（ホーム画面から開いたことがなくても、オフラインで開けるように）
   '/toolbox/',
@@ -55,6 +55,19 @@ const ASSETS = [
   '/toolbox/countdown/manifest.json',
   '/toolbox/countdown/icon.svg',
   '/toolbox/countdown/icon-192.png',
+  '/toolbox/timetable/',
+  '/toolbox/timetable/index.html',
+  '/toolbox/timetable/timetable.css',
+  '/toolbox/timetable/timetable.js',
+  '/toolbox/timetable/manifest.json',
+  '/toolbox/timetable/icon-192.png',
+  '/toolbox/roulette/',
+  '/toolbox/roulette/index.html',
+  '/toolbox/roulette/roulette.css',
+  '/toolbox/roulette/roulette.js',
+  '/toolbox/roulette/manifest.json',
+  '/toolbox/roulette/icon-192.png',
+  '/toolbox/timetable/share.js',
   '/toolbox/todo/manifest.json',
   '/toolbox/todo/icon.svg',
   '/toolbox/todo/icon-192.png',
@@ -64,6 +77,8 @@ const ASSETS = [
   '/assets/site.js',
   '/assets/logo.svg',
   '/assets/favicon.svg',
+  '/toolbox/timetable/icon.svg',
+  '/toolbox/roulette/icon.svg',
   // 多言語（オフラインでも選んだ言語で表示できるように）
   '/assets/i18n.js',
   '/assets/i18n/en.js',

@@ -1,13 +1,14 @@
-const CACHE_NAME = 'sk-countdown-v7';
+const CACHE_NAME = 'sk-timetable-v1';
 const ASSETS = [
-  '/toolbox/countdown/',
-  '/toolbox/countdown/index.html',
-  '/toolbox/countdown/countdown.css',
-  '/toolbox/countdown/countdown.js',
-  '/toolbox/countdown/manifest.json',
-  '/toolbox/countdown/icon.svg',
-  '/toolbox/countdown/icon-192.png',
-  '/toolbox/countdown/icon-512.png',
+  '/toolbox/timetable/',
+  '/toolbox/timetable/index.html',
+  '/toolbox/timetable/timetable.css',
+  '/toolbox/timetable/timetable.js',
+  '/toolbox/timetable/manifest.json',
+  '/toolbox/timetable/icon.svg',
+  '/toolbox/timetable/icon-192.png',
+  '/toolbox/timetable/icon-512.png',
+  '/toolbox/timetable/share.js',
   '/toolbox/shared/pwa.js',
   '/toolbox/shared/m3.css',
   '/toolbox/shared/m3.js',
@@ -23,7 +24,6 @@ const ASSETS = [
   '/toolbox/calc/icon.svg',
   '/toolbox/memo/icon.svg',
   '/toolbox/todo/icon.svg',
-  '/toolbox/timetable/icon.svg',
   '/toolbox/roulette/icon.svg',
   // 多言語（オフラインでも選んだ言語で表示できるように）
   '/assets/i18n.js',
@@ -45,7 +45,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => Promise.all(keys.map((key) => {
-      if (key.startsWith('sk-countdown-') && key !== CACHE_NAME) return caches.delete(key);
+      if (key.startsWith('sk-timetable-') && key !== CACHE_NAME) return caches.delete(key);
     })))
   );
   self.clients.claim();

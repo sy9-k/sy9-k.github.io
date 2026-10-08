@@ -1,5 +1,5 @@
 // SK's Toolbox の横断検索（Ctrl+K・Mac は ⌘K。[data-open-search] のボタンでも開く）
-//   メモ（sk_memo）・タスク（sk_todo）・Countdown の日（sk_countdown）・計算の履歴（sk_calc）・アプリと機能を、まとめて探す
+//   メモ（sk_memo）・タスク（sk_todo）・Countdown の日（sk_countdown）・時間割の科目（sk_timetable）・計算の履歴（sk_calc）・アプリと機能を、まとめて探す
 //   どれも、この端末の localStorage を読むだけ（どこにも送らない）。ロックしたメモの中身は探さない
 //   ↑↓ で選んで Enter で開く。Esc で閉じる
 (function () {
@@ -24,6 +24,8 @@
     { title: t("新しいメモ"), sub: "Memo", icon: "/toolbox/memo/icon.svg", url: "/toolbox/memo/#new", words: "new memo 新しい" },
     { title: "Todo", sub: t("リマインダー"), icon: "/toolbox/todo/icon.svg", url: "/toolbox/todo/", words: "todo タスク リマインダー" },
     { title: "Countdown", sub: t("あと何日"), icon: "/toolbox/countdown/icon.svg", url: "/toolbox/countdown/", words: "countdown カウントダウン" },
+    { title: "Timetable", sub: t("時間割"), icon: "/toolbox/timetable/icon.svg", url: "/toolbox/timetable/", words: "timetable 時間割 授業 クラス" },
+    { title: "Roulette", sub: t("ルーレット"), icon: "/toolbox/roulette/icon.svg", url: "/toolbox/roulette/", words: "roulette ルーレット くじ 抽選 順番" },
     { title: t("Toolbox の設定"), sub: "SK's Toolbox", icon: "/toolbox/icon.svg", url: "/toolbox/settings/", words: "settings 設定 テーマ" },
     { title: "SK's Toolbox", sub: t("ホーム"), icon: "/toolbox/icon.svg", url: "/toolbox/", words: "home ホーム" }
   ];
@@ -48,6 +50,16 @@
     (Array.isArray(cd.events) ? cd.events : []).forEach(function (ev) {
       if (!ev || typeof ev.name !== "string" || !hit(ev.name)) return;
       out.push({ group: "Countdown", title: (ev.emoji ? ev.emoji + " " : "") + ev.name, sub: ev.date, img: "/toolbox/countdown/icon.svg", url: "/toolbox/countdown/" });
+    });
+    // 時間割の科目（自分の時間割）
+    var tt = readJson("sk_timetable");
+    var cells = tt.table && tt.table.cells && typeof tt.table.cells === "object" ? tt.table.cells : {};
+    var seen = {};
+    Object.keys(cells).forEach(function (k) {
+      var c = cells[k];
+      if (!c || typeof c.subject !== "string" || seen[c.subject] || !(hit(c.subject) || hit(c.room) || hit(c.teacher))) return;
+      seen[c.subject] = 1;
+      out.push({ group: "Timetable", title: c.subject, sub: [c.room, c.teacher].filter(Boolean).join(" · "), img: "/toolbox/timetable/icon.svg", url: "/toolbox/timetable/" });
     });
     var calc = readJson("sk_calc");
     (Array.isArray(calc.history) ? calc.history : []).slice(0, 100).forEach(function (h) {

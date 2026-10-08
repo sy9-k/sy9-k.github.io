@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-calc-v13';
+const CACHE_NAME = 'sk-calc-v14';
 const ASSETS = [
   '/toolbox/calc/',
   '/toolbox/calc/index.html',
@@ -23,6 +23,8 @@ const ASSETS = [
   '/toolbox/clock/icon.svg',
   '/toolbox/memo/icon.svg',
   '/toolbox/todo/icon.svg',
+  '/toolbox/timetable/icon.svg',
+  '/toolbox/roulette/icon.svg',
   // 多言語（オフラインでも選んだ言語で表示できるように）
   '/assets/i18n.js',
   '/assets/i18n/en.js',

@@ -163,7 +163,9 @@
     { key: "sk_calc", app: "calc", name: "Calc", what: t("計算の履歴") },
     { key: "sk_memo", app: "memo", name: "Memo", what: t("メモと画像"), idb: "sk_toolbox_memo" },
     { key: "sk_todo", app: "todo", name: "Todo", what: t("タスク"), extra: ["sk_todo_notified"] },
-    { key: "sk_countdown", app: "countdown", name: "Countdown", what: t("日の一覧") }
+    { key: "sk_countdown", app: "countdown", name: "Countdown", what: t("日の一覧") },
+    { key: "sk_timetable", app: "timetable", name: "Timetable", what: t("時間割と、配信された時間割") },
+    { key: "sk_roulette", app: "roulette", name: "Roulette", what: t("ルーレットと結果の履歴") }
   ];
   var sizeFmt = new Intl.NumberFormat((I18N && I18N.locale) || "ja-JP", { maximumFractionDigits: 1 });
   function sizeOf(key) {
@@ -209,7 +211,7 @@
   function lp(u) { return I18N && I18N.path ? I18N.path(u) : u; }
 
   // ---- まとめてバックアップ ----
-  var BACKUP_KEYS = ["sk_toolbox", "sk_toolbox_home", "sk_clock", "sk_clock_tools", "sk_calc", "sk_memo", "sk_todo", "sk_countdown"];
+  var BACKUP_KEYS = ["sk_toolbox", "sk_toolbox_home", "sk_clock", "sk_clock_tools", "sk_calc", "sk_memo", "sk_todo", "sk_countdown", "sk_timetable", "sk_roulette"];
   function memoImages(mode, fn) {
     return new Promise(function (resolve) {
       if (!window.indexedDB) { resolve(null); return; }
@@ -519,7 +521,7 @@
       });
       data.appendChild(row);
     });
-    // まとめてバックアップ（Clock・Calc・Memo（画像も）・Todo・Countdown・この設定）
+    // まとめてバックアップ（Clock・Calc・Memo（画像も）・Todo・Countdown・Timetable・Roulette・この設定）
     var backupRow = el("div", "tbs-item tbs-item--backup");
     backupRow.appendChild(label(t("まとめてバックアップ"), t("すべてのアプリのデータを 1 つのファイルに。ほかの端末に移すときにも使えます")));
     var exportBtn = el("button", "m3-btn m3-btn--tonal m3-state");
@@ -548,7 +550,7 @@
     allBtn.type = "button";
     allBtn.addEventListener("click", function () {
       confirmDialog(t("Toolbox のデータをすべて消去しますか？"),
-        t("Clock・Calc・Memo・Todo・Countdown のデータと、この設定を消去します。元に戻すことはできません。"), t("すべて消去"))
+        t("Clock・Calc・Memo・Todo・Countdown・Timetable・Roulette のデータと、この設定を消去します。元に戻すことはできません。"), t("すべて消去"))
         .then(function (ok) {
           if (!ok) return;
           Promise.all(APPS.concat([{ key: STORE }]).map(clearApp)).then(function () { location.reload(); });

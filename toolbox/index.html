@@ -8,7 +8,7 @@
   <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
   <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
   <title>SK's Toolbox</title>
-  <meta name="description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」。">
+  <meta name="description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」、時間割の「Timetable」、回して決める「Roulette」。">
   <meta name="theme-color" content="#ffffff" data-theme-color>
   <link rel="canonical" href="https://sy9-k.github.io/toolbox/">
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
@@ -16,7 +16,7 @@
   <meta property="og:site_name" content="SK">
   <meta property="og:locale" content="ja_JP">
   <meta property="og:title" content="SK's Toolbox">
-  <meta property="og:description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」。">
+  <meta property="og:description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」、時間割の「Timetable」、回して決める「Roulette」。">
   <meta property="og:url" content="https://sy9-k.github.io/toolbox/">
   <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
   <meta property="og:image:width" content="1200">
@@ -99,6 +99,18 @@
           </form>
         </section>
 
+        <!-- Timetable（今日の授業。いまの授業を強調） -->
+        <section class="tbh-tile tbh-tile--timetable" data-tile="timetable" aria-labelledby="w-tt-title">
+          <a class="tbh-tile__head m3-state" href="/toolbox/timetable/">
+            <img src="/toolbox/timetable/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-tt-title">Timetable</h2><span class="tbh-tile__meta" id="tt-meta" data-i18n-skip></span></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </a>
+          <ol class="w-tt" id="tt-list" data-i18n-skip></ol>
+          <p class="tbh-tile__empty" id="tt-empty" hidden data-i18n-skip></p>
+          <a class="m3-btn tbh-tile__action m3-state" id="tt-action" href="/toolbox/timetable/" hidden><span class="msr" aria-hidden="true">edit_calendar</span><span>時間割を作る</span></a>
+        </section>
+
         <!-- Memo（最近のメモ） -->
         <section class="tbh-tile tbh-tile--memo" data-tile="memo" aria-labelledby="w-memo-title">
           <a class="tbh-tile__head m3-state" href="/toolbox/memo/">
@@ -132,6 +144,17 @@
           </span>
           <span class="w-calc__expr" id="calc-expr" data-i18n-skip></span>
           <span class="w-calc__res" id="calc-res" data-i18n-skip></span>
+        </a>
+
+        <!-- Roulette（いまのルーレットと、最後の結果） -->
+        <a class="tbh-tile tbh-tile--roulette m3-state" data-tile="roulette" href="/toolbox/roulette/" aria-labelledby="w-rl-title">
+          <span class="tbh-tile__head">
+            <img src="/toolbox/roulette/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-rl-title">Roulette</h2><span class="tbh-tile__meta" id="rl-meta" data-i18n-skip></span></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </span>
+          <span class="w-rl" aria-hidden="true"><span class="w-rl__wheel"></span></span>
+          <span class="w-rl__last" id="rl-last" data-i18n-skip></span>
         </a>
 
         <!-- 見た目（テーマカラー・ライト／ダークをその場で） -->

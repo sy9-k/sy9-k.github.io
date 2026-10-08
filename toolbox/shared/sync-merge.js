@@ -15,6 +15,9 @@ export const SYNC_APPS = {
   todo: { storage: "sk_todo", lists: ["lists", "tasks"] },
   memo: { storage: "sk_memo", lists: ["folders", "notes"], fields: ["lock"] },
   countdown: { storage: "sk_countdown", lists: ["events"] },
+  // 自分の時間割（まとめて 1 つ）。配信された時間割は端末ごとに受け取るので同期しない
+  timetable: { storage: "sk_timetable", fields: ["table"] },
+  roulette: { storage: "sk_roulette", lists: ["wheels", "history"] },
   calc: {
     storage: "sk_calc",
     lists: ["history"],

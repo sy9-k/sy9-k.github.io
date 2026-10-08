@@ -2,11 +2,13 @@
   "id": "/toolbox/",
   "name": "SK's Toolbox",
   "short_name": "Toolbox",
-  "description": "毎日ちょっと使う、小さなアプリを集めた SK の道具箱。Clock・Calc・Memo・Todo・Countdown。",
+  "description": "毎日ちょっと使う、小さなアプリを集めた SK の道具箱。Clock・Calc・Memo・Todo・Countdown・Timetable・Roulette。",
   "start_url": "/toolbox/",
   "scope": "/toolbox/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay"],
+  "display_override": [
+    "window-controls-overlay"
+  ],
   "background_color": "#f9f9ff",
   "theme_color": "#f9f9ff",
   "icons": [
@@ -86,6 +88,28 @@
       "icons": [
         {
           "src": "/toolbox/countdown/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Timetable",
+      "url": "/toolbox/timetable/",
+      "icons": [
+        {
+          "src": "/toolbox/timetable/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Roulette",
+      "url": "/toolbox/roulette/",
+      "icons": [
+        {
+          "src": "/toolbox/roulette/icon-192.png",
           "sizes": "192x192",
           "type": "image/png"
         }
