@@ -300,3 +300,8 @@ button, input, textarea { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: 1ms !important; }
 }
+
+/* パソコンでアプリとして入れ、タイトルバーを Toolbox のものにしたとき: 画像の拡大もタイトルバーの下から */
+@media (display-mode: window-controls-overlay) {
+  .viewer { top: var(--tbt-h); }
+}

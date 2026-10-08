@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-countdown-v3';
+const CACHE_NAME = 'sk-countdown-v4';
 const ASSETS = [
   '/toolbox/countdown/',
   '/toolbox/countdown/index.html',
@@ -17,6 +17,7 @@ const ASSETS = [
   '/toolbox/shared/sync.js',
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',
+  '/toolbox/shared/titlebar.js',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/clock/icon.svg',
   '/toolbox/calc/icon.svg',

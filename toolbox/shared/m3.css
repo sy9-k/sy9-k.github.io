@@ -280,6 +280,54 @@ body.tbs-open { overflow: hidden; }
 .icon-btn[data-open-settings].tsy-has-notice::after { content: ""; position: absolute; top: 8px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: var(--md-error, #ba1a1a); box-shadow: 0 0 0 2px var(--md-surface, #fff); pointer-events: none; }
 @media (max-width: 600px) { .tsy { margin-left: 16px; margin-right: 16px; } }
 
+/* ---- タイトルバー（/toolbox/shared/titlebar.js。パソコンでアプリとして入れ、タイトルバーを Toolbox のものにしたとき）---- */
+.tbt { display: none; }
+@media (display-mode: window-controls-overlay) {
+  :root { --tbt-h: env(titlebar-area-height, 33px); }
+  /* 中身をタイトルバーの分だけ下げる（Clock は空を下まで広げるので下げない） */
+  html:not([data-tbt="overlay"]) body { box-sizing: border-box; padding-top: var(--tbt-h); }
+  .tbt {
+    position: fixed; z-index: 35;
+    top: env(titlebar-area-y, 0); left: env(titlebar-area-x, 0); width: env(titlebar-area-width, 100%); height: var(--tbt-h);
+    display: flex; align-items: center; gap: 6px; box-sizing: border-box; padding: 0 6px 0 8px;
+    container-type: inline-size;
+    background: var(--md-surface, #f9f9ff); color: var(--md-on-surface, #191c20);
+    font-family: var(--md-font, system-ui, sans-serif); font-size: 13px; line-height: 1;
+    app-region: drag; -webkit-app-region: drag; user-select: none; -webkit-user-select: none;
+  }
+  .tbt a, .tbt button { app-region: no-drag; -webkit-app-region: no-drag; color: inherit; text-decoration: none; }
+  .tbt-brand { display: flex; align-items: center; gap: 6px; min-width: 0; height: 26px; padding: 0 8px 0 4px; border-radius: 8px; white-space: nowrap; }
+  .tbt-brand img { width: 18px; height: 18px; border-radius: 5px; flex: none; }
+  .tbt-name { font-weight: 700; letter-spacing: -.01em; }
+  .tbt-sep { color: var(--md-on-surface-variant, #44474e); }
+  .tbt-cur { font-weight: 500; color: var(--md-on-surface-variant, #44474e); overflow: hidden; text-overflow: ellipsis; }
+  .tbt-space { flex: 1; align-self: stretch; }
+  .tbt-apps { display: flex; gap: 2px; padding: 2px; border-radius: 999px; background: color-mix(in srgb, var(--md-on-surface, #191c20) 7%, transparent); }
+  .tbt-app { width: 28px; height: 22px; display: grid; place-items: center; border-radius: 999px; transition: background-color .15s linear; }
+  .tbt-app img { width: 16px; height: 16px; border-radius: 4px; }
+  .tbt-app[aria-current="page"] { background: var(--md-surface, #fff); box-shadow: 0 1px 2px rgba(0, 0, 0, .18); }
+  .tbt-btn { width: 30px; height: 26px; padding: 0; display: grid; place-items: center; flex: none; border: 0; border-radius: 8px; background: none; cursor: pointer; }
+  .tbt-btn .msr { font-size: 19px; }
+  .tbt-brand:hover, .tbt-app:not([aria-current="page"]):hover, .tbt-btn:hover { background: color-mix(in srgb, var(--md-on-surface, #191c20) 9%, transparent); }
+  .tbt a:focus-visible, .tbt button:focus-visible { outline: 2px solid var(--md-primary, #415f91); outline-offset: 0; }
+  .tbt-btn[data-open-settings].tsy-has-notice { position: relative; }
+  .tbt-btn[data-open-settings].tsy-has-notice::after { content: ""; position: absolute; top: 3px; right: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--md-error, #ba1a1a); pointer-events: none; }
+  @container (max-width: 480px) { .tbt-apps { display: none; } }
+  @container (max-width: 280px) { .tbt-sep, .tbt-cur { display: none; } }
+  /* Clock: 空の上にそのまま重ねる */
+  html[data-tbt="overlay"] .tbt { background: transparent; color: rgba(255, 255, 255, .92); }
+  html[data-tbt="overlay"] .tbt-sep, html[data-tbt="overlay"] .tbt-cur { color: rgba(255, 255, 255, .7); }
+  html[data-tbt="overlay"] .tbt-apps { background: rgba(255, 255, 255, .14); }
+  html[data-tbt="overlay"] .tbt-app[aria-current="page"] { background: rgba(255, 255, 255, .28); box-shadow: none; }
+  html[data-tbt="overlay"] .tbt-brand:hover, html[data-tbt="overlay"] .tbt-app:not([aria-current="page"]):hover, html[data-tbt="overlay"] .tbt-btn:hover { background: rgba(255, 255, 255, .16); }
+  /* 設定・ダイアログ・検索は、タイトルバーの下から（開いていても、ウィンドウを動かせるように） */
+  .tbs-overlay, .tbs-dialog-scrim, .sks-overlay { top: var(--tbt-h); }
+  /* /toolbox/ のホーム: サイトのヘッダーもタイトルバーの下に */
+  .site-header { top: calc(var(--tbt-h) - 1px); }
+  .hd-backdrop { top: calc(51px + var(--tbt-h)); }
+  .hd-menu { top: var(--tbt-h); }
+}
+
 /* ---- 横断検索（/toolbox/shared/search.js。Ctrl+K）---- */
 .sks-overlay { position: fixed; z-index: 70; inset: 0; display: flex; justify-content: center; align-items: flex-start; padding: max(10vh, 24px) 16px 16px; background: rgba(0, 0, 0, .32); animation: tbs-fade .15s linear; }
 .sks-panel {

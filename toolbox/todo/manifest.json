@@ -6,6 +6,7 @@
   "start_url": "/toolbox/todo/",
   "scope": "/toolbox/todo/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay"],
   "background_color": "#f9faef",
   "theme_color": "#f9faef",
   "icons": [

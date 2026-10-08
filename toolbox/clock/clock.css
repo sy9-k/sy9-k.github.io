@@ -381,3 +381,10 @@ body.is-night-dim.is-ringing .night-dim { opacity: 0; }
   .sky__orb, .sky__stars, .slot--colon { animation: none; }
   .slot > .in, .slot > .out { animation-duration: 1ms; }
 }
+
+/* ---- パソコンでアプリとして入れ、タイトルバーを Toolbox のものにしたとき（/toolbox/shared/titlebar.js）。空はタイトルバーの下まで広げ、上のものはその下に ---- */
+@media (display-mode: window-controls-overlay) {
+  .brand { top: calc(var(--tbt-h) + 12px); }
+  .modes { top: calc(var(--tbt-h) + 10px); }
+  .toast { top: calc(var(--tbt-h) + 16px); }
+}

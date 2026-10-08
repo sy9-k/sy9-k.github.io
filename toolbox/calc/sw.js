@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-calc-v10';
+const CACHE_NAME = 'sk-calc-v11';
 const ASSETS = [
   '/toolbox/calc/',
   '/toolbox/calc/index.html',
@@ -17,6 +17,7 @@ const ASSETS = [
   '/toolbox/shared/sync.js',
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',
+  '/toolbox/shared/titlebar.js',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/countdown/icon.svg',
   '/toolbox/clock/icon.svg',

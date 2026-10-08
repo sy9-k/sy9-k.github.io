@@ -6,6 +6,7 @@
   "start_url": "/toolbox/",
   "scope": "/toolbox/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay"],
   "background_color": "#f9f9ff",
   "theme_color": "#f9f9ff",
   "icons": [
