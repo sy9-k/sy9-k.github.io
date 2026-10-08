@@ -677,5 +677,11 @@
     var sync = document.createElement("script");
     sync.src = "/toolbox/shared/sync.js";
     (document.head || document.documentElement).appendChild(sync);
+    // パソコンでアプリとして入れたときのタイトルバー（Window Controls Overlay に対応したブラウザだけ）
+    if (navigator.windowControlsOverlay) {
+      var bar = document.createElement("script");
+      bar.src = "/toolbox/shared/titlebar.js";
+      (document.head || document.documentElement).appendChild(bar);
+    }
   }
 })();

@@ -6,6 +6,7 @@
   "start_url": "/toolbox/memo/",
   "scope": "/toolbox/memo/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay"],
   "background_color": "#faebe0",
   "theme_color": "#faebe0",
   "icons": [
