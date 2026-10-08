@@ -1,5 +1,5 @@
 // Countdown（SK's Toolbox）— 大事な日まで、あと何日
-//   ・日は localStorage の sk_countdown に保存する（SK Hub Systems には送らない）。テーマなどは共通の設定（/toolbox/shared/settings.js）
+//   ・日は localStorage の sk_countdown に保存する（オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する。/toolbox/shared/sync.js）。テーマなどは共通の設定（/toolbox/shared/settings.js）
 //       { version: 1, showPast: true, events: [{ id, name, date: "YYYY-MM-DD", time: "HH:MM" | null, emoji, color, yearly, created, updated }] }
 //   ・yearly（毎年）の日は、過ぎたら次の年に進めて数える（誕生日・記念日など）
 //   ・いちばん近い日は上に大きく出す。その日のうちで時刻を決めてあれば、残りを秒まで数える

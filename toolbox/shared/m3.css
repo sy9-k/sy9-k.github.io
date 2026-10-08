@@ -231,6 +231,53 @@ body.tbs-open { overflow: hidden; }
   .tbs-account { margin-left: 16px; margin-right: 16px; }
 }
 
+/* ---- オンライン同期（/toolbox/shared/sync.js。設定の画面の中）---- */
+.tsy { margin: 4px 16px 8px; padding: 16px; border-radius: 16px; background: var(--md-surface-container-highest, var(--md-surface-container-high)); }
+.tsy-head { display: flex; align-items: center; gap: 14px; }
+.tsy-badge { width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--md-surface); color: var(--md-on-surface-variant); }
+.tsy-badge.is-on { background: var(--md-primary); color: var(--md-on-primary); }
+.tsy-badge.is-warn { background: var(--md-error); color: #fff; }
+.tsy-badge.is-busy .msr { animation: tsy-pulse 1.2s ease-in-out infinite; }
+@keyframes tsy-pulse { 50% { opacity: .35; } }
+.tsy-head__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tsy-head__text strong { font-size: 16px; font-weight: 500; line-height: 22px; }
+.tsy-head__sub { font-size: 13px; line-height: 18px; color: var(--md-on-surface-variant); }
+.tsy-lead { margin: 12px 0 0; font-size: 14px; line-height: 21px; color: var(--md-on-surface-variant); }
+.tsy-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
+.tsy-actions .m3-btn .msr { font-size: 18px; margin-left: -6px; }
+.tsy-apps { margin: 12px -16px 0; }
+.tsy-apps .tbs-item { padding-left: 16px; padding-right: 16px; }
+.tsy-apps .tbs-app-icon { width: 36px; height: 36px; border-radius: 10px; }
+.tsy-problem { color: var(--md-error) !important; }
+.tsy-more { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--md-outline-variant); }
+.tsy-note { display: flex; gap: 8px; margin: 0 0 4px; font-size: 12px; line-height: 18px; color: var(--md-on-surface-variant); }
+.tsy-note .msr { font-size: 18px; flex: none; }
+.tsy-more .text-btn { margin-left: -12px; }
+/* パスフレーズのダイアログ */
+.tsy-box { width: min(440px, 100%); overflow-y: auto; }
+.tsy-dialog { display: flex; flex-direction: column; gap: 12px; }
+.tsy-show { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--md-on-surface-variant); cursor: pointer; }
+.tsy-show input { width: 18px; height: 18px; margin: 0; accent-color: var(--md-primary); }
+.tsy-warn { display: flex; gap: 8px; margin: 0; padding: 12px; border-radius: 12px; background: color-mix(in srgb, var(--md-error) 14%, transparent); color: var(--md-on-surface); font-size: 13px; line-height: 19px; }
+.tsy-warn .msr { font-size: 20px; flex: none; color: var(--md-error); }
+.tsy-error { margin: 0; min-height: 0; font-size: 13px; line-height: 18px; color: var(--md-error); }
+.tsy-error:empty { display: none; }
+.tsy-forgot { align-self: flex-start; margin-left: -12px; }
+.tsy-dialog .tbs-dialog__actions { margin-top: 8px; }
+.tsy-snackbar { z-index: 60; }
+/* SK Hub Systems アカウントのお知らせ */
+.tsy-notices { margin: 12px -16px 0; padding-top: 4px; border-top: 1px solid var(--md-outline-variant); }
+.tsy-notices .tbs-item { padding-left: 16px; padding-right: 16px; }
+.tsy-notice-link > .msr:first-child { color: var(--md-primary); }
+.tsy-count { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; display: grid; place-items: center; background: var(--md-error); color: #fff; font-size: 12px; font-weight: 700; }
+.tsy-notice { display: flex; align-items: baseline; gap: 12px; margin: 0 16px 6px 56px; padding: 10px 12px; border-radius: 12px; background: var(--md-surface); color: inherit; text-decoration: none; }
+.tsy-notice strong { flex: 1; min-width: 0; font-size: 14px; font-weight: 500; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tsy-notice small { flex: none; font-size: 12px; color: var(--md-on-surface-variant); }
+/* 未読のお知らせがあるとき、設定のボタンに点 */
+.icon-btn[data-open-settings].tsy-has-notice { position: relative; }
+.icon-btn[data-open-settings].tsy-has-notice::after { content: ""; position: absolute; top: 8px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: var(--md-error, #ba1a1a); box-shadow: 0 0 0 2px var(--md-surface, #fff); pointer-events: none; }
+@media (max-width: 600px) { .tsy { margin-left: 16px; margin-right: 16px; } }
+
 /* ---- 横断検索（/toolbox/shared/search.js。Ctrl+K）---- */
 .sks-overlay { position: fixed; z-index: 70; inset: 0; display: flex; justify-content: center; align-items: flex-start; padding: max(10vh, 24px) 16px 16px; background: rgba(0, 0, 0, .32); animation: tbs-fade .15s linear; }
 .sks-panel {

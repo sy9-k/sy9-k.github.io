@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-clock-v10';
+const CACHE_NAME = 'sk-clock-v11';
 const ASSETS = [
   '/toolbox/clock/',
   '/toolbox/clock/index.html',
@@ -15,6 +15,9 @@ const ASSETS = [
   '/toolbox/shared/settings.js',
   '/toolbox/shared/remind.js',
   '/toolbox/shared/search.js',
+  '/toolbox/shared/sync.js',
+  '/toolbox/shared/sync-merge.js',
+  '/toolbox/shared/sync-core.js',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/countdown/icon.svg',
   '/toolbox/calc/icon.svg',
@@ -83,14 +86,16 @@ self.addEventListener('fetch', (e) => {
   );
 });
 
-// リマインダー（Todo）の通知を押したら、Todo を開く（開いていれば前に出す）
+// 通知（Todo のリマインダー・Clock・SK Hub Systems のお知らせ）を押したら、そのページを開く（開いていれば前に出す）
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
   const url = (e.notification.data && e.notification.data.url) || '/toolbox/todo/';
+  // 通知のページ（Todo・Clock・SK Hub Systems のお知らせ）が開いていれば前に出す
+  const path = new URL(url, self.location.origin).pathname;
   e.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
       for (const c of list) {
-        if (new URL(c.url).pathname.startsWith('/toolbox/todo/') && 'focus' in c) return c.focus();
+        if (new URL(c.url).pathname.startsWith(path) && 'focus' in c) return c.focus();
       }
       return self.clients.openWindow(url);
     })

@@ -1,6 +1,6 @@
 // Todo（SK's Toolbox）— Apple のリマインダーのような ToDo
 //   ・データの形・完了（繰り返し）・通知は /toolbox/shared/remind.js（window.SKReminders）。localStorage の sk_todo に保存する
-//     （SK Hub Systems には送らない）。テーマなどは共通の設定（/toolbox/shared/settings.js）
+//     （オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する。/toolbox/shared/sync.js）。テーマなどは共通の設定（/toolbox/shared/settings.js）
 //   ・スマートリスト: 今日（期限切れもふくむ）・日時設定あり・すべて・フラグ付き・完了済み。マイリストは色とアイコンを選べる
 //   ・タスク: タイトル・メモ・URL・日付・時刻・繰り返し・フラグ・優先度・リスト・サブタスク。ⓘ でくわしい情報を開く
 //   ・「新規リマインダー」で、リストの最後に行を足してその場で書く（Enter で次の行）。「明日 9時 歯医者」のように書くと日時も入る

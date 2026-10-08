@@ -1654,7 +1654,7 @@ a.hx-tile:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px var(-
 /* アカウント */
 .hx-tile--account { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--surface)), var(--surface) 60%); }
 .hx-apps { position: relative; height: 240px; }
-.hx-app { position: absolute; left: 50%; top: 50%; width: 72px; height: 72px; margin: -36px 0 0 -36px; border-radius: 22px; overflow: hidden; background: var(--surface); box-shadow: 0 0 0 1px var(--line), var(--shadow); transform: rotate(calc(var(--i) * 120deg - 90deg)) translateX(100px) rotate(calc(var(--i) * -120deg + 90deg)); }
+.hx-app { --step: calc(360deg / var(--n, 3)); position: absolute; left: 50%; top: 50%; width: 72px; height: 72px; margin: -36px 0 0 -36px; border-radius: 22px; overflow: hidden; background: var(--surface); box-shadow: 0 0 0 1px var(--line), var(--shadow); transform: rotate(calc(var(--i) * var(--step) - 90deg)) translateX(100px) rotate(calc(var(--i) * var(--step) * -1 + 90deg)); }
 .hx-app img { width: 100%; height: 100%; object-fit: cover; }
 .hx-app img.yf-tile { padding: 14px; box-sizing: border-box; }
 .hx-app--center { width: 104px; height: 104px; margin: -52px 0 0 -52px; border-radius: 50%; padding: 22px; box-sizing: border-box; transform: none; box-shadow: 0 0 0 1px var(--line), 0 0 0 26px color-mix(in srgb, var(--accent) 7%, transparent), 0 0 0 58px color-mix(in srgb, var(--accent) 4%, transparent); }
@@ -1744,6 +1744,44 @@ a.hx-tile:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px var(-
 .hx-uses > p { margin-top: 18px; font-size: 13px; color: var(--muted); }
 
 /* 保存期間 */
+/* SK's Toolbox のオンライン同期（エンドツーエンド暗号化） */
+.hx-e2e { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr); align-items: center; gap: 0; max-width: 980px; margin: 0 auto 72px; }
+.hx-e2e-end { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.hx-e2e-end > small, .hx-e2e-hub > small { font-size: 13px; font-weight: 700; color: var(--muted); }
+.hx-e2e-note { width: 100%; max-width: 220px; padding: 18px 20px; border-radius: 22px; corner-shape: superellipse(1.5); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line), var(--shadow); text-align: left; }
+.hx-e2e-note b { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 800; }
+.hx-e2e-note b::before { content: ""; width: 18px; height: 18px; flex: none; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--accent); }
+.hx-e2e-note i { display: block; margin: 4px 0 0 28px; font-style: normal; font-size: 13px; color: #dc2626; font-weight: 700; }
+.hx-e2e-mid { display: flex; align-items: center; }
+.hx-e2e-line { flex: 1; height: 2px; position: relative; overflow: hidden; background: repeating-linear-gradient(90deg, var(--line-strong) 0 6px, transparent 6px 12px); }
+.hx-e2e-line i { position: absolute; top: -3px; left: -20%; width: 20%; height: 8px; border-radius: 4px; background: var(--accent); animation: hx-e2e-flow 2.6s linear infinite; }
+.hx-e2e-mid .hx-e2e-line:last-child i { animation-delay: 1.3s; }
+@keyframes hx-e2e-flow { to { left: 100%; } }
+.hx-e2e-hub { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 22px 24px; border-radius: 28px; corner-shape: superellipse(1.5); background: #000; color: #f5f5f7; box-shadow: 0 20px 50px -20px rgba(0, 0, 0, .5); }
+.hx-e2e-hub > small { color: #a1a1a6; }
+.hx-e2e-lock { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--accent) 30%, #1d1d1f); color: color-mix(in srgb, var(--accent) 60%, #fff); }
+.hx-e2e-lock svg { width: 24px; height: 24px; }
+.hx-e2e-cipher { font: 700 13px/1.6 "M PLUS 1 Code", ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; color: color-mix(in srgb, var(--accent) 55%, #fff); text-align: center; }
+.hx-e2e-points { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.hx-e2e-point { padding: 28px; border-radius: 26px; corner-shape: superellipse(1.5); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.hx-e2e-point h3 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+.hx-e2e-point p { margin-top: 10px; color: var(--muted); font-size: 14.5px; line-height: 1.7; }
+.hx-e2e-detail { margin-top: 48px; }
+.hx-e2e-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 22px; }
+.hx-e2e-steps li { display: flex; gap: 16px; }
+.hx-e2e-steps b { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-weight: 800; }
+.hx-e2e-steps h3 { font-size: 18px; font-weight: 800; }
+.hx-e2e-steps p { margin-top: 4px; color: var(--muted); font-size: 14.5px; line-height: 1.7; }
+@media (max-width: 980px) { .hx-e2e-points { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .hx-e2e { grid-template-columns: minmax(0, 1fr); gap: 0; justify-items: center; }
+  .hx-e2e-mid { flex-direction: column; }
+  .hx-e2e-line { width: 2px; height: 36px; flex: none; background: repeating-linear-gradient(180deg, var(--line-strong) 0 6px, transparent 6px 12px); }
+  .hx-e2e-line i { display: none; }
+  .hx-e2e-points { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .hx-e2e-line i { animation: none; display: none; } }
+
 .hx-keep { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
 .hx-keep-item { padding: 26px; border-radius: 26px; corner-shape: superellipse(1.5); background: var(--bg); }
 .hx-keep-item strong { display: block; font-size: clamp(32px, 3.6vw, 44px); font-weight: 800; letter-spacing: -.04em; line-height: 1.1; color: var(--link); }
@@ -1826,7 +1864,7 @@ a.hx-tile:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px var(-
 .is-in .ha-key-ico svg { transform: none; }
 
 /* 使えるサービス */
-.ha-services { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.ha-services { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 20px; }
 @media (max-width: 980px) { .ha-services { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .ha-services { grid-template-columns: minmax(0, 1fr); } }
 .ha-service { display: flex; flex-direction: column; gap: 10px; padding: 32px 26px; border-radius: 28px; corner-shape: superellipse(1.5); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); text-decoration: none; transition: transform .35s cubic-bezier(.22, 1, .36, 1), box-shadow .35s ease; }
