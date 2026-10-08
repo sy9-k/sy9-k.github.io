@@ -382,6 +382,12 @@ body.tbs-open { overflow: hidden; }
 .tbt { view-transition-name: sk-titlebar; }
 ::view-transition-group(sk-titlebar) { animation: none; }
 ::view-transition-old(sk-titlebar), ::view-transition-new(sk-titlebar) { animation-duration: .15s; }
+/* /toolbox/ のホームのサイトのヘッダー（assets/header.css の sk-header）は、中身と同じ速さで消える・現れる。
+   アプリの画面にはヘッダーがないので、前の画面のヘッダーが残って、透明な帯に見えないように */
+::view-transition-group(sk-header) { animation: none; }
+::view-transition-old(sk-header) { animation: m3-vt-out 90ms linear both; }
+::view-transition-new(sk-header) { animation: m3-vt-fade-in .2s linear 60ms both; }
+@keyframes m3-vt-fade-in { from { opacity: 0; } }
 /* まとめてバックアップ（設定の画面） */
 .tbs-item--backup { flex-wrap: wrap; }
 .tbs-backup__btns { display: flex; align-items: center; gap: 8px; }
@@ -400,7 +406,9 @@ body.tbs-open { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ripple { animation-duration: 1ms; }
-  ::view-transition-old(root), ::view-transition-new(root), ::view-transition-old(sk-titlebar), ::view-transition-new(sk-titlebar) { animation: none; }
+  ::view-transition-old(root), ::view-transition-new(root), ::view-transition-old(sk-titlebar), ::view-transition-new(sk-titlebar),
+  ::view-transition-old(sk-header), ::view-transition-new(sk-header) { animation: none; }
 }
 :root[data-motion="reduce"]::view-transition-old(root), :root[data-motion="reduce"]::view-transition-new(root),
-:root[data-motion="reduce"]::view-transition-old(sk-titlebar), :root[data-motion="reduce"]::view-transition-new(sk-titlebar) { animation: none; }
+:root[data-motion="reduce"]::view-transition-old(sk-titlebar), :root[data-motion="reduce"]::view-transition-new(sk-titlebar),
+:root[data-motion="reduce"]::view-transition-old(sk-header), :root[data-motion="reduce"]::view-transition-new(sk-header) { animation: none; }
