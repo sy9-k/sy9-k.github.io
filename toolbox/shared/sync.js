@@ -440,8 +440,11 @@
     if (!container || container._tsy) return;
     container._tsy = true;
     container.classList.add("tsy");
+    // 設定のダイアログは、画面に出す前に中身を作る。画面に出たあとで消えたら（ダイアログを閉じたら）描くのをやめる
+    var attached = false;
     function draw() {
-      if (!container.isConnected) { listeners = listeners.filter(function (fn) { return fn !== draw; }); return; }
+      if (container.isConnected) attached = true;
+      else if (attached) { listeners = listeners.filter(function (fn) { return fn !== draw; }); return; }
       container.textContent = "";
       var h = hint(), c = cfg();
       var head = el("div", "tsy-head");
