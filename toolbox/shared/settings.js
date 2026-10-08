@@ -27,6 +27,15 @@
   var root = document.documentElement;
   var I18N = window.SKI18N;
 
+  // 画面の切りかえのアニメーションは /toolbox/shared/m3.css のもの（タイトルバーを動かさないフェードスルー）。
+  // frameworks/check.js がサイト共通の切りかえを後から入れて上書きしないよう、check.js が見る印を付けておく
+  if (!document.querySelector('[data-RedCheckOSS-style="view-transition"]')) {
+    var vt = document.createElement("meta");
+    vt.setAttribute("data-RedCheckOSS-style", "view-transition");
+    vt.content = "toolbox";
+    (document.head || root).appendChild(vt);
+  }
+
   // /toolbox/ のホームをアプリとして開いたとき（PWA）は、サイトのヘッダーを細くする（<html class="hd-compact">。見た目は assets/header.css）
   if (scope === "site" && window.matchMedia) {
     var appMode = window.matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: fullscreen), (display-mode: minimal-ui)");
@@ -685,11 +694,5 @@
     var sync = document.createElement("script");
     sync.src = "/toolbox/shared/sync.js";
     (document.head || document.documentElement).appendChild(sync);
-    // パソコンでアプリとして入れたときのタイトルバー（Window Controls Overlay に対応したブラウザだけ）
-    if (navigator.windowControlsOverlay) {
-      var bar = document.createElement("script");
-      bar.src = "/toolbox/shared/titlebar.js";
-      (document.head || document.documentElement).appendChild(bar);
-    }
   }
 })();

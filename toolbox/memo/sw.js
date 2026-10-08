@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-memo-v11';
+const CACHE_NAME = 'sk-memo-v12';
 const ASSETS = [
   '/toolbox/memo/',
   '/toolbox/memo/index.html',

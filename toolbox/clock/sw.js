@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-clock-v12';
+const CACHE_NAME = 'sk-clock-v13';
 const ASSETS = [
   '/toolbox/clock/',
   '/toolbox/clock/index.html',

@@ -370,12 +370,18 @@ body.tbs-open { overflow: hidden; }
 .m3-btn, .fab, .text-btn, .icon-btn { transition: transform .18s var(--m3-spring), background-color .2s linear, color .2s linear, border-radius .3s cubic-bezier(.2, 0, 0, 1); }
 .m3-btn:active, .fab:active { transform: scale(.95); }
 .icon-btn:active { transform: scale(.9); }
-/* ページの移動をなめらかに（同じサイトの中。対応しているブラウザだけ） */
+/* ページの移動をなめらかに（同じサイトの中。対応しているブラウザだけ）
+   マテリアルデザインの「フェードスルー」: 前の画面はその場ですっと消え、次の画面は少し小さいところから現れる。
+   上下には動かさない（パソコンのタイトルバー（/toolbox/shared/titlebar.js）の下で、中身がずれて見えないように）。
+   タイトルバーは別に切り出して動かさず、アプリの名前などだけ短く入れかえる */
 @view-transition { navigation: auto; }
-::view-transition-old(root) { animation: m3-vt-out .2s var(--m3-accel) both; }
-::view-transition-new(root) { animation: m3-vt-in .42s var(--m3-decel) both; }
-@keyframes m3-vt-out { to { opacity: 0; transform: translateY(-6px) scale(.995); } }
-@keyframes m3-vt-in { from { opacity: 0; transform: translateY(12px) scale(.995); } }
+::view-transition-old(root) { animation: m3-vt-out 90ms linear both; }
+::view-transition-new(root) { animation: m3-vt-in .3s var(--m3-decel) 60ms both; }
+@keyframes m3-vt-out { to { opacity: 0; } }
+@keyframes m3-vt-in { from { opacity: 0; transform: scale(.97); } }
+.tbt { view-transition-name: sk-titlebar; }
+::view-transition-group(sk-titlebar) { animation: none; }
+::view-transition-old(sk-titlebar), ::view-transition-new(sk-titlebar) { animation-duration: .15s; }
 /* まとめてバックアップ（設定の画面） */
 .tbs-item--backup { flex-wrap: wrap; }
 .tbs-backup__btns { display: flex; align-items: center; gap: 8px; }
@@ -394,6 +400,7 @@ body.tbs-open { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ripple { animation-duration: 1ms; }
-  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  ::view-transition-old(root), ::view-transition-new(root), ::view-transition-old(sk-titlebar), ::view-transition-new(sk-titlebar) { animation: none; }
 }
-:root[data-motion="reduce"]::view-transition-old(root), :root[data-motion="reduce"]::view-transition-new(root) { animation: none; }
+:root[data-motion="reduce"]::view-transition-old(root), :root[data-motion="reduce"]::view-transition-new(root),
+:root[data-motion="reduce"]::view-transition-old(sk-titlebar), :root[data-motion="reduce"]::view-transition-new(sk-titlebar) { animation: none; }
