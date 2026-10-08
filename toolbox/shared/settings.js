@@ -560,11 +560,54 @@
     more.appendChild(langLink);
     more.appendChild(linkRow("/toolbox/", "apps", t("SK's Toolbox のアプリ一覧"), ""));
     more.appendChild(linkRow("/policies/", "policy", t("利用規約・プライバシーポリシー"), ""));
+    // 最新の版に更新（古いファイルが残って、新しい機能が出てこないとき）
+    var updRow = el("button", "tbs-item tbs-item--link tbs-item--button m3-state");
+    updRow.type = "button";
+    updRow.appendChild(icon("system_update"));
+    var updLabel = label(t("最新の版に更新"), t("保存してある古いファイルを消して、Toolbox を最新の状態で読み込み直します。データは消えません"));
+    updRow.appendChild(updLabel);
+    updRow.appendChild(icon("refresh"));
+    updRow.addEventListener("click", function () {
+      if (updRow.disabled) return;
+      updRow.disabled = true;
+      updLabel.querySelector(".tbs-label__title").textContent = t("更新しています…");
+      forceUpdate();
+    });
+    more.appendChild(updRow);
     more.appendChild(el("p", "tbs-version", "SK's Toolbox · 1.0"));
     body.appendChild(more);
 
     refreshUi();
     return body;
+  }
+
+  // ---- 最新の版に更新 ----
+  //   1. Toolbox の Service Worker を外す（次に開いたときに、新しいものが入る）
+  //   2. Toolbox の Service Worker が保存したファイル（sk-toolbox-・sk-todo- など）を消す
+  //   3. このページが読み込んだファイルを、ブラウザのキャッシュを使わずに取り直す
+  //   4. 開き直す。localStorage・IndexedDB（データ）には触らない
+  function forceUpdate() {
+    var jobs = [];
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+      jobs.push(navigator.serviceWorker.getRegistrations().then(function (regs) {
+        return Promise.all(regs.filter(function (r) { return new URL(r.scope).pathname.indexOf("/toolbox/") === 0; }).map(function (r) { return r.unregister(); }));
+      }).catch(function () { /* 外せなくても続ける */ }));
+    }
+    if (window.caches) {
+      jobs.push(caches.keys().then(function (keys) {
+        return Promise.all(keys.filter(function (k) { return /^sk-(toolbox|clock|calc|memo|todo|countdown)-/.test(k); }).map(function (k) { return caches.delete(k); }));
+      }).catch(function () { /* 同上 */ }));
+    }
+    Promise.all(jobs).then(function () {
+      var urls = [location.pathname + location.search];
+      try {
+        performance.getEntriesByType("resource").forEach(function (e) {
+          var u = new URL(e.name);
+          if (u.origin === location.origin && urls.indexOf(u.pathname + u.search) < 0) urls.push(u.pathname + u.search);
+        });
+      } catch (e) { /* 取れなければ、このページだけ */ }
+      return Promise.all(urls.map(function (u) { return fetch(u, { cache: "reload" }).catch(function () { /* オフラインなど */ }); }));
+    }).then(function () { location.reload(); });
   }
 
   // 全画面のダイアログで開く（端末の「戻る」で閉じる）
