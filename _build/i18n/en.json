@@ -2352,5 +2352,16 @@
   "Memo — 画像も入るメモ帳 | SK's Toolbox": "Memo — Notes with images | SK's Toolbox",
   "Roulette — ルーレット・抽選 | SK's Toolbox": "Roulette — Spin wheel & picker | SK's Toolbox",
   "Timetable — 時間割アプリ | SK's Toolbox": "Timetable — Class timetable app | SK's Toolbox",
-  "Todo — リマインダー・ToDo リスト | SK's Toolbox": "Todo — Reminders & to-do list | SK's Toolbox"
+  "Todo — リマインダー・ToDo リスト | SK's Toolbox": "Todo — Reminders & to-do list | SK's Toolbox",
+  "10 分後": "In 10 min",
+  "アイコンに数字を出す": "Show a number on the icon",
+  "アプリとして入れたとき、Dock やホーム画面のアイコンに、期限切れと今日の Todo の数を出します": "When installed as an app, show the number of overdue and today's Todo tasks on the Dock or home screen icon",
+  "オフ: 端末の空きが少ないとき、ブラウザが Toolbox のデータを消すことがあります": "Off: the browser may delete Toolbox data when the device is low on space",
+  "オン: 端末の空きが少なくなっても、ブラウザが Toolbox のデータを自動で消しません": "On: the browser won't automatically delete Toolbox data even when the device is low on space",
+  "オンにする": "Turn on",
+  "データの保護": "Data protection",
+  "ブラウザに許可されませんでした。Toolbox をアプリとして入れると、オンになりやすくなります": "The browser didn't allow it. Installing Toolbox as an app makes it more likely to be turned on",
+  "ミニ時計を開けませんでした": "Couldn't open the mini clock",
+  "ミニ時計（ほかのウィンドウの上に浮かべる）": "Mini clock (float above other windows)",
+  "完了にしました: {text}": "Completed: {text}"
 }

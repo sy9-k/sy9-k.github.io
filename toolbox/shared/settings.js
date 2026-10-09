@@ -7,7 +7,7 @@
 //       <html data-theme> に付ける）のまま。ライト・ダークを選んでいれば Toolbox の設定を優先する（ヘッダーもいっしょに変わる）
 //
 //   ・設定は localStorage の sk_toolbox に保存する（オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する）
-//       { theme: "auto|light|dark", color: "app|blue|sakura|…", motion: "auto|reduce", haptics: true|false }
+//       { theme: "auto|light|dark", color: "app|blue|sakura|…", motion: "auto|reduce", haptics: true|false, badge: true|false }
 //   ・テーマ: <html data-theme="light|dark">（auto のときは付けない。各アプリの CSS が端末の設定に合わせる）
 //   ・テーマカラー: SK's Brand のテーマカラー（SK's Blue など 7 色）から作った Material 3 の配色で --md-* を上書きする
 //       配色は Google の material-color-utilities（SchemeFidelity）で前もって計算したもの。
@@ -69,7 +69,7 @@
 
   // ---- 設定の読み書き ----
   var STORE = "sk_toolbox";
-  var DEFAULTS = { theme: "auto", color: "app", motion: "auto", haptics: true };
+  var DEFAULTS = { theme: "auto", color: "app", motion: "auto", haptics: true, badge: true };
   var settings = {};
   function read() {
     var d = {};
@@ -78,7 +78,8 @@
       theme: ["auto", "light", "dark"].indexOf(d.theme) >= 0 ? d.theme : DEFAULTS.theme,
       color: d.color === "app" || PALETTES[d.color] ? d.color : DEFAULTS.color,
       motion: d.motion === "reduce" ? "reduce" : "auto",
-      haptics: typeof d.haptics === "boolean" ? d.haptics : DEFAULTS.haptics
+      haptics: typeof d.haptics === "boolean" ? d.haptics : DEFAULTS.haptics,
+      badge: typeof d.badge === "boolean" ? d.badge : DEFAULTS.badge
     };
   }
   function write() {
@@ -473,12 +474,49 @@
     var use = section(t("操作"));
     use.appendChild(switchRow(t("押したときに振動する"), t("Calc のキーと、Todo のチェック。対応している端末（Android など）だけです"),
       function () { return settings.haptics; }, function (on) { set({ haptics: on }); vibrate(); }));
+    // アプリのアイコンの数字（Badging API。対応しているブラウザで、アプリとして入れたとき）
+    if (navigator.setAppBadge) {
+      use.appendChild(switchRow(t("アイコンに数字を出す"), t("アプリとして入れたとき、Dock やホーム画面のアイコンに、期限切れと今日の Todo の数を出します"),
+        function () { return settings.badge; }, function (on) {
+          set({ badge: on });
+          if (!on) navigator.clearAppBadge().catch(function () {});
+          else if (window.SKReminders) SKReminders.check();
+        }));
+    }
     body.appendChild(use);
 
     // この端末のデータ
     var data = section(t("この端末のデータ"));
     var dataNote = el("p", "tbs-text");
     data.appendChild(dataNote);
+    // データを消されにくくする（storage.persist。アプリとして入れると、たいてい自動でオンになる）
+    if (navigator.storage && navigator.storage.persisted) {
+      var keep = el("div", "tbs-item tbs-item--keep");
+      keep.appendChild(icon("verified_user"));
+      var keepLabel = label(t("データの保護"), t("確認中…"));
+      keep.appendChild(keepLabel);
+      var keepBtn = el("button", "text-btn m3-state", t("オンにする"));
+      keepBtn.type = "button";
+      keepBtn.hidden = true;
+      keep.appendChild(keepBtn);
+      data.appendChild(keep);
+      var keepSub = keepLabel.querySelector(".tbs-label__sub");
+      var drawKeep = function () {
+        navigator.storage.persisted().then(function (on) {
+          keepSub.textContent = on
+            ? t("オン: 端末の空きが少なくなっても、ブラウザが Toolbox のデータを自動で消しません")
+            : t("オフ: 端末の空きが少ないとき、ブラウザが Toolbox のデータを消すことがあります");
+          keepBtn.hidden = on || !navigator.storage.persist;
+        }).catch(function () { keep.hidden = true; });
+      };
+      keepBtn.addEventListener("click", function () {
+        navigator.storage.persist().then(function (ok) {
+          drawKeep();
+          if (!ok && window.M3) M3.dialog({ title: t("データの保護"), icon: "info", body: el("p", "tbs-dialog__text", t("ブラウザに許可されませんでした。Toolbox をアプリとして入れると、オンになりやすくなります")), actions: [{ label: "OK", primary: true, value: null }] });
+        }).catch(drawKeep);
+      });
+      drawKeep();
+    }
     updaters.push(function () {
       dataNote.textContent = syncOn()
         ? t("Toolbox のデータは、この端末のブラウザに保存し、オンライン同期で暗号化して SK Hub Systems アカウントにも保存しています。ここで消去しても、次に同期するときにアカウントから読み込み直します。")

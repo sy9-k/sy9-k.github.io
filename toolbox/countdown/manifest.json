@@ -6,7 +6,15 @@
   "start_url": "/toolbox/countdown/",
   "scope": "/toolbox/countdown/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay"],
+  "display_override": [
+    "window-controls-overlay"
+  ],
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  },
   "background_color": "#fef7ff",
   "theme_color": "#fef7ff",
   "icons": [

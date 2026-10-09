@@ -6,7 +6,15 @@
   "start_url": "/toolbox/calc/",
   "scope": "/toolbox/calc/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay"],
+  "display_override": [
+    "window-controls-overlay"
+  ],
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  },
   "background_color": "#f9f9ff",
   "theme_color": "#f9f9ff",
   "icons": [

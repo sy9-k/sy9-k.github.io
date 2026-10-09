@@ -1,6 +1,6 @@
 // SK's Toolbox のホーム画面（/toolbox/）の Service Worker。スコープは /toolbox/ 全体
 // 各アプリは自分のフォルダに自分の sw.js を持つ（スコープがせまいほうが使われる）。まだ開いたことのないアプリは、ここで開ける
-const CACHE_NAME = 'sk-toolbox-v11';
+const CACHE_NAME = 'sk-toolbox-v12';
 const ASSETS = [
   // ホーム画面と、4 つのアプリ（ホーム画面から開いたことがなくても、オフラインで開けるように）
   '/toolbox/',
@@ -143,13 +143,24 @@ self.addEventListener('fetch', (e) => {
 });
 
 // 通知（Todo のリマインダー・Clock・SK Hub Systems のお知らせ）を押したら、そのページを開く（開いていれば前に出す）
+// 通知のボタン（完了にする・10 分後・スヌーズ・止める）は、開いている Toolbox のページに伝えて、そこで処理する
+// （/toolbox/shared/remind.js。開いているページがなければ、?skact= を付けて開き、開いたページで処理する）
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
-  const url = (e.notification.data && e.notification.data.url) || '/toolbox/todo/';
+  const data = e.notification.data || {};
+  const url = data.url || '/toolbox/todo/';
   // 通知のページ（Todo・Clock・SK Hub Systems のお知らせ）が開いていれば前に出す
   const path = new URL(url, self.location.origin).pathname;
   e.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      if (e.action) {
+        if (e.action === 'stop') return null;
+        const msg = { type: 'sk-notification-action', action: e.action, kind: data.kind, id: data.id };
+        const target = list.find((c) => new URL(c.url).pathname.startsWith('/toolbox/'));
+        if (target) { target.postMessage(msg); return null; }
+        const q = new URLSearchParams({ skact: e.action, skkind: data.kind || '', skid: data.id || '' });
+        return self.clients.openWindow(path + '?' + q.toString());
+      }
       for (const c of list) {
         if (new URL(c.url).pathname.startsWith(path) && 'focus' in c) return c.focus();
       }
