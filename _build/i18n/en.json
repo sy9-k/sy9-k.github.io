@@ -2363,5 +2363,21 @@
   "ブラウザに許可されませんでした。Toolbox をアプリとして入れると、オンになりやすくなります": "The browser didn't allow it. Installing Toolbox as an app makes it more likely to be turned on",
   "ミニ時計を開けませんでした": "Couldn't open the mini clock",
   "ミニ時計（ほかのウィンドウの上に浮かべる）": "Mini clock (float above other windows)",
-  "完了にしました: {text}": "Completed: {text}"
+  "完了にしました: {text}": "Completed: {text}",
+  "SK's Toolbox が新しくなりました": "SK's Toolbox has been updated",
+  "SK's Toolbox が新しくなりました。更新すると反映されます": "SK's Toolbox has been updated. Reload to apply it",
+  "{p} 限 {subject}": "Period {p} {subject}",
+  "{time} から": "from {time}",
+  "あと {n} 分": "{n} min left",
+  "アイランド": "Island",
+  "アイランド（押すと今日のまとめ）": "Island (click for today's summary)",
+  "スヌーズ": "Snooze",
+  "タイマー（一時停止）": "Timer (paused)",
+  "パソコンでアプリとして入れたとき、タイトルバーの真ん中に、いまの授業やタイマーなどを小さく出します。押すと今日のまとめが開きます": "When installed as an app on a computer, shows your current class, timer, and more in the middle of the title bar. Click it to open today's summary",
+  "今日の Todo {n} 件": "{n} Todo tasks today",
+  "今日の Todo はありません": "No Todo tasks today",
+  "今日のまとめ": "Today's summary",
+  "期限切れを含みます": "Includes overdue tasks",
+  "次 {p} 限 {subject}": "Next: period {p} {subject}",
+  "次のアラーム": "Next alarm"
 }

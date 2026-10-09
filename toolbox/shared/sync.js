@@ -215,6 +215,7 @@
       if (fresh.length) {
         var title = t("SK Hub Systems のお知らせ");
         var body = fresh.length === 1 ? fresh[0].title : t("新しいお知らせが {n} 件あります", { n: fresh.length }) + " — " + fresh[0].title;
+        document.dispatchEvent(new CustomEvent("sk-island-flash", { detail: { icon: "mail", text: t("SK Hub Systems のお知らせ") + ": " + fresh[0].title, color: "#AFA9EC" } }));
         if (wantsPush(cfg())) push(title, body, "skhub-notice-" + fresh[0].id);
         else if (document.visibilityState === "visible") toast(t("新しいお知らせがあります: {title}", { title: fresh[0].title }), t("見る"), function () { location.href = noticeUrl(); });
       }

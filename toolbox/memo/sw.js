@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-memo-v15';
+const CACHE_NAME = 'sk-memo-v16';
 const ASSETS = [
   '/toolbox/memo/',
   '/toolbox/memo/index.html',
@@ -18,6 +18,7 @@ const ASSETS = [
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',
   '/toolbox/shared/titlebar.js',
+  '/toolbox/shared/island.js',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/countdown/icon.svg',
   '/toolbox/clock/icon.svg',

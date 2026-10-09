@@ -234,6 +234,22 @@ body.tbs-open { overflow: hidden; }
   .tbs-account { margin-left: 16px; margin-right: 16px; }
 }
 
+/* ---- 「新しくなりました」（/toolbox/shared/pwa.js）---- */
+.tb-update {
+  position: fixed; z-index: 55; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); translate: -50% 0;
+  display: flex; align-items: center; gap: 12px; width: max-content; max-width: calc(100vw - 24px);
+  padding: 8px 8px 8px 16px; border-radius: 20px;
+  background: var(--md-inverse-surface, #2e3036); color: var(--md-inverse-on-surface, #f0f0f7);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .28); font-family: var(--md-font, system-ui, sans-serif); font-size: 14px; line-height: 20px;
+  animation: tb-update-in .45s cubic-bezier(.34, 1.36, .64, 1);
+}
+@keyframes tb-update-in { from { opacity: 0; transform: translateY(24px) scale(.96); } }
+.tb-update > .msr { color: var(--md-inverse-primary, #aac7ff); }
+.tb-update__text { flex: 1; min-width: 0; }
+.tb-update__go { height: 36px; padding: 0 18px; background: var(--md-inverse-primary, #aac7ff); color: var(--md-inverse-surface, #2e3036); }
+.tb-update__close { width: 36px; height: 36px; color: inherit; }
+:root[data-motion="reduce"] .tb-update { animation: none; }
+
 /* ---- オンライン同期（/toolbox/shared/sync.js。設定の画面の中）---- */
 .tsy { margin: 4px 16px 8px; padding: 16px; border-radius: 16px; background: var(--md-surface-container-highest, var(--md-surface-container-high)); }
 .tsy-head { display: flex; align-items: center; gap: 14px; }
@@ -321,6 +337,55 @@ body.tbs-open { overflow: hidden; }
   html[data-tbt="overlay"] .tbt-apps { background: rgba(255, 255, 255, .14); }
   html[data-tbt="overlay"] .tbt-app[aria-current="page"] { background: rgba(255, 255, 255, .28); box-shadow: none; }
   html[data-tbt="overlay"] .tbt-brand:hover, html[data-tbt="overlay"] .tbt-app:not([aria-current="page"]):hover, html[data-tbt="overlay"] .tbt-btn:hover { background: rgba(255, 255, 255, .16); }
+  /* アイランド（/toolbox/shared/island.js）: タイトルバーの真ん中の小さな島。押すと下に広がる */
+  .isl { position: absolute; z-index: 2; left: 50%; top: 50%; translate: -50% -50%; app-region: no-drag; -webkit-app-region: no-drag; }
+  .isl[hidden] { display: none; }
+  .isl__pill {
+    display: flex; align-items: center; gap: 7px; height: 25px; max-width: min(420px, 46cqw); padding: 0 12px; overflow: hidden;
+    border: 0; border-radius: 999px; background: #111214; color: #f5f5f7; cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 2px 8px rgba(0, 0, 0, .25);
+    font: 500 12.5px/1 var(--md-font, system-ui, sans-serif); white-space: nowrap;
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), background-color .2s linear;
+  }
+  .tbt .isl__pill { color: #f5f5f7; } /* タイトルバーのボタンの「親の色に合わせる」より優先（島はいつも黒地に白） */
+  .isl__pill:hover { background: #1c1d20; }
+  .isl__pill:active { transform: scale(.96); }
+  .isl__pill:focus-visible { outline: 2px solid var(--md-primary, #6cd3f7); outline-offset: 2px; }
+  .isl__icon { font-size: 16px; color: var(--isl-c, #fff); }
+  .isl__icon[hidden], .isl__sub[hidden], .isl__bar[hidden] { display: none; }
+  .isl__text { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+  .isl__sub { color: rgba(245, 245, 247, .62); font-weight: 400; font-variant-numeric: tabular-nums; }
+  .isl__bar { width: 46px; height: 4px; flex: none; border-radius: 2px; background: rgba(255, 255, 255, .18); overflow: hidden; }
+  .isl__bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--isl-c, #fff); transition: width 1s linear; }
+  .isl[data-kind="flash"] .isl__pill { padding: 0 16px; }
+  .isl.is-flash .isl__pill { animation: isl-pop .6s cubic-bezier(.34, 1.56, .64, 1); }
+  @keyframes isl-pop { 0% { transform: scale(.9); } 40% { transform: scale(1.12, 1.18); } 100% { transform: none; } }
+  .isl__panel {
+    position: absolute; top: calc(100% + 8px); left: 50%; translate: -50% 0;
+    width: min(360px, 80vw); padding: 14px; border-radius: 24px;
+    background: #111214; color: #f5f5f7; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 18px 40px rgba(0, 0, 0, .35);
+    font-family: var(--md-font, system-ui, sans-serif); cursor: default; user-select: none;
+    transform-origin: 50% 0; animation: isl-open .38s cubic-bezier(.34, 1.36, .64, 1);
+  }
+  .isl__panel[hidden] { display: none; }
+  @keyframes isl-open { from { opacity: 0; transform: scale(.6, .3); } }
+  .isl-panel__head { display: flex; align-items: baseline; justify-content: space-between; padding: 0 4px 8px; }
+  .isl-panel__head b { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .isl-panel__head span { font-size: 13px; color: rgba(245, 245, 247, .62); }
+  .isl-row { display: flex; align-items: center; gap: 12px; padding: 9px 8px; border-radius: 14px; color: inherit; text-decoration: none; }
+  a.isl-row:hover { background: rgba(255, 255, 255, .07); }
+  .isl-row .msr { font-size: 20px; }
+  .isl-row__text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .isl-row__text b { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .isl-row__text small { font-size: 12px; color: rgba(245, 245, 247, .62); }
+  .isl-panel__apps { display: flex; gap: 6px; margin-top: 8px; }
+  .isl-app { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px; border: 0; border-radius: 14px; background: rgba(255, 255, 255, .08); color: inherit; cursor: pointer; font: 500 11.5px/1.2 var(--md-font, system-ui, sans-serif); }
+  .isl-app:hover { background: rgba(255, 255, 255, .14); }
+  .isl-app .msr { font-size: 20px; }
+  @container (max-width: 560px) { .isl { display: none; } }
+  /* 島があるときは、少しせまいと右のアプリの切りかえを隠す（同じボタンは、島を押すと出る） */
+  @container (max-width: 900px) { .tbt:has(.isl:not([hidden])) .tbt-apps { display: none; } }
+  :root[data-motion="reduce"] .isl__pill, :root[data-motion="reduce"] .isl__panel, :root[data-motion="reduce"] .isl.is-flash .isl__pill { animation: none; transition: none; }
   /* 設定・ダイアログ・検索は、タイトルバーの下から（開いていても、ウィンドウを動かせるように） */
   .tbs-overlay, .tbs-dialog-scrim, .sks-overlay { top: var(--tbt-h); }
   /* /toolbox/ のホーム: サイトのヘッダー（ふつうは 52px・細いときは 44px）もタイトルバーの下に */

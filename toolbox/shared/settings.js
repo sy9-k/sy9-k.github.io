@@ -7,7 +7,7 @@
 //       <html data-theme> に付ける）のまま。ライト・ダークを選んでいれば Toolbox の設定を優先する（ヘッダーもいっしょに変わる）
 //
 //   ・設定は localStorage の sk_toolbox に保存する（オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する）
-//       { theme: "auto|light|dark", color: "app|blue|sakura|…", motion: "auto|reduce", haptics: true|false, badge: true|false }
+//       { theme: "auto|light|dark", color: "app|blue|sakura|…", motion: "auto|reduce", haptics: true|false, badge: true|false, island: true|false }
 //   ・テーマ: <html data-theme="light|dark">（auto のときは付けない。各アプリの CSS が端末の設定に合わせる）
 //   ・テーマカラー: SK's Brand のテーマカラー（SK's Blue など 7 色）から作った Material 3 の配色で --md-* を上書きする
 //       配色は Google の material-color-utilities（SchemeFidelity）で前もって計算したもの。
@@ -69,7 +69,7 @@
 
   // ---- 設定の読み書き ----
   var STORE = "sk_toolbox";
-  var DEFAULTS = { theme: "auto", color: "app", motion: "auto", haptics: true, badge: true };
+  var DEFAULTS = { theme: "auto", color: "app", motion: "auto", haptics: true, badge: true, island: true };
   var settings = {};
   function read() {
     var d = {};
@@ -79,7 +79,8 @@
       color: d.color === "app" || PALETTES[d.color] ? d.color : DEFAULTS.color,
       motion: d.motion === "reduce" ? "reduce" : "auto",
       haptics: typeof d.haptics === "boolean" ? d.haptics : DEFAULTS.haptics,
-      badge: typeof d.badge === "boolean" ? d.badge : DEFAULTS.badge
+      badge: typeof d.badge === "boolean" ? d.badge : DEFAULTS.badge,
+      island: typeof d.island === "boolean" ? d.island : DEFAULTS.island
     };
   }
   function write() {
@@ -474,6 +475,11 @@
     var use = section(t("操作"));
     use.appendChild(switchRow(t("押したときに振動する"), t("Calc のキーと、Todo のチェック。対応している端末（Android など）だけです"),
       function () { return settings.haptics; }, function (on) { set({ haptics: on }); vibrate(); }));
+    // アイランド（/toolbox/shared/island.js。パソコンでアプリとして入れ、タイトルバーを Toolbox のものにしたとき）
+    if (navigator.windowControlsOverlay) {
+      use.appendChild(switchRow(t("アイランド"), t("パソコンでアプリとして入れたとき、タイトルバーの真ん中に、いまの授業やタイマーなどを小さく出します。押すと今日のまとめが開きます"),
+        function () { return settings.island; }, function (on) { set({ island: on }); }));
+    }
     // アプリのアイコンの数字（Badging API。対応しているブラウザで、アプリとして入れたとき）
     if (navigator.setAppBadge) {
       use.appendChild(switchRow(t("アイコンに数字を出す"), t("アプリとして入れたとき、Dock やホーム画面のアイコンに、期限切れと今日の Todo の数を出します"),
