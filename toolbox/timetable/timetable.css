@@ -108,6 +108,112 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .now-card--plain { color: var(--md-on-surface-variant); }
 .now-card--plain .msr { font-size: 28px; color: var(--md-primary); }
 
+/* いまのカード: 特別な日程の日 */
+.now-card--special { cursor: pointer; background: color-mix(in srgb, var(--md-primary) 12%, var(--md-surface-container-low)); }
+.now-card--special .msr { color: var(--md-primary); }
+.now-card__plain { display: block; font-size: 15px; font-weight: 700; color: var(--md-on-surface); }
+.now-card--plain .now-card__meta { white-space: normal; }
+
+/* クラスへの連絡 */
+.notices { margin: 0 0 18px; }
+.nt-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--md-error); color: #fff; font-size: 11.5px; vertical-align: 1px; }
+.nt-list { display: flex; flex-direction: column; gap: 8px; }
+.nt-card {
+  --nc: var(--md-primary);
+  display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 12px 14px; border: 0; border-radius: 18px; cursor: pointer; text-align: left; font: inherit;
+  background: color-mix(in srgb, var(--nc) 9%, var(--md-surface-container-low)); color: var(--md-on-surface);
+}
+.nt-card--bring { --nc: #ea580c; }
+.nt-card--submit { --nc: #7c3aed; }
+.nt-card--change { --nc: #0891b2; }
+.nt-card.is-important { --nc: var(--md-error); box-shadow: inset 0 0 0 2px var(--md-error); }
+.nt-card.is-ended { opacity: .55; }
+.nt-card > .msr { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: color-mix(in srgb, var(--nc) 16%, transparent); color: var(--nc); font-size: 20px; }
+.nt-card__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.nt-card__top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--md-on-surface-variant); }
+.nt-card__kind { font-weight: 700; color: var(--nc); }
+.nt-card__new { padding: 1px 7px; border-radius: 999px; background: var(--md-error); color: #fff; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; }
+.nt-card__title { font-size: 15px; font-weight: 700; overflow-wrap: anywhere; }
+.nt-card__body { font-size: 13px; color: var(--md-on-surface-variant); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+.nt-body { margin: 0; font-size: 15px; line-height: 1.7; }
+.nt-when { margin: 0; font-size: 12px; color: var(--md-on-surface-variant); }
+.nt-important { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 4px; font-size: 14px; cursor: pointer; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nt-card--bring { --nc: #fb923c; } :root:not([data-theme="light"]) .nt-card--submit { --nc: #a78bfa; } :root:not([data-theme="light"]) .nt-card--change { --nc: #22d3ee; } }
+:root[data-theme="dark"] .nt-card--bring { --nc: #fb923c; }
+:root[data-theme="dark"] .nt-card--submit { --nc: #a78bfa; }
+:root[data-theme="dark"] .nt-card--change { --nc: #22d3ee; }
+
+/* 特別な日程（試験の週・行事・休みなど） */
+.specials { margin: 0 0 18px; }
+.specials__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 4px 8px; }
+.specials__title { margin: 0; font-size: 15px; font-weight: 700; color: var(--md-on-surface-variant); }
+.specials__head .text-btn .msr { font-size: 18px; }
+.specials__empty { margin: 0 4px; font-size: 13px; line-height: 1.6; color: var(--md-on-surface-variant); }
+.specials__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.sp-card {
+  --sc: var(--md-primary);
+  display: flex; align-items: center; gap: 12px; min-width: 0; padding: 12px 14px; border: 0; border-radius: 18px; cursor: pointer; text-align: left;
+  background: color-mix(in srgb, var(--sc) 10%, var(--md-surface-container-low)); color: var(--md-on-surface);
+}
+.sp-card--exam { --sc: #db2777; }
+.sp-card--event { --sc: #ea580c; }
+.sp-card--off { --sc: #16a34a; }
+.sp-card > .msr { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: color-mix(in srgb, var(--sc) 18%, transparent); color: var(--sc); font-size: 22px; }
+.sp-card__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.sp-card__name { font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sp-card__range { font-size: 12.5px; color: var(--md-on-surface-variant); }
+.sp-card__state { flex: none; padding: 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--sc) 16%, transparent); font-size: 12px; font-weight: 700; color: var(--sc); }
+.sp-card.is-now { box-shadow: inset 0 0 0 2px var(--sc); }
+.sp-card.is-now .sp-card__state { background: var(--sc); color: #fff; }
+.sp-card.is-ended { opacity: .55; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sp-card--exam { --sc: #f472b6; } :root:not([data-theme="light"]) .sp-card--event { --sc: #fb923c; } :root:not([data-theme="light"]) .sp-card--off { --sc: #4ade80; } }
+:root[data-theme="dark"] .sp-card--exam { --sc: #f472b6; }
+:root[data-theme="dark"] .sp-card--event { --sc: #fb923c; }
+:root[data-theme="dark"] .sp-card--off { --sc: #4ade80; }
+/* 今週の日程で出しているとき: 特別な日程の日（試験の時間割・休み） */
+.grid__day.is-special:not(.is-today) { background: color-mix(in srgb, #db2777 12%, transparent); color: var(--md-on-surface); }
+.grid.is-week .grid__day { font-size: 13px; }
+.grid__day.is-off:not(.is-today) { background: color-mix(in srgb, #16a34a 14%, transparent); }
+.cell--special { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--cc) 55%, transparent); }
+.cell__time { font-size: 11.5px; font-weight: 500; color: var(--md-on-surface-variant); font-variant-numeric: tabular-nums; }
+.cell--off { --cc: #16a34a; background: color-mix(in srgb, var(--cc) 10%, transparent); box-shadow: none; cursor: pointer; align-items: center; color: #16a34a; }
+.cell--off::before { display: none; }
+.cell--off:hover { transform: none; box-shadow: none; }
+/* いつもの時間割を出しているときに今日が特別な日程なら、表の今日の列は薄く */
+.grid.is-special-today .cell.is-today { opacity: .45; }
+
+/* 特別な日程のダイアログ */
+.sp-view { display: flex; flex-direction: column; gap: 10px; }
+.sp-view__range { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; color: var(--md-on-surface-variant); }
+.sp-view__range .msr { font-size: 20px; color: var(--md-primary); }
+.sp-view__hint { margin: 0; font-size: 12px; color: var(--md-on-surface-variant); }
+.sp-days { display: flex; flex-direction: column; gap: 6px; max-height: min(52vh, 420px); overflow-y: auto; margin: 0 -4px; padding: 0 4px; }
+.sp-day { display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 10px 12px; border: 0; border-radius: 14px; background: var(--md-surface-container-highest); color: inherit; text-align: left; font: inherit; }
+button.sp-day { cursor: pointer; }
+.sp-day.is-today { box-shadow: inset 0 0 0 2px var(--md-primary); }
+.sp-day__date { flex: none; width: 76px; font-size: 13px; font-weight: 700; padding-top: 1px; }
+.sp-day__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+.sp-day > .msr { flex: none; font-size: 18px; color: var(--md-on-surface-variant); }
+.sp-day__tag { color: var(--md-on-surface-variant); }
+.sp-day__tag--off { color: #16a34a; font-weight: 700; }
+.sp-day__slot { padding-left: 8px; border-left: 3px solid var(--cc, var(--md-primary)); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.sp-day__note { font-size: 12px; color: var(--md-on-surface-variant); white-space: pre-wrap; }
+.sp-slots { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
+.sp-slot {
+  display: grid; grid-template-columns: 1fr auto 1fr 36px; grid-template-areas: "s d e x" "subj subj room room";
+  align-items: center; gap: 6px; padding: 8px; border-radius: 14px; background: var(--md-surface-container-high);
+}
+.sp-slot__s { grid-area: s; } .sp-slot > span { grid-area: d; color: var(--md-on-surface-variant); }
+.sp-slot__e { grid-area: e; } .sp-slot .icon-btn { grid-area: x; }
+.sp-slot .sp-slot__subject { grid-area: subj; } .sp-slot .sp-slot__room { grid-area: room; }
+.sp-slot input[type="time"] { width: 100%; height: 38px; padding: 0 6px; border: 0; border-radius: 8px; background: var(--md-surface-container-highest); font-variant-numeric: tabular-nums; }
+.sp-slot .m3-field__input { min-width: 0; height: 38px; padding: 0 8px; border-radius: 8px; background: var(--md-surface-container-highest); font-size: 14px; }
+.sp-slot .m3-field__input:focus { box-shadow: inset 0 -2px 0 var(--md-primary); }
+.sp-slot .icon-btn { width: 36px; height: 36px; }
+.sp-tools { display: flex; flex-wrap: wrap; gap: 4px; }
+.sp-tools .msr { font-size: 18px; }
+.tt-hint { margin: -4px 0 0; font-size: 12px; color: var(--md-on-surface-variant); }
+
 /* 時間割の表 */
 .grid-wrap { overflow-x: auto; margin: 0 -4px; padding: 4px; }
 .grid {

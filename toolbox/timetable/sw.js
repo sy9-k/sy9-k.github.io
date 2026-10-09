@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-timetable-v4';
+const CACHE_NAME = 'sk-timetable-v5';
 const ASSETS = [
   '/toolbox/timetable/',
   '/toolbox/timetable/index.html',

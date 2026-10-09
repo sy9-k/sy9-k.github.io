@@ -62,23 +62,35 @@
     if (best && best.at - now <= 12 * 36e5) r.alarm = best;
     return r;
   }
+  // 今日の時間割（特別な日程（試験・休みなど）の日は、その日程。/toolbox/timetable/timetable.js と同じ決まり）
   function classInfo(now) {
     var data = readJson("sk_timetable") || {};
     var tb = data.view && data.view !== "mine" && data.received && data.received[data.view] ? data.received[data.view].table : data.table;
     if (!tb || !tb.cells) return {};
-    var d = new Date(now), w = d.getDay(), di = w === 0 ? -1 : w - 1;
-    if (di < 0 || di >= (tb.days === 6 ? 6 : 5)) return {};
-    var mins = d.getHours() * 60 + d.getMinutes(), r = { list: [], periods: [] };
-    for (var p = 0; p < Math.min(10, tb.periods || 6); p++) {
-      var c = tb.cells[di + "-" + p], tm = Array.isArray(tb.times) && tb.times[p] ? tb.times[p] : {};
-      var s = hm(tm.s), e = hm(tm.e);
-      r.periods.push({ p: p + 1, s: s, e: e, cell: c && typeof c.subject === "string" ? c : null });
-      if (!c || typeof c.subject !== "string") continue;
-      var item = { p: p + 1, subject: c.subject, room: c.room || "", color: c.color, s: tm.s, e: tm.e };
+    var d = new Date(now), w = d.getDay(), di = w === 0 ? -1 : w - 1, ds = ymd(d), sp = null;
+    (Array.isArray(tb.special) ? tb.special : []).forEach(function (x) { if (x && ds >= x.from && ds <= x.to) sp = x; });
+    var day = sp ? (sp.days && sp.days[ds]) || { type: sp.kind === "off" ? "off" : "normal" } : null;
+    var slots = [];
+    if (day && day.type === "off") return { special: sp.name, off: true, list: [], periods: [] };
+    if (day && day.type === "custom") {
+      (Array.isArray(day.slots) ? day.slots : []).forEach(function (x, i) { slots.push({ p: i + 1, s: x.s, e: x.e, cell: x && typeof x.subject === "string" ? x : null }); });
+    } else {
+      if (di < 0 || di >= (tb.days === 6 ? 6 : 5)) return {};
+      for (var p = 0; p < Math.min(10, tb.periods || 6); p++) {
+        var tm = Array.isArray(tb.times) && tb.times[p] ? tb.times[p] : {}, c = tb.cells[di + "-" + p];
+        slots.push({ p: p + 1, s: tm.s, e: tm.e, cell: c && typeof c.subject === "string" ? c : null });
+      }
+    }
+    var mins = d.getHours() * 60 + d.getMinutes(), r = { list: [], periods: [], special: sp ? sp.name : "" };
+    slots.forEach(function (sl) {
+      var s = hm(sl.s), e = hm(sl.e), c = sl.cell;
+      r.periods.push({ p: sl.p, s: s, e: e, cell: c });
+      if (!c) return;
+      var item = { p: sl.p, subject: c.subject, room: c.room || "", color: c.color, s: sl.s, e: sl.e };
       r.list.push(item);
       if (s !== null && e !== null && mins >= s && mins < e) { r.now = item; item.left = e - mins; item.progress = (mins - s) / Math.max(1, e - s); }
       else if (s !== null && mins < s && !r.next) { r.next = item; item.until = s - mins; }
-    }
+    });
     return r;
   }
   function todoInfo(now) {
@@ -301,7 +313,7 @@
         var ps = (cl.periods || []).filter(function (p) { return p.s !== null && p.e !== null; });
         if (!ps.length || !cl.list.length) {
           track.hidden = true;
-          label.textContent = f ? f.text : timeFmt.format(new Date(now)) + " · " + dateFmt.format(new Date(now));
+          label.textContent = f ? f.text : (cl.special ? cl.special + (cl.off ? " · " + t("休み") : "") + " · " : "") + timeFmt.format(new Date(now)) + " · " + dateFmt.format(new Date(now));
           progress.style.width = "0";
           return;
         }

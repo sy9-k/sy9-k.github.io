@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-countdown-v10';
+const CACHE_NAME = 'sk-countdown-v11';
 const ASSETS = [
   '/toolbox/countdown/',
   '/toolbox/countdown/index.html',
