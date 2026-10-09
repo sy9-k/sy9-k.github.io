@@ -5,6 +5,7 @@
 //   ・timetableInbox/{メールアドレス}   … { tids: [受け取る時間割の ID], updatedAt }。本人（Google のメールアドレスが一致し、確認済み）だけが読める
 //   ・timetableInvites/{コード}         … { tid, title, ownerUid, expiresAt, createdAt }。招待コード（管理者が作る。コードを知っている人だけが読める）
 //   ・timetables/{ID}/joins/{UID}      … { email, name, code, joinedAt }。招待コードで参加した人（一覧は管理者だけ）
+//   ・timetables/{ID}/roster/{UID}     … { name, joinedAt }。参加している人の名前だけ。同じ時間割を受け取っている人どうしで見られる
 //   権限は y-filter リポジトリの systems/firestore.rules（「SK's Toolbox の時間割の配信」）
 import { ACCOUNT_TERMS_VERSION, currentUser, db, profileOf } from "/assets/hub/account.js";
 import {
@@ -125,6 +126,7 @@ export async function listJoins(tid) {
 // 管理者: 参加した人を外す（受け取り箱からも消す）
 export async function removeJoin(tid, person) {
   await deleteDoc(doc(db, "timetables", tid, "joins", person.uid));
+  await deleteDoc(doc(db, "timetables", tid, "roster", person.uid)).catch(() => {});
   if (person.email) await setDoc(inbox(person.email), { tids: arrayRemove(tid), updatedAt: serverTimestamp() }, { merge: true });
 }
 
@@ -157,6 +159,15 @@ export async function joinWithCode(info) {
   if (tids.length >= 20 && !tids.includes(info.tid)) throw fail("too-many");
   const batch = writeBatch(db);
   batch.set(doc(db, "timetables", info.tid, "joins", user.uid), { email, name: String(info.name || "").slice(0, 60), code: info.code, joinedAt: serverTimestamp() });
+  batch.set(doc(db, "timetables", info.tid, "roster", user.uid), { name: String(info.name || "").slice(0, 60), joinedAt: serverTimestamp() });
   if (!tids.includes(info.tid)) batch.set(inbox(email), { tids: tids.concat([info.tid]), updatedAt: serverTimestamp(), joinCode: info.code });
   await batch.commit();
+}
+
+// 参加している人の名前（同じ時間割を受け取っている人・管理者）。メールアドレスは入っていない
+export async function listRoster(tid) {
+  const user = await currentUser();
+  const snap = await getDocs(collection(db, "timetables", tid, "roster"));
+  return snap.docs.map((d) => ({ uid: d.id, name: String(d.data().name || ""), joinedAt: ms(d.data().joinedAt), me: !!user && d.id === user.uid }))
+    .sort((a, b) => a.joinedAt - b.joinedAt);
 }

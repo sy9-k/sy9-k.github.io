@@ -2577,5 +2577,9 @@
   "配信を更新しました": "Sharing updated",
   "配信・連絡・特別な日程・招待コード・参加している人": "Sharing, notices, special schedules, invite codes and members",
   "配信中（{date} に更新）": "Shared (updated {date})",
-  "配信先のメールアドレス（1 行に 1 つ。なくてもよい。招待コードでも参加できます）": "Recipient emails (one per line; optional — people can also join with an invite code)"
+  "配信先のメールアドレス（1 行に 1 つ。なくてもよい。招待コードでも参加できます）": "Recipient emails (one per line; optional — people can also join with an invite code)",
+  "{n} 人（招待コードで参加した人。名前だけ表示します）": "{n} people (joined with an invite code; only names are shown)",
+  "自分": "you",
+  "見るには SK Hub Systems アカウントでログインしてください。": "Sign in with your SK Hub Systems account to see this.",
+  "配信している人（管理者）に、あなたの名前（{name}）とメールアドレス（{email}）が伝わります。ほかの参加者には名前だけが見えます（メールアドレスは見えません）。": "The person sharing (admin) will see your name ({name}) and email ({email}). Other members can see only your name (not your email)."
 }

@@ -74,6 +74,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .head { margin: 8px 4px 16px; }
 .head__title { margin: 0; font-size: clamp(30px, 5vw, 40px); font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+.head__roster { margin: 6px 0 0 -8px; }
+.head__roster .msr { font-size: 18px; }
 .head__sub { margin: 4px 0 0; font-size: 14px; color: var(--md-on-surface-variant); }
 
 /* 自分の時間割・配信された時間割の切りかえ */

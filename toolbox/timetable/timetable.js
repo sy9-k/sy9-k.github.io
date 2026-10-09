@@ -236,6 +236,9 @@
     var sub = cur.readonly ? t("配信された時間割（見るだけ）") : count ? t("{n} コマ", { n: count }) : t("コマを押して、科目を入れましょう");
     if (!cur.readonly && tb.share) sub += " · " + t("配信中");
     $("sub").textContent = sub;
+    // 配信された時間割: 参加している人（名前だけ）を見るボタン
+    var rb = $("btn-roster");
+    rb.hidden = !cur.readonly;
 
     // 切りかえ
     var views = $("views"), ids = Object.keys(data.received);
@@ -1287,7 +1290,7 @@
         var p1 = el("p", "tt-info");
         p1.append(icon("school"), el("span", "", t("「{title}」の時間割と連絡が届くようになります（見るだけ）。", { title: info.title })));
         var p2 = el("p", "tt-info");
-        p2.append(icon("visibility"), el("span", "", t("配信している人（管理者）に、あなたの名前（{name}）とメールアドレス（{email}）が伝わります。ほかの参加者には見えません。", { name: info.name || t("名前なし"), email: info.email })));
+        p2.append(icon("visibility"), el("span", "", t("配信している人（管理者）に、あなたの名前（{name}）とメールアドレス（{email}）が伝わります。ほかの参加者には名前だけが見えます（メールアドレスは見えません）。", { name: info.name || t("名前なし"), email: info.email })));
         body.append(p1, p2);
         return window.M3.dialog({ title: t("「{title}」に参加しますか？", { title: info.title }), icon: "group_add", body: body, actions: [{ label: t("キャンセル"), value: null }, { label: t("参加する"), primary: true, value: "join" }] }).then(function (v) {
           if (v !== "join") return;
@@ -1301,6 +1304,29 @@
       console.warn("[Timetable join]", e);
       say(e && e.code === "too-many" ? t("受け取れる時間割は 20 個までです") : t("参加できませんでした。時間をおいてもう一度お試しください。"));
     });
+  }
+
+  // 参加している人（配信された時間割を見ているとき。名前だけ）
+  function openRoster() {
+    var id = data.view;
+    if (id === "mine" || !data.received[id]) return;
+    var body = el("div", "ad-rows");
+    body.appendChild(el("p", "specials__empty", t("読み込み中…")));
+    var dlg = window.M3.dialog({ title: t("参加している人"), icon: "group", body: body, actions: [{ label: t("閉じる"), primary: true, value: null }] });
+    loadShare().then(function (m) { return m.listRoster(id); }).then(function (list) {
+      body.textContent = "";
+      if (!list.length) { body.appendChild(el("p", "specials__empty", t("招待コードで参加した人は、まだいません。"))); return; }
+      body.appendChild(el("p", "ad-note", t("{n} 人（招待コードで参加した人。名前だけ表示します）", { n: list.length })));
+      list.forEach(function (p) {
+        var r = el("div", "ad-row");
+        var tx = el("div", "ad-row__text");
+        tx.appendChild(el("b", "", (p.name || t("名前なし")) + (p.me ? "（" + t("自分") + "）" : "")));
+        if (p.joinedAt) tx.appendChild(el("span", "", t("{date} に参加", { date: new Date(p.joinedAt).toLocaleDateString(locale) })));
+        r.append(icon("person"), tx);
+        body.appendChild(r);
+      });
+    }).catch(function () { body.textContent = ""; body.appendChild(el("p", "specials__empty", hint() ? t("読み込めませんでした。") : t("見るには SK Hub Systems アカウントでログインしてください。"))); });
+    return dlg;
   }
 
   // ================================================================
@@ -1552,6 +1578,7 @@
   });
   $("btn-setup").addEventListener("click", openSetup);
   $("btn-admin").addEventListener("click", openAdmin);
+  $("btn-roster").addEventListener("click", openRoster);
   $("import-file").addEventListener("change", function () {
     var file = this.files && this.files[0];
     this.value = "";
