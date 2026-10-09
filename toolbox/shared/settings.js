@@ -8,7 +8,7 @@
 //
 //   ・設定は localStorage の sk_toolbox に保存する（オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する）
 //       { theme: "auto|light|dark", color: "app|blue|sakura|…", motion: "auto|reduce", haptics: true|false, badge: true|false,
-//         titlebar: { center: "command|island|chips|ticker|timeline|tabs|none", chips: ["class","todo","alarm","timer"], brand, name, apps, search, settings: true|false } }
+//         titlebar: { center: "command|menu|island|chips|ticker|timeline|tabs|none", chips: ["class","todo","alarm","timer"], brand, name, apps, search, settings: true|false } }
 //   ・テーマ: <html data-theme="light|dark">（auto のときは付けない。各アプリの CSS が端末の設定に合わせる）
 //   ・テーマカラー: SK's Brand のテーマカラー（SK's Blue など 7 色）から作った Material 3 の配色で --md-* を上書きする
 //       配色は Google の material-color-utilities（SchemeFidelity）で前もって計算したもの。
@@ -70,7 +70,7 @@
 
   // ---- 設定の読み書き ----
   var STORE = "sk_toolbox";
-  var TB_CENTERS = ["command", "island", "chips", "ticker", "timeline", "tabs", "none"];
+  var TB_CENTERS = ["command", "menu", "island", "chips", "ticker", "timeline", "tabs", "none"];
   var TB_CHIPS = ["class", "todo", "alarm", "timer"];
   var TB_PARTS = ["brand", "name", "apps", "search", "settings"];
   var DEFAULTS = { theme: "auto", color: "app", motion: "auto", haptics: true, badge: true };
@@ -334,6 +334,7 @@
     grid.setAttribute("aria-label", t("真ん中に出すもの"));
     [
       ["command", "search", t("コマンドバー"), t("検索欄の形。次の予定を薄く出し、押すと検索とコマンド（⌘K）")],
+      ["menu", "menu", t("メニューバー"), t("Mac のアプリのように「ファイル」「編集」「表示」「移動」「ウィンドウ」「ヘルプ」を並べる。最初のメニューはアプリの名前")],
       ["island", "radio_button_checked", t("アイランド"), t("黒い小さな島に、いま大事なことを 1 つ。押すと今日のまとめ")],
       ["chips", "label", t("ステータスチップ"), t("授業・Todo・アラーム・タイマーを小さな札で並べる")],
       ["ticker", "text_rotation_none", t("ティッカー"), t("1 行の文字が数秒ごとに入れ替わる")],
@@ -747,7 +748,7 @@
     }
     if (window.caches) {
       jobs.push(caches.keys().then(function (keys) {
-        return Promise.all(keys.filter(function (k) { return /^sk-(toolbox|clock|calc|memo|todo|countdown)-/.test(k); }).map(function (k) { return caches.delete(k); }));
+        return Promise.all(keys.filter(function (k) { return /^sk-(toolbox|clock|calc|memo|todo|countdown|timetable|roulette)-/.test(k); }).map(function (k) { return caches.delete(k); }));
       }).catch(function () { /* 同上 */ }));
     }
     Promise.all(jobs).then(function () {
@@ -821,7 +822,8 @@
     // テーマカラーの一覧（SK's Brand の色。"app" は各アプリの色）。ホーム画面の「見た目」でも使う
     colors: [{ key: "app", name: t("アプリの色"), note: t("Calc は青、Memo はオレンジ、Todo は緑") }].concat(COLORS),
     openSettings: openSettings,
-    renderSettings: renderSettings
+    renderSettings: renderSettings,
+    forceUpdate: forceUpdate
   };
 
   // オンライン同期（任意）。見本（?embed）では読み込まない

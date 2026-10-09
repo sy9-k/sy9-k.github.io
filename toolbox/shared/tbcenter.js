@@ -6,6 +6,7 @@
 //     ticker   … ティッカー: 1 行の文字が数秒ごとに入れ替わる
 //     timeline … 今日のタイムライン: 今日の授業を色の帯で並べ、「今」の線が動く。下のふちに今の授業の進み具合
 //     tabs     … アプリのタブ: アプリを名前で並べる（アイコンとアプリ名・アプリの切りかえの代わり）
+//     menu     … メニューバー（「ファイル」「編集」…。作るのは /toolbox/shared/titlebar.js）
 //     none     … 何も出さない
 //   読むだけ。データは各アプリが localStorage に保存したもの（sk_clock_tools・sk_timetable・sk_todo）
 //   リマインダー・アラーム・SK Hub のお知らせ・新しい版は、数秒だけ目立たせる（sk-island-flash / skreminder）
@@ -360,11 +361,11 @@
     if (view && view.extra) view.extra.remove();
     if (view && view.node) view.node.remove(); // アプリのタブは .tbc の外（帯の左）にある
     slot.textContent = "";
-    bar.classList.remove("tbt--tabs", "tbt--chips");
+    bar.classList.remove("tbt--tabs", "tbt--chips", "tbt--tight");
     view = null;
-    mode = MAKERS[m] ? m : "none";
+    mode = MAKERS[m] || m === "menu" ? m : "none"; // メニューバーは /toolbox/shared/titlebar.js が出す
     bar.dataset.center = mode;
-    if (mode === "none") return;
+    if (!MAKERS[mode]) return;
     view = MAKERS[mode]();
     if (view.tabs) { bar.classList.add("tbt--tabs"); bar.insertBefore(view.node, bar.firstChild); }
     else {
@@ -373,12 +374,22 @@
     }
     if (view.extra) bar.appendChild(view.extra);
     view.paint(true);
+    fit();
   }
-  function tick() { if (view && document.visibilityState === "visible") view.paint(false); }
+  function tick() { if (view && document.visibilityState === "visible") { view.paint(false); fit(); } }
+  // メニューバー（左）と重なるなら、真ん中ではなく右に寄せる
+  function fit() {
+    var mb = bar.querySelector(".tbt-menubar"), tight = false;
+    if (mb && mb.offsetWidth && slot.offsetWidth) {
+      var r = bar.getBoundingClientRect();
+      tight = r.left + r.width / 2 - slot.offsetWidth / 2 < mb.getBoundingClientRect().right + 12;
+    }
+    bar.classList.toggle("tbt--tight", tight);
+  }
   function sync() {
     var want = conf().center || "command";
     if (want !== mode) setMode(want);
-    var on = wco.visible && mode !== "none";
+    var on = wco.visible && !!MAKERS[mode];
     if (on && !ticking) { tick(); ticking = setInterval(tick, 1000); }
     else if (!on && ticking) { clearInterval(ticking); ticking = null; }
   }
@@ -398,7 +409,8 @@
     bar.appendChild(slot);
     sync();
     wco.addEventListener("geometrychange", sync);
-    if (window.SKToolbox) SKToolbox.onChange(function () { var before = mode; sync(); if (view && before === mode) view.paint(true); });
+    if (window.SKToolbox) SKToolbox.onChange(function () { var before = mode; sync(); if (view && before === mode) view.paint(true); requestAnimationFrame(fit); });
+    window.addEventListener("resize", function () { requestAnimationFrame(fit); });
     window.addEventListener("storage", function (e) { if (view && /^sk_(clock_tools|timetable|todo)$/.test(e.key || "")) view.paint(true); });
     return true;
   }
