@@ -2,9 +2,14 @@
 //   ・自分の時間割は localStorage の sk_timetable に保存する（オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する。/toolbox/shared/sync.js）
 //       { version: 1, view: "mine" | 配信された時間割の ID,
 //         table: { name, days: 5|6, periods: 1〜10, times: [{ s: "HH:MM", e: "HH:MM" }], cells: { "曜日-時限": { subject, room, teacher, note, color } },
-//                  updated, share: { tid, title, publishedAt } },        … share は管理者が配信したとき
+//                  special: [特別な日程], updated, share: { tid, title, publishedAt } },        … share は管理者が配信したとき
 //         received: { ID: { title, table, updatedAt, fetchedAt } } }     … 配信された時間割（見るだけ。端末に置いておき、オフラインでも見られる）
 //   ・曜日は 0 = 月曜。いまの授業・次の授業は、時限の時刻から出す
+//   ・特別な日程（試験の週・行事・休みなど。12 個まで、1 つ 31 日まで）
+//       { id, name, kind: "exam" | "event" | "off" | "other", from: "YYYY-MM-DD", to: "YYYY-MM-DD",
+//         days: { "YYYY-MM-DD": { type: "normal" | "off" | "custom", note, slots: [{ s, e, subject, room, note, color }] } } }
+//       その期間の日は、days に書いた日程になる（書いていない日は、休み（kind: "off"）ならお休み、ほかはいつもの時間割）。
+//       時間割の JSON に入っているので、配信するとクラスの人にも届く。いまの授業・次の授業、タイトルバーの真ん中も、この日程で出す
 //   ・クラスの時間割の配信（/toolbox/timetable/share.js）
 //       管理者（SK Hub Systems の開発者）が、メールアドレスを入れて自分の時間割を配信する。受け取る人は、そのメールアドレスの
 //       SK Hub Systems アカウントでログインすると、配信された時間割が出る（見るだけ。返事などはない）
@@ -61,10 +66,66 @@
         };
       });
     }
-    var out = { name: str(x.name, 40).trim() || t("時間割"), days: days, periods: periods, times: times, cells: cells, updated: Number(x.updated) || 0 };
+    var out = { name: str(x.name, 40).trim() || t("時間割"), days: days, periods: periods, times: times, cells: cells, special: cleanSpecial(x.special), updated: Number(x.updated) || 0 };
     if (x.share && typeof x.share.tid === "string") out.share = { tid: x.share.tid.slice(0, 40), title: str(x.share.title, 60), publishedAt: Number(x.share.publishedAt) || 0 };
     return out;
   }
+  // ---- 特別な日程 ----
+  var SP_KINDS = { exam: ["edit_note", t("試験")], event: ["celebration", t("行事")], off: ["beach_access", t("休み")], other: ["event_note", t("その他")] };
+  var MAX_SPECIAL = 12, MAX_SPAN = 31, MAX_SLOTS = 10;
+  function isYmd(v) { return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(parseYmd(v)); }
+  function parseYmd(v) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ""); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(NaN); }
+  function addDays(v, n) { var d = parseYmd(v); d.setDate(d.getDate() + n); return ymd(d); }
+  function spanDays(from, to) { return Math.round((parseYmd(to) - parseYmd(from)) / 864e5) + 1; }
+  function datesOf(sp) { var out = [], n = Math.min(MAX_SPAN, spanDays(sp.from, sp.to)); for (var i = 0; i < n; i++) out.push(addDays(sp.from, i)); return out; }
+  function cleanSlot(x) {
+    if (!x || typeof x !== "object") return null;
+    var subject = str(x.subject, 40).trim(), sm = minutes(x.s), em = minutes(x.e);
+    if (!subject || sm === null || em === null || em <= sm) return null;
+    return { s: x.s, e: x.e, subject: subject, room: str(x.room, 30), note: str(x.note, 200), color: /^#[0-9a-f]{6}$/i.test(x.color || "") ? x.color : COLORS[0] };
+  }
+  function cleanSpecial(list) {
+    var out = [];
+    (Array.isArray(list) ? list : []).forEach(function (x) {
+      if (out.length >= MAX_SPECIAL || !x || typeof x !== "object" || !isYmd(x.from) || !isYmd(x.to) || x.to < x.from || spanDays(x.from, x.to) > MAX_SPAN) return;
+      var kind = SP_KINDS[x.kind] ? x.kind : "other", days = {};
+      if (x.days && typeof x.days === "object") {
+        Object.keys(x.days).forEach(function (k) {
+          var d = x.days[k];
+          if (!isYmd(k) || k < x.from || k > x.to || !d || typeof d !== "object") return;
+          var type = d.type === "off" || d.type === "custom" ? d.type : "normal";
+          var slots = type === "custom" && Array.isArray(d.slots) ? d.slots.map(cleanSlot).filter(Boolean).slice(0, MAX_SLOTS) : [];
+          slots.sort(function (a, b) { return minutes(a.s) - minutes(b.s); });
+          days[k] = { type: type, note: str(d.note, 200), slots: slots };
+        });
+      }
+      out.push({ id: str(x.id, 20) || newId(), name: str(x.name, 40).trim() || SP_KINDS[kind][1], kind: kind, from: x.from, to: x.to, days: days });
+    });
+    out.sort(function (a, b) { return a.from < b.from ? -1 : a.from > b.from ? 1 : 0; });
+    return out;
+  }
+  // その日の特別な日程（なければ null）。日程がかさなっていたら、あとから始まるほう
+  function specialFor(tb, ds) {
+    var hit = null;
+    (tb.special || []).forEach(function (sp) { if (ds >= sp.from && ds <= sp.to) hit = sp; });
+    return hit;
+  }
+  function dayOf(sp, ds) { return sp.days[ds] || { type: sp.kind === "off" ? "off" : "normal", note: "", slots: [], auto: true }; }
+  // その日の時間割: { special, day, off, slots: [{ label, p（いつもの時間割のとき）, s, e, cell }] }
+  function dayPlan(tb, date) {
+    var ds = ymd(date), sp = specialFor(tb, ds), day = sp ? dayOf(sp, ds) : null;
+    var r = { special: sp, day: day, off: false, slots: [] };
+    if (day && day.type === "off") { r.off = true; return r; }
+    if (day && day.type === "custom") {
+      r.slots = day.slots.map(function (x, i) { return { label: String(i + 1), s: x.s, e: x.e, cell: x }; });
+      return r;
+    }
+    var di = todayIndex(date);
+    if (di < 0 || di >= tb.days) { r.noSchool = true; return r; }
+    for (var p = 0; p < tb.periods; p++) r.slots.push({ label: String(p + 1), p: p, s: tb.times[p].s, e: tb.times[p].e, cell: tb.cells[di + "-" + p] || null });
+    return r;
+  }
+
   var data = { version: 1, view: "mine", table: cleanTable(null), received: {} };
   function load() {
     try {
@@ -108,18 +169,16 @@
   // 月曜 = 0 … 土曜 = 5、日曜は -1
   function todayIndex(now) { var w = now.getDay(); return w === 0 ? -1 : w - 1; }
   function status(tb, now) {
-    var di = todayIndex(now);
+    var di = todayIndex(now), plan = dayPlan(tb, now);
     var nowMin = now.getHours() * 60 + now.getMinutes();
-    var r = { day: di, now: null, next: null, hasToday: false };
-    if (di < 0 || di >= tb.days) return r;
-    for (var p = 0; p < tb.periods; p++) {
-      var c = tb.cells[di + "-" + p];
-      if (c) r.hasToday = true;
-      var s = minutes(tb.times[p].s), e = minutes(tb.times[p].e);
-      if (s === null || e === null) continue;
-      if (nowMin >= s && nowMin < e) r.now = { p: p, cell: c || null, left: e - nowMin, total: Math.max(1, e - s) };
-      else if (nowMin < s && !r.next && c) r.next = { p: p, cell: c, start: tb.times[p].s, until: s - nowMin };
-    }
+    var r = { day: di, plan: plan, now: null, next: null, hasToday: false };
+    plan.slots.forEach(function (sl) {
+      if (sl.cell) r.hasToday = true;
+      var s = minutes(sl.s), e = minutes(sl.e);
+      if (s === null || e === null) return;
+      if (nowMin >= s && nowMin < e) r.now = { p: sl.p, label: sl.label, cell: sl.cell, left: e - nowMin, total: Math.max(1, e - s) };
+      else if (nowMin < s && !r.next && sl.cell) r.next = { p: sl.p, label: sl.label, cell: sl.cell, start: sl.s, until: s - nowMin };
+    });
     return r;
   }
   // その授業が次にある日（今日がその曜日で、まだ終わっていなければ今日）
@@ -164,6 +223,9 @@
     }
 
     renderNow(tb, st);
+    renderSpecials(tb, cur.readonly);
+    // 今日が特別な日程なら、表の今日の列は薄く（表はいつもの時間割）
+    grid.classList.toggle("is-special-today", !!(st.plan.special && st.plan.day.type !== "normal"));
 
     // 表
     grid.style.setProperty("--days", String(tb.days));
@@ -172,7 +234,7 @@
     for (var d = 0; d < tb.days; d++) {
       var h = el("div", "grid__day" + (d === st.day ? " is-today" : ""));
       h.appendChild(document.createTextNode(DAY_NAMES[d]));
-      if (d === st.day) h.appendChild(el("small", "", t("今日")));
+      if (d === st.day) h.appendChild(el("small", "", st.plan.special ? st.plan.special.name : t("今日")));
       grid.appendChild(h);
     }
     var i = 0;
@@ -235,29 +297,286 @@
       box.appendChild(a);
       return a;
     }
-    if (st.day < 0 || st.day >= tb.days) {
-      var off = el("div", "now-card now-card--plain");
-      off.append(icon("weekend"), el("span", "", t("今日は授業がありません")));
-      box.appendChild(off);
-      return;
+    function plain(ic, text, sub) {
+      var a = el("div", "now-card now-card--plain");
+      var tx = el("div", "now-card__text");
+      tx.appendChild(el("span", "now-card__plain", text));
+      if (sub) tx.appendChild(el("span", "now-card__meta", sub));
+      a.append(icon(ic), tx);
+      box.appendChild(a);
+      return a;
     }
+    var plan = st.plan, sp = plan.special;
+    // 今日が特別な日程の日
+    if (sp) {
+      var info = plain(SP_KINDS[sp.kind][0], sp.name + " · " + rangeText(sp), plan.day.type === "custom" ? t("今日は特別な時間割です") : plan.day.type === "off" ? t("今日はお休みです") : t("今日はいつもの時間割です"));
+      info.classList.add("now-card--special");
+      if (plan.day.note) info.querySelector(".now-card__text").appendChild(el("span", "now-card__meta", plan.day.note));
+      info.tabIndex = 0;
+      info.setAttribute("role", "button");
+      info.addEventListener("click", function () { openSpecial(sp.id); });
+      info.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openSpecial(sp.id); } });
+    }
+    if (plan.off) return;
+    if (plan.noSchool) { plain("weekend", t("今日は授業がありません")); return; }
     if (st.now) {
       var c = st.now.cell;
       var meta = [c && c.room, c && c.teacher].filter(Boolean).join(" · ");
-      var nc = card("now", String(st.now.p + 1), t("いま · あと {n} 分", { n: st.now.left }), c, meta);
+      var nc = card("now", st.now.label, t("いま · あと {n} 分", { n: st.now.left }), c, meta);
       var bar = el("span", "now-card__bar");
       bar.style.width = Math.round((1 - st.now.left / st.now.total) * 100) + "%";
       nc.appendChild(bar);
     }
     if (st.next) {
       var c2 = st.next.cell;
-      card("next", String(st.next.p + 1), t("次 · {time} から（あと {n} 分）", { time: st.next.start, n: st.next.until }), c2, [c2.room, c2.teacher].filter(Boolean).join(" · "));
+      card("next", st.next.label, t("次 · {time} から（あと {n} 分）", { time: st.next.start, n: st.next.until }), c2, [c2.room, c2.teacher].filter(Boolean).join(" · "));
     }
-    if (!st.now && !st.next) {
-      var done = el("div", "now-card now-card--plain");
-      done.append(icon(st.hasToday ? "task_alt" : "event_available"), el("span", "", st.hasToday ? t("今日の授業は終わりました") : t("今日の時間割はまだ入っていません")));
-      box.appendChild(done);
+    if (!st.now && !st.next) plain(st.hasToday ? "task_alt" : "event_available", st.hasToday ? t("今日の授業は終わりました") : t("今日の時間割はまだ入っていません"));
+  }
+
+  // ---- 特別な日程の一覧（これからのもの。自分の時間割では、終わったものも薄く出す） ----
+  var mdFmt = new Intl.DateTimeFormat(locale, { month: "numeric", day: "numeric", weekday: "short" });
+  function dateText(ds) { return mdFmt.format(parseYmd(ds)); }
+  function rangeText(sp) { return sp.from === sp.to ? dateText(sp.from) : dateText(sp.from) + " 〜 " + dateText(sp.to); }
+  function renderSpecials(tb, readonly) {
+    var box = $("specials"), today = ymd(new Date());
+    box.textContent = "";
+    var list = (tb.special || []).filter(function (sp) { return !readonly || sp.to >= today; });
+    if (!list.length && readonly) { box.hidden = true; return; }
+    box.hidden = false;
+    var head = el("div", "specials__head");
+    head.appendChild(el("h2", "specials__title", t("特別な日程")));
+    if (!readonly) {
+      var add = el("button", "text-btn m3-state");
+      add.type = "button";
+      add.id = "add-special";
+      add.append(icon("add"), el("span", "", t("追加")));
+      head.appendChild(add);
     }
+    box.appendChild(head);
+    if (!list.length) {
+      box.appendChild(el("p", "specials__empty", t("試験の週・行事・休みなど、いつもとちがう日程を入れておくと、その日は「いまの授業」がその日程になります。")));
+      return;
+    }
+    var row = el("div", "specials__list");
+    list.forEach(function (sp) {
+      var b = el("button", "sp-card m3-state sp-card--" + sp.kind);
+      b.type = "button";
+      b.dataset.special = sp.id;
+      var state, ended = sp.to < today;
+      if (ended) { state = t("終わりました"); b.classList.add("is-ended"); }
+      else if (sp.from <= today) { state = t("いま"); b.classList.add("is-now"); }
+      else { var n = spanDays(today, sp.from) - 1; state = n === 1 ? t("明日から") : t("あと {n} 日", { n: n }); }
+      var tx = el("span", "sp-card__text");
+      tx.append(el("span", "sp-card__name", sp.name), el("span", "sp-card__range", rangeText(sp)));
+      b.append(icon(SP_KINDS[sp.kind][0]), tx, el("span", "sp-card__state", state));
+      row.appendChild(b);
+    });
+    box.appendChild(row);
+  }
+  $("specials").addEventListener("click", function (e) {
+    if (embed) return;
+    var b = e.target.closest("[data-special]");
+    if (b) { openSpecial(b.dataset.special); return; }
+    if (e.target.closest("#add-special")) editSpecialInfo(null);
+  });
+
+  // 特別な日程を開く（日ごとの日程。自分の時間割なら、日を押すと変えられる）
+  function findSpecial(id) {
+    var tb = current().table;
+    return (tb.special || []).filter(function (sp) { return sp.id === id; })[0] || null;
+  }
+  function slotLine(x, i) { return (i + 1) + ". " + x.s + "〜" + x.e + " " + x.subject + (x.room ? "（" + x.room + "）" : ""); }
+  function openSpecial(id) {
+    var cur = current(), tb = cur.table, sp = findSpecial(id);
+    if (!sp) return;
+    var today = ymd(new Date());
+    var body = el("div", "sp-view");
+    var top = el("p", "sp-view__range");
+    top.append(icon(SP_KINDS[sp.kind][0]), el("span", "", SP_KINDS[sp.kind][1] + " · " + rangeText(sp)));
+    body.appendChild(top);
+    var list = el("div", "sp-days");
+    datesOf(sp).forEach(function (ds) {
+      var day = dayOf(sp, ds), di = todayIndex(parseYmd(ds));
+      // 書いていない土日（授業のない曜日）は出さない
+      if (day.auto && (di < 0 || di >= tb.days)) return;
+      var r = el(cur.readonly ? "div" : "button", "sp-day" + (cur.readonly ? "" : " m3-state") + (ds === today ? " is-today" : ""));
+      if (!cur.readonly) { r.type = "button"; r.dataset.date = ds; }
+      var d = el("span", "sp-day__date", dateText(ds));
+      var info = el("span", "sp-day__info");
+      if (day.type === "off") info.appendChild(el("span", "sp-day__tag sp-day__tag--off", t("休み")));
+      else if (day.type === "normal") info.appendChild(el("span", "sp-day__tag", t("いつもの時間割")));
+      else if (!day.slots.length) info.appendChild(el("span", "sp-day__tag", t("まだ入っていません")));
+      day.slots.forEach(function (x, i) {
+        var line = el("span", "sp-day__slot", slotLine(x, i));
+        line.style.setProperty("--cc", x.color);
+        info.appendChild(line);
+      });
+      if (day.note) info.appendChild(el("span", "sp-day__note", day.note));
+      r.append(d, info);
+      if (!cur.readonly) r.appendChild(icon("edit"));
+      list.appendChild(r);
+    });
+    body.appendChild(list);
+    if (!cur.readonly) body.appendChild(el("p", "sp-view__hint", t("日を押すと、その日の日程（休み・特別な時間割）を変えられます。")));
+    var actions = cur.readonly ? [{ label: t("閉じる"), primary: true, value: null }]
+      : [{ label: t("削除"), danger: true, value: "delete" }, { label: t("名前・期間"), value: "info" }, { label: t("閉じる"), primary: true, value: null }];
+    window.M3.dialog({
+      title: sp.name, body: body, actions: actions,
+      onReady: function (close) {
+        list.addEventListener("click", function (e) { var b = e.target.closest("[data-date]"); if (b) close("day:" + b.dataset.date); });
+      }
+    }).then(function (v) {
+      if (!v) return;
+      if (v === "info") editSpecialInfo(sp);
+      else if (v === "delete") {
+        var i = tb.special.indexOf(sp);
+        tb.special.splice(i, 1);
+        changed();
+        say(t("{name} を消しました", { name: sp.name }), function () { tb.special.splice(i, 0, sp); changed(); });
+      } else if (v.indexOf("day:") === 0) editDay(sp, v.slice(4));
+    });
+  }
+
+  // 名前・種類・期間（null なら新しく作る）
+  function editSpecialInfo(sp) {
+    if (data.view !== "mine") { data.view = "mine"; save(); render(); }
+    var tb = data.table;
+    if (!sp && tb.special.length >= MAX_SPECIAL) { say(t("特別な日程は {n} 個までです。終わったものを消してください", { n: MAX_SPECIAL })); return; }
+    var draft = { kind: sp ? sp.kind : "exam" };
+    var box = el("div", "tt-edit");
+    box.appendChild(el("p", "tt-label", t("種類")));
+    var seg = el("div", "tt-seg");
+    seg.setAttribute("role", "radiogroup");
+    var name = input(sp ? sp.name : "", 40, t("例: 期末試験"));
+    Object.keys(SP_KINDS).forEach(function (k) {
+      var b = el("button", "m3-state", SP_KINDS[k][1]);
+      b.type = "button";
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", String(draft.kind === k));
+      b.addEventListener("click", function () { draft.kind = k; Array.prototype.forEach.call(seg.children, function (x) { x.setAttribute("aria-checked", String(x === b)); }); });
+      seg.appendChild(b);
+    });
+    box.appendChild(seg);
+    box.appendChild(field(t("名前"), name));
+    var row = el("div", "tt-time tt-time--one");
+    var today = ymd(new Date());
+    var f = el("input"); f.type = "date"; f.value = sp ? sp.from : today;
+    var to = el("input"); to.type = "date"; to.value = sp ? sp.to : addDays(today, 4);
+    var lf = el("label", "tt-time__field"); lf.append(el("span", "", t("はじめの日")), f);
+    var lt = el("label", "tt-time__field"); lt.append(el("span", "", t("おわりの日")), to);
+    row.append(lf, el("span", "", "〜"), lt);
+    box.appendChild(row);
+    box.appendChild(el("p", "tt-hint", t("1 日だけなら、同じ日にしてください。31 日まで。")));
+    window.M3.dialog({ title: sp ? t("特別な日程を変更") : t("特別な日程を追加"), icon: "event_note", body: box, actions: [{ label: t("キャンセル"), value: null }, { label: sp ? t("保存") : t("追加"), primary: true, value: "save" }] }).then(function (v) {
+      if (v !== "save") return;
+      var from = f.value, end = to.value;
+      if (!isYmd(from) || !isYmd(end) || end < from) { say(t("おわりの日は、はじめの日と同じか、それより後にしてください")); return; }
+      if (spanDays(from, end) > MAX_SPAN) { say(t("期間は {n} 日までです", { n: MAX_SPAN })); return; }
+      var target = sp || { id: newId(), days: {} };
+      target.kind = draft.kind;
+      target.name = name.value.trim().slice(0, 40) || SP_KINDS[draft.kind][1];
+      target.from = from;
+      target.to = end;
+      Object.keys(target.days).forEach(function (k) { if (k < from || k > end) delete target.days[k]; });
+      if (!sp) tb.special.push(target);
+      tb.special = cleanSpecial(tb.special);
+      changed();
+      if (!sp) say(t("追加しました。日を押して、その日の日程を入れてください"));
+      openSpecial(target.id);
+    });
+  }
+
+  // 1 日の日程（いつもの時間割・休み・特別な時間割）
+  function editDay(sp, ds) {
+    var tb = data.table, day = dayOf(sp, ds), di = todayIndex(parseYmd(ds));
+    var draft = { type: day.type, slots: day.slots.map(function (x) { return Object.assign({}, x); }) };
+    var box = el("div", "tt-edit");
+    var seg = el("div", "tt-seg");
+    seg.setAttribute("role", "radiogroup");
+    [["normal", t("いつもどおり")], ["custom", t("特別な時間割")], ["off", t("休み")]].forEach(function (o) {
+      var b = el("button", "m3-state", o[1]);
+      b.type = "button";
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", String(draft.type === o[0]));
+      b.addEventListener("click", function () {
+        draft.type = o[0];
+        Array.prototype.forEach.call(seg.children, function (x) { x.setAttribute("aria-checked", String(x === b)); });
+        // はじめて「特別な時間割」にしたときは、1 行だけ用意する
+        if (o[0] === "custom" && !slotBox.children.length) addRow({});
+        sync();
+      });
+      seg.appendChild(b);
+    });
+    box.appendChild(seg);
+    var slotBox = el("div", "sp-slots");
+    var tools = el("div", "sp-tools");
+    var addBtn = el("button", "text-btn m3-state");
+    addBtn.type = "button";
+    addBtn.append(icon("add"), el("span", "", t("行を追加")));
+    var copyBtn = el("button", "text-btn m3-state");
+    copyBtn.type = "button";
+    copyBtn.append(icon("content_copy"), el("span", "", t("いつもの授業を入れる")));
+    copyBtn.hidden = di < 0 || di >= tb.days;
+    tools.append(addBtn, copyBtn);
+    box.append(slotBox, tools);
+    var note = input(day.note, 200, t("例: 持ち物は筆記用具だけ"));
+    box.appendChild(field(t("メモ（その日のお知らせ）"), note));
+    var known = subjects(tb);
+    function addRow(x) {
+      if (slotBox.children.length >= MAX_SLOTS) { say(t("1 日 {n} 行までです", { n: MAX_SLOTS })); return; }
+      var last = slotBox.lastElementChild, lastEnd = last ? minutes(last.querySelector(".sp-slot__e").value) : null;
+      var r = el("div", "sp-slot");
+      var sIn = el("input", "sp-slot__s"); sIn.type = "time";
+      var eIn = el("input", "sp-slot__e"); eIn.type = "time";
+      if (x.s) sIn.value = x.s; else if (lastEnd !== null && lastEnd + 60 < 1440) sIn.value = hhmm(lastEnd + 10); else sIn.value = "09:00";
+      eIn.value = x.e || hhmm(minutes(sIn.value) + 50);
+      var subj = input(x.subject || "", 40, t("科目"));
+      subj.classList.add("sp-slot__subject");
+      var room = input(x.room || "", 30, t("教室"));
+      room.classList.add("sp-slot__room");
+      var del = el("button", "icon-btn m3-state");
+      del.type = "button";
+      del.setAttribute("aria-label", t("この行を消す"));
+      del.appendChild(icon("close"));
+      del.addEventListener("click", function () { r.remove(); });
+      sIn.setAttribute("aria-label", t("始まり"));
+      eIn.setAttribute("aria-label", t("終わり"));
+      r.dataset.color = x.color || "";
+      r.append(sIn, el("span", "", "〜"), eIn, subj, room, del);
+      slotBox.appendChild(r);
+    }
+    function hhmm(m) { m = Math.max(0, Math.min(1439, m)); return pad(Math.floor(m / 60)) + ":" + pad(m % 60); }
+    draft.slots.forEach(addRow);
+    addBtn.addEventListener("click", function () { addRow({}); });
+    copyBtn.addEventListener("click", function () {
+      slotBox.textContent = "";
+      for (var p = 0; p < tb.periods; p++) {
+        var c = tb.cells[di + "-" + p];
+        if (c) addRow({ s: tb.times[p].s, e: tb.times[p].e, subject: c.subject, room: c.room, color: c.color });
+      }
+      if (!slotBox.children.length) addRow({});
+    });
+    function sync() { slotBox.hidden = tools.hidden = draft.type !== "custom"; }
+    sync();
+    window.M3.dialog({ title: dateText(ds) + " · " + sp.name, icon: "event", body: box, actions: [{ label: t("キャンセル"), value: null }, { label: t("保存"), primary: true, value: "save" }] }).then(function (v) {
+      if (v !== "save") { openSpecial(sp.id); return; }
+      var slots = [], bad = 0;
+      Array.prototype.forEach.call(slotBox.children, function (r) {
+        var subject = r.querySelector(".sp-slot__subject").value.trim();
+        if (!subject) return;
+        var k = known[subject];
+        var x = cleanSlot({ s: r.querySelector(".sp-slot__s").value, e: r.querySelector(".sp-slot__e").value, subject: subject, room: r.querySelector(".sp-slot__room").value.trim() || (k ? k.room : ""), color: r.dataset.color || (k ? k.color : COLORS[slots.length % COLORS.length]) });
+        if (x) slots.push(x); else bad++;
+      });
+      slots.sort(function (a, b) { return minutes(a.s) - minutes(b.s); });
+      var defType = sp.kind === "off" ? "off" : "normal";
+      if (draft.type === defType && !note.value.trim()) delete sp.days[ds];
+      else sp.days[ds] = { type: draft.type, note: note.value.trim().slice(0, 200), slots: draft.type === "custom" ? slots : [] };
+      changed();
+      if (bad) say(t("時刻がおかしい行 {n} 件は入れませんでした（終わりは始まりより後に）", { n: bad }));
+      openSpecial(sp.id);
+    });
   }
 
   // ================================================================
@@ -634,7 +953,7 @@
       if (!r.ok.length) { say(t("配信先のメールアドレスを入れてください")); return; }
       if (r.ok.length > MAX_MEMBERS) { say(t("配信先は {n} 人までです", { n: MAX_MEMBERS })); return; }
       var name = title.value.trim().slice(0, 60) || tb.name;
-      var payload = JSON.stringify({ name: name, days: tb.days, periods: tb.periods, times: tb.times.slice(0, tb.periods), cells: tb.cells });
+      var payload = JSON.stringify({ name: name, days: tb.days, periods: tb.periods, times: tb.times.slice(0, tb.periods), cells: tb.cells, special: tb.special });
       say(t("配信しています…"));
       loadShare().then(function (m) { return m.publish({ tid: tb.share && tb.share.tid, title: name, json: payload, emails: r.ok }); }).then(function (tid) {
         tb.share = { tid: tid, title: name, publishedAt: Date.now() };
@@ -661,6 +980,7 @@
     setMenu(false);
     var cmd = b.dataset.menu;
     if (cmd === "setup") openSetup();
+    else if (cmd === "special") editSpecialInfo(null);
     else if (cmd === "share") openShare();
     else if (cmd === "refresh") receive(true);
     else if (cmd === "export") {
