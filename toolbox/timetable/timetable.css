@@ -141,7 +141,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
 :root[data-theme="dark"] .sp-card--exam { --sc: #f472b6; }
 :root[data-theme="dark"] .sp-card--event { --sc: #fb923c; }
 :root[data-theme="dark"] .sp-card--off { --sc: #4ade80; }
-/* 今日が特別な日程なら、表の今日の列は薄く（表はいつもの時間割） */
+/* 今週の日程で出しているとき: 特別な日程の日（試験の時間割・休み） */
+.grid__day.is-special:not(.is-today) { background: color-mix(in srgb, #db2777 12%, transparent); color: var(--md-on-surface); }
+.grid.is-week .grid__day { font-size: 13px; }
+.grid__day.is-off:not(.is-today) { background: color-mix(in srgb, #16a34a 14%, transparent); }
+.cell--special { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--cc) 55%, transparent); }
+.cell__time { font-size: 11.5px; font-weight: 500; color: var(--md-on-surface-variant); font-variant-numeric: tabular-nums; }
+.cell--off { --cc: #16a34a; background: color-mix(in srgb, var(--cc) 10%, transparent); box-shadow: none; cursor: pointer; align-items: center; color: #16a34a; }
+.cell--off::before { display: none; }
+.cell--off:hover { transform: none; box-shadow: none; }
+/* いつもの時間割を出しているときに今日が特別な日程なら、表の今日の列は薄く */
 .grid.is-special-today .cell.is-today { opacity: .45; }
 
 /* 特別な日程のダイアログ */

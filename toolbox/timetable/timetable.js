@@ -224,46 +224,85 @@
 
     renderNow(tb, st);
     renderSpecials(tb, cur.readonly);
-    // 今日が特別な日程なら、表の今日の列は薄く（表はいつもの時間割）
-    grid.classList.toggle("is-special-today", !!(st.plan.special && st.plan.day.type !== "normal"));
+    // いつもの時間割を出しているときに今日が特別な日程なら、表の今日の列は薄く
+    grid.classList.toggle("is-special-today", !!(st.plan.special && st.plan.day.type !== "normal") && gridMode === "usual");
 
-    // 表
+    // 表。今週に特別な日程（試験など）があれば、今週の日程で出す（上の切りかえで、いつもの時間割にもできる）
+    var week = weekOf(tb, now), weekMode = week.special && gridMode !== "usual";
+    renderGridMode(week);
+    grid.classList.toggle("is-week", !!weekMode);
     grid.style.setProperty("--days", String(tb.days));
     grid.textContent = "";
     grid.appendChild(el("span"));
     for (var d = 0; d < tb.days; d++) {
-      var h = el("div", "grid__day" + (d === st.day ? " is-today" : ""));
-      h.appendChild(document.createTextNode(DAY_NAMES[d]));
-      if (d === st.day) h.appendChild(el("small", "", st.plan.special ? st.plan.special.name : t("今日")));
+      var wp = weekMode ? week.plans[d] : null, isToday = weekMode ? week.dates[d] === ymd(now) : d === st.day;
+      var h = el("div", "grid__day" + (isToday ? " is-today" : "") + (wp && wp.special && wp.day.type !== "normal" ? " is-special" + (wp.off ? " is-off" : "") : ""));
+      h.appendChild(document.createTextNode(DAY_NAMES[d] + (weekMode ? " " + mdShort.format(parseYmd(week.dates[d])) : "")));
+      if (wp && wp.special && wp.day.type !== "normal") h.appendChild(el("small", "", wp.off ? t("休み") : wp.special.name));
+      else if (isToday) h.appendChild(el("small", "", !weekMode && st.plan.special ? st.plan.special.name : t("今日")));
       grid.appendChild(h);
     }
-    var i = 0;
-    for (var p = 0; p < tb.periods; p++) {
+    var i = 0, rows = tb.periods;
+    if (weekMode) week.plans.forEach(function (pl) { if (pl.day && pl.day.type === "custom") rows = Math.max(rows, pl.slots.length); });
+    rows = Math.min(10, rows);
+    for (var p = 0; p < rows; p++) {
       // 時限の番号（自分の時間割では、押すとその時限の時刻を変えられる）
-      var ph = el(cur.readonly ? "div" : "button", "grid__period" + (st.now && st.now.p === p ? " is-now" : "") + (cur.readonly ? "" : " m3-state"));
-      if (!cur.readonly) { ph.type = "button"; ph.dataset.period = String(p); }
+      var hasTime = p < tb.periods;
+      var ph = el(cur.readonly || !hasTime ? "div" : "button", "grid__period" + (st.now && st.now.p === p ? " is-now" : "") + (cur.readonly || !hasTime ? "" : " m3-state"));
+      if (!cur.readonly && hasTime) { ph.type = "button"; ph.dataset.period = String(p); }
       ph.appendChild(document.createTextNode(String(p + 1)));
-      ph.appendChild(el("small", "", tb.times[p].s + "\n" + tb.times[p].e));
-      ph.title = periodLabel(p) + " " + tb.times[p].s + "〜" + tb.times[p].e + (cur.readonly ? "" : " · " + t("押すと時刻を変えられます"));
+      if (hasTime) {
+        ph.appendChild(el("small", "", tb.times[p].s + "\n" + tb.times[p].e));
+        ph.title = periodLabel(p) + " " + tb.times[p].s + "〜" + tb.times[p].e + (cur.readonly ? "" : " · " + t("押すと時刻を変えられます"));
+      }
       grid.appendChild(ph);
       for (var d2 = 0; d2 < tb.days; d2++) {
-        var key = d2 + "-" + p, c = tb.cells[key];
+        var plan2 = weekMode ? week.plans[d2] : null, today2 = weekMode ? week.dates[d2] === ymd(now) : d2 === st.day;
         var b = el("button", "cell m3-state");
         b.type = "button";
-        b.dataset.key = key;
-        if (c) {
-          b.style.setProperty("--cc", c.color);
-          b.appendChild(el("span", "cell__subject", c.subject));
-          if (c.room) b.appendChild(el("span", "cell__room", c.room));
-          b.setAttribute("aria-label", DAY_NAMES[d2] + " " + periodLabel(p) + " " + c.subject + (c.room ? " " + c.room : ""));
+        if (plan2 && plan2.special && plan2.day.type !== "normal") {
+          // 特別な日程の日（試験の時間割・休み）。押すと、その日程を開く
+          b.dataset.special = plan2.special.id;
+          b.classList.add("cell--special");
+          var sl = plan2.off ? null : plan2.slots[p];
+          if (plan2.off) {
+            b.classList.add("cell--off");
+            if (p === 0) b.appendChild(el("span", "cell__subject", t("休み")));
+            b.setAttribute("aria-label", DAY_NAMES[d2] + " " + t("休み"));
+          } else if (sl) {
+            b.style.setProperty("--cc", sl.cell.color);
+            b.appendChild(el("span", "cell__subject", sl.cell.subject));
+            b.appendChild(el("span", "cell__time", sl.s + "〜" + sl.e));
+            if (sl.cell.room) b.appendChild(el("span", "cell__room", sl.cell.room));
+            b.setAttribute("aria-label", DAY_NAMES[d2] + " " + sl.s + "〜" + sl.e + " " + sl.cell.subject + (sl.cell.room ? " " + sl.cell.room : ""));
+            if (today2 && st.now && st.now.p === undefined && st.now.label === String(p + 1)) { b.classList.add("is-now"); b.dataset.now = t("いま"); }
+          } else {
+            b.classList.add("cell--empty", "is-readonly");
+            b.tabIndex = -1;
+            b.setAttribute("aria-label", DAY_NAMES[d2] + " " + t("なし"));
+          }
+        } else if (p >= tb.periods) {
+          // いつもの日だが、試験の日の行のほうが多いとき
+          b.classList.add("cell--empty", "is-readonly");
+          b.tabIndex = -1;
+          b.setAttribute("aria-hidden", "true");
         } else {
-          b.classList.add("cell--empty");
-          if (cur.readonly) { b.classList.add("is-readonly"); b.tabIndex = -1; }
-          else b.appendChild(icon("add"));
-          b.setAttribute("aria-label", DAY_NAMES[d2] + " " + periodLabel(p) + " " + t("空き"));
+          var key = d2 + "-" + p, c = tb.cells[key];
+          b.dataset.key = key;
+          if (c) {
+            b.style.setProperty("--cc", c.color);
+            b.appendChild(el("span", "cell__subject", c.subject));
+            if (c.room) b.appendChild(el("span", "cell__room", c.room));
+            b.setAttribute("aria-label", DAY_NAMES[d2] + " " + periodLabel(p) + " " + c.subject + (c.room ? " " + c.room : ""));
+          } else {
+            b.classList.add("cell--empty");
+            if (cur.readonly) { b.classList.add("is-readonly"); b.tabIndex = -1; }
+            else b.appendChild(icon("add"));
+            b.setAttribute("aria-label", DAY_NAMES[d2] + " " + periodLabel(p) + " " + t("空き"));
+          }
+          if (today2 && st.now && st.now.p === p && c) { b.classList.add("is-now"); b.dataset.now = t("いま"); }
         }
-        if (d2 === st.day) b.classList.add("is-today");
-        if (d2 === st.day && st.now && st.now.p === p && c) { b.classList.add("is-now"); b.dataset.now = t("いま"); }
+        if (today2) b.classList.add("is-today");
         if (firstRender) { b.classList.add("cell--in"); b.style.setProperty("--i", String(i++)); }
         grid.appendChild(b);
       }
@@ -280,6 +319,39 @@
     $("note").textContent = cur.readonly
       ? t("配信した人が時間割を変えると、次に開いたときに新しくなります。")
       : t("時間割はこの端末のブラウザに保存されます（オンライン同期は任意）。");
+  }
+
+  // ---- 表の切りかえ（今週の日程・いつもの時間割） ----
+  //   今週（日曜は次の週）に特別な日程があれば、表はその週の日程（試験の時間割・休み）。切りかえはこの画面のあいだだけ覚える
+  var gridMode = "week";
+  var mdShort = new Intl.DateTimeFormat(locale, { month: "numeric", day: "numeric" });
+  function weekOf(tb, now) {
+    var base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var w = base.getDay();
+    base.setDate(base.getDate() + (w === 0 ? 1 : 1 - w)); // 月曜
+    var r = { dates: [], plans: [], special: null };
+    for (var d = 0; d < tb.days; d++) {
+      var day = new Date(base.getFullYear(), base.getMonth(), base.getDate() + d), pl = dayPlan(tb, day);
+      r.dates.push(ymd(day));
+      r.plans.push(pl);
+      if (pl.special && pl.day.type !== "normal" && !r.special) r.special = pl.special;
+    }
+    return r;
+  }
+  function renderGridMode(week) {
+    var box = $("grid-mode");
+    box.hidden = !week.special;
+    if (!week.special) return;
+    box.textContent = "";
+    [["week", icon(SP_KINDS[week.special.kind][0]), t("今週（{name}）", { name: week.special.name })], ["usual", icon("calendar_view_week"), t("いつもの時間割")]].forEach(function (o) {
+      var b = el("button", "view-chip m3-state");
+      b.type = "button";
+      b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", String((gridMode === "usual" ? "usual" : "week") === o[0]));
+      b.append(o[1], el("span", "", o[2]));
+      b.addEventListener("click", function () { gridMode = o[0]; firstRender = true; render(); });
+      box.appendChild(b);
+    });
   }
 
   function renderNow(tb, st) {
@@ -722,7 +794,9 @@
   grid.addEventListener("click", function (e) {
     if (embed) return;
     var b = e.target.closest(".cell");
-    if (b) { openCell(b.dataset.key); return; }
+    if (b && b.dataset.special) { openSpecial(b.dataset.special); return; }
+    if (b && b.dataset.key) { openCell(b.dataset.key); return; }
+    if (b) return;
     var ph = e.target.closest(".grid__period[data-period]");
     if (ph) { openPeriod(+ph.dataset.period); return; }
     if (e.target.closest("#add-period")) addPeriod();

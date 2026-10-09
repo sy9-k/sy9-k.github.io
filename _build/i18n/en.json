@@ -2490,5 +2490,6 @@
   "行事": "Event",
   "試験": "Exam",
   "試験の週・行事・休みなど、いつもとちがう日程を入れておくと、その日は「いまの授業」がその日程になります。": "Add schedules that differ from usual, like exam weeks, events or days off, and “Now” will follow them on those days.",
-  "追加しました。日を押して、その日の日程を入れてください": "Added. Tap a day to enter its schedule"
+  "追加しました。日を押して、その日の日程を入れてください": "Added. Tap a day to enter its schedule",
+  "今週（{name}）": "This week ({name})"
 }
