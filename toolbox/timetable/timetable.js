@@ -13,6 +13,7 @@
 //   ・クラスへの連絡（30 件まで）: table.notices = [{ id, kind: "info" | "bring" | "submit" | "change", important, title, body, date（対象の日）, until（いつまで出すか）, created }]
 //       これも時間割の JSON に入るので、配信するとクラスの人に届く。新しい連絡は、受け取ったときに通知する（通知を許可しているとき）
 //       読んだ連絡は data.seen、通知した連絡は data.notified（どちらも id の一覧。この端末だけ）
+//       書く・直す・消すのは管理者だけ（配信と同じ。share.js の isAdmin）。ほかの人は、配信された連絡を読むだけ
 //   ・クラスの時間割の配信（/toolbox/timetable/share.js）
 //       管理者（SK Hub Systems の開発者）が、メールアドレスを入れて自分の時間割を配信する。受け取る人は、そのメールアドレスの
 //       SK Hub Systems アカウントでログインすると、配信された時間割が出る（見るだけ。返事などはない）
@@ -132,6 +133,7 @@
   // ---- クラスへの連絡 ----
   var NT_KINDS = { info: ["campaign", t("お知らせ")], bring: ["backpack", t("持ち物")], submit: ["assignment", t("提出物")], change: ["swap_horiz", t("変更")] };
   var MAX_NOTICES = 30;
+  var admin = false; // 管理者か（ログインしているときに確かめる。はじめはいいえ）
   function cleanNotices(list) {
     var out = [];
     (Array.isArray(list) ? list : []).forEach(function (x) {
@@ -440,7 +442,8 @@
     var box = $("notices"), today = ymd(new Date());
     box.textContent = "";
     var list = (tb.notices || []).filter(function (n) { return !readonly || noticeActive(n, today); });
-    // 自分の時間割で、連絡がなく配信もしていなければ出さない（メニューから追加できる）
+    // 自分の時間割の連絡は、管理者だけ（書いて配信する人）。配信された時間割では、まだ出す連絡があるときだけ
+    if (!readonly && !admin) { box.hidden = true; return; }
     if (!list.length && (readonly || !tb.share)) { box.hidden = true; return; }
     box.hidden = false;
     var head = el("div", "specials__head");
@@ -499,7 +502,7 @@
     body.appendChild(meta);
     if (n.body) body.appendChild(el("p", "tt-detail__note nt-body", n.body));
     if (n.created) body.appendChild(el("p", "nt-when", t("{date} に書いた連絡", { date: new Date(n.created).toLocaleString(locale, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) })));
-    var actions = cur.readonly ? [{ label: t("閉じる"), primary: true, value: null }] : [{ label: t("削除"), danger: true, value: "delete" }, { label: t("編集"), value: "edit" }, { label: t("閉じる"), primary: true, value: null }];
+    var actions = cur.readonly || !admin ? [{ label: t("閉じる"), primary: true, value: null }] : [{ label: t("削除"), danger: true, value: "delete" }, { label: t("編集"), value: "edit" }, { label: t("閉じる"), primary: true, value: null }];
     if (n.kind === "submit" || n.kind === "bring") actions.unshift({ label: t("Todo に追加"), value: "todo" });
     window.M3.dialog({ title: n.title, body: body, actions: actions }).then(function (v) {
       render();
@@ -524,6 +527,7 @@
   }
   // 連絡を書く・直す（自分の時間割）。配信しているなら「保存して配信」で、すぐクラスの人に届ける
   function editNotice(n) {
+    if (!admin) return; // 管理者だけ
     if (data.view !== "mine") { data.view = "mine"; save(); render(); }
     var tb = data.table;
     if (!n && tb.notices.length >= MAX_NOTICES) { say(t("連絡は {n} 件までです。古いものを消してください", { n: MAX_NOTICES })); return; }
@@ -1317,6 +1321,11 @@
   if (signedIn) {
     receive(false);
     setInterval(function () { if (document.visibilityState === "visible") receive(false); }, 30 * 60 * 1000);
-    loadShare().then(function (m) { return m.isAdmin(); }).then(function (admin) { $("menu-share").hidden = !admin; }).catch(function () { /* 管理者でない */ });
+    loadShare().then(function (m) { return m.isAdmin(); }).then(function (yes) {
+      admin = !!yes;
+      $("menu-share").hidden = !admin;
+      $("menu-notice").hidden = !admin;
+      if (admin) render();
+    }).catch(function () { /* 管理者でない */ });
   }
 })();
