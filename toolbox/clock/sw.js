@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-clock-v17';
+const CACHE_NAME = 'sk-clock-v18';
 const ASSETS = [
   '/toolbox/clock/',
   '/toolbox/clock/index.html',
@@ -19,7 +19,7 @@ const ASSETS = [
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',
   '/toolbox/shared/titlebar.js',
-  '/toolbox/shared/island.js',
+  '/toolbox/shared/tbcenter.js',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/countdown/icon.svg',
   '/toolbox/calc/icon.svg',

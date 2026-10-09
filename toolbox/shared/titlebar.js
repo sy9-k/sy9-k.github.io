@@ -1,7 +1,8 @@
 // SK's Toolbox のタイトルバー（パソコンの Chrome・Edge でアプリとして入れたとき。Window Controls Overlay）
 //   ・manifest の display_override: ["window-controls-overlay"] で、ウィンドウのいちばん上の帯をページが使えるようになる
 //     （右上・左上の閉じるボタンなどはブラウザが上に重ねる。タイトルバーの右の「∧」で、ふつうのタイトルバーに戻せる）
-//   ・帯の中身: Toolbox のアイコンといまのアプリの名前・アプリの切りかえ・検索（⌘K）・設定
+//   ・帯の中身: Toolbox のアイコンといまのアプリの名前・アプリの切りかえ・検索（⌘K）・設定。真ん中は /toolbox/shared/tbcenter.js
+//     どれを出すかは Toolbox の設定の「タイトルバー」で選べる（settings.titlebar。消したものは <div class="tbt" data-off="apps search"> のように）
 //     何もないところをドラッグすると、ウィンドウを動かせる（app-region: drag）
 //   ・見た目と、中身をタイトルバーの分だけ下げるのは /toolbox/shared/m3.css（@media (display-mode: window-controls-overlay)）。
 //     Clock は空をタイトルバーの下まで広げる（<html data-tbt="overlay">）
@@ -82,6 +83,16 @@
     bar.append(search, settings);
 
     document.body.insertBefore(bar, document.body.firstChild);
+
+    // 設定で消したもの
+    var parts = ["brand", "name", "apps", "search", "settings"];
+    var applyParts = function () {
+      var tb = window.SKToolbox && SKToolbox.get().titlebar;
+      var off = tb ? parts.filter(function (k) { return tb[k] === false; }) : [];
+      if (off.length) bar.setAttribute("data-off", off.join(" ")); else bar.removeAttribute("data-off");
+    };
+    applyParts();
+    if (window.SKToolbox) SKToolbox.onChange(applyParts);
 
     // 色は、そのページの背景と同じに（アプリごと・テーマごとに違うため）。Clock は空の上に重ねるので、色を付けない
     if (document.documentElement.getAttribute("data-tbt") !== "overlay") {

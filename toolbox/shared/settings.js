@@ -7,7 +7,8 @@
 //       <html data-theme> に付ける）のまま。ライト・ダークを選んでいれば Toolbox の設定を優先する（ヘッダーもいっしょに変わる）
 //
 //   ・設定は localStorage の sk_toolbox に保存する（オンライン同期をオンにしたときだけ、暗号化して SK Hub Systems アカウントにも保存する）
-//       { theme: "auto|light|dark", color: "app|blue|sakura|…", motion: "auto|reduce", haptics: true|false, badge: true|false, island: true|false }
+//       { theme: "auto|light|dark", color: "app|blue|sakura|…", motion: "auto|reduce", haptics: true|false, badge: true|false,
+//         titlebar: { center: "command|island|chips|ticker|timeline|tabs|none", chips: ["class","todo","alarm","timer"], brand, name, apps, search, settings: true|false } }
 //   ・テーマ: <html data-theme="light|dark">（auto のときは付けない。各アプリの CSS が端末の設定に合わせる）
 //   ・テーマカラー: SK's Brand のテーマカラー（SK's Blue など 7 色）から作った Material 3 の配色で --md-* を上書きする
 //       配色は Google の material-color-utilities（SchemeFidelity）で前もって計算したもの。
@@ -69,7 +70,18 @@
 
   // ---- 設定の読み書き ----
   var STORE = "sk_toolbox";
-  var DEFAULTS = { theme: "auto", color: "app", motion: "auto", haptics: true, badge: true, island: true };
+  var TB_CENTERS = ["command", "island", "chips", "ticker", "timeline", "tabs", "none"];
+  var TB_CHIPS = ["class", "todo", "alarm", "timer"];
+  var TB_PARTS = ["brand", "name", "apps", "search", "settings"];
+  var DEFAULTS = { theme: "auto", color: "app", motion: "auto", haptics: true, badge: true };
+  // タイトルバー（パソコンでアプリとして入れたとき。/toolbox/shared/titlebar.js・tbcenter.js）。前の「アイランド」のオン・オフ（island）も引き継ぐ
+  function readTitlebar(d) {
+    var tb = d.titlebar && typeof d.titlebar === "object" ? d.titlebar : {};
+    var r = { center: TB_CENTERS.indexOf(tb.center) >= 0 ? tb.center : d.island === false ? "none" : "command" };
+    r.chips = Array.isArray(tb.chips) ? TB_CHIPS.filter(function (k) { return tb.chips.indexOf(k) >= 0; }) : TB_CHIPS.slice();
+    TB_PARTS.forEach(function (k) { r[k] = typeof tb[k] === "boolean" ? tb[k] : true; });
+    return r;
+  }
   var settings = {};
   function read() {
     var d = {};
@@ -80,7 +92,7 @@
       motion: d.motion === "reduce" ? "reduce" : "auto",
       haptics: typeof d.haptics === "boolean" ? d.haptics : DEFAULTS.haptics,
       badge: typeof d.badge === "boolean" ? d.badge : DEFAULTS.badge,
-      island: typeof d.island === "boolean" ? d.island : DEFAULTS.island
+      titlebar: readTitlebar(d)
     };
   }
   function write() {
@@ -305,6 +317,85 @@
     return row;
   }
 
+  // タイトルバーの設定: 真ん中に出すもの（7 種類）と、アイコン・名前・アプリの切りかえ・検索・設定のオン・オフ
+  function setTitlebar(patch) {
+    var tb = {};
+    Object.keys(settings.titlebar).forEach(function (k) { tb[k] = settings.titlebar[k]; });
+    Object.keys(patch).forEach(function (k) { tb[k] = patch[k]; });
+    set({ titlebar: tb });
+  }
+  function titlebarSection() {
+    var sec = section(t("タイトルバー"));
+    sec.appendChild(el("p", "tbs-text", t("パソコンでアプリとして入れたときの、ウィンドウのいちばん上の帯。真ん中に出すものと、並べるボタンを選べます")));
+    var row = el("div", "tbs-item tbs-item--col");
+    row.appendChild(label(t("真ん中に出すもの")));
+    var grid = el("div", "tbs-designs");
+    grid.setAttribute("role", "radiogroup");
+    grid.setAttribute("aria-label", t("真ん中に出すもの"));
+    [
+      ["command", "search", t("コマンドバー"), t("検索欄の形。次の予定を薄く出し、押すと検索とコマンド（⌘K）")],
+      ["island", "radio_button_checked", t("アイランド"), t("黒い小さな島に、いま大事なことを 1 つ。押すと今日のまとめ")],
+      ["chips", "label", t("ステータスチップ"), t("授業・Todo・アラーム・タイマーを小さな札で並べる")],
+      ["ticker", "text_rotation_none", t("ティッカー"), t("1 行の文字が数秒ごとに入れ替わる")],
+      ["timeline", "view_timeline", t("今日のタイムライン"), t("今日の授業を色の帯で並べ、「今」の線が動く")],
+      ["tabs", "tab", t("アプリのタブ"), t("アプリを名前のタブで並べる（アイコン・名前・アプリの切りかえの代わり）")],
+      ["none", "block", t("なし"), t("何も出さない")]
+    ].forEach(function (o) {
+      var b = el("button", "tbs-design m3-state");
+      b.type = "button";
+      b.setAttribute("role", "radio");
+      var ic = icon(o[1]);
+      ic.classList.add("tbs-design__icon");
+      var check = icon("check_circle");
+      check.classList.add("tbs-design__check");
+      b.append(ic, label(o[2], o[3]), check);
+      b.addEventListener("click", function () { setTitlebar({ center: o[0] }); });
+      updaters.push(function () { b.setAttribute("aria-checked", String(settings.titlebar.center === o[0])); });
+      grid.appendChild(b);
+    });
+    row.appendChild(grid);
+    sec.appendChild(row);
+
+    // ステータスチップに出すもの（ステータスチップを選んだときだけ）
+    var chipRow = el("div", "tbs-item tbs-item--col");
+    chipRow.appendChild(label(t("チップに出すもの")));
+    var chipBox = el("div", "tbs-chips");
+    [["class", "school", t("授業")], ["todo", "checklist", "Todo"], ["alarm", "alarm", t("アラーム")], ["timer", "hourglass_top", t("タイマー")]].forEach(function (o) {
+      var b = el("button", "tbs-chip m3-state");
+      b.type = "button";
+      b.setAttribute("aria-pressed", "false");
+      b.append(icon(o[1]), el("span", "", o[2]));
+      b.addEventListener("click", function () {
+        var list = settings.titlebar.chips.slice(), i = list.indexOf(o[0]);
+        if (i >= 0) list.splice(i, 1); else list.push(o[0]);
+        setTitlebar({ chips: TB_CHIPS.filter(function (k) { return list.indexOf(k) >= 0; }) });
+      });
+      updaters.push(function () { b.setAttribute("aria-pressed", String(settings.titlebar.chips.indexOf(o[0]) >= 0)); });
+      chipBox.appendChild(b);
+    });
+    chipRow.appendChild(chipBox);
+    updaters.push(function () { chipRow.hidden = settings.titlebar.center !== "chips"; });
+    sec.appendChild(chipRow);
+
+    // 並べるもの
+    var tabsNote = t("「アプリのタブ」のときは、タブが代わりに出ます");
+    [
+      ["brand", t("Toolbox のアイコン"), t("押すとホーム")],
+      ["name", t("アプリの名前"), t("「SK's Toolbox › Clock」のように")],
+      ["apps", t("アプリの切りかえ"), t("右のアプリのアイコン")],
+      ["search", t("検索のボタン"), t("消しても ⌘K（Ctrl+K）で開けます")],
+      ["settings", t("設定のボタン"), t("消しても、各アプリの上の歯車から開けます")]
+    ].forEach(function (o) {
+      var r = switchRow(o[1], o[2], function () { return settings.titlebar[o[0]]; }, function (on) { var p = {}; p[o[0]] = on; setTitlebar(p); });
+      if (o[0] === "brand" || o[0] === "name" || o[0] === "apps") {
+        var sub = r.querySelector(".tbs-label__sub");
+        updaters.push(function () { sub.textContent = settings.titlebar.center === "tabs" ? o[2] + " · " + tabsNote : o[2]; });
+      }
+      sec.appendChild(r);
+    });
+    return sec;
+  }
+
   // 確認のダイアログ（M3 の基本のダイアログ）
   function confirmDialog(title, text, ok) {
     return new Promise(function (resolve) {
@@ -475,11 +566,6 @@
     var use = section(t("操作"));
     use.appendChild(switchRow(t("押したときに振動する"), t("Calc のキーと、Todo のチェック。対応している端末（Android など）だけです"),
       function () { return settings.haptics; }, function (on) { set({ haptics: on }); vibrate(); }));
-    // アイランド（/toolbox/shared/island.js。パソコンでアプリとして入れ、タイトルバーを Toolbox のものにしたとき）
-    if (navigator.windowControlsOverlay) {
-      use.appendChild(switchRow(t("アイランド"), t("パソコンでアプリとして入れたとき、タイトルバーの真ん中に、いまの授業やタイマーなどを小さく出します。押すと今日のまとめが開きます"),
-        function () { return settings.island; }, function (on) { set({ island: on }); }));
-    }
     // アプリのアイコンの数字（Badging API。対応しているブラウザで、アプリとして入れたとき）
     if (navigator.setAppBadge) {
       use.appendChild(switchRow(t("アイコンに数字を出す"), t("アプリとして入れたとき、Dock やホーム画面のアイコンに、期限切れと今日の Todo の数を出します"),
@@ -490,6 +576,9 @@
         }));
     }
     body.appendChild(use);
+
+    // タイトルバー（パソコンの Chrome・Edge でアプリとして入れ、タイトルバーを Toolbox のものにしたとき）
+    if (navigator.windowControlsOverlay) body.appendChild(titlebarSection());
 
     // この端末のデータ
     var data = section(t("この端末のデータ"));

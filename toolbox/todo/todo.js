@@ -1159,6 +1159,19 @@
     }).catch(function () { say(t("読み込めませんでした。Todo のバックアップのファイルを選んでください")); });
   });
 
+  // 横断検索の「Todo に追加」（/toolbox/shared/search.js が sessionStorage の sk_quick_todo に入れて、ここを開く）
+  var quick = null;
+  try { quick = sessionStorage.getItem("sk_quick_todo"); sessionStorage.removeItem("sk_quick_todo"); } catch (e) { /* 使えない */ }
+  if (quick && quick.trim()) {
+    var qq = R.parseQuick(quick.trim().slice(0, 500)), qnow = Date.now();
+    var qx = R.upgradeTask({ id: newId(), list: data.lists[0].id, text: qq.text || quick.trim(), due: qq.due, time: qq.time, repeat: qq.repeat, priority: qq.priority, created: qnow, updated: qnow }, data.lists);
+    data.tasks.push(qx);
+    lastAdded = qx.id;
+    save();
+    openView(qx.list, false);
+    say(t("Todo に追加しました: {text}", { text: qx.text }));
+  }
+
   // #task-ID で開いたとき（横断検索など）: そのタスクのリストを開いて、くわしい情報を出す
   var deep = /^#task-(.+)$/.exec(location.hash);
   if (deep) {

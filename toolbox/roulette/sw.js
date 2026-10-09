@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-roulette-v3';
+const CACHE_NAME = 'sk-roulette-v4';
 const ASSETS = [
   '/toolbox/roulette/',
   '/toolbox/roulette/index.html',
@@ -18,7 +18,7 @@ const ASSETS = [
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',
   '/toolbox/shared/titlebar.js',
-  '/toolbox/shared/island.js',
+  '/toolbox/shared/tbcenter.js',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/clock/icon.svg',
   '/toolbox/calc/icon.svg',

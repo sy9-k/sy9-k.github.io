@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-timetable-v3';
+const CACHE_NAME = 'sk-timetable-v4';
 const ASSETS = [
   '/toolbox/timetable/',
   '/toolbox/timetable/index.html',
@@ -19,7 +19,7 @@ const ASSETS = [
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',
   '/toolbox/shared/titlebar.js',
-  '/toolbox/shared/island.js',
+  '/toolbox/shared/tbcenter.js',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/clock/icon.svg',
   '/toolbox/calc/icon.svg',

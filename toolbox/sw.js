@@ -1,6 +1,6 @@
 // SK's Toolbox のホーム画面（/toolbox/）の Service Worker。スコープは /toolbox/ 全体
 // 各アプリは自分のフォルダに自分の sw.js を持つ（スコープがせまいほうが使われる）。まだ開いたことのないアプリは、ここで開ける
-const CACHE_NAME = 'sk-toolbox-v13';
+const CACHE_NAME = 'sk-toolbox-v14';
 const ASSETS = [
   // ホーム画面と、4 つのアプリ（ホーム画面から開いたことがなくても、オフラインで開けるように）
   '/toolbox/',
@@ -21,7 +21,7 @@ const ASSETS = [
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',
   '/toolbox/shared/titlebar.js',
-  '/toolbox/shared/island.js',
+  '/toolbox/shared/tbcenter.js',
   '/toolbox/settings/',
   '/toolbox/clock/',
   '/toolbox/clock/index.html',

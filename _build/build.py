@@ -78,7 +78,7 @@ EXTRA = {
         '  <link rel="stylesheet" href="/toolbox/home.css">\n'
         '  <script src="/toolbox/shared/settings.js" data-app="home" data-scope="site"></script>\n'
         '  <script src="/toolbox/shared/titlebar.js"></script>\n'
-        '  <script src="/toolbox/shared/island.js"></script>\n'
+        '  <script src="/toolbox/shared/tbcenter.js"></script>\n'
         '  <link rel="manifest" href="/toolbox/manifest.json">\n'
         '  <meta name="apple-mobile-web-app-capable" content="yes">\n'
         '  <meta name="apple-mobile-web-app-title" content="SK\'s Toolbox">\n',
@@ -99,7 +99,7 @@ RUNTIME_SOURCES = [
     "dictionary/script.js", "dictionary/account.js", "assets/hub/sync-loader.js", "assets/analytics.js", "assets/nf-secret.js", "assets/terminal.js",
     "nagi/app.js", "nagi/account.js", "brand/brand.js", "assets/hub/account-button.js",
     "toolbox/clock/clock.js", "toolbox/calc/calc.js", "toolbox/memo/memo.js", "toolbox/todo/todo.js", "toolbox/countdown/countdown.js", "toolbox/clock/clock-tools.js", "toolbox/shared/settings.js", "toolbox/shared/m3.js", "toolbox/shared/remind.js", "toolbox/home.js",
-    "toolbox/shared/sync.js", "toolbox/shared/titlebar.js", "toolbox/shared/island.js", "toolbox/shared/pwa.js",
+    "toolbox/shared/sync.js", "toolbox/shared/titlebar.js", "toolbox/shared/tbcenter.js", "toolbox/shared/pwa.js", "toolbox/shared/search.js",
     "toolbox/timetable/timetable.js", "toolbox/roulette/roulette.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
