@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-roulette-v6';
+const CACHE_NAME = 'sk-roulette-v7';
 const ASSETS = [
   '/toolbox/roulette/',
   '/toolbox/roulette/index.html',

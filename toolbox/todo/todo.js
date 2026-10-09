@@ -943,6 +943,8 @@
 
     window.M3.dialog({
       title: t("詳細"), body: body, cancelValue: "close",
+      // スマホ（指で操作）では、開いたときにキーボードを出さない（タイトルを押すと出る）
+      autofocus: !(window.matchMedia && matchMedia("(pointer: coarse)").matches),
       actions: [{ label: t("削除"), danger: true, value: "delete" }, { label: t("完了"), primary: true, value: "close" }],
       onReady: function (close, box) {
         box.classList.add("detail");

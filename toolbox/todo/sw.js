@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-todo-v18';
+const CACHE_NAME = 'sk-todo-v19';
 const ASSETS = [
   '/toolbox/todo/',
   '/toolbox/todo/index.html',
