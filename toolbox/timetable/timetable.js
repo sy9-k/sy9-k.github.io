@@ -229,6 +229,7 @@
   var grid = $("grid"), firstRender = true;
   function periodLabel(p) { return t("{n} 限", { n: p + 1 }); }
   function render() {
+    if (adminView) renderAdmin();
     var cur = current(), tb = cur.table, now = new Date(), st = status(tb, now);
     $("title").textContent = cur.title;
     var count = Object.keys(tb.cells).length;
@@ -438,13 +439,13 @@
   }
 
   // ---- クラスへの連絡（新しい順。配信された時間割なら見るだけ） ----
-  function renderNotices(tb, readonly) {
-    var box = $("notices"), today = ymd(new Date());
+  function renderNotices(tb, readonly, target) {
+    var box = target || $("notices"), today = ymd(new Date());
     box.textContent = "";
     var list = (tb.notices || []).filter(function (n) { return !readonly || noticeActive(n, today); });
-    // 自分の時間割の連絡は、管理者だけ（書いて配信する人）。配信された時間割では、まだ出す連絡があるときだけ
+    // 自分の時間割の連絡は、管理者だけ（書いて配信する人）。配信された時間割では、まだ出す連絡があるときだけ。管理者の画面（target）ではいつも出す
     if (!readonly && !admin) { box.hidden = true; return; }
-    if (!list.length && (readonly || !tb.share)) { box.hidden = true; return; }
+    if (!target && !list.length && (readonly || !tb.share)) { box.hidden = true; return; }
     box.hidden = false;
     var head = el("div", "specials__head");
     var unread = list.filter(function (n) { return readonly && data.seen.indexOf(n.id) < 0; }).length;
@@ -462,7 +463,7 @@
     if (!readonly) {
       var add = el("button", "text-btn m3-state");
       add.type = "button";
-      add.id = "add-notice";
+      add.dataset.action = "add-notice";
       add.append(icon("add"), el("span", "", t("連絡を書く")));
       head.appendChild(add);
     }
@@ -486,12 +487,19 @@
     });
     box.appendChild(wrap);
   }
-  $("notices").addEventListener("click", function (e) {
+  // 連絡・特別な日程の一覧を押したとき（時間割の画面と管理者の画面で同じ）
+  function listClick(e) {
     if (embed) return;
     var b = e.target.closest("[data-notice]");
     if (b) { openNotice(b.dataset.notice); return; }
-    if (e.target.closest("#add-notice")) editNotice(null);
-  });
+    var sp = e.target.closest("[data-special]");
+    if (sp) { openSpecial(sp.dataset.special); return; }
+    var act = e.target.closest("[data-action]");
+    if (!act) return;
+    if (act.dataset.action === "add-notice") editNotice(null);
+    else if (act.dataset.action === "add-special") editSpecialInfo(null);
+  }
+  $("notices").addEventListener("click", listClick);
   function openNotice(id) {
     var cur = current(), n = (cur.table.notices || []).filter(function (x) { return x.id === id; })[0];
     if (!n) return;
@@ -590,8 +598,8 @@
   var mdFmt = new Intl.DateTimeFormat(locale, { month: "numeric", day: "numeric", weekday: "short" });
   function dateText(ds) { return mdFmt.format(parseYmd(ds)); }
   function rangeText(sp) { return sp.from === sp.to ? dateText(sp.from) : dateText(sp.from) + " 〜 " + dateText(sp.to); }
-  function renderSpecials(tb, readonly) {
-    var box = $("specials"), today = ymd(new Date());
+  function renderSpecials(tb, readonly, target) {
+    var box = target || $("specials"), today = ymd(new Date());
     box.textContent = "";
     var list = (tb.special || []).filter(function (sp) { return !readonly || sp.to >= today; });
     if (!list.length && readonly) { box.hidden = true; return; }
@@ -601,7 +609,7 @@
     if (!readonly) {
       var add = el("button", "text-btn m3-state");
       add.type = "button";
-      add.id = "add-special";
+      add.dataset.action = "add-special";
       add.append(icon("add"), el("span", "", t("追加")));
       head.appendChild(add);
     }
@@ -626,12 +634,7 @@
     });
     box.appendChild(row);
   }
-  $("specials").addEventListener("click", function (e) {
-    if (embed) return;
-    var b = e.target.closest("[data-special]");
-    if (b) { openSpecial(b.dataset.special); return; }
-    if (e.target.closest("#add-special")) editSpecialInfo(null);
-  });
+  $("specials").addEventListener("click", listClick);
 
   // 特別な日程を開く（日ごとの日程。自分の時間割なら、日を押すと変えられる）
   function findSpecial(id) {
@@ -1170,14 +1173,14 @@
     if (!tb.share) return;
     say(t("配信しています…"));
     loadShare().then(function (m) {
-      return m.loadMembers(tb.share.tid).then(function (emails) {
-        if (!emails.length) throw new Error("no members");
+      return m.loadMembers(tb.share.tid).catch(function () { return []; }).then(function (emails) {
         return m.publish({ tid: tb.share.tid, title: tb.share.title || tb.name, json: payloadOf(tb, tb.share.title || tb.name), emails: emails }).then(function () { return emails.length; });
       });
     }).then(function (count) {
       tb.share.publishedAt = Date.now();
       save(); render();
-      say(t("{n} 人に配信しました", { n: count }));
+      say(t("配信を更新しました"));
+      if (adminView) renderAdmin();
     }, function (e) {
       console.warn("[Timetable share]", e);
       say(t("配信できませんでした。管理者の SK Hub Systems アカウントでログインしているか確認してください。"));
@@ -1197,7 +1200,7 @@
     ta.placeholder = "taro@example.com\nhanako@example.com";
     ta.spellcheck = false;
     ta.autocapitalize = "off";
-    box.appendChild(field(t("配信先のメールアドレス（1 行に 1 つ。カンマ区切りでも可）"), ta));
+    box.appendChild(field(t("配信先のメールアドレス（1 行に 1 つ。なくてもよい。招待コードでも参加できます）"), ta));
     var count = el("p", "tt-count");
     box.appendChild(count);
     var err = el("p", "tt-error");
@@ -1241,7 +1244,7 @@
       }
       if (v !== "publish") return;
       var r = parseEmails(ta.value);
-      if (!r.ok.length) { say(t("配信先のメールアドレスを入れてください")); return; }
+      // メールアドレスなしでも配信できる（招待コードで参加してもらう）
       if (r.ok.length > MAX_MEMBERS) { say(t("配信先は {n} 人までです", { n: MAX_MEMBERS })); return; }
       var name = title.value.trim().slice(0, 60) || tb.name;
       var payload = payloadOf(tb, name);
@@ -1249,11 +1252,274 @@
       loadShare().then(function (m) { return m.publish({ tid: tb.share && tb.share.tid, title: name, json: payload, emails: r.ok }); }).then(function (tid) {
         tb.share = { tid: tid, title: name, publishedAt: Date.now() };
         save(); render();
-        say(t("{n} 人に配信しました", { n: r.ok.length }) + (r.bad.length ? " · " + t("形がちがうメールアドレス {n} 件は入れませんでした", { n: r.bad.length }) : ""));
+        say((r.ok.length ? t("{n} 人に配信しました", { n: r.ok.length }) : t("配信しました。招待コードで参加してもらえます")) + (r.bad.length ? " · " + t("形がちがうメールアドレス {n} 件は入れませんでした", { n: r.bad.length }) : ""));
+        if (adminView) renderAdmin();
       }, function (e) {
         console.warn("[Timetable share]", e);
         say(t("配信できませんでした。管理者の SK Hub Systems アカウントでログインしているか確認してください。"));
       });
+    });
+  }
+
+  // ================================================================
+  // 招待コードで参加（受け取る人）
+  // ================================================================
+  function loginUrl(next) { return (I18N && I18N.path ? I18N.path("/account/") : "/account/") + "?next=" + encodeURIComponent(next || location.pathname); }
+  function askJoin() {
+    window.M3.prompt({ title: t("招待コードで参加"), label: t("招待コード（例: K7QM-3XRA）"), placeholder: "XXXX-XXXX", ok: t("次へ"), maxLength: 20 }).then(function (v) { if (v) doJoin(v); });
+  }
+  function doJoin(code) {
+    if (!hint()) {
+      window.M3.dialog({ title: t("ログインしてください"), icon: "login", body: el("p", "tbs-dialog__text", t("招待コードで参加するには、SK Hub Systems アカウント（Google）でログインします。ログインしたあと、もう一度招待のリンクを開いてください。")),
+        actions: [{ label: t("キャンセル"), value: null }, { label: t("ログイン"), primary: true, value: "login" }] })
+        .then(function (v) { if (v === "login") location.href = loginUrl(location.pathname + "?join=" + encodeURIComponent(code)); });
+      return;
+    }
+    say(t("招待コードを確かめています…"));
+    loadShare().then(function (m) {
+      return m.checkInvite(code).then(function (info) {
+        if (info.status === "signed-out") { say(t("ログインし直してください")); return; }
+        if (info.status === "unregistered") { say(t("SK Hub Systems アカウントの作成（規約への同意）がまだです")); return; }
+        if (info.status === "not-found") { say(t("招待コードが見つかりません。もう一度確かめてください")); return; }
+        if (info.status === "expired") { say(t("この招待コードは期限が切れています。配信している人に新しいコードをもらってください")); return; }
+        if (info.joined) { say(t("「{title}」にはもう参加しています", { title: info.title })); receive(true); return; }
+        var body = el("div", "tt-edit");
+        var p1 = el("p", "tt-info");
+        p1.append(icon("school"), el("span", "", t("「{title}」の時間割と連絡が届くようになります（見るだけ）。", { title: info.title })));
+        var p2 = el("p", "tt-info");
+        p2.append(icon("visibility"), el("span", "", t("配信している人（管理者）に、あなたの名前（{name}）とメールアドレス（{email}）が伝わります。ほかの参加者には見えません。", { name: info.name || t("名前なし"), email: info.email })));
+        body.append(p1, p2);
+        return window.M3.dialog({ title: t("「{title}」に参加しますか？", { title: info.title }), icon: "group_add", body: body, actions: [{ label: t("キャンセル"), value: null }, { label: t("参加する"), primary: true, value: "join" }] }).then(function (v) {
+          if (v !== "join") return;
+          return m.joinWithCode(info).then(function () {
+            say(t("「{title}」に参加しました", { title: info.title }));
+            receive(false);
+          });
+        });
+      });
+    }).catch(function (e) {
+      console.warn("[Timetable join]", e);
+      say(e && e.code === "too-many" ? t("受け取れる時間割は 20 個までです") : t("参加できませんでした。時間をおいてもう一度お試しください。"));
+    });
+  }
+
+  // ================================================================
+  // 管理者の画面（#admin。管理者だけ）: 配信・連絡・特別な日程・招待コード・参加している人をまとめて
+  // ================================================================
+  var adminView = false, adminCache = { tid: null, invites: null, joins: null, members: null, loading: false };
+  function openAdmin() {
+    if (!admin) return;
+    if (data.view !== "mine") { data.view = "mine"; save(); }
+    adminView = true;
+    root.classList.add("is-admin-view");
+    if (location.hash !== "#admin") history.pushState(null, "", location.pathname + "#admin");
+    adminCache.tid = null;
+    render();
+    window.scrollTo(0, 0);
+  }
+  function closeAdmin() {
+    adminView = false;
+    root.classList.remove("is-admin-view");
+    if (location.hash === "#admin") history.replaceState(null, "", location.pathname);
+    firstRender = true;
+    render();
+  }
+  window.addEventListener("popstate", function () { if (adminView && location.hash !== "#admin") closeAdmin(); else if (!adminView && location.hash === "#admin" && admin) openAdmin(); });
+  // 招待コード・参加している人・メールアドレスの配信先を読み込む（管理者の画面を開いたとき・変えたとき）
+  function loadAdminData(force) {
+    var tb = data.table;
+    if (!tb.share || adminCache.loading) return;
+    if (!force && adminCache.tid === tb.share.tid) return;
+    adminCache.loading = true;
+    adminCache.tid = tb.share.tid;
+    loadShare().then(function (m) {
+      return Promise.all([
+        m.listInvites(tb.share.tid).catch(function () { return null; }),
+        m.listJoins(tb.share.tid).catch(function () { return null; }),
+        m.loadMembers(tb.share.tid).catch(function () { return null; })
+      ]);
+    }).then(function (r) {
+      adminCache.invites = r[0]; adminCache.joins = r[1]; adminCache.members = r[2];
+    }).catch(function () { /* 読めなかった */ }).then(function () { adminCache.loading = false; if (adminView) renderAdmin(); });
+  }
+  function adminSection(title, iconName, actions) {
+    var sec = el("section", "ad-section");
+    var head = el("div", "ad-section__head");
+    var h = el("h2", "ad-section__title");
+    h.append(icon(iconName), el("span", "", title));
+    head.appendChild(h);
+    (actions || []).forEach(function (a) {
+      var b = el("button", (a.primary ? "m3-btn m3-btn--tonal" : "text-btn") + " m3-state");
+      b.type = "button";
+      b.append(icon(a.icon), el("span", "", a.label));
+      b.addEventListener("click", a.run);
+      head.appendChild(b);
+    });
+    sec.appendChild(head);
+    return sec;
+  }
+  function renderAdmin() {
+    var box = $("admin"), tb = data.table, today = ymd(new Date());
+    box.textContent = "";
+    var top = el("div", "ad-top");
+    var back = el("button", "icon-btn m3-state");
+    back.type = "button";
+    back.setAttribute("aria-label", t("時間割に戻る"));
+    back.appendChild(icon("arrow_back"));
+    back.addEventListener("click", closeAdmin);
+    var tt = el("div", "ad-top__text");
+    tt.append(el("h1", "head__title", t("管理者の画面")), el("p", "head__sub", t("配信・連絡・特別な日程・招待コード・参加している人")));
+    top.append(back, tt);
+    box.appendChild(top);
+
+    // 配信
+    var sec = adminSection(t("配信"), "campaign", tb.share ? [{ icon: "tune", label: t("配信の設定"), run: openShare }, { icon: "sync", label: t("配信を更新"), primary: true, run: republish }] : [{ icon: "campaign", label: t("配信する"), primary: true, run: openShare }]);
+    var card = el("div", "ad-status");
+    if (!tb.share) {
+      card.append(icon("cloud_off"), el("span", "", t("まだ配信していません。配信すると、メールアドレスや招待コードでクラスの人に届けられます。")));
+    } else {
+      var stale = tb.updated > tb.share.publishedAt;
+      card.classList.toggle("is-stale", stale);
+      var tx = el("div", "ad-status__text");
+      tx.append(el("b", "", tb.share.title || tb.name), el("span", "", stale ? t("配信したあとに変えたところがあります。「配信を更新」を押すと届きます") : t("配信中（{date} に更新）", { date: new Date(tb.share.publishedAt).toLocaleString(locale, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) })));
+      var counts = el("div", "ad-counts");
+      function count(n, label) { var c = el("div", "ad-count"); c.append(el("b", "", n === null ? (adminCache.loading ? "…" : "—") : String(n)), el("span", "", label)); counts.appendChild(c); }
+      count(adminCache.members ? adminCache.members.length : null, t("メールアドレス"));
+      count(adminCache.joins ? adminCache.joins.length : null, t("招待コードで参加"));
+      count((tb.notices || []).filter(function (n) { return noticeActive(n, today); }).length, t("出している連絡"));
+      card.append(icon(stale ? "sync_problem" : "cloud_done"), tx, counts);
+    }
+    sec.appendChild(card);
+    box.appendChild(sec);
+
+    // 連絡・特別な日程（時間割の画面と同じ一覧）
+    var nBox = el("section", "ad-section ad-list");
+    renderNotices(tb, false, nBox);
+    nBox.addEventListener("click", listClick);
+    box.appendChild(nBox);
+    var sBox = el("section", "ad-section ad-list");
+    renderSpecials(tb, false, sBox);
+    sBox.addEventListener("click", listClick);
+    box.appendChild(sBox);
+
+    // 招待コード
+    var inv = adminSection(t("招待コード"), "key", tb.share ? [{ icon: "add", label: t("招待コードを作る"), primary: true, run: makeInvite }] : []);
+    if (!tb.share) inv.appendChild(el("p", "specials__empty", t("招待コードは、配信してから作れます。")));
+    else if (!adminCache.invites) inv.appendChild(el("p", "specials__empty", adminCache.loading ? t("読み込み中…") : t("読み込めませんでした。Firebase のルールが新しくなっているか確かめてください。")));
+    else if (!adminCache.invites.length) inv.appendChild(el("p", "specials__empty", t("招待コードを作って配ると、メールアドレスを集めなくても、みんなが自分で参加できます。")));
+    else {
+      var list = el("div", "ad-rows");
+      adminCache.invites.forEach(function (x) {
+        var r = el("div", "ad-row" + (x.expiresAt <= Date.now() ? " is-ended" : ""));
+        var left = Math.ceil((x.expiresAt - Date.now()) / 864e5);
+        var tx2 = el("div", "ad-row__text");
+        tx2.append(el("b", "ad-code", formatCode(x.code)), el("span", "", x.expiresAt <= Date.now() ? t("期限切れ") : t("あと {n} 日使えます", { n: left })));
+        r.append(icon("key"), tx2);
+        if (x.expiresAt > Date.now()) {
+          r.appendChild(rowBtn("link", t("リンクをコピー"), function () { copyText(joinUrl(x.code), t("参加のリンクをコピーしました")); }));
+          r.appendChild(rowBtn("qr_code_2", t("QR コード"), function () { showQr(x); }));
+        }
+        r.appendChild(rowBtn("delete", t("削除"), function () { removeInvite(x); }));
+        list.appendChild(r);
+      });
+      inv.appendChild(list);
+    }
+    box.appendChild(inv);
+
+    // 参加している人
+    var mem = adminSection(t("参加している人"), "group", tb.share ? [{ icon: "refresh", label: t("読み込み直す"), run: function () { loadAdminData(true); renderAdmin(); } }] : []);
+    if (tb.share) {
+      if (!adminCache.joins) mem.appendChild(el("p", "specials__empty", adminCache.loading ? t("読み込み中…") : t("読み込めませんでした。")));
+      else if (!adminCache.joins.length) mem.appendChild(el("p", "specials__empty", t("招待コードで参加した人は、まだいません。")));
+      else {
+        var rows = el("div", "ad-rows");
+        adminCache.joins.forEach(function (p) {
+          var r = el("div", "ad-row");
+          var tx3 = el("div", "ad-row__text");
+          tx3.append(el("b", "", p.name || p.email), el("span", "", [p.name ? p.email : "", p.joinedAt ? t("{date} に参加", { date: new Date(p.joinedAt).toLocaleDateString(locale) }) : ""].filter(Boolean).join(" · ")));
+          r.append(icon("person"), tx3, rowBtn("person_remove", t("外す"), function () { removePerson(p); }));
+          rows.appendChild(r);
+        });
+        mem.appendChild(rows);
+      }
+      if (adminCache.members && adminCache.members.length) {
+        var more = el("p", "ad-note");
+        more.textContent = t("このほか、メールアドレスで配信している人が {n} 人います（「配信の設定」で変えられます）。", { n: adminCache.members.length });
+        mem.appendChild(more);
+      }
+    } else mem.appendChild(el("p", "specials__empty", t("配信すると、ここに参加している人が出ます。")));
+    box.appendChild(mem);
+    loadAdminData(false);
+  }
+  function rowBtn(iconName, label, fn) {
+    var b = el("button", "icon-btn m3-state");
+    b.type = "button";
+    b.title = label;
+    b.setAttribute("aria-label", label);
+    b.appendChild(icon(iconName));
+    b.addEventListener("click", fn);
+    return b;
+  }
+  function formatCode(code) { return code.length === 8 ? code.slice(0, 4) + "-" + code.slice(4) : code; }
+  function joinUrl(code) { return location.origin + "/toolbox/timetable/?join=" + code; }
+  function copyText(text, done) {
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { say(done); }, function () { say(text); });
+    else say(text);
+  }
+  function makeInvite() {
+    var tb = data.table;
+    if (!tb.share) return;
+    window.M3.choose({ title: t("招待コードを作る"), options: [{ value: 1, label: t("1 日だけ使える"), icon: "today" }, { value: 7, label: t("7 日間使える"), icon: "date_range" }, { value: 30, label: t("30 日間使える"), icon: "calendar_month" }], value: 7 }).then(function (days) {
+      if (!days) return;
+      loadShare().then(function (m) { return m.createInvite({ tid: tb.share.tid, title: tb.share.title || tb.name, days: days }); }).then(function (code) {
+        loadAdminData(true);
+        showQr({ code: code, expiresAt: Date.now() + days * 864e5 });
+      }, function (e) { console.warn("[Timetable invite]", e); say(t("招待コードを作れませんでした。Firebase のルールが新しくなっているか確かめてください。")); });
+    });
+  }
+  function removeInvite(x) {
+    window.M3.confirm({ title: t("この招待コードを消しますか？"), text: t("このコードでは、もう参加できなくなります。参加済みの人はそのままです。"), ok: t("削除"), danger: true }).then(function (yes) {
+      if (!yes) return;
+      loadShare().then(function (m) { return m.deleteInvite(x.code); }).then(function () { say(t("招待コードを消しました")); loadAdminData(true); }, function () { say(t("消せませんでした")); });
+    });
+  }
+  function removePerson(p) {
+    window.M3.confirm({ title: t("{name} を外しますか？", { name: p.name || p.email }), text: t("この人の画面から、配信した時間割と連絡が消えます。招待コードが有効なら、また参加できます。"), ok: t("外す"), danger: true }).then(function (yes) {
+      if (!yes) return;
+      loadShare().then(function (m) { return m.removeJoin(data.table.share.tid, p); }).then(function () { say(t("外しました")); loadAdminData(true); }, function () { say(t("外せませんでした")); });
+    });
+  }
+  // QR コード（qrcode-generator を cdnjs から。読めなければ、コードとリンクだけ）
+  var qrLib = null;
+  function loadQr() {
+    if (window.qrcode) return Promise.resolve(window.qrcode);
+    if (!qrLib) qrLib = new Promise(function (resolve, reject) {
+      var sc = document.createElement("script");
+      sc.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
+      sc.onload = function () { window.qrcode ? resolve(window.qrcode) : reject(new Error("no qrcode")); };
+      sc.onerror = function () { qrLib = null; reject(new Error("load failed")); };
+      document.head.appendChild(sc);
+    });
+    return qrLib;
+  }
+  function showQr(x) {
+    var url = joinUrl(x.code);
+    var body = el("div", "ad-qr");
+    var pic = el("div", "ad-qr__pic");
+    pic.appendChild(el("span", "ad-qr__loading", t("読み込み中…")));
+    body.appendChild(pic);
+    body.appendChild(el("p", "ad-qr__code", formatCode(x.code)));
+    body.appendChild(el("p", "ad-qr__hint", t("カメラで読み取るか、Timetable の「︙」→「招待コードで参加」にコードを入れると参加できます。{date} まで使えます。", { date: new Date(x.expiresAt).toLocaleDateString(locale) })));
+    var link = el("p", "ad-qr__url", url);
+    body.appendChild(link);
+    loadQr().then(function (qrcode) {
+      var q = qrcode(0, "M");
+      q.addData(url);
+      q.make();
+      pic.innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+    }).catch(function () { pic.textContent = ""; pic.hidden = true; });
+    window.M3.dialog({ title: t("招待コード"), icon: "qr_code_2", body: body, actions: [{ label: t("リンクをコピー"), value: "copy" }, { label: t("閉じる"), primary: true, value: null }] }).then(function (v) {
+      if (v === "copy") copyText(url, t("参加のリンクをコピーしました"));
     });
   }
 
@@ -1273,6 +1539,8 @@
     if (cmd === "setup") openSetup();
     else if (cmd === "special") editSpecialInfo(null);
     else if (cmd === "notice") editNotice(null);
+    else if (cmd === "admin") openAdmin();
+    else if (cmd === "join") askJoin();
     else if (cmd === "share") openShare();
     else if (cmd === "refresh") receive(true);
     else if (cmd === "export") {
@@ -1283,6 +1551,7 @@
     } else if (cmd === "import") $("import-file").click();
   });
   $("btn-setup").addEventListener("click", openSetup);
+  $("btn-admin").addEventListener("click", openAdmin);
   $("import-file").addEventListener("change", function () {
     var file = this.files && this.files[0];
     this.value = "";
@@ -1313,6 +1582,13 @@
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") render(); });
   window.addEventListener("storage", function (e) { if (e.key === STORE) { load(); render(); } });
 
+  // 招待のリンク（?join=コード）で開いたとき
+  var joinParam = /[?&]join=([A-Za-z0-9-]{8,20})/.exec(location.search);
+  if (joinParam) {
+    history.replaceState(null, "", location.pathname + location.hash);
+    setTimeout(function () { doJoin(joinParam[1]); }, 300);
+  }
+
   // ログインしているとき: 配信された時間割を受け取る。管理者なら「配信」を出す
   var signedIn = !!hint();
   $("menu-refresh").hidden = !signedIn;
@@ -1325,7 +1601,10 @@
       admin = !!yes;
       $("menu-share").hidden = !admin;
       $("menu-notice").hidden = !admin;
-      if (admin) render();
+      $("menu-admin").hidden = !admin;
+      $("btn-admin").hidden = !admin;
+      if (admin && location.hash === "#admin") openAdmin();
+      else if (admin) render();
     }).catch(function () { /* 管理者でない */ });
   }
 })();
