@@ -180,21 +180,47 @@
 
   // ---- 通知 ----
   function readNotified() { try { return JSON.parse(localStorage.getItem(NOTIFIED) || "{}") || {}; } catch (e) { return {}; } }
-  function notify(title, body, tag, app) {
+  // extra … { actions: [{ action, title }], data: { kind, id, url } }。ボタン（actions）は Service Worker から出す通知だけ（Chrome・Edge・Android）
+  //   ボタンが押されたら、Service Worker が開いているページに知らせる（下の handleAction）
+  function notify(title, body, tag, app, extra) {
     if (!(window.Notification && Notification.permission === "granted")) return;
-    var opts = { body: body, tag: tag, icon: "/toolbox/" + app + "/icon-192.png", badge: "/toolbox/" + app + "/icon-192.png", requireInteraction: app === "clock", data: { url: "/toolbox/" + app + "/" } };
+    extra = extra || {};
+    var data = Object.assign({ url: "/toolbox/" + app + "/" }, extra.data || {});
+    var opts = { body: body, tag: tag, icon: "/toolbox/" + app + "/icon-192.png", badge: "/toolbox/" + app + "/icon-192.png", requireInteraction: app === "clock", data: data };
     function fallback() { try { new Notification(title, opts); } catch (e) { /* 出せない */ } }
     if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
-      navigator.serviceWorker.getRegistration().then(function (reg) { if (reg && reg.showNotification) reg.showNotification(title, opts); else fallback(); }).catch(fallback);
+      navigator.serviceWorker.getRegistration().then(function (reg) {
+        if (!reg || !reg.showNotification) { fallback(); return; }
+        var withActions = Object.assign({}, opts, { actions: extra.actions || [] });
+        reg.showNotification(title, withActions).catch(function () { reg.showNotification(title, opts).catch(fallback); });
+      }).catch(fallback);
     } else fallback();
   }
   function show(task) {
-    notify(task.text || t("リマインダー"), task.notes || t("リマインダーの時刻になりました"), "sk-todo-" + task.id, "todo");
+    notify(task.text || t("リマインダー"), task.notes || t("リマインダーの時刻になりました"), "sk-todo-" + task.id, "todo", {
+      actions: [{ action: "done", title: t("完了にする") }, { action: "snooze", title: t("10 分後") }],
+      data: { kind: "todo", id: task.id, url: "/toolbox/todo/#task-" + encodeURIComponent(task.id) }
+    });
   }
+
+  // ---- 「10 分後」にもう一度（localStorage の sk_todo_snooze = { タスクの id: もう一度知らせる時刻 }）----
+  var SNOOZE = "sk_todo_snooze";
+  function readSnooze() { try { return JSON.parse(localStorage.getItem(SNOOZE) || "{}") || {}; } catch (e) { return {}; } }
   function check() {
     var data = load();
+    updateBadge(data);
     var notified = readNotified();
     var now = Date.now(), changed = false, fired = [];
+    // 「10 分後」にした通知
+    var snooze = readSnooze(), snoozed = false;
+    Object.keys(snooze).forEach(function (id) {
+      if (now < snooze[id]) return;
+      var task = data.tasks.filter(function (x) { return x.id === id; })[0];
+      delete snooze[id];
+      snoozed = true;
+      if (task && !task.done) fired.push(task);
+    });
+    if (snoozed) { try { localStorage.setItem(SNOOZE, JSON.stringify(snooze)); } catch (e) { /* 次に */ } }
     data.tasks.forEach(function (x) {
       if (x.done || !x.due || !x.time) return;
       var at = new Date(x.due + "T" + x.time + ":00").getTime();
@@ -206,7 +232,10 @@
         fired.push(x);
       }
     });
-    if (!changed) return;
+    if (!changed) {
+      fired.forEach(function (x) { show(x); document.dispatchEvent(new CustomEvent("skreminder", { detail: x })); });
+      return;
+    }
     // 消えたタスクの記録はかたづける
     var ids = {};
     data.tasks.forEach(function (x) { ids[x.id] = 1; });
@@ -264,13 +293,61 @@
     } catch (e) { return; }
     events.forEach(function (ev) {
       if (typeof window.SKClockRing === "function") { window.SKClockRing(ev); return; }
-      if (ev.kind === "alarm") notify(ev.alarm.label || t("アラーム"), t("{time} のアラーム", { time: ev.alarm.time }), "sk-alarm-" + ev.alarm.id, "clock");
+      if (ev.kind === "alarm") notify(ev.alarm.label || t("アラーム"), t("{time} のアラーム", { time: ev.alarm.time }), "sk-alarm-" + ev.alarm.id, "clock", {
+        actions: [{ action: "snooze", title: t("スヌーズ（5 分）") }, { action: "stop", title: t("止める") }],
+        data: { kind: "alarm", id: ev.alarm.id }
+      });
       else notify(t("タイマー"), t("時間になりました"), "sk-timer", "clock");
       document.dispatchEvent(new CustomEvent("skreminder", { detail: { text: ev.kind === "alarm" ? (ev.alarm.label || t("アラーム")) + " " + ev.alarm.time : t("タイマーが終わりました") } }));
     });
   }
 
+  // ---- アプリのアイコンの数字（期限切れと今日のまだのタスク。Toolbox の設定でオフにできる）----
+  function updateBadge(data) {
+    if (!navigator.setAppBadge) return;
+    var on = !window.SKToolbox || SKToolbox.get().badge !== false;
+    var today = ymd(new Date());
+    var n = on ? data.tasks.filter(function (x) { return !x.done && !x.parent && x.due && x.due <= today; }).length : 0;
+    (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(function () { /* 対応していない */ });
+  }
+
+  // ---- 通知のボタン（Service Worker から届く。開いているページがなかったときは ?skact= で来る）----
+  function storageEvent(key) { try { window.dispatchEvent(new StorageEvent("storage", { key: key, storageArea: localStorage })); } catch (e) { /* 古いブラウザ */ } }
+  function handleAction(msg) {
+    if (!msg || !msg.action || !msg.id) return;
+    if (msg.kind === "todo") {
+      var data = load(), task = data.tasks.filter(function (x) { return x.id === msg.id; })[0];
+      if (!task) return;
+      if (msg.action === "done" && !task.done) {
+        complete(task, data);
+        try { save(data); } catch (e) { return; }
+        storageEvent(STORE);
+        updateBadge(data);
+        document.dispatchEvent(new CustomEvent("skreminder", { detail: { text: t("完了にしました: {text}", { text: task.text }) } }));
+      } else if (msg.action === "snooze") {
+        var sn = readSnooze();
+        sn[task.id] = Date.now() + 10 * 6e4;
+        try { localStorage.setItem(SNOOZE, JSON.stringify(sn)); } catch (e) { /* 保存できない */ }
+      }
+    } else if (msg.kind === "alarm" && msg.action === "snooze") {
+      var tools = readJson(TOOLS);
+      var a = (Array.isArray(tools.alarms) ? tools.alarms : []).filter(function (x) { return x && x.id === msg.id; })[0];
+      if (!a) return;
+      a.on = true;
+      a.snoozeAt = Date.now() + 5 * 6e4;
+      try { localStorage.setItem(TOOLS, JSON.stringify(tools)); } catch (e) { return; }
+      storageEvent(TOOLS);
+    }
+  }
+
   if (!/[?&]embed\b/.test(location.search)) {
+    if (navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", function (e) { if (e.data && e.data.type === "sk-notification-action") handleAction(e.data); });
+    var q = new URLSearchParams(location.search);
+    if (q.get("skact")) {
+      handleAction({ action: q.get("skact"), kind: q.get("skkind"), id: q.get("skid") });
+      ["skact", "skkind", "skid"].forEach(function (k) { q.delete(k); });
+      history.replaceState(history.state, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash);
+    }
     setTimeout(check, 1500);
     setInterval(check, 20000);
     setInterval(function () { if (typeof window.SKClockRing !== "function") checkClock(); }, 5000);

@@ -1,6 +1,9 @@
 // SK's Toolbox の横断検索（Ctrl+K・Mac は ⌘K。[data-open-search] のボタンでも開く）
 //   メモ（sk_memo）・タスク（sk_todo）・Countdown の日（sk_countdown）・時間割の科目（sk_timetable）・計算の履歴（sk_calc）・アプリと機能を、まとめて探す
 //   どれも、この端末の localStorage を読むだけ（どこにも送らない）。ロックしたメモの中身は探さない
+//   コマンドも打てる: 「5分」「タイマー 1時間30分」→ タイマー開始 / 「12*3+4」→ 計算してコピー /
+//     「todo 明日 9時 歯医者」「+ 宿題」→ Todo に追加 / 「メモ 牛乳を買う」→ 新しいメモ。何を打っても、最後に「Todo に追加」「メモにする」が出る
+//     Todo とメモは、sessionStorage（sk_quick_todo・sk_quick_memo）に入れて、そのアプリを開いて追加してもらう（保存のしかたはアプリに任せる）
 //   ↑↓ で選んで Enter で開く。Esc で閉じる
 (function () {
   "use strict";
@@ -29,6 +32,81 @@
     { title: t("Toolbox の設定"), sub: "SK's Toolbox", icon: "/toolbox/icon.svg", url: "/toolbox/settings/", words: "settings 設定 テーマ" },
     { title: "SK's Toolbox", sub: t("ホーム"), icon: "/toolbox/icon.svg", url: "/toolbox/", words: "home ホーム" }
   ];
+
+  // ---- コマンド ----
+  // 「5分」「90秒」「1時間30分」「タイマー 3分」「timer 10m」→ ミリ秒（なければ 0）
+  function parseTimer(q) {
+    var m = /^(?:タイマー|timer)?\s*((?:\d+(?:\.\d+)?\s*(?:時間|h|hr|分|m|min|秒|s|sec)\s*)+)$/i.exec(q.trim());
+    if (!m) return 0;
+    var ms = 0, re = /(\d+(?:\.\d+)?)\s*(時間|hr|h|分|min|m|秒|sec|s)/gi, x;
+    while ((x = re.exec(m[1]))) ms += parseFloat(x[1]) * (/^(時間|h|hr)$/i.test(x[2]) ? 36e5 : /^(分|m|min)$/i.test(x[2]) ? 6e4 : 1e3);
+    return ms >= 1000 && ms <= 24 * 36e5 ? Math.round(ms) : 0;
+  }
+  // 計算（数字と + - × ÷ * / % ^ ( ) だけ。eval は使わない）
+  function calc(q) {
+    var src = q.replace(/[×xX]/g, "*").replace(/÷/g, "/").replace(/[，,]/g, "").replace(/＝|=\s*$/g, "").replace(/\s+/g, "");
+    if (!/^[\d.+\-*/%^()]+$/.test(src) || !/\d/.test(src) || !/[+\-*/%^]/.test(src.replace(/^-/, ""))) return null;
+    var i = 0;
+    function num() {
+      if (src[i] === "(") { i++; var v = expr(); if (src[i] !== ")") throw 0; i++; return v; }
+      if (src[i] === "-") { i++; return -factor(); }
+      var m = /^\d*\.?\d+/.exec(src.slice(i));
+      if (!m) throw 0;
+      i += m[0].length;
+      var n = parseFloat(m[0]);
+      if (src[i] === "%") { i++; n /= 100; }
+      return n;
+    }
+    function factor() { var b = num(); if (src[i] === "^") { i++; return Math.pow(b, factor()); } return b; }
+    function term() { var v = factor(); while (src[i] === "*" || src[i] === "/") { var op = src[i++], r = factor(); v = op === "*" ? v * r : v / r; } return v; }
+    function expr() { var v = term(); while (src[i] === "+" || src[i] === "-") { var op = src[i++], r = term(); v = op === "+" ? v + r : v - r; } return v; }
+    try {
+      var v = expr();
+      if (i !== src.length || !isFinite(v)) return null;
+      return String(Math.round(v * 1e10) / 1e10);
+    } catch (e) { return null; }
+  }
+  function durText(ms) {
+    var s = Math.round(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    return [h ? t("{n} 時間", { n: h }) : "", m ? t("{n} 分", { n: m }) : "", sec ? t("{n} 秒", { n: sec }) : ""].filter(Boolean).join(" ");
+  }
+  function commands(q) {
+    var top = [], end = [], m;
+    var ms = parseTimer(q);
+    if (ms) top.push({ title: t("タイマーを {time} で始める", { time: durText(ms) }), sub: t("Clock のタイマー。ほかのアプリを開いていても、時間になったら知らせます"), img: "/toolbox/clock/icon.svg", run: function () { startTimer(ms); } });
+    var r = calc(q);
+    if (r !== null) top.push({ title: q.trim().replace(/\*/g, "×").replace(/\//g, "÷") + " = " + r, sub: t("押すと答えをコピー"), img: "/toolbox/calc/icon.svg", copy: r });
+    if ((m = /^(?:\+|todo|やること|タスク)\s*(.+)$/i.exec(q.trim()))) top.push(todoCmd(m[1]));
+    else end.push(todoCmd(q.trim()));
+    if ((m = /^(?:メモ|memo|note)\s+(.+)$/i.exec(q.trim()))) top.push(memoCmd(m[1]));
+    else end.push(memoCmd(q.trim()));
+    top.forEach(function (x) { x.group = t("コマンド"); x.cmd = true; });
+    end.forEach(function (x) { x.group = t("コマンド"); x.cmd = true; });
+    return { top: top, end: end };
+  }
+  function todoCmd(text) {
+    var hint = "";
+    if (window.SKReminders && SKReminders.parseQuick) {
+      var p = SKReminders.parseQuick(text);
+      hint = [p.due || "", p.time || ""].filter(Boolean).join(" ");
+    }
+    return { title: t("Todo に追加: {text}", { text: text }), sub: hint ? t("期限 {due}", { due: hint }) : t("「明日 9時」なども書けます"), img: "/toolbox/todo/icon.svg", run: function () { handOff("sk_quick_todo", text, "/toolbox/todo/"); } };
+  }
+  function memoCmd(text) {
+    return { title: t("メモにする: {text}", { text: text }), sub: t("新しいメモを作って開きます"), img: "/toolbox/memo/icon.svg", run: function () { handOff("sk_quick_memo", text, "/toolbox/memo/"); } };
+  }
+  function handOff(key, text, url) {
+    try { sessionStorage.setItem(key, text); } catch (e) { return; }
+    if (location.pathname === url) location.reload(); else location.href = url;
+  }
+  function startTimer(ms) {
+    var tools = readJson("sk_clock_tools");
+    tools.timer = { duration: ms, endAt: Date.now() + ms, running: true, remaining: ms };
+    try { localStorage.setItem("sk_clock_tools", JSON.stringify(tools)); } catch (e) { return; }
+    // Clock を開いているなら、タイマーの画面に（ほかのタブの Clock には storage イベントで伝わる）
+    if (location.pathname === "/toolbox/clock/") { location.hash = "#timer"; location.reload(); return; }
+    document.dispatchEvent(new CustomEvent("sk-island-flash", { detail: { icon: "hourglass_top", text: t("タイマー {time}", { time: durText(ms) }), color: "#F0997B" } }));
+  }
 
   function collect(q) {
     var out = [], ql = q.toLowerCase();
@@ -66,7 +144,8 @@
       if (!h || !(hit(h.e) || hit(h.r))) return;
       out.push({ group: "Calc", title: h.e.replace(/\*/g, "×").replace(/\//g, "÷") + " = " + h.r, sub: t("押すと答えをコピー"), img: "/toolbox/calc/icon.svg", copy: h.r });
     });
-    return out.slice(0, 60);
+    var cmd = commands(q);
+    return cmd.top.concat(out.slice(0, 60), cmd.end);
   }
 
   var overlay = null, items = [], active = 0, opener = null;
@@ -75,13 +154,18 @@
     list.textContent = "";
     items = q ? collect(q) : [];
     active = 0;
-    if (!q) { list.appendChild(el("p", "sks-hint", t("メモ・タスク・Countdown の日・計算の履歴・アプリをまとめて探せます"))); return; }
+    if (!q) {
+      list.appendChild(el("p", "sks-hint", t("メモ・タスク・Countdown の日・計算の履歴・アプリをまとめて探せます")));
+      list.appendChild(el("p", "sks-hint sks-hint--sub", t("コマンドも使えます: 「5分」でタイマー、「12*3」で計算、「todo 明日 宿題」で Todo に追加、「メモ …」で新しいメモ")));
+      return;
+    }
     if (!items.length) { list.appendChild(el("p", "sks-hint", t("見つかりませんでした。"))); return; }
     var group = null;
     items.forEach(function (it, i) {
       if (it.group !== group) { group = it.group; list.appendChild(el("p", "sks-group", group)); }
       var a = el(it.url ? "a" : "button", "sks-item m3-state" + (it.done ? " is-done" : ""));
       if (it.url) a.href = it.url; else a.type = "button";
+      if (it.cmd) a.classList.add("is-cmd");
       a.id = "sks-item-" + i;
       a.setAttribute("role", "option");
       a.dataset.i = String(i);
@@ -90,7 +174,7 @@
       img.alt = "";
       var text = el("span", "sks-item__text");
       text.append(el("span", "sks-item__title", it.title), el("span", "sks-item__sub", it.sub || ""));
-      a.append(img, text, icon(it.url ? "arrow_outward" : "content_copy"));
+      a.append(img, text, icon(it.url ? "arrow_outward" : it.run ? "keyboard_return" : "content_copy"));
       list.appendChild(a);
     });
     highlight(input, list);
@@ -103,6 +187,7 @@
   function choose(i) {
     var it = items[i];
     if (!it) return;
+    if (it.run) { close(); it.run(); return; }
     if (it.copy) {
       if (navigator.clipboard) navigator.clipboard.writeText(it.copy);
       close();
@@ -125,7 +210,7 @@
     var bar = el("label", "sks-bar");
     var input = el("input");
     input.type = "search";
-    input.placeholder = t("Toolbox を検索");
+    input.placeholder = t("検索・コマンド（5分・12*3・todo …）");
     input.setAttribute("aria-label", t("Toolbox を検索"));
     input.setAttribute("role", "combobox");
     input.setAttribute("aria-expanded", "true");

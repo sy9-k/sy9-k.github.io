@@ -12,6 +12,8 @@
   "use strict";
 
   var root = document.documentElement;
+  // 検索エンジンのクローラーには、ページのタイトルを時刻に書きかえない（検索結果に「12:34 · Clock」と出ないように）
+  var CRAWLER = /bot|crawler|spider|crawling/i.test(navigator.userAgent);
   var embed = /[?&]embed\b/.test(location.search);
   var I18N = window.SKI18N;
   var locale = (I18N && I18N.locale) || "ja-JP";
@@ -153,7 +155,7 @@
       partEl.textContent = partOfDay(h);
       var top = settings.theme === "sky" ? paintSky(now) : getComputedStyle(root).getPropertyValue("--sky-top").trim();
       if (themeColor) themeColor.content = top || "#000000";
-      if (!document.body.dataset.mode || document.body.dataset.mode === "clock") document.title = hh + ":" + pad(m) + (settings.h24 ? "" : " " + ampm.textContent) + " · Clock";
+      if (!CRAWLER && (!document.body.dataset.mode || document.body.dataset.mode === "clock")) document.title = hh + ":" + pad(m) + (settings.h24 ? "" : " " + ampm.textContent) + " · Clock";
       document.body.classList.toggle("is-night-dim", !!settings.night && (h >= 22 || h < 6));
     }
   }
@@ -310,6 +312,61 @@
     if (r && r.catch) r.catch(function () { say(t("この端末では使えません")); });
   }
 
+  // ---- ミニ時計（Document Picture-in-Picture。ほかのウィンドウの上に、小さい時計を浮かべる。パソコンの Chrome・Edge）----
+  //   時刻と日付。タイマー・ストップウォッチが動いていれば、その時間も出す（sk_clock_tools を読む）。背景はいまのテーマの色
+  var pipWin = null, pipTimer = null;
+  function fmtDur(sec) {
+    var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+    return (h ? h + ":" + pad(m) : String(m)) + ":" + pad(s);
+  }
+  function togglePip() {
+    if (!("documentPictureInPicture" in window)) { say(t("この端末では使えません")); return; }
+    if (pipWin) { pipWin.close(); return; }
+    window.documentPictureInPicture.requestWindow({ width: 320, height: 180 }).then(function (w) {
+      pipWin = w;
+      var d = w.document;
+      d.title = "Clock";
+      document.querySelectorAll('link[rel="stylesheet"][href*="fonts.googleapis"]').forEach(function (l) { d.head.appendChild(l.cloneNode()); });
+      var st = d.createElement("style");
+      st.textContent = "html,body{margin:0;height:100%}" +
+        "body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:Outfit,'Avenir Next','Helvetica Neue',system-ui,sans-serif;-webkit-font-smoothing:antialiased;user-select:none;overflow:hidden;transition:background 2s linear,color 2s linear}" +
+        ".d{font-size:min(5.6vw,11vh);letter-spacing:.12em;opacity:.75}" +
+        ".t{font-size:min(28vw,52vh);font-weight:200;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;white-space:nowrap}" +
+        ".t small{font-size:.36em;font-weight:300;opacity:.7;margin-left:.15em}" +
+        ".x{font-size:min(6.5vw,13vh);font-weight:500;font-variant-numeric:tabular-nums;opacity:.9}";
+      d.head.appendChild(st);
+      var dateBox = d.createElement("div"), timeBox = d.createElement("div"), extraBox = d.createElement("div");
+      dateBox.className = "d"; timeBox.className = "t"; extraBox.className = "x";
+      d.body.append(dateBox, timeBox, extraBox);
+      var secBox = d.createElement("small");
+      function paint() {
+        var cs = getComputedStyle(root);
+        d.body.style.background = "linear-gradient(180deg," + cs.getPropertyValue("--sky-top") + "," + cs.getPropertyValue("--sky-mid") + " 55%," + cs.getPropertyValue("--sky-low") + ")";
+        d.body.style.color = cs.getPropertyValue("--ink");
+        var now = new Date(), h = now.getHours();
+        timeBox.textContent = (settings.h24 ? pad(h) : String(h % 12 || 12)) + ":" + pad(now.getMinutes());
+        if (settings.sec) { secBox.textContent = pad(now.getSeconds()); timeBox.appendChild(secBox); }
+        dateBox.textContent = settings.date ? dateFmt.format(now) : "";
+        dateBox.hidden = !settings.date;
+        var tools = {};
+        try { tools = JSON.parse(localStorage.getItem("sk_clock_tools") || "{}") || {}; } catch (e) { /* なし */ }
+        var extra = "", tm = tools.timer, sw = tools.sw;
+        if (tm && tm.running && tm.endAt) extra = "⏳ " + fmtDur(Math.max(0, Math.ceil((tm.endAt - Date.now()) / 1000)));
+        else if (sw && sw.running && sw.start) extra = "⏱ " + fmtDur(Math.floor(((Number(sw.elapsed) || 0) + Date.now() - sw.start) / 1000));
+        extraBox.textContent = extra;
+        extraBox.hidden = !extra;
+      }
+      paint();
+      pipTimer = setInterval(paint, 250);
+      $("btn-pip").setAttribute("aria-pressed", "true");
+      w.addEventListener("pagehide", function () {
+        clearInterval(pipTimer);
+        pipWin = null;
+        $("btn-pip").setAttribute("aria-pressed", "false");
+      });
+    }).catch(function () { say(t("ミニ時計を開けませんでした")); });
+  }
+
   ["fullscreenchange", "webkitfullscreenchange"].forEach(function (ev) {
     document.addEventListener(ev, function () {
       var isFull = !!(document.fullscreenElement || document.webkitFullscreenElement);
@@ -342,6 +399,7 @@
   $("btn-sec").addEventListener("click", toggleSec);
   $("btn-wake").addEventListener("click", toggleWake);
   $("btn-full").addEventListener("click", toggleFull);
+  if ("documentPictureInPicture" in window) { $("btn-pip").hidden = false; $("btn-pip").addEventListener("click", togglePip); }
   $("btn-night").addEventListener("click", toggleNight);
   ["mousemove", "pointerdown", "keydown", "focusin"].forEach(function (ev) { document.addEventListener(ev, wake, { passive: true }); });
   document.addEventListener("keydown", function (e) {
@@ -352,6 +410,7 @@
     else if (k === "s") toggleSec();
     else if (k === "h") toggle24();
     else if (k === "t") nextTheme();
+    else if (k === "p" && "documentPictureInPicture" in window) togglePip();
   });
 
   // 表示のパネル

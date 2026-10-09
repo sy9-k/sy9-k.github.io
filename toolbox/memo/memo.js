@@ -1091,6 +1091,16 @@
     if (window.M3) { M3.stagger(listEl); M3.stagger(foldersEl); }
     if (startId === "new") newNote();
   }
+  // 横断検索の「メモにする」（/toolbox/shared/search.js が sessionStorage の sk_quick_memo に入れて、ここを開く）
+  var quick = null;
+  try { quick = sessionStorage.getItem("sk_quick_memo"); sessionStorage.removeItem("sk_quick_memo"); } catch (e) { /* 使えない */ }
+  if (quick && quick.trim()) {
+    var qText = quick.trim().slice(0, 5000), qNow = Date.now();
+    var qn = { id: newId(), html: "<div>" + esc(qText) + "</div>", text: qText, folder: DEFAULT_FOLDER, pinned: false, created: qNow, updated: qNow };
+    data.notes.push(qn);
+    save();
+    open(qn.id, true);
+  }
 
   // ================================================================
   // 操作
