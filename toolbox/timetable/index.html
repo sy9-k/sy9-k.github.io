@@ -50,6 +50,7 @@
         <button type="button" class="icon-btn m3-state" id="btn-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="その他" title="その他"><span class="msr" aria-hidden="true">more_vert</span></button>
         <div class="menu" id="menu" role="menu" hidden>
           <button type="button" class="m3-state" role="menuitem" data-menu="setup" id="menu-setup"><span class="msr" aria-hidden="true">tune</span><span>時間割の設定（曜日・時限・時刻）</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="notice"><span class="msr" aria-hidden="true">campaign</span><span>クラスへの連絡を書く</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="special"><span class="msr" aria-hidden="true">event_note</span><span>特別な日程を追加（試験・行事・休み）</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="share" id="menu-share" hidden><span class="msr" aria-hidden="true">campaign</span><span>配信（管理者）</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="refresh" id="menu-refresh" hidden><span class="msr" aria-hidden="true">sync</span><span>配信された時間割を更新</span></button>
@@ -68,6 +69,9 @@
 
       <!-- 自分の時間割と、配信された時間割の切りかえ（配信されたものがあるときだけ） -->
       <div class="views" id="views" role="tablist" aria-label="時間割の切りかえ" hidden data-i18n-skip></div>
+
+      <!-- クラスへの連絡（配信された時間割の連絡・自分が書いた連絡） -->
+      <section class="notices" id="notices" aria-label="連絡" hidden data-i18n-skip></section>
 
       <!-- いまの授業・次の授業 -->
       <section class="now" id="now" aria-live="polite" data-i18n-skip></section>

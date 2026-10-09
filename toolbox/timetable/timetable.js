@@ -10,6 +10,9 @@
 //         days: { "YYYY-MM-DD": { type: "normal" | "off" | "custom", note, slots: [{ s, e, subject, room, note, color }] } } }
 //       その期間の日は、days に書いた日程になる（書いていない日は、休み（kind: "off"）ならお休み、ほかはいつもの時間割）。
 //       時間割の JSON に入っているので、配信するとクラスの人にも届く。いまの授業・次の授業、タイトルバーの真ん中も、この日程で出す
+//   ・クラスへの連絡（30 件まで）: table.notices = [{ id, kind: "info" | "bring" | "submit" | "change", important, title, body, date（対象の日）, until（いつまで出すか）, created }]
+//       これも時間割の JSON に入るので、配信するとクラスの人に届く。新しい連絡は、受け取ったときに通知する（通知を許可しているとき）
+//       読んだ連絡は data.seen、通知した連絡は data.notified（どちらも id の一覧。この端末だけ）
 //   ・クラスの時間割の配信（/toolbox/timetable/share.js）
 //       管理者（SK Hub Systems の開発者）が、メールアドレスを入れて自分の時間割を配信する。受け取る人は、そのメールアドレスの
 //       SK Hub Systems アカウントでログインすると、配信された時間割が出る（見るだけ。返事などはない）
@@ -66,7 +69,7 @@
         };
       });
     }
-    var out = { name: str(x.name, 40).trim() || t("時間割"), days: days, periods: periods, times: times, cells: cells, special: cleanSpecial(x.special), updated: Number(x.updated) || 0 };
+    var out = { name: str(x.name, 40).trim() || t("時間割"), days: days, periods: periods, times: times, cells: cells, special: cleanSpecial(x.special), notices: cleanNotices(x.notices), updated: Number(x.updated) || 0 };
     if (x.share && typeof x.share.tid === "string") out.share = { tid: x.share.tid.slice(0, 40), title: str(x.share.title, 60), publishedAt: Number(x.share.publishedAt) || 0 };
     return out;
   }
@@ -126,7 +129,30 @@
     return r;
   }
 
-  var data = { version: 1, view: "mine", table: cleanTable(null), received: {} };
+  // ---- クラスへの連絡 ----
+  var NT_KINDS = { info: ["campaign", t("お知らせ")], bring: ["backpack", t("持ち物")], submit: ["assignment", t("提出物")], change: ["swap_horiz", t("変更")] };
+  var MAX_NOTICES = 30;
+  function cleanNotices(list) {
+    var out = [];
+    (Array.isArray(list) ? list : []).forEach(function (x) {
+      if (out.length >= MAX_NOTICES || !x || typeof x !== "object") return;
+      var title = str(x.title, 80).trim();
+      if (!title) return;
+      out.push({
+        id: str(x.id, 20) || newId(), kind: NT_KINDS[x.kind] ? x.kind : "info", important: x.important === true,
+        title: title, body: str(x.body, 1000), date: isYmd(x.date) ? x.date : "", until: isYmd(x.until) ? x.until : "", created: Number(x.created) || 0
+      });
+    });
+    out.sort(function (a, b) { return b.created - a.created; });
+    return out;
+  }
+  // まだ出す連絡か（いつまで出すかを過ぎたら出さない。決めていなければ、出してから 14 日）
+  function noticeActive(n, today) {
+    return (n.until || n.date || ymd(new Date((n.created || Date.now()) + 14 * 864e5))) >= today;
+  }
+  function idList(v) { return Array.isArray(v) ? v.filter(function (x) { return typeof x === "string"; }).slice(-300) : []; }
+
+  var data = { version: 1, view: "mine", table: cleanTable(null), received: {}, seen: [], notified: [] };
   function load() {
     try {
       var d = JSON.parse(localStorage.getItem(STORE) || "{}") || {};
@@ -139,6 +165,8 @@
         });
       }
       data.view = typeof d.view === "string" && (d.view === "mine" || data.received[d.view]) ? d.view : "mine";
+      data.seen = idList(d.seen);
+      data.notified = idList(d.notified);
     } catch (e) { /* 初期値 */ }
   }
   function save() {
@@ -222,6 +250,7 @@
       });
     }
 
+    renderNotices(tb, cur.readonly);
     renderNow(tb, st);
     renderSpecials(tb, cur.readonly);
     // いつもの時間割を出しているときに今日が特別な日程なら、表の今日の列は薄く
@@ -404,6 +433,153 @@
       card("next", st.next.label, t("次 · {time} から（あと {n} 分）", { time: st.next.start, n: st.next.until }), c2, [c2.room, c2.teacher].filter(Boolean).join(" · "));
     }
     if (!st.now && !st.next) plain(st.hasToday ? "task_alt" : "event_available", st.hasToday ? t("今日の授業は終わりました") : t("今日の時間割はまだ入っていません"));
+  }
+
+  // ---- クラスへの連絡（新しい順。配信された時間割なら見るだけ） ----
+  function renderNotices(tb, readonly) {
+    var box = $("notices"), today = ymd(new Date());
+    box.textContent = "";
+    var list = (tb.notices || []).filter(function (n) { return !readonly || noticeActive(n, today); });
+    // 自分の時間割で、連絡がなく配信もしていなければ出さない（メニューから追加できる）
+    if (!list.length && (readonly || !tb.share)) { box.hidden = true; return; }
+    box.hidden = false;
+    var head = el("div", "specials__head");
+    var unread = list.filter(function (n) { return readonly && data.seen.indexOf(n.id) < 0; }).length;
+    var h = el("h2", "specials__title", t("連絡"));
+    if (unread) h.appendChild(el("span", "nt-count", String(unread)));
+    head.appendChild(h);
+    // 受け取る人: 通知をまだ決めていなければ「通知をオン」
+    if (readonly && window.Notification && Notification.permission === "default") {
+      var on = el("button", "text-btn m3-state");
+      on.type = "button";
+      on.append(icon("notifications"), el("span", "", t("新しい連絡を通知する")));
+      on.addEventListener("click", function () { Notification.requestPermission().then(function () { render(); }); });
+      head.appendChild(on);
+    }
+    if (!readonly) {
+      var add = el("button", "text-btn m3-state");
+      add.type = "button";
+      add.id = "add-notice";
+      add.append(icon("add"), el("span", "", t("連絡を書く")));
+      head.appendChild(add);
+    }
+    box.appendChild(head);
+    if (!list.length) { box.appendChild(el("p", "specials__empty", t("持ち物・提出物・時間の変更などを書いて配信すると、クラスの人に届きます。"))); return; }
+    var wrap = el("div", "nt-list");
+    list.forEach(function (n) {
+      var b = el("button", "nt-card m3-state nt-card--" + n.kind + (n.important ? " is-important" : "") + (noticeActive(n, today) ? "" : " is-ended"));
+      b.type = "button";
+      b.dataset.notice = n.id;
+      var tx = el("span", "nt-card__text");
+      var top = el("span", "nt-card__top");
+      top.appendChild(el("span", "nt-card__kind", NT_KINDS[n.kind][1]));
+      if (n.date) top.appendChild(el("span", "nt-card__date", dateText(n.date)));
+      if (readonly && data.seen.indexOf(n.id) < 0) top.appendChild(el("span", "nt-card__new", "NEW"));
+      if (!readonly && !noticeActive(n, today)) top.appendChild(el("span", "nt-card__date", t("終わりました")));
+      tx.append(top, el("span", "nt-card__title", n.title));
+      if (n.body) tx.appendChild(el("span", "nt-card__body", n.body));
+      b.append(icon(n.important ? "priority_high" : NT_KINDS[n.kind][0]), tx);
+      wrap.appendChild(b);
+    });
+    box.appendChild(wrap);
+  }
+  $("notices").addEventListener("click", function (e) {
+    if (embed) return;
+    var b = e.target.closest("[data-notice]");
+    if (b) { openNotice(b.dataset.notice); return; }
+    if (e.target.closest("#add-notice")) editNotice(null);
+  });
+  function openNotice(id) {
+    var cur = current(), n = (cur.table.notices || []).filter(function (x) { return x.id === id; })[0];
+    if (!n) return;
+    if (data.seen.indexOf(n.id) < 0) { data.seen.push(n.id); data.seen = idList(data.seen); save(); }
+    var body = el("div", "tt-detail");
+    var meta = el("div", "tt-detail__row");
+    meta.append(icon(NT_KINDS[n.kind][0]), el("span", "", [NT_KINDS[n.kind][1], n.important ? t("大事") : "", n.date ? t("{date} のこと", { date: dateText(n.date) }) : ""].filter(Boolean).join(" · ")));
+    body.appendChild(meta);
+    if (n.body) body.appendChild(el("p", "tt-detail__note nt-body", n.body));
+    if (n.created) body.appendChild(el("p", "nt-when", t("{date} に書いた連絡", { date: new Date(n.created).toLocaleString(locale, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) })));
+    var actions = cur.readonly ? [{ label: t("閉じる"), primary: true, value: null }] : [{ label: t("削除"), danger: true, value: "delete" }, { label: t("編集"), value: "edit" }, { label: t("閉じる"), primary: true, value: null }];
+    if (n.kind === "submit" || n.kind === "bring") actions.unshift({ label: t("Todo に追加"), value: "todo" });
+    window.M3.dialog({ title: n.title, body: body, actions: actions }).then(function (v) {
+      render();
+      if (v === "edit") editNotice(n);
+      else if (v === "todo") noticeToTodo(n);
+      else if (v === "delete") {
+        var tb = data.table, i = tb.notices.indexOf(n);
+        tb.notices.splice(i, 1);
+        changed();
+        say(t("連絡を消しました") + (tb.share ? " · " + t("「配信を更新」で、クラスの人の画面からも消えます") : ""), function () { tb.notices.splice(i, 0, n); changed(); });
+      }
+    });
+  }
+  // 持ち物・提出物を Todo に（対象の日があれば、その日が期限）
+  function noticeToTodo(n) {
+    var R = window.SKReminders;
+    if (!R) return;
+    var d2 = R.load(), now = Date.now();
+    d2.tasks.push(R.upgradeTask({ id: newId(), list: d2.lists[0].id, text: n.title, notes: n.body, due: n.date || null, created: now, updated: now }, d2.lists));
+    try { R.save(d2); } catch (e) { say(t("保存できませんでした")); return; }
+    say(n.date ? t("Todo に追加しました（期限 {date}）", { date: dateText(n.date) }) : t("Todo に追加しました"));
+  }
+  // 連絡を書く・直す（自分の時間割）。配信しているなら「保存して配信」で、すぐクラスの人に届ける
+  function editNotice(n) {
+    if (data.view !== "mine") { data.view = "mine"; save(); render(); }
+    var tb = data.table;
+    if (!n && tb.notices.length >= MAX_NOTICES) { say(t("連絡は {n} 件までです。古いものを消してください", { n: MAX_NOTICES })); return; }
+    var draft = { kind: n ? n.kind : "info", important: n ? n.important : false };
+    var box = el("div", "tt-edit");
+    var seg = el("div", "tt-seg");
+    seg.setAttribute("role", "radiogroup");
+    seg.setAttribute("aria-label", t("種類"));
+    Object.keys(NT_KINDS).forEach(function (k) {
+      var b = el("button", "m3-state", NT_KINDS[k][1]);
+      b.type = "button";
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", String(draft.kind === k));
+      b.addEventListener("click", function () { draft.kind = k; Array.prototype.forEach.call(seg.children, function (x) { x.setAttribute("aria-checked", String(x === b)); }); });
+      seg.appendChild(b);
+    });
+    box.appendChild(seg);
+    var title = input(n ? n.title : "", 80, t("例: 明日は体操服を持ってくること"));
+    box.appendChild(field(t("タイトル"), title));
+    var ta = el("textarea", "m3-field__input");
+    ta.rows = 4;
+    ta.maxLength = 1000;
+    ta.value = n ? n.body : "";
+    box.appendChild(field(t("くわしく（なくてもよい）"), ta));
+    var row = el("div", "tt-time tt-time--one");
+    var dateIn = el("input"); dateIn.type = "date"; dateIn.value = n ? n.date : "";
+    var untilIn = el("input"); untilIn.type = "date"; untilIn.value = n ? n.until : "";
+    var ld = el("label", "tt-time__field"); ld.append(el("span", "", t("何日のこと（なくてもよい）")), dateIn);
+    var lu = el("label", "tt-time__field"); lu.append(el("span", "", t("いつまで出すか")), untilIn);
+    row.append(ld, el("span", "", ""), lu);
+    box.appendChild(row);
+    box.appendChild(el("p", "tt-hint", t("「いつまで出すか」を空けると、何日のことの日まで（なければ 14 日間）出します。")));
+    var imp = el("label", "nt-important m3-state");
+    var impIn = el("input", "tbs-switch");
+    impIn.type = "checkbox";
+    impIn.setAttribute("role", "switch");
+    impIn.checked = draft.important;
+    imp.append(el("span", "", t("大事な連絡（目立たせる）")), impIn);
+    box.appendChild(imp);
+    var actions = [{ label: t("キャンセル"), value: null }, { label: t("保存"), primary: !tb.share, value: "save" }];
+    if (tb.share) actions.push({ label: t("保存して配信"), primary: true, value: "publish" });
+    window.M3.dialog({ title: n ? t("連絡を編集") : t("連絡を書く"), icon: "campaign", body: box, actions: actions }).then(function (v) {
+      if (v !== "save" && v !== "publish") return;
+      if (!title.value.trim()) { say(t("タイトルを入れてください")); return; }
+      var target = n || { id: newId(), created: Date.now() };
+      target.kind = draft.kind;
+      target.important = impIn.checked;
+      target.title = title.value.trim().slice(0, 80);
+      target.body = ta.value.trim().slice(0, 1000);
+      target.date = dateIn.value || "";
+      target.until = untilIn.value || "";
+      if (!n) tb.notices.unshift(target);
+      tb.notices = cleanNotices(tb.notices);
+      changed();
+      if (v === "publish") republish(); else if (tb.share) say(t("保存しました。「配信を更新」で、クラスの人に届きます"));
+    });
   }
 
   // ---- 特別な日程の一覧（これからのもの。自分の時間割では、終わったものも薄く出す） ----
@@ -940,6 +1116,20 @@
         try { tb = cleanTable(JSON.parse(it.json)); } catch (e) { return; }
         next[it.tid] = { title: str(it.title, 60), table: tb, updatedAt: it.updatedAt, fetchedAt: Date.now() };
       });
+      // 新しい連絡を知らせる（はじめて受け取ったときは、前からある連絡は知らせない）
+      var today = ymd(new Date()), fresh = [];
+      Object.keys(next).forEach(function (id) {
+        (next[id].table.notices || []).forEach(function (n) {
+          if (!noticeActive(n, today) || data.notified.indexOf(n.id) >= 0) return;
+          data.notified.push(n.id);
+          if (Object.keys(data.received).length) fresh.push({ n: n, title: next[id].title });
+        });
+      });
+      data.notified = idList(data.notified);
+      fresh.slice(0, 3).forEach(function (f) {
+        if (window.SKReminders) SKReminders.notify((f.n.important ? "❗ " : "") + t("{class} の連絡", { class: f.title || t("クラス") }), f.n.title + (f.n.body ? "\n" + f.n.body.slice(0, 120) : ""), "sk-notice-" + f.n.id, "timetable");
+      });
+      if (fresh.length) document.dispatchEvent(new CustomEvent("sk-island-flash", { detail: { icon: "campaign", text: t("連絡: {title}", { title: fresh[0].n.title }), color: "#6cd3f7" } }));
       function stamp(r) { return JSON.stringify(Object.keys(r).map(function (k) { return [k, r[k].updatedAt]; })); }
       var hadBefore = Object.keys(data.received).length > 0, before = stamp(data.received);
       data.received = next;
@@ -966,6 +1156,29 @@
     return { ok: ok, bad: bad };
   }
   var MAX_MEMBERS = 200;
+  // 配信する中身（時間割・特別な日程・連絡）
+  function payloadOf(tb, name) {
+    return JSON.stringify({ name: name, days: tb.days, periods: tb.periods, times: tb.times.slice(0, tb.periods), cells: tb.cells, special: tb.special, notices: tb.notices });
+  }
+  // いまの配信先のまま、配信を更新する（連絡の「保存して配信」）
+  function republish() {
+    var tb = data.table;
+    if (!tb.share) return;
+    say(t("配信しています…"));
+    loadShare().then(function (m) {
+      return m.loadMembers(tb.share.tid).then(function (emails) {
+        if (!emails.length) throw new Error("no members");
+        return m.publish({ tid: tb.share.tid, title: tb.share.title || tb.name, json: payloadOf(tb, tb.share.title || tb.name), emails: emails }).then(function () { return emails.length; });
+      });
+    }).then(function (count) {
+      tb.share.publishedAt = Date.now();
+      save(); render();
+      say(t("{n} 人に配信しました", { n: count }));
+    }, function (e) {
+      console.warn("[Timetable share]", e);
+      say(t("配信できませんでした。管理者の SK Hub Systems アカウントでログインしているか確認してください。"));
+    });
+  }
   function openShare() {
     if (data.view !== "mine") { data.view = "mine"; save(); render(); }
     var tb = data.table;
@@ -1027,7 +1240,7 @@
       if (!r.ok.length) { say(t("配信先のメールアドレスを入れてください")); return; }
       if (r.ok.length > MAX_MEMBERS) { say(t("配信先は {n} 人までです", { n: MAX_MEMBERS })); return; }
       var name = title.value.trim().slice(0, 60) || tb.name;
-      var payload = JSON.stringify({ name: name, days: tb.days, periods: tb.periods, times: tb.times.slice(0, tb.periods), cells: tb.cells, special: tb.special });
+      var payload = payloadOf(tb, name);
       say(t("配信しています…"));
       loadShare().then(function (m) { return m.publish({ tid: tb.share && tb.share.tid, title: name, json: payload, emails: r.ok }); }).then(function (tid) {
         tb.share = { tid: tid, title: name, publishedAt: Date.now() };
@@ -1055,6 +1268,7 @@
     var cmd = b.dataset.menu;
     if (cmd === "setup") openSetup();
     else if (cmd === "special") editSpecialInfo(null);
+    else if (cmd === "notice") editNotice(null);
     else if (cmd === "share") openShare();
     else if (cmd === "refresh") receive(true);
     else if (cmd === "export") {

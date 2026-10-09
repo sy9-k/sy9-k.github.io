@@ -114,6 +114,35 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .now-card__plain { display: block; font-size: 15px; font-weight: 700; color: var(--md-on-surface); }
 .now-card--plain .now-card__meta { white-space: normal; }
 
+/* クラスへの連絡 */
+.notices { margin: 0 0 18px; }
+.nt-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--md-error); color: #fff; font-size: 11.5px; vertical-align: 1px; }
+.nt-list { display: flex; flex-direction: column; gap: 8px; }
+.nt-card {
+  --nc: var(--md-primary);
+  display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 12px 14px; border: 0; border-radius: 18px; cursor: pointer; text-align: left; font: inherit;
+  background: color-mix(in srgb, var(--nc) 9%, var(--md-surface-container-low)); color: var(--md-on-surface);
+}
+.nt-card--bring { --nc: #ea580c; }
+.nt-card--submit { --nc: #7c3aed; }
+.nt-card--change { --nc: #0891b2; }
+.nt-card.is-important { --nc: var(--md-error); box-shadow: inset 0 0 0 2px var(--md-error); }
+.nt-card.is-ended { opacity: .55; }
+.nt-card > .msr { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: color-mix(in srgb, var(--nc) 16%, transparent); color: var(--nc); font-size: 20px; }
+.nt-card__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.nt-card__top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--md-on-surface-variant); }
+.nt-card__kind { font-weight: 700; color: var(--nc); }
+.nt-card__new { padding: 1px 7px; border-radius: 999px; background: var(--md-error); color: #fff; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; }
+.nt-card__title { font-size: 15px; font-weight: 700; overflow-wrap: anywhere; }
+.nt-card__body { font-size: 13px; color: var(--md-on-surface-variant); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+.nt-body { margin: 0; font-size: 15px; line-height: 1.7; }
+.nt-when { margin: 0; font-size: 12px; color: var(--md-on-surface-variant); }
+.nt-important { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 4px; font-size: 14px; cursor: pointer; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nt-card--bring { --nc: #fb923c; } :root:not([data-theme="light"]) .nt-card--submit { --nc: #a78bfa; } :root:not([data-theme="light"]) .nt-card--change { --nc: #22d3ee; } }
+:root[data-theme="dark"] .nt-card--bring { --nc: #fb923c; }
+:root[data-theme="dark"] .nt-card--submit { --nc: #a78bfa; }
+:root[data-theme="dark"] .nt-card--change { --nc: #22d3ee; }
+
 /* 特別な日程（試験の週・行事・休みなど） */
 .specials { margin: 0 0 18px; }
 .specials__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 4px 8px; }
