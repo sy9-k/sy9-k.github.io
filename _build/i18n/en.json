@@ -2518,5 +2518,6 @@
   "連絡は {n} 件までです。古いものを消してください": "Up to {n} notices. Please delete old ones",
   "連絡を書く": "Write a notice",
   "連絡を消しました": "Notice deleted",
-  "連絡を編集": "Edit notice"
+  "連絡を編集": "Edit notice",
+  "言語…": "Language…"
 }

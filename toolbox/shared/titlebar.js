@@ -102,6 +102,21 @@
     list.forEach(function (x) { var r = typeof x === "function" ? x() : x; if (r) out.push(r); });
     return out;
   }
+  // SK のホームページ（サイトのヘッダーと同じ）。タイトルバーを Toolbox のものにしているときは、サイトのヘッダーを隠し、
+  // メニューバーの「SK」か、タイトルバーの SK のボタンから開く
+  function sitePath(url) { return I18N && I18N.path ? I18N.path(url) : url; }
+  function siteItems() {
+    return [
+      { label: t("SK のホームページ"), run: go(sitePath("/")) },
+      "-",
+      { label: t("私について"), run: go(sitePath("/about/")) },
+      { label: t("プロダクト"), run: go(sitePath("/products/")) },
+      { label: t("サポートと情報"), run: go(sitePath("/support/")) },
+      { label: t("アカウント"), run: go(sitePath("/account/")) },
+      "-",
+      { label: t("言語…"), run: go("/lang/?next=" + encodeURIComponent(location.pathname)) }
+    ];
+  }
   function menus() {
     var s = window.SKToolbox ? SKToolbox.get() : {};
     var editable = editTarget && (editTarget.isContentEditable || /^(INPUT|TEXTAREA)$/.test(editTarget.tagName));
@@ -111,8 +126,7 @@
         { label: t("Toolbox の設定…"), key: MOD + ",", run: openSettings },
         { label: t("最新の版に更新"), run: function () { if (window.SKToolbox && SKToolbox.forceUpdate) SKToolbox.forceUpdate(); else location.reload(); } },
         "-",
-        { label: t("SK Hub Systems アカウント"), run: go("/account/") },
-        { label: t("SK のホームページ"), run: go("/") }
+        { label: t("SK's Toolbox のホーム"), run: go("/toolbox/") }
       ] },
       { title: t("ファイル"), items: fileApp.concat(fileApp.length && more.length ? ["-"] : [], more, (fileApp.length || more.length) ? ["-"] : [], [
         { label: t("印刷…"), key: MOD + "P", run: function () { window.print(); } }
@@ -152,6 +166,7 @@
         "-",
         { label: t("ページを読み込み直す"), key: MOD + "R", run: function () { location.reload(); } }
       ] },
+      { title: "SK", items: siteItems() },
       { title: t("ヘルプ"), items: [
         { label: t("検索・コマンド…"), key: MOD + "K", run: function () { if (window.SKSearch) SKSearch.open(); } },
         { label: t("ヘルプとサポート"), run: go("/support/") },
@@ -189,6 +204,23 @@
     });
     bar.insertBefore(mb, brand.nextSibling);
     bar.appendChild(pop);
+    // SK のボタン（メニューバーにしていないとき。右の検索の左）
+    var siteBtn = el("button", "tbt-btn tbt-site");
+    siteBtn.type = "button";
+    siteBtn.title = t("SK のホームページ");
+    siteBtn.setAttribute("aria-label", t("SK のホームページ"));
+    siteBtn.setAttribute("aria-haspopup", "menu");
+    siteBtn.setAttribute("aria-expanded", "false");
+    var logo = el("img");
+    logo.src = "/assets/logo.svg";
+    logo.alt = "";
+    siteBtn.appendChild(logo);
+    siteBtn.addEventListener("mousedown", function (e) { e.preventDefault(); });
+    siteBtn.addEventListener("click", function () { if (openIdx === "site") close(); else open("site", false); });
+    siteBtn.addEventListener("keydown", function (e) { if (e.key === "ArrowDown") { e.preventDefault(); open("site", true); } });
+    var searchBtn = bar.querySelector("[data-open-search]");
+    if (searchBtn) bar.insertBefore(siteBtn, searchBtn); else bar.appendChild(siteBtn);
+    function anchor(i) { return i === "site" ? siteBtn : titles[i]; }
 
     function move(i, d, keepOpen) {
       var n = (i + d + titles.length) % titles.length;
@@ -197,10 +229,13 @@
     }
     function open(i, focusFirst) {
       var a = document.activeElement;
-      if (openIdx < 0 && a && !bar.contains(a)) editTarget = a;
+      if (openIdx === -1 && a && !bar.contains(a)) editTarget = a;
+      if (openIdx !== -1) close();
       openIdx = i;
       titles.forEach(function (x, k) { x.setAttribute("aria-expanded", String(k === i)); x.classList.toggle("is-open", k === i); });
-      var m = menus()[i];
+      siteBtn.setAttribute("aria-expanded", String(i === "site"));
+      siteBtn.classList.toggle("is-open", i === "site");
+      var m = i === "site" ? { items: siteItems() } : menus()[i];
       pop.textContent = "";
       items = [];
       m.items.forEach(function (it) {
@@ -218,31 +253,32 @@
       });
       if (pop.lastChild && pop.lastChild.classList.contains("tbt-pop__sep")) pop.lastChild.remove();
       pop.hidden = false;
-      pop.style.left = Math.max(0, titles[i].offsetLeft - 4) + "px";
+      if (i === "site") pop.style.left = Math.max(0, siteBtn.offsetLeft + siteBtn.offsetWidth - pop.offsetWidth) + "px";
+      else pop.style.left = Math.max(0, titles[i].offsetLeft - 4) + "px";
       if (focusFirst) { var f = items.filter(function (x) { return !x.disabled; })[0]; if (f) f.focus(); }
     }
     function close() {
-      if (openIdx < 0) return;
-      var hadFocus = pop.contains(document.activeElement);
-      titles[openIdx].setAttribute("aria-expanded", "false");
-      titles[openIdx].classList.remove("is-open");
-      if (hadFocus) titles[openIdx].focus();
+      if (openIdx === -1) return;
+      var hadFocus = pop.contains(document.activeElement), at = anchor(openIdx);
+      at.setAttribute("aria-expanded", "false");
+      at.classList.remove("is-open");
+      if (hadFocus) at.focus();
       openIdx = -1;
       pop.hidden = true;
     }
     pop.addEventListener("keydown", function (e) {
       var live = items.filter(function (x) { return !x.disabled; }), k = live.indexOf(document.activeElement);
       if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (live.length) live[(k + (e.key === "ArrowDown" ? 1 : live.length - 1)) % live.length].focus(); }
-      else if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); move(openIdx, e.key === "ArrowRight" ? 1 : -1, true); }
+      else if ((e.key === "ArrowRight" || e.key === "ArrowLeft") && openIdx !== "site") { e.preventDefault(); move(openIdx, e.key === "ArrowRight" ? 1 : -1, true); }
       else if (e.key === "Escape") { e.preventDefault(); close(); }
       else if (e.key === "Tab") close();
     });
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && openIdx >= 0) close();
+      if (e.key === "Escape" && openIdx !== -1) close();
       // ⌘,（Ctrl+,）で Toolbox の設定（メニューバーを出しているとき）
       if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && e.key === "," && !bar.matches('[data-off~="menu"]')) { e.preventDefault(); openSettings(); }
     });
-    document.addEventListener("pointerdown", function (e) { if (openIdx >= 0 && !mb.contains(e.target) && !pop.contains(e.target)) close(); });
+    document.addEventListener("pointerdown", function (e) { if (openIdx !== -1 && !mb.contains(e.target) && !pop.contains(e.target) && !siteBtn.contains(e.target)) close(); });
     window.addEventListener("blur", close);
     window.addEventListener("resize", close);
   }
