@@ -714,6 +714,9 @@
     more.appendChild(linkRow("/toolbox/", "apps", t("SK's Toolbox のアプリ一覧"), ""));
     more.appendChild(linkRow("/policies/", "policy", t("利用規約・プライバシーポリシー"), ""));
     // 最新の版に更新（古いファイルが残って、新しい機能が出てこないとき）
+    // アプリとして入れる方法（/toolbox/install/。アプリとして開いているときは出さない）
+    var installed = (window.matchMedia && matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: minimal-ui)").matches) || navigator.standalone === true;
+    if (!installed) more.appendChild(linkRow("/toolbox/install/", "install_mobile", t("アプリとして入れる方法"), t("ホーム画面・Dock から開けて、オフラインでも使えます")));
     var updRow = el("button", "tbs-item tbs-item--link tbs-item--button m3-state");
     updRow.type = "button";
     updRow.appendChild(icon("system_update"));

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="SK's Toolbox をアプリとして入れる方法。iPhone・iPad、Android、パソコン（Chrome・Edge）、Mac（Safari）の手順。ホーム画面や Dock から開けて、オフラインでも使えます。">
+<meta name="theme-color" content="#f9f9ff" id="theme-color">
+<title>アプリとして入れる方法 | SK's Toolbox</title>
+<link rel="canonical" href="https://sy9-k.github.io/toolbox/install/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SK's Toolbox">
+<meta property="og:title" content="アプリとして入れる方法 | SK's Toolbox">
+<meta property="og:description" content="SK's Toolbox をアプリとして入れる方法。iPhone・iPad、Android、パソコン、Mac の手順。">
+<meta property="og:url" content="https://sy9-k.github.io/toolbox/install/">
+<meta property="og:image" content="https://sy9-k.github.io/toolbox/icon-512.png">
+<!-- 多言語: /lang/ で選んだ言語で表示する（/assets/i18n.js。body の最後で translatePage()） -->
+<script src="/assets/i18n.js"></script>
+<script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@300;400;500;700;800&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>
+<link rel="stylesheet" href="/toolbox/shared/m3.css">
+<!-- アプリとして入れるのは Toolbox 全体（/toolbox/。中のアプリもまとめて入る） -->
+<link rel="manifest" href="/toolbox/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/toolbox/icon.svg">
+<link rel="apple-touch-icon" href="/toolbox/icon-192.png">
+<style>
+  /* 色はホームと同じ（ブルー系）。テーマカラーを選ぶと settings.js が上書きする */
+  :root {
+    --md-primary: #415f91; --md-on-primary: #ffffff;
+    --md-primary-container: #d6e3ff; --md-on-primary-container: #284777;
+    --md-secondary-container: #dae2f9; --md-on-secondary-container: #3e4759;
+    --md-error: #ba1a1a;
+    --md-surface: #f9f9ff; --md-on-surface: #191c20; --md-on-surface-variant: #44474e;
+    --md-surface-container-low: #f3f3fa; --md-surface-container: #ededf4; --md-surface-container-high: #e7e8ee; --md-surface-container-highest: #e2e2e9;
+    --md-outline: #74777f; --md-outline-variant: #c4c6d0;
+    --md-inverse-surface: #2e3036; --md-inverse-on-surface: #f0f0f7; --md-inverse-primary: #aac7ff;
+    --md-font: "M PLUS 1", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --md-primary: #aac7ff; --md-on-primary: #0a305f;
+      --md-primary-container: #284777; --md-on-primary-container: #d6e3ff;
+      --md-secondary-container: #3e4759; --md-on-secondary-container: #dae2f9;
+      --md-error: #ffb4ab;
+      --md-surface: #111318; --md-on-surface: #e2e2e9; --md-on-surface-variant: #c4c6d0;
+      --md-surface-container-low: #191c20; --md-surface-container: #1d2024; --md-surface-container-high: #282a2f; --md-surface-container-highest: #333539;
+      --md-outline: #8e9099; --md-outline-variant: #44474e;
+      --md-inverse-surface: #e2e2e9; --md-inverse-on-surface: #2e3036; --md-inverse-primary: #415f91;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --md-primary: #aac7ff; --md-on-primary: #0a305f;
+    --md-primary-container: #284777; --md-on-primary-container: #d6e3ff;
+    --md-secondary-container: #3e4759; --md-on-secondary-container: #dae2f9;
+    --md-error: #ffb4ab;
+    --md-surface: #111318; --md-on-surface: #e2e2e9; --md-on-surface-variant: #c4c6d0;
+    --md-surface-container-low: #191c20; --md-surface-container: #1d2024; --md-surface-container-high: #282a2f; --md-surface-container-highest: #333539;
+    --md-outline: #8e9099; --md-outline-variant: #44474e;
+    --md-inverse-surface: #e2e2e9; --md-inverse-on-surface: #2e3036; --md-inverse-primary: #415f91;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { min-height: 100dvh; background: var(--md-surface); color: var(--md-on-surface); font-family: var(--md-font); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--md-primary); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .page { max-width: 760px; margin: 0 auto; padding: max(4px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(40px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+  .app-bar { display: flex; align-items: center; min-height: 64px; margin: 0 -4px; }
+
+  /* はじめ */
+  .hero { position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px; padding: 28px; border-radius: 32px; isolation: isolate;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--md-primary) 22%, var(--md-surface-container-low)), var(--md-surface-container-low) 70%); }
+  .hero::after { content: ""; position: absolute; z-index: -1; right: -80px; top: -90px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--md-primary) 30%, transparent), transparent 70%); }
+  .hero__icon { flex: none; width: 88px; height: 88px; border-radius: 24px; box-shadow: 0 12px 28px -12px rgba(0, 0, 0, .45); }
+  .hero h1 { margin: 0; font-size: clamp(24px, 5vw, 32px); font-weight: 800; line-height: 1.25; }
+  .hero p { margin: 8px 0 0; font-size: 15px; line-height: 1.7; color: var(--md-on-surface-variant); }
+
+  /* いまの状態（入れられる・もう入っている） */
+  .status { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin: 16px 0 0; padding: 16px 18px; border-radius: 24px; background: var(--md-surface-container); }
+  .status > .msr { font-size: 28px; color: var(--md-primary); }
+  .status__text { flex: 1; min-width: 200px; }
+  .status__text b { display: block; font-size: 16px; }
+  .status__text span { font-size: 13.5px; line-height: 1.6; color: var(--md-on-surface-variant); }
+  .status.is-done { background: color-mix(in srgb, #16a34a 14%, var(--md-surface-container-low)); }
+  .status.is-done > .msr { color: #16a34a; }
+  .status .m3-btn .msr { font-size: 20px; }
+
+  /* 端末の切りかえ */
+  h2 { margin: 32px 4px 12px; font-size: 20px; font-weight: 700; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+  .tab { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px 0 12px; border: 1px solid var(--md-outline-variant); border-radius: 12px; background: none; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--md-on-surface-variant); }
+  .tab .msr { font-size: 20px; }
+  .tab[aria-selected="true"] { border-color: transparent; background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+  .tab__mine { margin-left: 2px; padding: 1px 7px; border-radius: 999px; background: var(--md-primary); color: var(--md-on-primary); font-size: 11px; font-weight: 700; }
+
+  /* 手順 */
+  .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: step; }
+  .step { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 20px; background: var(--md-surface-container-low); counter-increment: step; }
+  .step::before { content: counter(step); flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--md-primary); color: var(--md-on-primary); font-weight: 800; }
+  .step__text { flex: 1; min-width: 0; padding-top: 4px; font-size: 15px; line-height: 1.7; }
+  .step__text small { display: block; margin-top: 2px; font-size: 13px; color: var(--md-on-surface-variant); }
+  /* 押すボタンの見本 */
+  .key { display: inline-flex; align-items: center; gap: 4px; margin: 0 2px; padding: 1px 9px 1px 6px; border: 1px solid var(--md-outline-variant); border-radius: 8px; background: var(--md-surface); font-size: 13.5px; font-weight: 700; white-space: nowrap; vertical-align: 1px; }
+  .key .msr { font-size: 17px; color: var(--md-primary); }
+  .note { display: flex; gap: 10px; margin: 12px 0 0; padding: 14px 16px; border-radius: 16px; background: color-mix(in srgb, var(--md-primary) 9%, transparent); font-size: 13.5px; line-height: 1.7; color: var(--md-on-surface-variant); }
+  .note .msr { flex: none; font-size: 20px; color: var(--md-primary); }
+  .note--warn { background: color-mix(in srgb, #ea580c 12%, transparent); }
+  .note--warn .msr { color: #ea580c; }
+
+  /* できること */
+  .perks { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .perk { display: flex; gap: 12px; padding: 16px; border-radius: 20px; background: var(--md-surface-container-low); }
+  .perk > .msr { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: 22px; }
+  .perk b { display: block; font-size: 15px; }
+  .perk span { font-size: 13px; line-height: 1.6; color: var(--md-on-surface-variant); }
+
+  /* よくある質問 */
+  .faq { display: flex; flex-direction: column; gap: 8px; }
+  .faq details { border-radius: 16px; background: var(--md-surface-container-low); }
+  .faq summary { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; list-style: none; font-size: 15px; font-weight: 700; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "expand_more"; margin-left: auto; font-family: "Material Symbols Rounded"; font-size: 22px; font-weight: 400; color: var(--md-on-surface-variant); transition: transform .2s; }
+  .faq details[open] summary::after { transform: rotate(180deg); }
+  .faq details > div { padding: 0 16px 16px; font-size: 14px; line-height: 1.8; color: var(--md-on-surface-variant); }
+  .faq details > div p { margin: 0 0 6px; }
+  .foot { margin: 32px 4px 0; text-align: center; font-size: 13px; color: var(--md-on-surface-variant); }
+  .foot a { color: var(--md-primary); }
+  .step__text b { white-space: nowrap; }
+  @media (max-width: 600px) {
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; }
+    .tab { height: auto; min-height: 44px; padding: 8px 10px; justify-content: flex-start; text-align: left; line-height: 1.3; }
+    .tab__mine { margin-left: auto; }
+    .hero { flex-direction: column; align-items: flex-start; padding: 22px; gap: 14px; }
+    .hero__icon { width: 64px; height: 64px; border-radius: 18px; }
+    .step { padding: 14px; gap: 12px; }
+  }
+</style>
+<!-- SK's Toolbox の共通の設定 -->
+<script src="/toolbox/shared/settings.js" data-scope="page"></script>
+<script src="/toolbox/shared/m3.js"></script>
+<!-- パソコンでアプリとして入れたときのタイトルバー -->
+<script src="/toolbox/shared/titlebar.js"></script>
+<!-- タイトルバーの真ん中（コマンドバー・アイランドなど。Toolbox の設定で選ぶ） -->
+<script src="/toolbox/shared/tbcenter.js"></script>
+</head>
+<body>
+  <div class="page">
+    <header class="app-bar">
+      <a class="tb-back m3-state" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
+    </header>
+
+    <section class="hero">
+      <img class="hero__icon" src="/toolbox/icon.svg" alt="" width="88" height="88">
+      <div>
+        <h1>SK's Toolbox をアプリとして入れる</h1>
+        <p>ホーム画面や Dock から 1 回押すだけで開けて、オフラインでも使えます。無料で、アプリストアもアカウントもいりません。1 回入れると、Clock・Todo・Timetable などのアプリがまとめて入ります。</p>
+      </div>
+    </section>
+
+    <!-- いまの状態（下のスクリプトが出しわける） -->
+    <div class="status is-done" id="status-done" hidden>
+      <span class="msr" aria-hidden="true">check_circle</span>
+      <div class="status__text"><b>もうアプリとして開いています</b><span>このまま使えます。ホーム画面や Dock のアイコンから開けます。</span></div>
+    </div>
+    <div class="status" id="status-ready" hidden>
+      <span class="msr" aria-hidden="true">install_desktop</span>
+      <div class="status__text"><b>この端末なら、ボタン 1 つで入れられます</b><span>「インストール」を押して、出てきた確認で「インストール」を選んでください。</span></div>
+      <button type="button" class="m3-btn m3-state" id="install-now"><span class="msr" aria-hidden="true">download</span><span>インストール</span></button>
+    </div>
+    <div class="status" id="status-steps">
+      <span class="msr" aria-hidden="true">touch_app</span>
+      <div class="status__text"><b>下の手順で、2〜3 回押すだけです</b><span id="status-device" data-i18n-skip></span></div>
+    </div>
+
+    <h2>入れ方</h2>
+    <div class="tabs" role="tablist" aria-label="端末を選ぶ">
+      <button type="button" class="tab m3-state" role="tab" data-os="ios" aria-selected="false" aria-controls="os-ios"><span class="msr" aria-hidden="true">phone_iphone</span><span>iPhone・iPad</span></button>
+      <button type="button" class="tab m3-state" role="tab" data-os="android" aria-selected="false" aria-controls="os-android"><span class="msr" aria-hidden="true">android</span><span>Android</span></button>
+      <button type="button" class="tab m3-state" role="tab" data-os="pc" aria-selected="false" aria-controls="os-pc"><span class="msr" aria-hidden="true">computer</span><span>パソコン（Chrome・Edge）</span></button>
+      <button type="button" class="tab m3-state" role="tab" data-os="mac" aria-selected="false" aria-controls="os-mac"><span class="msr" aria-hidden="true">laptop_mac</span><span>Mac（Safari）</span></button>
+    </div>
+
+    <!-- iPhone・iPad -->
+    <div class="os" id="os-ios" role="tabpanel" hidden>
+      <ol class="steps">
+        <li class="step"><div class="step__text">Safari でこのページ（または <b>sy9-k.github.io/toolbox/</b>）を開きます<small>iOS 16.4 以降なら、Chrome や Edge でも同じようにできます</small></div></li>
+        <li class="step"><div class="step__text">画面の下（iPad は右上）の <span class="key"><span class="msr" aria-hidden="true">ios_share</span>共有</span> を押します</div></li>
+        <li class="step"><div class="step__text">一覧を下に動かして、<span class="key"><span class="msr" aria-hidden="true">add_box</span>ホーム画面に追加</span> を押します<small>見つからないときは、いちばん下の「アクションを編集」から追加できます</small></div></li>
+        <li class="step"><div class="step__text">右上の <span class="key">追加</span> を押すと、ホーム画面に SK's Toolbox のアイコンが出ます</div></li>
+      </ol>
+      <p class="note"><span class="msr" aria-hidden="true">notifications</span><span>iPhone・iPad では、Todo のリマインダーやアラーム、クラスの連絡の<b>通知は、ホーム画面に追加したアプリからだけ</b>届きます（Apple の決まりです）。</span></p>
+      <p class="note note--warn"><span class="msr" aria-hidden="true">info</span><span>iPhone・iPad では、ホーム画面のアプリと Safari とで、保存されるデータが別々になります。Safari で使っていたデータは、各アプリの「バックアップを書き出す・読み込む」か、オンライン同期で移せます。</span></p>
+    </div>
+
+    <!-- Android -->
+    <div class="os" id="os-android" role="tabpanel" hidden>
+      <ol class="steps">
+        <li class="step"><div class="step__text">Chrome でこのページ（または <b>sy9-k.github.io/toolbox/</b>）を開きます</div></li>
+        <li class="step"><div class="step__text">右上の <span class="key"><span class="msr" aria-hidden="true">more_vert</span>メニュー</span> を押します</div></li>
+        <li class="step"><div class="step__text"><span class="key"><span class="msr" aria-hidden="true">install_mobile</span>アプリをインストール</span>（または「ホーム画面に追加」）を押します</div></li>
+        <li class="step"><div class="step__text"><span class="key">インストール</span> を押すと、ホーム画面とアプリの一覧に入ります</div></li>
+      </ol>
+      <p class="note"><span class="msr" aria-hidden="true">lightbulb</span><span>Galaxy の Samsung Internet では、下の <b>メニュー</b> → 「ページを追加」 → 「ホーム画面」です。</span></p>
+    </div>
+
+    <!-- パソコン（Chrome・Edge） -->
+    <div class="os" id="os-pc" role="tabpanel" hidden>
+      <ol class="steps">
+        <li class="step"><div class="step__text">Chrome か Edge でこのページ（または <b>sy9-k.github.io/toolbox/</b>）を開きます</div></li>
+        <li class="step"><div class="step__text">アドレスバーの右にある <span class="key"><span class="msr" aria-hidden="true">install_desktop</span>インストール</span> のマークを押します<small>見つからないときは、Chrome は「︙」→「キャスト、保存、共有」→「ページをアプリとしてインストール」、Edge は「…」→「アプリ」→「このサイトをアプリとしてインストール」</small></div></li>
+        <li class="step"><div class="step__text"><span class="key">インストール</span> を押すと、自分のウィンドウで開きます。Windows はスタートメニュー、Mac は Dock・Launchpad から開けます</div></li>
+      </ol>
+      <p class="note"><span class="msr" aria-hidden="true">web_asset</span><span>入れたあとは、ウィンドウのいちばん上の帯を Toolbox のものにできます（右上の「∧」）。真ん中に出すもの（コマンドバー・メニューバーなど）は「Toolbox の設定」→「タイトルバー」で選べます。</span></p>
+    </div>
+
+    <!-- Mac（Safari） -->
+    <div class="os" id="os-mac" role="tabpanel" hidden>
+      <ol class="steps">
+        <li class="step"><div class="step__text">Safari でこのページ（または <b>sy9-k.github.io/toolbox/</b>）を開きます<small>macOS Sonoma（14）以降</small></div></li>
+        <li class="step"><div class="step__text">画面のいちばん上のメニューバーの <span class="key">ファイル</span> → <span class="key"><span class="msr" aria-hidden="true">dock_to_bottom</span>Dock に追加</span> を選びます<small>ツールバーの <span class="msr" aria-hidden="true" style="font-size:15px;vertical-align:-3px">ios_share</span> 共有からも選べます</small></div></li>
+        <li class="step"><div class="step__text"><span class="key">追加</span> を押すと、Dock に SK's Toolbox が入ります</div></li>
+      </ol>
+      <p class="note"><span class="msr" aria-hidden="true">lightbulb</span><span>タイトルバーを Toolbox のものにする機能は、Chrome・Edge で入れたときだけです。</span></p>
+    </div>
+
+    <p class="note note--warn" id="firefox-note" hidden><span class="msr" aria-hidden="true">info</span><span>パソコンの Firefox は、アプリとして入れる機能がありません。Chrome・Edge（Mac は Safari も）で開いてください。</span></p>
+
+    <h2>アプリとして入れるとできること</h2>
+    <div class="perks">
+      <div class="perk"><span class="msr" aria-hidden="true">touch_app</span><div><b>すぐ開ける</b><span>ホーム画面・Dock のアイコンから。ブラウザのタブに埋もれません</span></div></div>
+      <div class="perk"><span class="msr" aria-hidden="true">wifi_off</span><div><b>オフラインでも使える</b><span>電波がないところでも、時計・メモ・Todo などが開けます</span></div></div>
+      <div class="perk"><span class="msr" aria-hidden="true">notifications_active</span><div><b>通知</b><span>Todo のリマインダー、アラーム・タイマー、クラスの連絡</span></div></div>
+      <div class="perk"><span class="msr" aria-hidden="true">counter_1</span><div><b>アイコンに数字</b><span>期限切れと今日の Todo の数を、アイコンに出します</span></div></div>
+      <div class="perk"><span class="msr" aria-hidden="true">shortcut</span><div><b>ショートカット</b><span>アイコンを長押し（右クリック）で、アプリ一覧や各アプリへ</span></div></div>
+      <div class="perk"><span class="msr" aria-hidden="true">verified_user</span><div><b>データが消されにくい</b><span>端末の空きが少なくなっても、ブラウザがデータを消しにくくなります</span></div></div>
+    </div>
+
+    <h2>よくある質問</h2>
+    <div class="faq">
+      <details><summary>お金はかかりますか？</summary><div><p>かかりません。アプリストアも、アカウントもいりません。</p></div></details>
+      <details><summary>アプリごとに入れることはできますか？</summary><div><p>できます。Clock だけ、Todo だけなど、そのアプリを開いてから同じ手順で入れると、そのアプリだけが入ります。SK's Toolbox を入れると、全部のアプリがその中で使えます。</p></div></details>
+      <details><summary>新しくなったら、入れ直しが必要ですか？</summary><div><p>いりません。開いたときに自動で新しい版を確かめて、「新しくなりました」と出たら「更新」を押すだけです。</p></div></details>
+      <details><summary>データはどこに保存されますか？</summary><div><p>この端末の中だけです。オンライン同期（任意）をオンにしたときだけ、端末で暗号化してから SK Hub Systems アカウントに保存します。</p></div></details>
+      <details><summary>消すには？</summary><div><p>iPhone・iPad・Android は、アイコンを長押しして「削除」（「アンインストール」）。パソコンは、アプリのウィンドウの右上の「…」から「アンインストール」です。</p><p>アプリを消すと、その中のデータも消えることがあります。先に各アプリの「バックアップを書き出す」をしておくと安心です。</p></div></details>
+    </div>
+
+    <p class="foot"><a href="/toolbox/">SK's Toolbox のホーム</a> · <a href="/toolbox/settings/">Toolbox の設定</a> · <a href="/support/">サポートと情報</a></p>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+      var I18N = window.SKI18N;
+      function t(s) { return I18N ? I18N.t(s) : s; }
+      function $(id) { return document.getElementById(id); }
+      var ua = navigator.userAgent;
+      var standalone = (window.matchMedia && matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: minimal-ui), (display-mode: fullscreen)").matches) || navigator.standalone === true;
+      var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      var android = /Android/.test(ua);
+      var firefox = /Firefox\//.test(ua) && !android && !ios;
+      var macSafari = !ios && /Macintosh/.test(ua) && /Safari\//.test(ua) && !/Chrome\/|Chromium\/|Edg\/|Firefox\//.test(ua);
+      var os = ios ? "ios" : android ? "android" : macSafari ? "mac" : "pc";
+      var names = { ios: t("iPhone・iPad"), android: "Android", pc: t("パソコン（Chrome・Edge）"), mac: t("Mac（Safari）") };
+
+      // 端末の切りかえ（いま使っている端末に「この端末」を付けて、最初に開く）
+      var tabs = document.querySelectorAll(".tab");
+      function show(k) {
+        Array.prototype.forEach.call(tabs, function (b) { b.setAttribute("aria-selected", String(b.dataset.os === k)); });
+        Array.prototype.forEach.call(document.querySelectorAll(".os"), function (p) { p.hidden = p.id !== "os-" + k; });
+      }
+      Array.prototype.forEach.call(tabs, function (b) {
+        if (b.dataset.os === os) { var mine = document.createElement("span"); mine.className = "tab__mine"; mine.textContent = t("この端末"); b.appendChild(mine); }
+        b.addEventListener("click", function () { show(b.dataset.os); });
+      });
+      show(os);
+      $("firefox-note").hidden = !firefox;
+      $("status-device").textContent = t("いまの端末: ") + names[os] + (firefox ? " · Firefox" : "");
+
+      // もうアプリとして開いている / ボタン 1 つで入れられる（Chrome・Edge・Android の Chrome）
+      if (standalone) { $("status-done").hidden = false; $("status-steps").hidden = true; return; }
+      var prompt = null;
+      window.addEventListener("beforeinstallprompt", function (e) {
+        e.preventDefault();
+        prompt = e;
+        $("status-ready").hidden = false;
+        $("status-steps").hidden = true;
+      });
+      $("install-now").addEventListener("click", function () {
+        if (!prompt) return;
+        prompt.prompt();
+        prompt.userChoice.then(function (r) {
+          prompt = null;
+          $("status-ready").hidden = true;
+          if (r && r.outcome === "accepted") $("status-done").hidden = false;
+          else $("status-steps").hidden = false;
+        });
+      });
+      window.addEventListener("appinstalled", function () { $("status-ready").hidden = true; $("status-steps").hidden = true; $("status-done").hidden = false; });
+
+      var meta = $("theme-color");
+      if (window.SKToolbox) SKToolbox.onChange(function () { meta.content = getComputedStyle(document.documentElement).getPropertyValue("--md-surface").trim(); });
+    })();
+  </script>
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <!-- 横断検索（Ctrl+K） -->
+  <script src="/toolbox/shared/search.js"></script>
+  <script src="/frameworks/check.js" defer></script>
+  <script src="/assets/analytics.js" defer></script>
+</body>
+</html>
