@@ -2124,5 +2124,12 @@
   "項目をもう 1 つ以上入れてください": "항목을 하나 이상 더 넣어 주세요",
   "項目を追加": "항목 추가",
   "項目を追加（改行で複数）": "항목 추가(줄바꿈으로 여러 개)",
-  "順番決め・当番決めに": "순서・당번 정하기에"
+  "順番決め・当番決めに": "순서・당번 정하기에",
+  "Calc — 電卓・関数電卓 | SK's Toolbox": "Calc — 계산기・공학용 계산기 | SK's Toolbox",
+  "Clock — 時計・アラーム・タイマー | SK's Toolbox": "Clock — 시계・알람・타이머 | SK's Toolbox",
+  "Countdown — あと何日カウントダウン | SK's Toolbox": "Countdown — 남은 날 카운트다운 | SK's Toolbox",
+  "Memo — 画像も入るメモ帳 | SK's Toolbox": "Memo — 이미지도 넣는 메모장 | SK's Toolbox",
+  "Roulette — ルーレット・抽選 | SK's Toolbox": "Roulette — 룰렛・추첨 | SK's Toolbox",
+  "Timetable — 時間割アプリ | SK's Toolbox": "Timetable — 시간표 앱 | SK's Toolbox",
+  "Todo — リマインダー・ToDo リスト | SK's Toolbox": "Todo — 미리 알림・할 일 목록 | SK's Toolbox"
 }

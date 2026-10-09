@@ -2124,5 +2124,12 @@
   "項目をもう 1 つ以上入れてください": "請再新增至少 1 個項目",
   "項目を追加": "新增項目",
   "項目を追加（改行で複数）": "新增項目（換行可新增多個）",
-  "順番決め・当番決めに": "適合決定順序或值日"
+  "順番決め・当番決めに": "適合決定順序或值日",
+  "Calc — 電卓・関数電卓 | SK's Toolbox": "Calc — 計算機・工程計算機 | SK's Toolbox",
+  "Clock — 時計・アラーム・タイマー | SK's Toolbox": "Clock — 時鐘・鬧鐘・計時器 | SK's Toolbox",
+  "Countdown — あと何日カウントダウン | SK's Toolbox": "Countdown — 倒數天數 | SK's Toolbox",
+  "Memo — 画像も入るメモ帳 | SK's Toolbox": "Memo — 可放圖片的記事本 | SK's Toolbox",
+  "Roulette — ルーレット・抽選 | SK's Toolbox": "Roulette — 輪盤・抽籤 | SK's Toolbox",
+  "Timetable — 時間割アプリ | SK's Toolbox": "Timetable — 課表應用程式 | SK's Toolbox",
+  "Todo — リマインダー・ToDo リスト | SK's Toolbox": "Todo — 提醒事項・待辦清單 | SK's Toolbox"
 }

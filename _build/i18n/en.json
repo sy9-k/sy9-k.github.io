@@ -2345,5 +2345,12 @@
   "項目をもう 1 つ以上入れてください": "Add at least one more item",
   "項目を追加": "Add item",
   "項目を追加（改行で複数）": "Add items (one per line)",
-  "順番決め・当番決めに": "For deciding turns or chores"
+  "順番決め・当番決めに": "For deciding turns or chores",
+  "Calc — 電卓・関数電卓 | SK's Toolbox": "Calc — Calculator & scientific calculator | SK's Toolbox",
+  "Clock — 時計・アラーム・タイマー | SK's Toolbox": "Clock — Clock, alarm & timer | SK's Toolbox",
+  "Countdown — あと何日カウントダウン | SK's Toolbox": "Countdown — Days-left countdown | SK's Toolbox",
+  "Memo — 画像も入るメモ帳 | SK's Toolbox": "Memo — Notes with images | SK's Toolbox",
+  "Roulette — ルーレット・抽選 | SK's Toolbox": "Roulette — Spin wheel & picker | SK's Toolbox",
+  "Timetable — 時間割アプリ | SK's Toolbox": "Timetable — Class timetable app | SK's Toolbox",
+  "Todo — リマインダー・ToDo リスト | SK's Toolbox": "Todo — Reminders & to-do list | SK's Toolbox"
 }

@@ -59,7 +59,7 @@
     document.body.dataset.mode = mode;
     Array.prototype.forEach.call(panels, function (p) { p.hidden = p.dataset.panel !== mode; });
     Array.prototype.forEach.call(tabs, function (b) { b.setAttribute("aria-selected", String(b.dataset.mode === mode)); b.tabIndex = b.dataset.mode === mode ? 0 : -1; });
-    if (mode !== "clock") document.title = titles[mode] + " · Clock";
+    if (mode !== "clock" && !/bot|crawler|spider|crawling/i.test(navigator.userAgent)) document.title = titles[mode] + " · Clock";
     if (!embed && !keepHash) history.replaceState(null, "", mode === "clock" ? location.pathname : "#" + mode);
     if (window.SKClock) SKClock.wake();
     save();

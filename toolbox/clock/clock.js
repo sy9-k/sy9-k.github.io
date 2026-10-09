@@ -12,6 +12,8 @@
   "use strict";
 
   var root = document.documentElement;
+  // 検索エンジンのクローラーには、ページのタイトルを時刻に書きかえない（検索結果に「12:34 · Clock」と出ないように）
+  var CRAWLER = /bot|crawler|spider|crawling/i.test(navigator.userAgent);
   var embed = /[?&]embed\b/.test(location.search);
   var I18N = window.SKI18N;
   var locale = (I18N && I18N.locale) || "ja-JP";
@@ -153,7 +155,7 @@
       partEl.textContent = partOfDay(h);
       var top = settings.theme === "sky" ? paintSky(now) : getComputedStyle(root).getPropertyValue("--sky-top").trim();
       if (themeColor) themeColor.content = top || "#000000";
-      if (!document.body.dataset.mode || document.body.dataset.mode === "clock") document.title = hh + ":" + pad(m) + (settings.h24 ? "" : " " + ampm.textContent) + " · Clock";
+      if (!CRAWLER && (!document.body.dataset.mode || document.body.dataset.mode === "clock")) document.title = hh + ":" + pad(m) + (settings.h24 ? "" : " " + ampm.textContent) + " · Clock";
       document.body.classList.toggle("is-night-dim", !!settings.night && (h >= 22 || h < 6));
     }
   }
