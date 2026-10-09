@@ -2577,5 +2577,12 @@
   "配信を更新しました": "Sharing updated",
   "配信・連絡・特別な日程・招待コード・参加している人": "Sharing, notices, special schedules, invite codes and members",
   "配信中（{date} に更新）": "Shared (updated {date})",
-  "配信先のメールアドレス（1 行に 1 つ。なくてもよい。招待コードでも参加できます）": "Recipient emails (one per line; optional — people can also join with an invite code)"
+  "配信先のメールアドレス（1 行に 1 つ。なくてもよい。招待コードでも参加できます）": "Recipient emails (one per line; optional — people can also join with an invite code)",
+  "{date} から": "since {date}",
+  "{n} 人 · 名前とアイコンは、その人が時間割を開くと出ます。ほかの参加者には見えません。": "{n} people · Names and icons appear once each person opens the timetable. Other members can't see this list.",
+  "まだだれもいません。メールアドレスか招待コードで届けると、ここに出ます。": "No one yet. Deliver by email or invite code and people will appear here.",
+  "まだ開いていない": "Not opened yet",
+  "まだ開いていません": "Not opened yet",
+  "メールアドレスの配信先からも外し、この人の画面から配信した時間割と連絡が消えます。": "They'll also be removed from the email recipients, and the shared timetable and notices will disappear from their screen.",
+  "外しています…": "Removing…"
 }

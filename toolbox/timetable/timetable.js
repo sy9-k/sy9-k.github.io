@@ -154,7 +154,7 @@
   }
   function idList(v) { return Array.isArray(v) ? v.filter(function (x) { return typeof x === "string"; }).slice(-300) : []; }
 
-  var data = { version: 1, view: "mine", table: cleanTable(null), received: {}, seen: [], notified: [] };
+  var data = { version: 1, view: "mine", table: cleanTable(null), received: {}, seen: [], notified: [], registered: {} };
   function load() {
     try {
       var d = JSON.parse(localStorage.getItem(STORE) || "{}") || {};
@@ -169,6 +169,9 @@
       data.view = typeof d.view === "string" && (d.view === "mine" || data.received[d.view]) ? d.view : "mine";
       data.seen = idList(d.seen);
       data.notified = idList(d.notified);
+      // 管理者の「参加している人」に名前・アイコンを書いた時間割（{ ID: 書いた内容 }。同じなら書き直さない）
+      data.registered = {};
+      if (d.registered && typeof d.registered === "object") Object.keys(d.registered).forEach(function (k) { if (typeof d.registered[k] === "string") data.registered[k] = d.registered[k].slice(0, 800); });
     } catch (e) { /* 初期値 */ }
   }
   function save() {
@@ -1148,6 +1151,10 @@
       render();
       $("receive-hint").hidden = true;
       if (manual) say(res.items.length ? t("配信された時間割を更新しました") : t("配信された時間割はありません"));
+      // 配信した人（管理者）の「参加している人」に、名前とアイコンを出す
+      if (res.items.length) loadShare().then(function (m) { return m.registerSelf(Object.keys(next), data.registered); }).then(function (r) {
+        if (JSON.stringify(r) !== JSON.stringify(data.registered)) { data.registered = r; save(); }
+      }).catch(function () { /* 次に開いたときにまた試す */ });
     }).catch(function () { if (manual) say(t("確認できませんでした。インターネットの接続を確認してください。")); });
   }
 
@@ -1384,8 +1391,9 @@
       tx.append(el("b", "", tb.share.title || tb.name), el("span", "", stale ? t("配信したあとに変えたところがあります。「配信を更新」を押すと届きます") : t("配信中（{date} に更新）", { date: new Date(tb.share.publishedAt).toLocaleString(locale, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) })));
       var counts = el("div", "ad-counts");
       function count(n, label) { var c = el("div", "ad-count"); c.append(el("b", "", n === null ? (adminCache.loading ? "…" : "—") : String(n)), el("span", "", label)); counts.appendChild(c); }
-      count(adminCache.members ? adminCache.members.length : null, t("メールアドレス"));
-      count(adminCache.joins ? adminCache.joins.length : null, t("招待コードで参加"));
+      var ppl = peopleOf();
+      count(ppl ? ppl.length : null, t("参加している人"));
+      count(ppl ? ppl.filter(function (p) { return p.pending; }).length : null, t("まだ開いていない"));
       count((tb.notices || []).filter(function (n) { return noticeActive(n, today); }).length, t("出している連絡"));
       card.append(icon(stale ? "sync_problem" : "cloud_done"), tx, counts);
     }
@@ -1426,30 +1434,51 @@
     }
     box.appendChild(inv);
 
-    // 参加している人
+    // 参加している人（招待コードで参加した人・メールアドレスの配信先の人。管理者だけが見られる）
     var mem = adminSection(t("参加している人"), "group", tb.share ? [{ icon: "refresh", label: t("読み込み直す"), run: function () { loadAdminData(true); renderAdmin(); } }] : []);
     if (tb.share) {
-      if (!adminCache.joins) mem.appendChild(el("p", "specials__empty", adminCache.loading ? t("読み込み中…") : t("読み込めませんでした。")));
-      else if (!adminCache.joins.length) mem.appendChild(el("p", "specials__empty", t("招待コードで参加した人は、まだいません。")));
+      var people = peopleOf();
+      if (!people) mem.appendChild(el("p", "specials__empty", adminCache.loading ? t("読み込み中…") : t("読み込めませんでした。")));
+      else if (!people.length) mem.appendChild(el("p", "specials__empty", t("まだだれもいません。メールアドレスか招待コードで届けると、ここに出ます。")));
       else {
+        mem.appendChild(el("p", "ad-note ad-note--top", t("{n} 人 · 名前とアイコンは、その人が時間割を開くと出ます。ほかの参加者には見えません。", { n: people.length })));
         var rows = el("div", "ad-rows");
-        adminCache.joins.forEach(function (p) {
-          var r = el("div", "ad-row");
+        people.forEach(function (p) {
+          var r = el("div", "ad-row" + (p.pending ? " is-pending" : ""));
           var tx3 = el("div", "ad-row__text");
-          tx3.append(el("b", "", p.name || p.email), el("span", "", [p.name ? p.email : "", p.joinedAt ? t("{date} に参加", { date: new Date(p.joinedAt).toLocaleDateString(locale) }) : ""].filter(Boolean).join(" · ")));
-          r.append(icon("person"), tx3, rowBtn("person_remove", t("外す"), function () { removePerson(p); }));
+          tx3.append(el("b", "", p.name || p.email), el("span", "", [p.name ? p.email : "", p.pending ? t("まだ開いていません") : "", p.via === "code" ? t("招待コード") : t("メールアドレス"), p.joinedAt ? t("{date} から", { date: new Date(p.joinedAt).toLocaleDateString(locale) }) : ""].filter(Boolean).join(" · ")));
+          r.append(avatar(p), tx3, rowBtn("person_remove", t("外す"), function () { removePerson(p); }));
           rows.appendChild(r);
         });
         mem.appendChild(rows);
       }
-      if (adminCache.members && adminCache.members.length) {
-        var more = el("p", "ad-note");
-        more.textContent = t("このほか、メールアドレスで配信している人が {n} 人います（「配信の設定」で変えられます）。", { n: adminCache.members.length });
-        mem.appendChild(more);
-      }
     } else mem.appendChild(el("p", "specials__empty", t("配信すると、ここに参加している人が出ます。")));
     box.appendChild(mem);
     loadAdminData(false);
+  }
+  // 参加している人の一覧: 名前・アイコンのある人（joins）と、まだ開いていないメールアドレスの配信先
+  function peopleOf() {
+    if (!adminCache.joins || !adminCache.members) return adminCache.joins && !adminCache.members ? adminCache.joins.map(function (j) { return personOf(j); }) : null;
+    var byEmail = {}, out = [];
+    adminCache.joins.forEach(function (j) { byEmail[j.email] = true; out.push(personOf(j)); });
+    adminCache.members.forEach(function (e) { if (!byEmail[e]) out.push({ email: e, name: "", photo: "", color: "", via: "email", pending: true, member: true }); });
+    out.forEach(function (p) { if (adminCache.members.indexOf(p.email) >= 0) p.member = true; });
+    return out.sort(function (a, b) { return (a.pending - b.pending) || (a.name || a.email).localeCompare(b.name || b.email, locale); });
+  }
+  function personOf(j) { return { uid: j.uid, email: j.email, name: j.name, photo: j.photo, color: j.color, via: j.code ? "code" : "email", joinedAt: j.joinedAt, pending: false }; }
+  function avatar(p) {
+    var a = el("span", "ad-avatar");
+    if (p.photo) {
+      var img = el("img");
+      img.src = p.photo;
+      img.alt = "";
+      img.referrerPolicy = "no-referrer";
+      img.addEventListener("error", function () { img.remove(); a.textContent = (p.name || p.email || "?").charAt(0).toUpperCase(); });
+      a.appendChild(img);
+    } else if (p.pending) a.appendChild(icon("mail"));
+    else a.textContent = (p.name || p.email || "?").charAt(0).toUpperCase();
+    if (p.color && /^#[0-9a-f]{3,8}$/i.test(p.color)) a.style.background = p.color;
+    return a;
   }
   function rowBtn(iconName, label, fn) {
     var b = el("button", "icon-btn m3-state");
@@ -1484,9 +1513,21 @@
     });
   }
   function removePerson(p) {
-    window.M3.confirm({ title: t("{name} を外しますか？", { name: p.name || p.email }), text: t("この人の画面から、配信した時間割と連絡が消えます。招待コードが有効なら、また参加できます。"), ok: t("外す"), danger: true }).then(function (yes) {
+    var tb = data.table;
+    window.M3.confirm({ title: t("{name} を外しますか？", { name: p.name || p.email }), text: p.member
+      ? t("メールアドレスの配信先からも外し、この人の画面から配信した時間割と連絡が消えます。")
+      : t("この人の画面から、配信した時間割と連絡が消えます。招待コードが有効なら、また参加できます。"), ok: t("外す"), danger: true }).then(function (yes) {
       if (!yes) return;
-      loadShare().then(function (m) { return m.removeJoin(data.table.share.tid, p); }).then(function () { say(t("外しました")); loadAdminData(true); }, function () { say(t("外せませんでした")); });
+      say(t("外しています…"));
+      loadShare().then(function (m) {
+        var job = Promise.resolve();
+        // メールアドレスの配信先なら、配信先から外して配信を更新する（受け取り箱からも消える）
+        if (p.member) job = m.loadMembers(tb.share.tid).then(function (emails) {
+          var next = emails.filter(function (e) { return e !== p.email; });
+          return m.publish({ tid: tb.share.tid, title: tb.share.title || tb.name, json: payloadOf(tb, tb.share.title || tb.name), emails: next }).then(function () { tb.share.publishedAt = Date.now(); save(); });
+        });
+        return job.then(function () { return m.removeJoin(tb.share.tid, p); });
+      }).then(function () { say(t("外しました")); loadAdminData(true); }, function () { say(t("外せませんでした")); });
     });
   }
   // QR コード（qrcode-generator を cdnjs から。読めなければ、コードとリンクだけ）

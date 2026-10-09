@@ -4,11 +4,12 @@
 //   ・timetables/{ID}/private/members  … { emails: [配信先のメールアドレス], updatedAt }。管理者だけ（受け取る人どうしには見えない）
 //   ・timetableInbox/{メールアドレス}   … { tids: [受け取る時間割の ID], updatedAt }。本人（Google のメールアドレスが一致し、確認済み）だけが読める
 //   ・timetableInvites/{コード}         … { tid, title, ownerUid, expiresAt, createdAt }。招待コード（管理者が作る。コードを知っている人だけが読める）
-//   ・timetables/{ID}/joins/{UID}      … { email, name, code, joinedAt }。招待コードで参加した人（一覧は管理者だけ）
+//   ・timetables/{ID}/joins/{UID}      … { email, name, photo, color, code, joinedAt }。参加している人（一覧は管理者だけ）
+//                                       招待コードで参加したとき、またはメールアドレスの配信先の人が時間割を開いたとき（code は ""）に、本人が作る
 //   権限は y-filter リポジトリの systems/firestore.rules（「SK's Toolbox の時間割の配信」）
 import { ACCOUNT_TERMS_VERSION, currentUser, db, profileOf } from "/assets/hub/account.js";
 import {
-  arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, Timestamp, where, writeBatch
+  arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, Timestamp, updateDoc, where, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 function fail(code) { const e = new Error(code); e.code = code; return e; }
@@ -119,13 +120,37 @@ export async function deleteInvite(code) { await deleteDoc(invite(code)); }
 // 管理者: 招待コードで参加した人
 export async function listJoins(tid) {
   const snap = await getDocs(joinsCol(tid));
-  return snap.docs.map((d) => ({ uid: d.id, email: String(d.data().email || ""), name: String(d.data().name || ""), joinedAt: ms(d.data().joinedAt) }))
+  return snap.docs.map((d) => ({ uid: d.id, email: String(d.data().email || ""), name: String(d.data().name || ""), photo: String(d.data().photo || ""), color: String(d.data().color || ""), code: String(d.data().code || ""), joinedAt: ms(d.data().joinedAt) }))
     .sort((a, b) => b.joinedAt - a.joinedAt);
 }
 // 管理者: 参加した人を外す（受け取り箱からも消す）
 export async function removeJoin(tid, person) {
-  await deleteDoc(doc(db, "timetables", tid, "joins", person.uid));
+  if (person.uid) await deleteDoc(doc(db, "timetables", tid, "joins", person.uid));
   if (person.email) await setDoc(inbox(person.email), { tids: arrayRemove(tid), updatedAt: serverTimestamp() }, { merge: true });
+}
+function safePhoto(url) { const u = String(url || ""); return /^https:\/\//.test(u) && u.length <= 500 ? u : ""; }
+
+// 受け取る人: 時間割を開いたとき、管理者の「参加している人」に名前とアイコンを出す（メールアドレスの配信先の人。招待コードの人は名前・アイコンを新しく）
+//   known … { tid: 前に書いた名前・アイコン } を返し、同じなら書かない
+export async function registerSelf(tids, known) {
+  const user = await currentUser();
+  if (!user || !user.email || !user.emailVerified) return known || {};
+  const acc = await getDoc(doc(db, "accounts", user.uid));
+  if (!acc.exists()) return known || {};
+  const prof = profileOf(user, acc.data());
+  const fields = { name: prof.name.slice(0, 60), photo: safePhoto(prof.photo), color: String(prof.colorValue || "").slice(0, 20) };
+  const sig = JSON.stringify(fields), out = Object.assign({}, known || {});
+  for (const tid of tids) {
+    if (out[tid] === sig) continue;
+    const ref = doc(db, "timetables", tid, "joins", user.uid);
+    try {
+      const snap = await getDoc(ref);
+      if (snap.exists()) await updateDoc(ref, fields);
+      else await setDoc(ref, Object.assign({ email: user.email.toLowerCase(), code: "", joinedAt: serverTimestamp() }, fields));
+      out[tid] = sig;
+    } catch (e) { /* 配信先から外れているなど。次に開いたときにまた試す */ }
+  }
+  return out;
 }
 
 // 参加する人: コードを確かめる
@@ -144,7 +169,8 @@ export async function checkInvite(text) {
   if (ms(d.expiresAt) <= Date.now()) return { status: "expired", code, title: String(d.title || "") };
   let joined = false;
   try { const box = await getDoc(inbox((user.email || "").toLowerCase())); joined = box.exists() && (box.data().tids || []).includes(d.tid); } catch (e) { /* まだない */ }
-  return { status: "ready", code, tid: d.tid, title: String(d.title || ""), joined, email: (user.email || "").toLowerCase(), name: profileOf(user, acc.data()).name };
+  const prof = profileOf(user, acc.data());
+  return { status: "ready", code, tid: d.tid, title: String(d.title || ""), joined, email: (user.email || "").toLowerCase(), name: prof.name, photo: prof.photo, color: prof.colorValue };
 }
 // 参加する人: 参加する（管理者に、名前とメールアドレスが伝わる）
 export async function joinWithCode(info) {
@@ -156,7 +182,7 @@ export async function joinWithCode(info) {
   const tids = box && box.exists() && Array.isArray(box.data().tids) ? box.data().tids.filter((x) => typeof x === "string") : [];
   if (tids.length >= 20 && !tids.includes(info.tid)) throw fail("too-many");
   const batch = writeBatch(db);
-  batch.set(doc(db, "timetables", info.tid, "joins", user.uid), { email, name: String(info.name || "").slice(0, 60), code: info.code, joinedAt: serverTimestamp() });
+  batch.set(doc(db, "timetables", info.tid, "joins", user.uid), { email, name: String(info.name || "").slice(0, 60), photo: safePhoto(info.photo), color: String(info.color || "").slice(0, 20), code: info.code, joinedAt: serverTimestamp() });
   if (!tids.includes(info.tid)) batch.set(inbox(email), { tids: tids.concat([info.tid]), updatedAt: serverTimestamp(), joinCode: info.code });
   await batch.commit();
 }
