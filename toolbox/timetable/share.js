@@ -3,10 +3,12 @@
 //   ・timetables/{ID}                  … { title, json: 時間割の JSON, ownerUid, updatedAt }。管理者と、配信先の人だけが読める
 //   ・timetables/{ID}/private/members  … { emails: [配信先のメールアドレス], updatedAt }。管理者だけ（受け取る人どうしには見えない）
 //   ・timetableInbox/{メールアドレス}   … { tids: [受け取る時間割の ID], updatedAt }。本人（Google のメールアドレスが一致し、確認済み）だけが読める
+//   ・timetableInvites/{コード}         … { tid, title, ownerUid, expiresAt, createdAt }。招待コード（管理者が作る。コードを知っている人だけが読める）
+//   ・timetables/{ID}/joins/{UID}      … { email, name, code, joinedAt }。招待コードで参加した人（一覧は管理者だけ）
 //   権限は y-filter リポジトリの systems/firestore.rules（「SK's Toolbox の時間割の配信」）
-import { ACCOUNT_TERMS_VERSION, currentUser, db } from "/assets/hub/account.js";
+import { ACCOUNT_TERMS_VERSION, currentUser, db, profileOf } from "/assets/hub/account.js";
 import {
-  arrayRemove, arrayUnion, deleteDoc, doc, getDoc, serverTimestamp, setDoc, writeBatch
+  arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, Timestamp, where, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 function fail(code) { const e = new Error(code); e.code = code; return e; }
@@ -81,4 +83,80 @@ export async function unpublish(tid) {
   await inChunks(emails, 20, (email) => setDoc(inbox(email), { tids: arrayRemove(tid), updatedAt: serverTimestamp() }, { merge: true }));
   await deleteDoc(membersRef(tid));
   await deleteDoc(doc(db, "timetables", tid));
+}
+
+// ================================================================
+// 招待コード
+// ================================================================
+// コードは 8 文字（まぎらわしい 0 O 1 I L を使わない）。表示は XXXX-XXXX
+const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+export function normalizeCode(text) { return String(text || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16); }
+export function formatCode(code) { return code.length === 8 ? code.slice(0, 4) + "-" + code.slice(4) : code; }
+function newCode() {
+  const b = crypto.getRandomValues(new Uint8Array(8));
+  return Array.from(b, (x) => CODE_CHARS[x % CODE_CHARS.length]).join("");
+}
+const invite = (code) => doc(db, "timetableInvites", code);
+const joinsCol = (tid) => collection(db, "timetables", tid, "joins");
+const ms = (ts) => (ts && ts.toMillis ? ts.toMillis() : 0);
+
+// 管理者: 招待コードを作る（days 日で使えなくなる）
+export async function createInvite({ tid, title, days }) {
+  const user = await currentUser();
+  if (!user) throw fail("signed-out");
+  const code = newCode();
+  await setDoc(invite(code), { tid, title, ownerUid: user.uid, expiresAt: Timestamp.fromMillis(Date.now() + days * 864e5), createdAt: serverTimestamp() });
+  return code;
+}
+// 管理者: その時間割の招待コード（期限切れも含む）
+export async function listInvites(tid) {
+  const snap = await getDocs(query(collection(db, "timetableInvites"), where("tid", "==", tid)));
+  return snap.docs.map((d) => ({ code: d.id, title: String(d.data().title || ""), expiresAt: ms(d.data().expiresAt), createdAt: ms(d.data().createdAt) }))
+    .sort((a, b) => b.createdAt - a.createdAt);
+}
+export async function deleteInvite(code) { await deleteDoc(invite(code)); }
+
+// 管理者: 招待コードで参加した人
+export async function listJoins(tid) {
+  const snap = await getDocs(joinsCol(tid));
+  return snap.docs.map((d) => ({ uid: d.id, email: String(d.data().email || ""), name: String(d.data().name || ""), joinedAt: ms(d.data().joinedAt) }))
+    .sort((a, b) => b.joinedAt - a.joinedAt);
+}
+// 管理者: 参加した人を外す（受け取り箱からも消す）
+export async function removeJoin(tid, person) {
+  await deleteDoc(doc(db, "timetables", tid, "joins", person.uid));
+  if (person.email) await setDoc(inbox(person.email), { tids: arrayRemove(tid), updatedAt: serverTimestamp() }, { merge: true });
+}
+
+// 参加する人: コードを確かめる
+// 戻り値: { status: "signed-out" | "unregistered" | "not-found" | "expired" | "ready", code, title, tid, joined }
+export async function checkInvite(text) {
+  const code = normalizeCode(text);
+  const user = await currentUser();
+  if (!user) return { status: "signed-out", code };
+  const acc = await getDoc(doc(db, "accounts", user.uid));
+  if (!acc.exists() || acc.data().termsVersion !== ACCOUNT_TERMS_VERSION) return { status: "unregistered", code };
+  if (code.length < 8) return { status: "not-found", code };
+  let snap;
+  try { snap = await getDoc(invite(code)); } catch (e) { return { status: "not-found", code }; }
+  if (!snap.exists()) return { status: "not-found", code };
+  const d = snap.data();
+  if (ms(d.expiresAt) <= Date.now()) return { status: "expired", code, title: String(d.title || "") };
+  let joined = false;
+  try { const box = await getDoc(inbox((user.email || "").toLowerCase())); joined = box.exists() && (box.data().tids || []).includes(d.tid); } catch (e) { /* まだない */ }
+  return { status: "ready", code, tid: d.tid, title: String(d.title || ""), joined, email: (user.email || "").toLowerCase(), name: profileOf(user, acc.data()).name };
+}
+// 参加する人: 参加する（管理者に、名前とメールアドレスが伝わる）
+export async function joinWithCode(info) {
+  const user = await currentUser();
+  if (!user) throw fail("signed-out");
+  const email = (user.email || "").toLowerCase();
+  if (!email || !user.emailVerified) throw fail("no-email");
+  const box = await getDoc(inbox(email)).catch(() => null);
+  const tids = box && box.exists() && Array.isArray(box.data().tids) ? box.data().tids.filter((x) => typeof x === "string") : [];
+  if (tids.length >= 20 && !tids.includes(info.tid)) throw fail("too-many");
+  const batch = writeBatch(db);
+  batch.set(doc(db, "timetables", info.tid, "joins", user.uid), { email, name: String(info.name || "").slice(0, 60), code: info.code, joinedAt: serverTimestamp() });
+  if (!tids.includes(info.tid)) batch.set(inbox(email), { tids: tids.concat([info.tid]), updatedAt: serverTimestamp(), joinCode: info.code });
+  await batch.commit();
 }

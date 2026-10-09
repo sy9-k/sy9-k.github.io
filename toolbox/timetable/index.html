@@ -43,6 +43,7 @@
     <header class="app-bar">
       <a class="tb-back m3-state" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
       <span class="app-bar__space"></span>
+      <button type="button" class="icon-btn m3-state" id="btn-admin" hidden aria-label="管理者の画面" title="管理者の画面"><span class="msr" aria-hidden="true">admin_panel_settings</span></button>
       <button type="button" class="icon-btn m3-state" id="btn-setup" aria-label="時間割の設定（曜日・時限・時刻）" title="時間割の設定（曜日・時限・時刻）"><span class="msr" aria-hidden="true">edit_calendar</span></button>
       <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
       <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
@@ -50,7 +51,9 @@
         <button type="button" class="icon-btn m3-state" id="btn-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="その他" title="その他"><span class="msr" aria-hidden="true">more_vert</span></button>
         <div class="menu" id="menu" role="menu" hidden>
           <button type="button" class="m3-state" role="menuitem" data-menu="setup" id="menu-setup"><span class="msr" aria-hidden="true">tune</span><span>時間割の設定（曜日・時限・時刻）</span></button>
-          <button type="button" class="m3-state" role="menuitem" data-menu="notice"><span class="msr" aria-hidden="true">campaign</span><span>クラスへの連絡を書く</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="admin" id="menu-admin" hidden><span class="msr" aria-hidden="true">admin_panel_settings</span><span>管理者の画面</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="join"><span class="msr" aria-hidden="true">group_add</span><span>招待コードで参加</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="notice" id="menu-notice" hidden><span class="msr" aria-hidden="true">campaign</span><span>クラスへの連絡を書く</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="special"><span class="msr" aria-hidden="true">event_note</span><span>特別な日程を追加（試験・行事・休み）</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="share" id="menu-share" hidden><span class="msr" aria-hidden="true">campaign</span><span>配信（管理者）</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="refresh" id="menu-refresh" hidden><span class="msr" aria-hidden="true">sync</span><span>配信された時間割を更新</span></button>
@@ -62,6 +65,9 @@
     </header>
 
     <main>
+      <!-- 管理者の画面（#admin。管理者だけ） -->
+      <section class="admin" id="admin" aria-label="管理者の画面" data-i18n-skip></section>
+
       <div class="head">
         <h1 class="head__title" id="title" data-i18n-skip>Timetable</h1>
         <p class="head__sub" id="sub" data-i18n-skip></p>
