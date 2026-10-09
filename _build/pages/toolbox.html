@@ -11,6 +11,24 @@
         <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
       </div>
 
+      <!-- ウィジェットとアプリ一覧の切りかえ（/toolbox/#apps でアプリ一覧から開く） -->
+      <div class="tbh-views" role="tablist" aria-label="ホームの表示">
+        <button type="button" class="tbh-view m3-state" role="tab" id="view-widgets" data-view="widgets" aria-selected="true" aria-controls="bento"><span class="msr" aria-hidden="true">dashboard</span><span>ウィジェット</span></button>
+        <button type="button" class="tbh-view m3-state" role="tab" id="view-apps" data-view="apps" aria-selected="false" aria-controls="apps"><span class="msr" aria-hidden="true">apps</span><span>アプリ</span></button>
+      </div>
+
+      <!-- アプリ一覧（スマホのホーム画面のように、アプリを大きなアイコンで並べる） -->
+      <nav class="tbh-apps" id="apps" role="tabpanel" aria-labelledby="view-apps" hidden>
+        <a class="tbh-app m3-state" href="/toolbox/clock/"><img src="/toolbox/clock/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Clock</span><span class="tbh-app__desc">時計・アラーム・タイマー</span><span class="tbh-app__badge" data-badge="clock" hidden data-i18n-skip></span></a>
+        <a class="tbh-app m3-state" href="/toolbox/todo/"><img src="/toolbox/todo/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Todo</span><span class="tbh-app__desc">リマインダー・やること</span><span class="tbh-app__badge" data-badge="todo" hidden data-i18n-skip></span></a>
+        <a class="tbh-app m3-state" href="/toolbox/timetable/"><img src="/toolbox/timetable/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Timetable</span><span class="tbh-app__desc">時間割・クラスの連絡</span><span class="tbh-app__badge" data-badge="timetable" hidden data-i18n-skip></span></a>
+        <a class="tbh-app m3-state" href="/toolbox/memo/"><img src="/toolbox/memo/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Memo</span><span class="tbh-app__desc">画像も入るメモ帳</span></a>
+        <a class="tbh-app m3-state" href="/toolbox/calc/"><img src="/toolbox/calc/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Calc</span><span class="tbh-app__desc">電卓・関数電卓</span></a>
+        <a class="tbh-app m3-state" href="/toolbox/countdown/"><img src="/toolbox/countdown/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Countdown</span><span class="tbh-app__desc">あと何日</span></a>
+        <a class="tbh-app m3-state" href="/toolbox/roulette/"><img src="/toolbox/roulette/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Roulette</span><span class="tbh-app__desc">ルーレット・抽選</span></a>
+        <a class="tbh-app tbh-app--settings m3-state" href="/toolbox/settings/"><span class="tbh-app__icon"><span class="msr" aria-hidden="true">settings</span></span><span class="tbh-app__name">設定</span><span class="tbh-app__desc">見た目・同期・データ</span></a>
+      </nav>
+
       <!-- ホームの編集中: タイルの並べ替え・表示と非表示 -->
       <div class="tbh-editbar" id="home-editbar" hidden>
         <span class="msr" aria-hidden="true">dashboard_customize</span>
@@ -112,6 +130,9 @@
           <button type="button" class="text-btn tbh-look__more m3-state" data-open-settings><span class="msr" aria-hidden="true">tune</span><span>すべての設定</span></button>
         </section>
       </div>
+
+      <!-- 前にアプリ一覧を見ていたら、最初からアプリ一覧に（home.js を待つと、ウィジェットが一瞬見えてしまうため） -->
+      <script>try { if (location.hash === "#apps" || (location.hash !== "#widgets" && localStorage.getItem("sk_toolbox_view") === "apps")) { document.getElementById("apps").hidden = false; document.getElementById("bento").hidden = true; document.getElementById("view-apps").setAttribute("aria-selected", "true"); document.getElementById("view-widgets").setAttribute("aria-selected", "false"); document.getElementById("home-edit").hidden = true; } } catch (e) {}</script>
 
       <footer class="tbh-foot">
         <ul class="tbh-tips">

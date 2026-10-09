@@ -2584,5 +2584,11 @@
   "まだ開いていない": "Not opened yet",
   "まだ開いていません": "Not opened yet",
   "メールアドレスの配信先からも外し、この人の画面から配信した時間割と連絡が消えます。": "They'll also be removed from the email recipients, and the shared timetable and notices will disappear from their screen.",
-  "外しています…": "Removing…"
+  "外しています…": "Removing…",
+  "ウィジェット": "Widgets",
+  "ホームの表示": "Home view",
+  "リマインダー・やること": "Reminders & to-dos",
+  "ルーレット・抽選": "Roulette & draws",
+  "時間割・クラスの連絡": "Timetable & class notices",
+  "見た目・同期・データ": "Look, sync & data"
 }
