@@ -21,7 +21,9 @@
     { path: "/toolbox/calc/", name: "Calc" },
     { path: "/toolbox/memo/", name: "Memo" },
     { path: "/toolbox/todo/", name: "Todo" },
-    { path: "/toolbox/countdown/", name: "Countdown" }
+    { path: "/toolbox/countdown/", name: "Countdown" },
+    { path: "/toolbox/timetable/", name: "Timetable" },
+    { path: "/toolbox/roulette/", name: "Roulette" }
   ];
   var path = location.pathname;
   var current = null;

@@ -1,0 +1,44 @@
+{
+  "id": "/toolbox/timetable/",
+  "name": "Timetable — SK's Toolbox",
+  "short_name": "Timetable",
+  "description": "曜日と時限の時間割。いまの授業と次の授業がすぐ分かります。クラスの時間割の配信にも対応。",
+  "start_url": "/toolbox/timetable/",
+  "scope": "/toolbox/timetable/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay"
+  ],
+  "background_color": "#f6fafd",
+  "theme_color": "#f6fafd",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": [
+    "education",
+    "productivity"
+  ]
+}

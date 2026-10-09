@@ -20,7 +20,7 @@ import { firebaseConfig } from "/y-filter/firebase-config.js";
 
 export const ACCOUNT_NAME = "SK Hub Systems アカウント";
 // アカウント規約（/policies/docs/sk-hub-account.txt）の版。変えると、次に使うときに同意し直してもらう
-export const ACCOUNT_TERMS_VERSION = "2026-10-08";
+export const ACCOUNT_TERMS_VERSION = "2026-10-08.2";
 
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);

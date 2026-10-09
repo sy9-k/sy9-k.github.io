@@ -1,6 +1,6 @@
 // SK's Toolbox のオンライン同期（任意。最初はオフ）。/toolbox/shared/settings.js が読み込む
 //   ・SK Hub Systems アカウントでログインし、アカウントで Toolbox に接続し、Toolbox の設定で「同期を始める」を選んだ端末だけが同期する
-//   ・同期するもの（アプリごとに選べる）: Toolbox の設定とホームの並び・Todo・Memo の文章（画像はしない）・Countdown・Calc の履歴
+//   ・同期するもの（アプリごとに選べる）: Toolbox の設定とホームの並び・Todo・Memo の文章（画像はしない）・Countdown・Calc の履歴・自分の時間割・ルーレット
 //   ・中身は端末で暗号化してから送る（/toolbox/shared/sync-core.js）。同期用のパスフレーズは本人が決め、サーバーには送らない
 //   ・この端末の同期の設定は localStorage の sk_toolbox_sync（鍵を含むので、バックアップには入れない。ログアウトすると消える）
 //       { uid, key, keyId, apps: { settings: true, … }, base: { アプリ: 前回そろえたときの指紋 }, at: 最後に同期した時刻, results: { アプリ: 結果 } }
@@ -27,9 +27,11 @@
     { key: "todo", name: "Todo", what: t("リストとタスク"), icon: "/toolbox/todo/icon.svg" },
     { key: "memo", name: "Memo", what: t("メモの文章（画像は同期しません）"), icon: "/toolbox/memo/icon.svg" },
     { key: "countdown", name: "Countdown", what: t("日の一覧"), icon: "/toolbox/countdown/icon.svg" },
-    { key: "calc", name: "Calc", what: t("計算の履歴"), icon: "/toolbox/calc/icon.svg" }
+    { key: "calc", name: "Calc", what: t("計算の履歴"), icon: "/toolbox/calc/icon.svg" },
+    { key: "timetable", name: "Timetable", what: t("自分の時間割"), icon: "/toolbox/timetable/icon.svg" },
+    { key: "roulette", name: "Roulette", what: t("ルーレットと結果の履歴"), icon: "/toolbox/roulette/icon.svg" }
   ];
-  var STORAGE = { settings: ["sk_toolbox", "sk_toolbox_home"], todo: ["sk_todo"], memo: ["sk_memo"], countdown: ["sk_countdown"], calc: ["sk_calc"] };
+  var STORAGE = { settings: ["sk_toolbox", "sk_toolbox_home"], todo: ["sk_todo"], memo: ["sk_memo"], countdown: ["sk_countdown"], calc: ["sk_calc"], timetable: ["sk_timetable"], roulette: ["sk_roulette"] };
 
   // ---- この端末の同期の設定 ----
   function readJson(key) { try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; } }

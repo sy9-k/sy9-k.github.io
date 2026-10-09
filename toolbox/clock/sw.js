@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-clock-v14';
+const CACHE_NAME = 'sk-clock-v15';
 const ASSETS = [
   '/toolbox/clock/',
   '/toolbox/clock/index.html',
@@ -24,6 +24,8 @@ const ASSETS = [
   '/toolbox/calc/icon.svg',
   '/toolbox/memo/icon.svg',
   '/toolbox/todo/icon.svg',
+  '/toolbox/timetable/icon.svg',
+  '/toolbox/roulette/icon.svg',
   // 多言語（オフラインでも選んだ言語で表示できるように）
   '/assets/i18n.js',
   '/assets/i18n/en.js',

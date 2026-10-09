@@ -1,13 +1,13 @@
-const CACHE_NAME = 'sk-countdown-v7';
+const CACHE_NAME = 'sk-roulette-v1';
 const ASSETS = [
-  '/toolbox/countdown/',
-  '/toolbox/countdown/index.html',
-  '/toolbox/countdown/countdown.css',
-  '/toolbox/countdown/countdown.js',
-  '/toolbox/countdown/manifest.json',
-  '/toolbox/countdown/icon.svg',
-  '/toolbox/countdown/icon-192.png',
-  '/toolbox/countdown/icon-512.png',
+  '/toolbox/roulette/',
+  '/toolbox/roulette/index.html',
+  '/toolbox/roulette/roulette.css',
+  '/toolbox/roulette/roulette.js',
+  '/toolbox/roulette/manifest.json',
+  '/toolbox/roulette/icon.svg',
+  '/toolbox/roulette/icon-192.png',
+  '/toolbox/roulette/icon-512.png',
   '/toolbox/shared/pwa.js',
   '/toolbox/shared/m3.css',
   '/toolbox/shared/m3.js',
@@ -24,7 +24,6 @@ const ASSETS = [
   '/toolbox/memo/icon.svg',
   '/toolbox/todo/icon.svg',
   '/toolbox/timetable/icon.svg',
-  '/toolbox/roulette/icon.svg',
   // 多言語（オフラインでも選んだ言語で表示できるように）
   '/assets/i18n.js',
   '/assets/i18n/en.js',
@@ -45,7 +44,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => Promise.all(keys.map((key) => {
-      if (key.startsWith('sk-countdown-') && key !== CACHE_NAME) return caches.delete(key);
+      if (key.startsWith('sk-roulette-') && key !== CACHE_NAME) return caches.delete(key);
     })))
   );
   self.clients.claim();
