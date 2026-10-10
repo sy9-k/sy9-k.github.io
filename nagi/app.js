@@ -152,7 +152,8 @@
   }
   function notify(title, body) {
     if (!settings.notify || !("Notification" in window) || Notification.permission !== "granted") return;
-    var options = { body: body, icon: "ico/icon-192.png", badge: "ico/icon-192.png", tag: "nagi", renotify: true };
+    // 通知の形は SK's Toolbox とそろえる（本文の 1 行目 … 「Nagi · 何の通知か」。小さなアイコンは白と透明だけの三日月）
+    var options = { body: "Nagi · " + t("タイマー") + (body ? "\n" + body : ""), icon: "ico/icon-192.png", badge: "ico/badge-96.png", tag: "nagi", renotify: true, timestamp: Date.now(), vibrate: [200, 100, 200] };
     if (navigator.serviceWorker && navigator.serviceWorker.controller) {
       navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(title, options); }).catch(function () {});
     } else {

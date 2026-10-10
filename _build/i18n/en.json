@@ -2654,5 +2654,7 @@
   "端末を選ぶ": "Choose a device",
   "通知": "Notifications",
   "電波がないところでも、時計・メモ・Todo などが開けます": "Clock, Memo, Todo and more open even without a signal",
-  "いまの端末: ": "This device: "
+  "いまの端末: ": "This device: ",
+  "{time} のリマインダー": "{time} reminder",
+  "{time}のタイマー": "{time} timer"
 }

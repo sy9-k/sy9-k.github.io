@@ -450,7 +450,9 @@
     clearTimeout(autoStop);
     autoStop = setTimeout(stopRing, 5 * 6e4); // 5 分で止める
     if (document.visibilityState !== "visible" && window.SKReminders) {
-      SKReminders.notify($("ring-title").textContent, isAlarm ? t("{time} のアラーム", { time: ev.alarm.time }) : t("時間になりました"), isAlarm ? "sk-alarm-" + ev.alarm.id : "sk-timer", "clock");
+      SKReminders.notify(isAlarm ? (ev.alarm.label || t("アラーム")) : t("タイマーが終わりました"), "", isAlarm ? "sk-alarm-" + ev.alarm.id : "sk-timer", "clock", {
+        context: isAlarm ? t("{time} のアラーム", { time: ev.alarm.time }) : SKReminders.timerText ? SKReminders.timerText(ev.timer) : t("タイマー")
+      });
     }
     load();
     renderAll();

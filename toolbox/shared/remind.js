@@ -180,13 +180,25 @@
 
   // ---- 通知 ----
   function readNotified() { try { return JSON.parse(localStorage.getItem(NOTIFIED) || "{}") || {}; } catch (e) { return {}; } }
-  // extra … { actions: [{ action, title }], data: { kind, id, url } }。ボタン（actions）は Service Worker から出す通知だけ（Chrome・Edge・Android）
+  // extra … { context, actions: [{ action, title }], data: { kind, id, url }, important }。ボタン（actions）は Service Worker から出す通知だけ（Chrome・Edge・Android）
   //   ボタンが押されたら、Service Worker が開いているページに知らせる（下の handleAction）
+  // 通知の形はどのアプリもそろえる（Nagi・SK Hub Systems のお知らせも同じ形）:
+  //   タイトル … いちばん大事なこと（タスクの名前・アラームの名前・連絡のタイトル）
+  //   本文の 1 行目 … 「アプリの名前 · 何の通知か」（extra.context）。2 行目から、くわしいこと（body）
+  //   アイコン … アプリのアイコン。小さなアイコン（badge。Android の上のバーなど）… 白と透明だけの形（/toolbox/shared/badges/）
+  var APP_NAMES = { todo: "Todo", clock: "Clock", timetable: "Timetable", memo: "Memo", countdown: "Countdown", calc: "Calc", roulette: "Roulette" };
+  var BADGES = { todo: "todo", clock: "clock", timetable: "timetable" };
   function notify(title, body, tag, app, extra) {
     if (!(window.Notification && Notification.permission === "granted")) return;
     extra = extra || {};
     var data = Object.assign({ url: "/toolbox/" + app + "/" }, extra.data || {});
-    var opts = { body: body, tag: tag, icon: "/toolbox/" + app + "/icon-192.png", badge: "/toolbox/" + app + "/icon-192.png", requireInteraction: app === "clock", data: data };
+    var head = (APP_NAMES[app] || "SK's Toolbox") + (extra.context ? " · " + extra.context : "");
+    var urgent = app === "clock" || !!extra.important;
+    var opts = {
+      body: head + (body ? "\n" + body : ""), tag: tag, renotify: true, timestamp: Date.now(),
+      icon: "/toolbox/" + app + "/icon-192.png", badge: "/toolbox/shared/badges/" + (BADGES[app] || "toolbox") + ".png",
+      requireInteraction: urgent, vibrate: urgent ? [300, 120, 300, 120, 600] : [200], data: data
+    };
     function fallback() { try { new Notification(title, opts); } catch (e) { /* 出せない */ } }
     if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
       navigator.serviceWorker.getRegistration().then(function (reg) {
@@ -196,8 +208,17 @@
       }).catch(fallback);
     } else fallback();
   }
+  // 「5 分のタイマー」（長さが分からなければ「タイマー」）
+  function timerText(tm) {
+    var s = tm && tm.duration ? Math.round(tm.duration / 1000) : 0;
+    if (!s) return t("タイマー");
+    var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    return t("{time}のタイマー", { time: [h ? t("{n} 時間", { n: h }) : "", m ? t("{n} 分", { n: m }) : "", sec ? t("{n} 秒", { n: sec }) : ""].filter(Boolean).join(" ") });
+  }
   function show(task) {
-    notify(task.text || t("リマインダー"), task.notes || t("リマインダーの時刻になりました"), "sk-todo-" + task.id, "todo", {
+    notify(task.text || t("リマインダー"), task.notes || "", "sk-todo-" + task.id, "todo", {
+      context: task.time ? t("{time} のリマインダー", { time: task.time }) : t("リマインダー"),
+      important: task.priority >= 3 || !!task.flagged,
       actions: [{ action: "done", title: t("完了にする") }, { action: "snooze", title: t("10 分後") }],
       data: { kind: "todo", id: task.id, url: "/toolbox/todo/#task-" + encodeURIComponent(task.id) }
     });
@@ -293,11 +314,12 @@
     } catch (e) { return; }
     events.forEach(function (ev) {
       if (typeof window.SKClockRing === "function") { window.SKClockRing(ev); return; }
-      if (ev.kind === "alarm") notify(ev.alarm.label || t("アラーム"), t("{time} のアラーム", { time: ev.alarm.time }), "sk-alarm-" + ev.alarm.id, "clock", {
+      if (ev.kind === "alarm") notify(ev.alarm.label || t("アラーム"), "", "sk-alarm-" + ev.alarm.id, "clock", {
+        context: t("{time} のアラーム", { time: ev.alarm.time }),
         actions: [{ action: "snooze", title: t("スヌーズ（5 分）") }, { action: "stop", title: t("止める") }],
         data: { kind: "alarm", id: ev.alarm.id }
       });
-      else notify(t("タイマー"), t("時間になりました"), "sk-timer", "clock");
+      else notify(t("タイマーが終わりました"), "", "sk-timer", "clock", { context: timerText(ev.timer) });
       document.dispatchEvent(new CustomEvent("skreminder", { detail: { text: ev.kind === "alarm" ? (ev.alarm.label || t("アラーム")) + " " + ev.alarm.time : t("タイマーが終わりました") } }));
     });
   }
@@ -357,6 +379,6 @@
   window.SKReminders = {
     STORE: STORE, DEFAULT_LIST: DEFAULT_LIST, LIST_COLORS: LIST_COLORS, LIST_ICONS: LIST_ICONS, REPEATS: REPEATS,
     load: load, save: save, upgrade: upgrade, upgradeTask: upgradeTask, complete: complete, nextDue: nextDue,
-    ymd: ymd, parseYmd: parseYmd, check: check, checkClock: checkClock, notify: notify, parseQuick: parseQuick
+    ymd: ymd, parseYmd: parseYmd, check: check, checkClock: checkClock, notify: notify, parseQuick: parseQuick, timerText: timerText
   };
 })();

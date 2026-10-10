@@ -1137,7 +1137,10 @@
       });
       data.notified = idList(data.notified);
       fresh.slice(0, 3).forEach(function (f) {
-        if (window.SKReminders) SKReminders.notify((f.n.important ? "❗ " : "") + t("{class} の連絡", { class: f.title || t("クラス") }), f.n.title + (f.n.body ? "\n" + f.n.body.slice(0, 120) : ""), "sk-notice-" + f.n.id, "timetable");
+        if (window.SKReminders) SKReminders.notify((f.n.important ? "❗ " : "") + f.n.title, f.n.body ? f.n.body.slice(0, 120) : "", "sk-notice-" + f.n.id, "timetable", {
+          context: t("{class} の連絡", { class: f.title || t("クラス") }) + (NT_KINDS[f.n.kind] && f.n.kind !== "info" ? "（" + NT_KINDS[f.n.kind][1] + "）" : ""),
+          important: f.n.important
+        });
       });
       if (fresh.length) document.dispatchEvent(new CustomEvent("sk-island-flash", { detail: { icon: "campaign", text: t("連絡: {title}", { title: fresh[0].n.title }), color: "#6cd3f7" } }));
       function stamp(r) { return JSON.stringify(Object.keys(r).map(function (k) { return [k, r[k].updatedAt]; })); }
