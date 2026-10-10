@@ -150,10 +150,11 @@
       osc.stop(start + 1.7);
     });
   }
-  function notify(title, body) {
+  // context … 本文の 1 行目「Nagi · ○○」の ○○（終わった集中・休憩と、その長さ）
+  function notify(title, body, context) {
     if (!settings.notify || !("Notification" in window) || Notification.permission !== "granted") return;
     // 通知の形は SK's Toolbox とそろえる（本文の 1 行目 … 「Nagi · 何の通知か」。小さなアイコンは白と透明だけの三日月）
-    var options = { body: "Nagi · " + t("タイマー") + (body ? "\n" + body : ""), icon: "ico/icon-192.png", badge: "ico/badge-96.png", tag: "nagi", renotify: true, timestamp: Date.now(), vibrate: [200, 100, 200] };
+    var options = { body: "Nagi · " + (context || t("タイマー")) + (body ? "\n" + body : ""), icon: "ico/icon-192.png", badge: "ico/badge-96.png", tag: "nagi", renotify: true, timestamp: Date.now(), vibrate: [200, 100, 200] };
     function show() {
       if (navigator.serviceWorker && navigator.serviceWorker.controller) {
         navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(title, options); }).catch(function () {});
@@ -246,6 +247,9 @@
 
   function finish(natural) {
     var wasFocus = timer.mode === "focus";
+    // 通知の 1 行目: 終わったもの（「集中 25 分」「休憩 5 分」「長い休憩 15 分」）
+    var doneMin = timer.mode === "focus" ? settings.focus : timer.mode === "short" ? settings.short : settings.long;
+    var doneText = t(timer.mode === "focus" ? "集中 {n} 分" : timer.mode === "short" ? "休憩 {n} 分" : "長い休憩 {n} 分", { n: doneMin });
     if (wasFocus) {
       record(timer.focusStart || Date.now() - focusedSoFar(), focusedSoFar());
     }
@@ -254,8 +258,8 @@
     setMode(next, true);
     if (natural) {
       chime();
-      if (wasFocus) notify(t("集中おつかれさまでした"), next === "long" ? t("長い休憩にしましょう。") : t("少し休憩しましょう。"));
-      else notify(t("休憩おわり"), t("次の集中をはじめましょう。"));
+      if (wasFocus) notify(t("集中おつかれさまでした"), next === "long" ? t("長い休憩にしましょう。") : t("少し休憩しましょう。"), doneText);
+      else notify(t("休憩おわり"), t("次の集中をはじめましょう。"), doneText);
       var auto = wasFocus ? settings.autoBreak : settings.autoFocus;
       if (auto) start();
       else toast(wasFocus ? t("集中おつかれさまでした。休憩しましょう。") : t("休憩おわり。次の集中をはじめましょう。"));

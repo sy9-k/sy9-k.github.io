@@ -379,6 +379,8 @@
         sn[task.id] = Date.now() + 10 * 6e4;
         try { localStorage.setItem(SNOOZE, JSON.stringify(sn)); } catch (e) { /* 保存できない */ }
       }
+    } else if (msg.kind === "alarm" && (msg.action === "snooze" || msg.action === "stop") && document.dispatchEvent(new CustomEvent("sk-alarm-action", { cancelable: true, detail: msg })) === false) {
+      // Clock の画面で鳴っているとき: Clock が止める・スヌーズする（音も止まる。下の処理はしない）
     } else if (msg.kind === "alarm" && msg.action === "snooze") {
       var tools = readJson(TOOLS);
       var a = (Array.isArray(tools.alarms) ? tools.alarms : []).filter(function (x) { return x && x.id === msg.id; })[0];
