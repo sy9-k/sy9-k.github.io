@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-countdown-v15';
+const CACHE_NAME = 'sk-countdown-v16';
 const ASSETS = [
   '/toolbox/countdown/',
   '/toolbox/countdown/index.html',
@@ -24,6 +24,7 @@ const ASSETS = [
   '/toolbox/shared/badges/todo.png',
   '/toolbox/shared/badges/timetable.png',
   '/assets/badge-skhub.png',
+  '/assets/logo.svg',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/clock/icon.svg',
   '/toolbox/calc/icon.svg',

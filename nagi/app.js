@@ -154,11 +154,34 @@
     if (!settings.notify || !("Notification" in window) || Notification.permission !== "granted") return;
     // 通知の形は SK's Toolbox とそろえる（本文の 1 行目 … 「Nagi · 何の通知か」。小さなアイコンは白と透明だけの三日月）
     var options = { body: "Nagi · " + t("タイマー") + (body ? "\n" + body : ""), icon: "ico/icon-192.png", badge: "ico/badge-96.png", tag: "nagi", renotify: true, timestamp: Date.now(), vibrate: [200, 100, 200] };
-    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(title, options); }).catch(function () {});
-    } else {
-      try { new Notification(title, options); } catch (e) { /* 通知が使えない環境 */ }
+    function show() {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then(function (reg) { reg.showNotification(title, options); }).catch(function () {});
+      } else {
+        try { new Notification(title, options); } catch (e) { /* 通知が使えない環境 */ }
+      }
     }
+    // アイコン: Nagi のアイコンの右下に、小さな SK のマークを重ねる（SK's Toolbox と同じ。作れなければ Nagi のアイコンだけ）
+    var done = false;
+    var wait = setTimeout(function () { if (!done) { done = true; show(); } }, 1500);
+    nagiIcon().then(function (url) { if (done) return; done = true; clearTimeout(wait); options.icon = url; show(); });
+  }
+  var nagiIconP = null;
+  function nagiIcon() {
+    if (nagiIconP) return nagiIconP;
+    function img(src) { return new Promise(function (ok, ng) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = ng; i.src = src; }); }
+    nagiIconP = Promise.all([img("ico/icon-192.png"), img("/assets/logo.svg")]).then(function (im) {
+      var S = 192, c = document.createElement("canvas");
+      c.width = c.height = S;
+      var g = c.getContext("2d"), r = 37, cx = S - r - 1, cy = S - r - 1;
+      g.drawImage(im[0], 0, 0, 168, 168);
+      g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.fillStyle = "#ffffff"; g.fill();
+      g.save(); g.beginPath(); g.arc(cx, cy, r - 5, 0, Math.PI * 2); g.clip();
+      g.drawImage(im[1], cx - (r - 5), cy - (r - 5), (r - 5) * 2, (r - 5) * 2);
+      g.restore();
+      return c.toDataURL("image/png");
+    }).catch(function () { nagiIconP = null; return "ico/icon-192.png"; });
+    return nagiIconP;
   }
 
   // ---------- タイマー ----------

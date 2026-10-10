@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-clock-v23';
+const CACHE_NAME = 'sk-clock-v24';
 const ASSETS = [
   '/toolbox/clock/',
   '/toolbox/clock/index.html',
@@ -25,6 +25,7 @@ const ASSETS = [
   '/toolbox/shared/badges/todo.png',
   '/toolbox/shared/badges/timetable.png',
   '/assets/badge-skhub.png',
+  '/assets/logo.svg',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/countdown/icon.svg',
   '/toolbox/calc/icon.svg',

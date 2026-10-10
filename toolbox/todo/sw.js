@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-todo-v21';
+const CACHE_NAME = 'sk-todo-v22';
 const ASSETS = [
   '/toolbox/todo/',
   '/toolbox/todo/index.html',
@@ -24,6 +24,7 @@ const ASSETS = [
   '/toolbox/shared/badges/todo.png',
   '/toolbox/shared/badges/timetable.png',
   '/assets/badge-skhub.png',
+  '/assets/logo.svg',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/countdown/icon.svg',
   '/toolbox/clock/icon.svg',

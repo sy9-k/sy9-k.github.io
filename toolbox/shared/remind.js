@@ -186,6 +186,28 @@
   //   タイトル … いちばん大事なこと（タスクの名前・アラームの名前・連絡のタイトル）
   //   本文の 1 行目 … 「アプリの名前 · 何の通知か」（extra.context）。2 行目から、くわしいこと（body）
   //   アイコン … アプリのアイコン。小さなアイコン（badge。Android の上のバーなど）… 白と透明だけの形（/toolbox/shared/badges/）
+  // 通知のアイコン: アプリのアイコンの右下に、小さな SK のマークを重ねる（LINE の「相手のアイコン＋右下に LINE」のように）
+  //   画面の中（canvas）で 1 回だけ作って、data: の URL で使う。作れなかったら、アプリのアイコンだけ
+  var iconCache = {};
+  function loadImg(src) {
+    return new Promise(function (resolve, reject) { var i = new Image(); i.onload = function () { resolve(i); }; i.onerror = reject; i.src = src; });
+  }
+  function composeIcon(appIcon) {
+    if (iconCache[appIcon]) return iconCache[appIcon];
+    iconCache[appIcon] = Promise.all([loadImg(appIcon), loadImg("/assets/logo.svg")]).then(function (imgs) {
+      var S = 192, c = document.createElement("canvas");
+      c.width = c.height = S;
+      var g = c.getContext("2d");
+      g.drawImage(imgs[0], 0, 0, 168, 168); // アプリのアイコン（右下をあけるため、少し小さく）
+      var r = 37, cx = S - r - 1, cy = S - r - 1;
+      g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.fillStyle = "#ffffff"; g.fill(); // 白いふち
+      g.save(); g.beginPath(); g.arc(cx, cy, r - 5, 0, Math.PI * 2); g.clip();
+      g.drawImage(imgs[1], cx - (r - 5), cy - (r - 5), (r - 5) * 2, (r - 5) * 2);
+      g.restore();
+      return c.toDataURL("image/png");
+    }).catch(function () { delete iconCache[appIcon]; return appIcon; });
+    return iconCache[appIcon];
+  }
   var APP_NAMES = { todo: "Todo", clock: "Clock", timetable: "Timetable", memo: "Memo", countdown: "Countdown", calc: "Calc", roulette: "Roulette" };
   var BADGES = { todo: "todo", clock: "clock", timetable: "timetable" };
   function notify(title, body, tag, app, extra) {
@@ -200,13 +222,19 @@
       requireInteraction: urgent, vibrate: urgent ? [300, 120, 300, 120, 600] : [200], data: data
     };
     function fallback() { try { new Notification(title, opts); } catch (e) { /* 出せない */ } }
-    if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
-      navigator.serviceWorker.getRegistration().then(function (reg) {
-        if (!reg || !reg.showNotification) { fallback(); return; }
-        var withActions = Object.assign({}, opts, { actions: extra.actions || [] });
-        reg.showNotification(title, withActions).catch(function () { reg.showNotification(title, opts).catch(fallback); });
-      }).catch(fallback);
-    } else fallback();
+    function show() {
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+        navigator.serviceWorker.getRegistration().then(function (reg) {
+          if (!reg || !reg.showNotification) { fallback(); return; }
+          var withActions = Object.assign({}, opts, { actions: extra.actions || [] });
+          reg.showNotification(title, withActions).catch(function () { reg.showNotification(title, opts).catch(fallback); });
+        }).catch(fallback);
+      } else fallback();
+    }
+    // SK のマークを重ねたアイコンができたら出す（1.5 秒待ってもできなければ、アプリのアイコンのまま）
+    var done = false;
+    var wait = setTimeout(function () { if (!done) { done = true; show(); } }, 1500);
+    composeIcon(opts.icon).then(function (url) { if (done) return; done = true; clearTimeout(wait); opts.icon = url; show(); });
   }
   // 「5 分のタイマー」（長さが分からなければ「タイマー」）
   function timerText(tm) {
