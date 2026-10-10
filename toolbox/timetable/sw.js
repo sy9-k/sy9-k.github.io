@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-timetable-v10';
+const CACHE_NAME = 'sk-timetable-v11';
 const ASSETS = [
   '/toolbox/timetable/',
   '/toolbox/timetable/index.html',
@@ -25,6 +25,7 @@ const ASSETS = [
   '/toolbox/shared/badges/todo.png',
   '/toolbox/shared/badges/timetable.png',
   '/assets/badge-skhub.png',
+  '/assets/logo.svg',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/clock/icon.svg',
   '/toolbox/calc/icon.svg',

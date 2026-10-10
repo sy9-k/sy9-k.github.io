@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-roulette-v9';
+const CACHE_NAME = 'sk-roulette-v10';
 const ASSETS = [
   '/toolbox/roulette/',
   '/toolbox/roulette/index.html',
@@ -24,6 +24,7 @@ const ASSETS = [
   '/toolbox/shared/badges/todo.png',
   '/toolbox/shared/badges/timetable.png',
   '/assets/badge-skhub.png',
+  '/assets/logo.svg',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/clock/icon.svg',
   '/toolbox/calc/icon.svg',

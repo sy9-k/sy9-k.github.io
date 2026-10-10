@@ -450,8 +450,13 @@
     clearTimeout(autoStop);
     autoStop = setTimeout(stopRing, 5 * 6e4); // 5 分で止める
     if (document.visibilityState !== "visible" && window.SKReminders) {
-      SKReminders.notify(isAlarm ? (ev.alarm.label || t("アラーム")) : t("タイマーが終わりました"), "", isAlarm ? "sk-alarm-" + ev.alarm.id : "sk-timer", "clock", {
-        context: isAlarm ? t("{time} のアラーム", { time: ev.alarm.time }) : SKReminders.timerText ? SKReminders.timerText(ev.timer) : t("タイマー")
+      // ほかの画面から鳴ったときと同じ形（アラームには「スヌーズ」「止める」のボタン。/toolbox/shared/remind.js）
+      SKReminders.notify(isAlarm ? (ev.alarm.label || t("アラーム")) : t("タイマーが終わりました"), "", isAlarm ? "sk-alarm-" + ev.alarm.id : "sk-timer", "clock", isAlarm ? {
+        context: t("{time} のアラーム", { time: ev.alarm.time }),
+        actions: [{ action: "snooze", title: t("スヌーズ（5 分）") }, { action: "stop", title: t("止める") }],
+        data: { kind: "alarm", id: ev.alarm.id }
+      } : {
+        context: SKReminders.timerText ? SKReminders.timerText(ev.timer) : t("タイマー")
       });
     }
     load();
@@ -465,6 +470,12 @@
     ringing = null;
   }
   $("ring-stop").addEventListener("click", stopRing);
+  // 通知の「スヌーズ」「止める」（/toolbox/shared/remind.js）: この画面で鳴っているなら、画面のボタンと同じことをする
+  document.addEventListener("sk-alarm-action", function (e) {
+    if (!ringing || ringing.kind !== "alarm" || ringing.alarm.id !== e.detail.id) return;
+    e.preventDefault();
+    if (e.detail.action === "snooze") $("ring-snooze").click(); else stopRing();
+  });
   $("ring-snooze").addEventListener("click", function () {
     if (ringing && ringing.kind === "alarm") {
       load();
