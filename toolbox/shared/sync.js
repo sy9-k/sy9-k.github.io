@@ -197,7 +197,8 @@
   function noticeUrl() { return lp("/account/") + "#notices"; }
   function wantsPush(c) { return !!(c && c.notify !== false && window.Notification && Notification.permission === "granted"); }
   function push(title, body, tag) {
-    var opts = { body: body, tag: tag, icon: "/assets/apple-touch-icon.png", badge: "/assets/apple-touch-icon.png", data: { url: noticeUrl() } };
+    // 通知の形は Toolbox のアプリとそろえる（タイトル … いちばん大事なこと、本文の 1 行目 … 「SK Hub Systems · お知らせ」）
+    var opts = { body: "SK Hub Systems · " + t("お知らせ") + (body ? "\n" + body : ""), tag: tag, renotify: true, timestamp: Date.now(), icon: "/assets/apple-touch-icon.png", badge: "/assets/badge-skhub.png", data: { url: noticeUrl() } };
     function fallback() { try { new Notification(title, opts); } catch (e) { /* 出せない */ } }
     if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
       navigator.serviceWorker.getRegistration().then(function (reg) { if (reg && reg.showNotification) reg.showNotification(title, opts); else fallback(); }).catch(fallback);
@@ -213,8 +214,8 @@
       var known = Array.isArray(n.notified) ? n.notified : [];
       var fresh = res.items.filter(function (x) { return known.indexOf(x.id) < 0; });
       if (fresh.length) {
-        var title = t("SK Hub Systems のお知らせ");
-        var body = fresh.length === 1 ? fresh[0].title : t("新しいお知らせが {n} 件あります", { n: fresh.length }) + " — " + fresh[0].title;
+        var title = fresh.length === 1 ? fresh[0].title : t("新しいお知らせが {n} 件あります", { n: fresh.length });
+        var body = fresh.length === 1 ? "" : fresh[0].title;
         document.dispatchEvent(new CustomEvent("sk-island-flash", { detail: { icon: "mail", text: t("SK Hub Systems のお知らせ") + ": " + fresh[0].title, color: "#AFA9EC" } }));
         if (wantsPush(cfg())) push(title, body, "skhub-notice-" + fresh[0].id);
         else if (document.visibilityState === "visible") toast(t("新しいお知らせがあります: {title}", { title: fresh[0].title }), t("見る"), function () { location.href = noticeUrl(); });

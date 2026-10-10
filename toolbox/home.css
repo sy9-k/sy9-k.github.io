@@ -74,6 +74,43 @@ body.tb-home-page { background: var(--md-surface); }
 
 /* ---- Bento グリッド ---- */
 /* タイルの大きさ: 時計と Todo は 2×2、ほかは横 2（タブレットでは Calc と見た目は横 1）。順番は style の order（ホームを編集で変えられる。home.js） */
+/* ウィジェットとアプリ一覧の切りかえ */
+.tbh-views { display: inline-flex; gap: 4px; margin: -8px 4px 18px; padding: 4px; border-radius: 999px; background: var(--md-surface-container); }
+.tbh-view {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px 0 12px; border: 0; border-radius: 999px; background: none; cursor: pointer;
+  font-size: 14px; font-weight: 500; color: var(--md-on-surface-variant); transition: background-color .2s var(--md-emphasized), color .2s linear;
+}
+.tbh-view .msr { font-size: 20px; }
+.tbh-view[aria-selected="true"] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+.tbh-view[aria-selected="true"] .msr { font-variation-settings: "FILL" 1; }
+
+/* アプリ一覧（大きなアイコン） */
+.tbh-apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin: 0 0 8px; }
+.tbh-apps[hidden] { display: none; }
+.tbh-app {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 22px 12px 18px; border-radius: 28px; text-align: center; text-decoration: none;
+  background: var(--md-surface-container-low); transition: transform .3s cubic-bezier(.34, 1.4, .64, 1), box-shadow .25s ease, background-color .2s linear;
+}
+.tbh-app:hover { transform: translateY(-3px); background: var(--md-surface-container); box-shadow: 0 10px 24px -14px rgba(0, 0, 0, .35); }
+.tbh-app:active { transform: scale(.97); }
+.tbh-app img, .tbh-app__icon { width: 64px; height: 64px; margin-bottom: 8px; border-radius: 18px; box-shadow: 0 6px 16px -8px rgba(0, 0, 0, .35); transition: transform .35s cubic-bezier(.34, 1.56, .64, 1); }
+.tbh-app:hover img, .tbh-app:hover .tbh-app__icon { transform: scale(1.06) rotate(-2deg); }
+.tbh-app__icon { display: grid; place-items: center; background: linear-gradient(135deg, var(--md-outline), color-mix(in srgb, var(--md-outline) 60%, #000)); color: #fff; }
+.tbh-app__icon .msr { font-size: 34px; }
+.tbh-app__name { font-size: 16px; font-weight: 700; color: var(--md-on-surface); }
+.tbh-app__desc { font-size: 12.5px; line-height: 1.4; color: var(--md-on-surface-variant); }
+.tbh-app__badge { position: absolute; top: 14px; right: calc(50% - 44px); min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--md-error); color: #fff; font-size: 12px; font-weight: 700; line-height: 22px; box-shadow: 0 0 0 2px var(--md-surface-container-low); }
+.tbh-app__badge[hidden] { display: none; }
+@media (max-width: 600px) {
+  .tbh-apps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .tbh-app { padding: 14px 4px 12px; border-radius: 22px; background: none; }
+  .tbh-app img, .tbh-app__icon { width: 56px; height: 56px; border-radius: 16px; margin-bottom: 4px; }
+  .tbh-app__name { font-size: 13px; }
+  .tbh-app__desc { display: none; }
+  .tbh-app__badge { top: 8px; right: calc(50% - 38px); }
+}
+:root[data-motion="reduce"] .tbh-app, :root[data-motion="reduce"] .tbh-app img, :root[data-motion="reduce"] .tbh-app__icon, :root[data-motion="reduce"] .tbh-view { transition: none; }
+
 .tbh-bento {
   display: grid; gap: 16px;
   grid-template-columns: repeat(4, minmax(0, 1fr));

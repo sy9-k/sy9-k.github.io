@@ -45,6 +45,18 @@
   ],
   "shortcuts": [
     {
+      "name": "アプリ一覧",
+      "short_name": "アプリ",
+      "url": "/toolbox/#apps",
+      "icons": [
+        {
+          "src": "/toolbox/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
       "name": "Clock",
       "url": "/toolbox/clock/",
       "icons": [

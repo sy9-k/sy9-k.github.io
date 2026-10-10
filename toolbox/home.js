@@ -1,5 +1,5 @@
 // SK's Toolbox のホーム画面（/toolbox/）
-//   ・あいさつ（時間帯で変わる）と、Todo・Memo・Calc のウィジェット。時計は Clock の ?embed を iframe で出す（_build/pages/toolbox.html。build で /toolbox/index.html になる）
+//   ・あいさつ（時間帯で変わる）と、Todo・Memo・Calc のウィジェット。上の切りかえで、アプリ一覧（大きなアイコン）にもできる（#apps）。時計は Clock の ?embed を iframe で出す（_build/pages/toolbox.html。build で /toolbox/index.html になる）
 //   ・ウィジェットは各アプリが localStorage に保存したもの（sk_todo・sk_memo・sk_calc・sk_countdown・sk_timetable・sk_roulette）を読むだけ。
 //     Todo だけは、ここでチェックすると完了にできる（Todo アプリと同じ形で sk_todo に書く）
 //   ・ほかのタブ・アプリで変えたら（storage イベント）、戻ってきたら（visibilitychange）、1 分ごとに出し直す
@@ -295,6 +295,60 @@
     else last.append(el("small", "", t("押して回してみましょう")));
   }
 
+  // ---- ウィジェットとアプリ一覧の切りかえ（最後に見たほうを覚える。localStorage の sk_toolbox_view。#apps・#widgets で開くこともできる）----
+  var VIEW = "sk_toolbox_view", view = "widgets";
+  try { view = localStorage.getItem(VIEW) === "apps" ? "apps" : "widgets"; } catch (e) { /* ウィジェット */ }
+  if (location.hash === "#apps" || location.hash === "#widgets") view = location.hash.slice(1);
+  function setView(v, save, animate) {
+    view = v;
+    if (v === "apps" && editing) setEditing(false);
+    ["widgets", "apps"].forEach(function (k) { $("view-" + k).setAttribute("aria-selected", String(k === v)); });
+    $("bento").hidden = v !== "widgets";
+    $("apps").hidden = v !== "apps";
+    $("home-edit").hidden = v !== "widgets";
+    document.body.classList.toggle("is-home-apps", v === "apps");
+    if (save) {
+      try { localStorage.setItem(VIEW, v); } catch (e) { /* このページだけ */ }
+      if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    }
+    if (v === "apps") renderBadges();
+    if (animate && window.M3 && M3.stagger) M3.stagger(v === "apps" ? $("apps") : $("bento"));
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".tbh-view"), function (b) {
+    b.addEventListener("click", function () { if (view !== b.dataset.view) setView(b.dataset.view, true, true); });
+    b.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      e.preventDefault();
+      var next = view === "apps" ? "widgets" : "apps";
+      setView(next, true, true);
+      $("view-" + next).focus();
+    });
+  });
+  window.addEventListener("hashchange", function () { if (location.hash === "#apps" || location.hash === "#widgets") setView(location.hash.slice(1), false, true); });
+  // アプリの数字（Todo: 今日と期限切れ。Timetable: まだ読んでいない連絡）
+  function renderBadges() {
+    var badges = {};
+    try {
+      var open = R ? openTasks(R.load().tasks) : [];
+      var n = open.filter(function (x) { var i = dueInfo(x.due); return i && (i.today || i.over); }).length;
+      if (n) badges.todo = String(n);
+    } catch (e) { /* 読めない */ }
+    var tt = readJson("sk_timetable");
+    if (tt && tt.received && typeof tt.received === "object") {
+      var seen = Array.isArray(tt.seen) ? tt.seen : [], unread = 0, today = ymd(new Date());
+      Object.keys(tt.received).forEach(function (id) {
+        var nts = tt.received[id] && tt.received[id].table && Array.isArray(tt.received[id].table.notices) ? tt.received[id].table.notices : [];
+        nts.forEach(function (x) { if (x && seen.indexOf(x.id) < 0 && (x.until || x.date || "9999") >= today) unread++; });
+      });
+      if (unread) badges.timetable = String(unread);
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("[data-badge]"), function (b) {
+      var v = badges[b.dataset.badge];
+      b.hidden = !v;
+      b.textContent = v || "";
+    });
+  }
+
   // ---- ホームを編集（タイルの順番・表示と非表示。localStorage の sk_toolbox_home）----
   var HOME = "sk_toolbox_home", TILES = ["clock", "todo", "timetable", "memo", "countdown", "calc", "roulette", "look"];
   var bento = $("bento"), editing = false;
@@ -377,6 +431,7 @@
     renderCountdown();
     renderTimetable();
     renderRoulette();
+    if (view === "apps") renderBadges();
   }
   renderAll();
   // 動き: Todo の数字を数え上げる
@@ -396,4 +451,5 @@
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") renderAll(); });
   window.addEventListener("pageshow", function (e) { if (e.persisted) renderAll(); });
   setInterval(function () { if (document.visibilityState === "visible") { greet(); renderTodo(); } }, 60000);
+  setView(view, false, false);
 })();

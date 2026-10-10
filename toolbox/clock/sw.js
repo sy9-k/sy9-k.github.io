@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-clock-v20';
+const CACHE_NAME = 'sk-clock-v23';
 const ASSETS = [
   '/toolbox/clock/',
   '/toolbox/clock/index.html',
@@ -20,6 +20,11 @@ const ASSETS = [
   '/toolbox/shared/sync-core.js',
   '/toolbox/shared/titlebar.js',
   '/toolbox/shared/tbcenter.js',
+  '/toolbox/shared/badges/toolbox.png',
+  '/toolbox/shared/badges/clock.png',
+  '/toolbox/shared/badges/todo.png',
+  '/toolbox/shared/badges/timetable.png',
+  '/assets/badge-skhub.png',
   // 設定の画面で出す、ほかのアプリのアイコン
   '/toolbox/countdown/icon.svg',
   '/toolbox/calc/icon.svg',

@@ -108,7 +108,7 @@ STANDALONE_PAGES = [
     "dictionary/index.html", "dictionary/offline.html",
     "nagi/index.html",
     "toolbox/clock/index.html", "toolbox/calc/index.html", "toolbox/memo/index.html", "toolbox/todo/index.html", "toolbox/countdown/index.html", "toolbox/settings/index.html",
-    "toolbox/timetable/index.html", "toolbox/roulette/index.html",
+    "toolbox/timetable/index.html", "toolbox/roulette/index.html", "toolbox/install/index.html",
 ]
 # 英語だけに訳すページ（SK's Lab のツール。<html data-i18n-langs="ja en">）。ページの文とスクリプトの t("…") の両方を探す
 EN_ONLY_PAGES = ["qr-prj/index.html", "smart-dash/index.html"]
@@ -222,7 +222,7 @@ for code, tr in translators.items():
         path.unlink()
 
 # サイトマップ（このスクリプトで作るページ ＋ 別に作っているアプリ）
-sitemap += [ORIGIN + "/dictionary/", ORIGIN + "/nagi/", ORIGIN + "/y-filter/", ORIGIN + "/qr-prj/", ORIGIN + "/smart-dash/", ORIGIN + "/toolbox/clock/", ORIGIN + "/toolbox/calc/", ORIGIN + "/toolbox/memo/", ORIGIN + "/toolbox/todo/", ORIGIN + "/toolbox/countdown/", ORIGIN + "/toolbox/timetable/", ORIGIN + "/toolbox/roulette/"]
+sitemap += [ORIGIN + "/dictionary/", ORIGIN + "/nagi/", ORIGIN + "/y-filter/", ORIGIN + "/qr-prj/", ORIGIN + "/smart-dash/", ORIGIN + "/toolbox/clock/", ORIGIN + "/toolbox/calc/", ORIGIN + "/toolbox/memo/", ORIGIN + "/toolbox/todo/", ORIGIN + "/toolbox/countdown/", ORIGIN + "/toolbox/timetable/", ORIGIN + "/toolbox/roulette/", ORIGIN + "/toolbox/install/"]
 today = datetime.date.today().isoformat()
 xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
 xml += [f"  <url><loc>{u}</loc><lastmod>{today}</lastmod></url>" for u in sitemap]
