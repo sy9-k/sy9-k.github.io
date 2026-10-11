@@ -2808,5 +2808,7 @@
   "パスワードを使わずに、指紋や顔、端末のロックの解除だけで SK Hub Systems アカウントにログインできるようにします。パスキーはドメインに結びつくため、引っ越しのあとに用意します。": "We'll let you sign in to your SK Hub Systems account without a password, using just your fingerprint, face or device unlock. Passkeys are tied to a domain, so we'll add them after the move.",
   "ログインの画面に SK の名前": "SK's name on the sign-in screen",
   "新しくできるようになること": "What becomes possible",
-  "覚えやすく、変わらないアドレス": "An address that's easy to remember and won't change"
+  "覚えやすく、変わらないアドレス": "An address that's easy to remember and won't change",
+  "SK のサイトは sk-hub.jp に引っ越します": "SK's site is moving to sk-hub.jp",
+  "いまは準備中です。日程は決まりしだいお知らせします。": "We're getting ready now. We'll announce the date once it's set."
 }
