@@ -2702,5 +2702,7 @@
   "ログインは Google か GitHub のアカウントで。SK がパスワードを発行・保存することはありません。2 段階認証などの安全の設定も、それぞれのアカウントのものがそのまま守ってくれます。1 つのアカウントに両方をつないでおくこともできます。": "Sign in with a Google or GitHub account. SK never issues or stores passwords, and the security settings of each account, like 2-step verification, keep protecting you. You can also connect both to one account.",
   "招待コードで参加するには、SK Hub Systems アカウント（Google・GitHub）でログインします。ログインしたあと、もう一度招待のリンクを開いてください。": "To join with an invite code, sign in with your SK Hub Systems account (Google or GitHub). After signing in, open the invite link again.",
   "管理コンソールも、MALU も、Nagi も、SK's Toolbox も、ひとつのアカウントで。ログインは Google か GitHub。パスワードを新しく作る必要はありません。保存されている情報は、いつでもダウンロード・削除できます。": "The admin console, MALU, Nagi and SK's Toolbox, all with one account. Sign in with Google or GitHub, no new password needed. You can download or delete your saved information anytime.",
-  "管理コンソールも、MALU も、Nagi も、SK's Toolbox も。いつもの Google か GitHub のアカウントでログインするだけ。パスワードを新しく作る必要はありません。": "The admin console, MALU, Nagi and SK's Toolbox. Just sign in with your usual Google or GitHub account, no new password needed."
+  "管理コンソールも、MALU も、Nagi も、SK's Toolbox も。いつもの Google か GitHub のアカウントでログインするだけ。パスワードを新しく作る必要はありません。": "The admin console, MALU, Nagi and SK's Toolbox. Just sign in with your usual Google or GitHub account, no new password needed.",
+  "LINE でログイン": "Sign in with LINE",
+  "パスキーでログイン": "Sign in with a passkey"
 }
