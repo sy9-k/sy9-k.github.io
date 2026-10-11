@@ -1,4 +1,4 @@
-// SK Hub Systems アカウント（ログインは Google のみ）
+// SK Hub Systems アカウント（ログインは Google と Microsoft。Microsoft は MICROSOFT_LOGIN が true のときだけ出す）
 // sy9-k.github.io のページ（管理コンソール・これからのサービス）で共通に使うモジュール。
 //   ・ログイン状態は同じサイトの中で共有される（Firebase Authentication がブラウザに保存する）
 //   ・アカウントの登録 = accounts/{UID} に規約への同意を記録すること。Google の名前・メールアドレスは Firebase Authentication にだけある
@@ -10,7 +10,8 @@
 //   watchAccount(({ status, user }) => { if (status !== "ready") location.href = accountPageUrl(); ... });
 import { getApp, getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  GoogleAuthProvider, deleteUser, getAuth, onAuthStateChanged, reauthenticateWithPopup, signInWithPopup, signOut
+  GoogleAuthProvider, OAuthProvider, deleteUser, getAuth, linkWithCredential, linkWithPopup, onAuthStateChanged, reauthenticateWithPopup,
+  signInWithPopup, signOut, unlink
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   collection, deleteField, doc, getCountFromServer, getDoc, getFirestore, query, serverTimestamp, setDoc, updateDoc, where
@@ -127,11 +128,33 @@ export function setUnreadHint(count) {
 }
 
 // ---------- ログイン ----------
-function provider() {
+// ---------- ログインの方法 ----------
+// Microsoft でのログインは、Azure にアプリを登録し、Firebase の「ログイン方法」で Microsoft を有効にしてから true にする
+export const MICROSOFT_LOGIN = false;
+export const LOGIN_PROVIDERS = {
+  google: { id: "google.com", name: "Google", security: "https://myaccount.google.com/security" },
+  microsoft: { id: "microsoft.com", name: "Microsoft", security: "https://account.microsoft.com/security" }
+};
+export const availableLogins = () => Object.keys(LOGIN_PROVIDERS).filter((k) => k !== "microsoft" || MICROSOFT_LOGIN);
+function provider(key = "google") {
+  if (key === "microsoft") {
+    // 個人の Microsoft アカウントと、職場・学校のアカウントの両方（Azure の登録で「すべてのアカウント」）
+    const p = new OAuthProvider("microsoft.com");
+    p.setCustomParameters({ prompt: "select_account" });
+    return p;
+  }
   const p = new GoogleAuthProvider();
   p.setCustomParameters({ prompt: "select_account" });
   return p;
 }
+// そのユーザーがつないでいるログインの方法（"google" | "microsoft"）
+export function loginsOf(user) {
+  const ids = (user?.providerData || []).map((p) => p.providerId);
+  return Object.keys(LOGIN_PROVIDERS).filter((k) => ids.includes(LOGIN_PROVIDERS[k].id));
+}
+// 同じメールアドレスで、別の方法のアカウントがすでにあるとき（例: Google で作った人が Microsoft で入ろうとした）
+//   いったんその方法でログインしてもらい、あとから linkPending() で今回の方法をつなぐ
+let pending = null;
 
 // いまログインしているユーザー（ログイン状態が読み込まれるのを待つ。ログインしていなければ null）
 export function currentUser() {
@@ -140,8 +163,34 @@ export function currentUser() {
   });
 }
 
-export function signIn() {
-  return signInWithPopup(auth, provider());
+export async function signIn(key = "google") {
+  try {
+    return await signInWithPopup(auth, provider(key));
+  } catch (err) {
+    if (err?.code === "auth/account-exists-with-different-credential") {
+      pending = { key, credential: OAuthProvider.credentialFromError(err) };
+      const e = new Error("link-needed");
+      e.code = "sk/link-needed";
+      e.existing = key === "google" ? "microsoft" : "google";
+      e.email = err.customData?.email || "";
+      throw e;
+    }
+    throw err;
+  }
+}
+// 上の続き: 前からある方法でログインしたあと、今回の方法をつなぐ（ボタンを押してから呼ぶ。ポップアップが止められないように）
+export async function signInAndLinkPending(existingKey) {
+  const res = await signInWithPopup(auth, provider(existingKey));
+  if (pending?.credential) {
+    try { await linkWithCredential(res.user, pending.credential); } finally { pending = null; }
+  }
+  return res;
+}
+// ログインの方法を足す・外す（アカウントのページの「サインインとセキュリティ」）。最後の 1 つは外せない
+export function linkLogin(user, key) { return linkWithPopup(user, provider(key)); }
+export function unlinkLogin(user, key) {
+  if (loginsOf(user).length <= 1) { const e = new Error("last-login"); e.code = "sk/last-login"; return Promise.reject(e); }
+  return unlink(user, LOGIN_PROVIDERS[key].id);
 }
 
 // SK's Toolbox のオンライン同期の、この端末の設定（暗号化の鍵を含む）。ログアウトしたら消す
@@ -153,10 +202,12 @@ export function signOutAccount() {
   return signOut(auth);
 }
 
-// 大事な操作（アカウントの削除）の前に、もう一度 Google で確認する
-export function confirmWithGoogle(user) {
-  return reauthenticateWithPopup(user, provider());
+// 大事な操作（アカウントの削除）の前に、もう一度確認する（つないでいる方法で。Google があれば Google）
+export function confirmIdentity(user) {
+  const logins = loginsOf(user);
+  return reauthenticateWithPopup(user, provider(logins.includes("google") ? "google" : logins[0] || "google"));
 }
+export const confirmWithGoogle = confirmIdentity; // 前の名前（互換）
 
 export async function deleteLogin(user) {
   await deleteUser(user);

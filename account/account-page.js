@@ -2,8 +2,9 @@
 // ログイン → アカウントの作成（規約への同意）→ アカウントの確認・プロフィール・お知らせ・設定の同期・データのダウンロード・削除
 // サービスのページから ?next=/y-filter/ のように来たときは、使えるようになったら戻す。
 import {
-  PROFILE_COLORS, PROFILE_NAME_MAX, SERVICES, SYNC_AT_KEY, agreeLatestTerms, connectService, disconnectService, isConnected, confirmWithGoogle, db, deleteLogin, markNoticesSeen,
-  profileOf, register, rememberAccount, safeNext, saveLanguage, saveProfile, signIn, signOutAccount, syncSettings, watchAccount
+  LOGIN_PROVIDERS, MICROSOFT_LOGIN, PROFILE_COLORS, PROFILE_NAME_MAX, SERVICES, SYNC_AT_KEY, agreeLatestTerms, availableLogins, confirmIdentity,
+  connectService, disconnectService, isConnected, db, deleteLogin, linkLogin, loginsOf, markNoticesSeen, profileOf, register, rememberAccount,
+  safeNext, saveLanguage, saveProfile, signIn, signInAndLinkPending, signOutAccount, syncSettings, unlinkLogin, watchAccount
 } from "/assets/hub/account.js";
 import {
   arrayRemove, collection, deleteDoc, deleteField, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, updateDoc, where,
@@ -29,6 +30,11 @@ const errText = (err) => {
   if (code === "auth/popup-blocked") return t("ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。");
   if (code === "auth/network-request-failed" || code === "unavailable") return t("通信できませんでした。インターネットの接続を確認してください。");
   if (code === "permission-denied") return t("SK Hub Systems がこの操作を受け付けませんでした。時間をおいて再度お試しください。");
+  if (code === "auth/operation-not-allowed") return t("このログインの方法は、まだ使えません。");
+  if (code === "auth/credential-already-in-use" || code === "auth/email-already-in-use") return t("そのアカウントは、ほかの SK Hub Systems アカウントにつながっています。");
+  if (code === "auth/provider-already-linked") return t("その方法は、もうつながっています。");
+  if (code === "auth/requires-recent-login") return t("安全のため、もう一度ログインしてからお試しください。");
+  if (code === "sk/last-login") return t("ログインの方法は、少なくとも 1 つ残す必要があります。");
   return t("うまくいきませんでした（{code}）", { code: code || err?.message || err });
 };
 const toDate = (v) => (v && typeof v.toDate === "function" ? v.toDate() : v ? new Date(v) : null);
@@ -148,7 +154,7 @@ function render(state) {
     $("[data-acct-register-title]").textContent = outdated ? t("規約が新しくなりました") : t("アカウントを作成");
     $("[data-acct-register-lead]").textContent = outdated
       ? t("SK Hub Systems アカウント規約が新しくなりました。引き続き使うには、内容を確認して同意してください。")
-      : t("この Google アカウントで SK Hub Systems アカウントを作成します。内容を確認して、同意してください。");
+      : t("このアカウントで SK Hub Systems アカウントを作成します。内容を確認して、同意してください。");
     $("[data-acct-register]").textContent = outdated ? t("同意して続ける") : t("アカウントを作成");
     $("[data-acct-agree]").checked = false;
     // 年齢の確認は、アカウントを作るときだけ
@@ -183,6 +189,7 @@ function render(state) {
   renderSettings();
   renderOverview(user, account);
   renderPrivacyTiles();
+  renderLogins(user);
   // 開発者なら受信箱・記事エディターの項目を出す（config/developers は登録された本人だけが読める）
   getDoc(doc(db, "config", "developers"))
     .then(() => {
@@ -190,6 +197,64 @@ function render(state) {
       if (location.hash === "#developer") showSection("developer");
     })
     .catch(() => { root.querySelectorAll("[data-acct-dev]").forEach((el) => { el.hidden = true; }); });
+}
+
+// ---------- ログインの方法（サインインとセキュリティ） ----------
+// つないでいる方法を並べ、つなぐ・外す。最後の 1 つは外せない
+function renderLogins(user) {
+  const box = $("[data-acct-logins]");
+  if (!box) return;
+  const linked = loginsOf(user);
+  const keys = availableLogins().concat(linked.filter((k) => !availableLogins().includes(k)));
+  box.replaceChildren(...keys.map((key) => {
+    const info = LOGIN_PROVIDERS[key], on = linked.includes(key);
+    const row = document.createElement("div");
+    row.className = "acct-login-row";
+    const logo = document.createElement("span");
+    logo.className = "acct-login-logo acct-login-logo--" + key;
+    logo.setAttribute("aria-hidden", "true");
+    const text = document.createElement("div");
+    text.className = "acct-login-text";
+    const name = document.createElement("strong");
+    name.textContent = info.name;
+    const state = document.createElement("small");
+    state.textContent = on ? t("つながっています") : t("つないでいません");
+    text.append(name, state);
+    row.append(logo, text);
+    if (on) {
+      const sec = document.createElement("a");
+      sec.className = "acct-login-link";
+      sec.href = info.security;
+      sec.target = "_blank";
+      sec.rel = "noopener";
+      sec.textContent = t("セキュリティ");
+      row.appendChild(sec);
+    }
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "acct-login-btn" + (on ? " is-unlink" : "");
+    btn.textContent = on ? t("外す") : t("つなぐ");
+    btn.disabled = on && linked.length <= 1;
+    if (btn.disabled) btn.title = t("ログインの方法は、少なくとも 1 つ残す必要があります。");
+    btn.addEventListener("click", async () => {
+      if (busy) return;
+      if (on && !confirm(t("{name} でのログインを外しますか？ 外したあとは、{name} ではログインできなくなります。", { name: info.name }))) return;
+      setBusy(true, btn);
+      try {
+        if (on) await unlinkLogin(current.user, key);
+        else await linkLogin(current.user, key);
+        await current.user.reload();
+        renderLogins(current.user);
+        message(on ? t("{name} を外しました", { name: info.name }) : t("{name} をつなぎました。次から {name} でもログインできます。", { name: info.name }));
+      } catch (err) {
+        message(errText(err));
+      } finally {
+        setBusy(false, btn);
+      }
+    });
+    row.appendChild(btn);
+    return row;
+  }));
 }
 
 // ---------- プロフィール ----------
@@ -206,7 +271,7 @@ function renderProfile(user, account) {
   const p = profileOf(user, account);
   paintAvatar($("[data-acct-photo]"), $("[data-acct-letter]"), p);
   $("[data-acct-name]").textContent = p.name || t("（名前なし）");
-  $("[data-acct-profile-summary]").textContent = `${p.name || t("（名前なし）")} · ${p.photo ? t("Google アカウントの写真") : t("名前の頭文字")}`;
+  $("[data-acct-profile-summary]").textContent = `${p.name || t("（名前なし）")} · ${p.photo ? t("ログインに使っているアカウントの写真") : t("名前の頭文字")}`;
 }
 
 const profileDialog = document.querySelector("[data-acct-profile-dialog]");
@@ -702,17 +767,47 @@ async function renderConsole(user) {
 
 // ---------- 操作 ----------
 
+// ログインのボタン（data-acct-signin="google" | "microsoft"）。Microsoft は MICROSOFT_LOGIN のときだけ出す
+root.querySelectorAll('[data-acct-signin="microsoft"]').forEach((btn) => { btn.hidden = !MICROSOFT_LOGIN; });
+// Microsoft をまだ出していないあいだは、説明も Google だけに
+if (!MICROSOFT_LOGIN) {
+  $("[data-acct-signin-lead]").textContent = t("SK のサービスを、ひとつの Google アカウントで。パスワードを新しく作る必要はありません。");
+  $("[data-acct-signin-note]").textContent = t("SK Hub Systems アカウントのログインは、Google アカウントだけに対応しています。はじめての方も、このボタンからアカウントを作成できます。");
+  $("[data-acct-security-lead]").textContent = t("このアカウントには Google アカウントでログインします。SK がパスワードを発行・保存することはありません。");
+}
 root.querySelectorAll("[data-acct-signin]").forEach((btn) => btn.addEventListener("click", async () => {
   if (busy) return;
   setBusy(true, btn);
+  $("[data-acct-link]").hidden = true;
   try {
-    await signIn();
+    await signIn(btn.dataset.acctSignin || "google");
+  } catch (err) {
+    if (err?.code === "sk/link-needed") {
+      // 同じメールアドレスで、別の方法のアカウントがある: その方法でログインしてから、今回の方法をつなぐ
+      const name = LOGIN_PROVIDERS[err.existing].name;
+      $("[data-acct-link-text]").textContent = t("{email} は、{name} でログインする SK Hub Systems アカウントがあります。{name} でログインすると、{other} もつないで、次からどちらでもログインできるようにします。", { email: err.email || t("このメールアドレス"), name, other: LOGIN_PROVIDERS[btn.dataset.acctSignin].name });
+      const go = $("[data-acct-link-go]");
+      go.textContent = t("{name} でログインしてつなぐ", { name });
+      go.dataset.key = err.existing;
+      $("[data-acct-link]").hidden = false;
+    } else message(errText(err));
+  } finally {
+    setBusy(false, btn);
+  }
+}));
+$("[data-acct-link-go]").addEventListener("click", async (e) => {
+  const btn = e.currentTarget;
+  if (busy) return;
+  setBusy(true, btn);
+  try {
+    await signInAndLinkPending(btn.dataset.key);
+    $("[data-acct-link]").hidden = true;
   } catch (err) {
     message(errText(err));
   } finally {
     setBusy(false, btn);
   }
-}));
+});
 
 $$("[data-acct-signout], [data-acct-cancel]").forEach((btn) => btn.addEventListener("click", () => signOutAccount()));
 $("[data-acct-retry]").addEventListener("click", () => location.reload());
@@ -831,8 +926,8 @@ dialog.addEventListener("close", async () => {
   const label = btn.querySelector("[data-acct-delete-label]");
   label.textContent = t("削除しています…");
   try {
-    // 途中で止まらないように、データを消す前に Google で本人を確認する
-    await confirmWithGoogle(user);
+    // 途中で止まらないように、データを消す前に本人を確認する（つないでいるログインの方法で）
+    await confirmIdentity(user);
     await deleteServiceData(user.uid);
     await deleteDoc(doc(db, "accounts", user.uid));
     await deleteLogin(user);
