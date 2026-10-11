@@ -79,18 +79,26 @@
       <div class="settings-panel__header">
         <button id="settings-close" type="button" class="icon-button settings-close" aria-label="戻る"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
         <h2 id="settings-title">設定</h2>
+        <!-- アカウント（Android の設定アプリの右上のように） -->
+        <sk-account-button class="settings-me" app="malu" style="--ska-size:36px"></sk-account-button>
       </div>
       <div class="settings-layout">
         <aside class="settings-sidebar" aria-label="設定カテゴリ">
           <p class="settings-sidebar__title">MALU</p>
+          <!-- スマホでは Android の設定アプリと同じ: 大きな「設定」と「設定を検索」（検索は script.js） -->
+          <div class="settings-listhead">
+            <p class="settings-listhead__title" aria-hidden="true">設定</p>
+            <label class="settings-search"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="search" id="settings-search" placeholder="設定を検索" aria-label="設定を検索" autocomplete="off"></label>
+          </div>
           <nav class="settings-nav">
-            <a href="#settings-general" class="settings-nav__item active" data-settings-target="settings-general"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>基本設定</a>
-            <a href="#settings-account" class="settings-nav__item" data-settings-target="settings-account"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>アカウント</a>
-            <a href="#settings-data" class="settings-nav__item" data-settings-target="settings-data"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/></svg>データ</a>
-            <a href="#settings-status" class="settings-nav__item" data-settings-target="settings-status"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>状態</a>
-            <a href="#settings-pwa" class="settings-nav__item" data-settings-target="settings-pwa"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>PWA</a>
-            <a href="#settings-about" class="settings-nav__item" data-settings-target="settings-about"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>このアプリについて</a>
+            <a href="#settings-general" class="settings-nav__item active" data-settings-target="settings-general"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg><span class="settings-nav__text"><span>基本設定</span><small>辞書・結果の開き方・テーマ</small></span></a>
+            <a href="#settings-account" class="settings-nav__item" data-settings-target="settings-account"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span class="settings-nav__text"><span>アカウント</span><small>単語帳・検索履歴の同期</small></span></a>
+            <a href="#settings-data" class="settings-nav__item" data-settings-target="settings-data"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/></svg><span class="settings-nav__text"><span>データ</span><small>検索履歴・キャッシュ・引っ越し</small></span></a>
+            <a href="#settings-status" class="settings-nav__item" data-settings-target="settings-status"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg><span class="settings-nav__text"><span>状態</span><small>ネットワーク</small></span></a>
+            <a href="#settings-pwa" class="settings-nav__item" data-settings-target="settings-pwa"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg><span class="settings-nav__text"><span>PWA</span><small>インストール・更新</small></span></a>
+            <a href="#settings-about" class="settings-nav__item" data-settings-target="settings-about"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg><span class="settings-nav__text"><span>このアプリについて</span><small>更新・バージョン</small></span></a>
           </nav>
+          <p class="settings-search__none" id="settings-search-none" hidden>見つかりませんでした</p>
         </aside>
 
         <div class="settings-panel__body">

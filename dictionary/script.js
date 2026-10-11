@@ -635,6 +635,9 @@ function hideInstallBanner() {
 
 function openSettings() {
   updateClearHistoryState();
+  // スマホでは、開くたびにカテゴリの一覧から
+  if (typeof showSettingsList === 'function') showSettingsList();
+  if (settingsSearch) { settingsSearch.value = ''; filterSettings(); }
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     if (mainView) mainView.classList.add('hide');
     if (settingsOverlay) settingsOverlay.classList.remove('hide');
@@ -939,13 +942,39 @@ if (settingsButton) {
   settingsButton.addEventListener('click', openSettings);
 }
 
+// スマホ（せまい画面）: Android の設定アプリと同じく、最初はカテゴリの一覧だけ。押すと中身に切りかわり（is-detail）、戻るボタンで一覧に戻る
+const settingsLayout = document.querySelector('.settings-layout');
+const settingsSearch = document.getElementById('settings-search');
+const isNarrow = () => window.matchMedia('(max-width: 820px)').matches;
+function showSettingsList() {
+  if (settingsLayout) settingsLayout.classList.remove('is-detail');
+}
+// 設定を検索: カテゴリの名前・要約と、そのページの中の文字で、一覧をしぼる
+function filterSettings() {
+  const v = settingsSearch ? settingsSearch.value.trim().toLowerCase() : '';
+  let any = false;
+  settingsNavItems.forEach((item) => {
+    const sec = document.getElementById(item.dataset.settingsTarget);
+    const hit = !v || `${item.textContent} ${sec ? sec.textContent : ''}`.toLowerCase().includes(v);
+    item.hidden = !hit;
+    if (hit) any = true;
+  });
+  const none = document.getElementById('settings-search-none');
+  if (none) none.hidden = any;
+}
+if (settingsSearch) settingsSearch.addEventListener('input', filterSettings);
+
 if (settingsClose) {
-  settingsClose.addEventListener('click', closeSettings);
+  settingsClose.addEventListener('click', () => {
+    if (isNarrow() && settingsLayout && settingsLayout.classList.contains('is-detail')) { showSettingsList(); return; }
+    closeSettings();
+  });
 }
 
 settingsNavItems.forEach((item) => {
   item.addEventListener('click', (event) => {
     event.preventDefault();
+    if (settingsLayout) settingsLayout.classList.add('is-detail');
     showSettingsSection(item.dataset.settingsTarget);
   });
 });

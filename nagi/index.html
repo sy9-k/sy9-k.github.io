@@ -124,17 +124,25 @@
       <div class="settings-panel__header">
         <button type="submit" class="icon-btn" aria-label="戻る" title="戻る"><span class="ms" aria-hidden="true">arrow_back</span></button>
         <h2 id="settings-title">設定</h2>
+        <!-- アカウント（Android の設定アプリの右上のように） -->
+        <sk-account-button class="settings-me" app="nagi" style="--ska-size:36px"></sk-account-button>
       </div>
       <div class="settings-layout">
         <aside class="settings-sidebar" aria-label="設定のカテゴリ">
           <p class="settings-sidebar__title">Nagi</p>
+          <!-- スマホでは Android の設定アプリと同じ: 大きな「設定」と「設定を検索」（検索は app.js） -->
+          <div class="settings-listhead">
+            <p class="settings-listhead__title" aria-hidden="true">設定</p>
+            <label class="settings-search"><span class="ms" aria-hidden="true">search</span><input type="search" id="settings-search" placeholder="設定を検索" aria-label="設定を検索" autocomplete="off"></label>
+          </div>
           <nav class="settings-nav">
-            <button type="button" class="settings-nav__item active" data-settings-target="settings-general"><span class="ms" aria-hidden="true">tune</span><span>基本設定</span></button>
-            <button type="button" class="settings-nav__item" data-settings-target="settings-flow"><span class="ms" aria-hidden="true">notifications</span><span>進め方と知らせ方</span></button>
-            <button type="button" class="settings-nav__item" data-settings-target="settings-account"><span class="ms" aria-hidden="true">person</span><span>アカウント</span></button>
-            <button type="button" class="settings-nav__item" data-settings-target="settings-data"><span class="ms" aria-hidden="true">storage</span><span>データ</span></button>
-            <button type="button" class="settings-nav__item" data-settings-target="settings-about"><span class="ms" aria-hidden="true">info</span><span>このアプリについて</span></button>
+            <button type="button" class="settings-nav__item active" data-settings-target="settings-general"><span class="ms" aria-hidden="true">tune</span><span class="settings-nav__text"><span>基本設定</span><small>集中・休憩の長さ・1日の目標</small></span></button>
+            <button type="button" class="settings-nav__item" data-settings-target="settings-flow"><span class="ms" aria-hidden="true">notifications</span><span class="settings-nav__text"><span>進め方と知らせ方</span><small>自動ではじめる・音・通知</small></span></button>
+            <button type="button" class="settings-nav__item" data-settings-target="settings-account"><span class="ms" aria-hidden="true">person</span><span class="settings-nav__text"><span>アカウント</span><small>SK Hub Systems アカウントで同期</small></span></button>
+            <button type="button" class="settings-nav__item" data-settings-target="settings-data"><span class="ms" aria-hidden="true">storage</span><span class="settings-nav__text"><span>データ</span><small>記録・キャッシュ・引っ越し</small></span></button>
+            <button type="button" class="settings-nav__item" data-settings-target="settings-about"><span class="ms" aria-hidden="true">info</span><span class="settings-nav__text"><span>このアプリについて</span><small>更新・バージョン・規約</small></span></button>
           </nav>
+          <p class="settings-search__none" id="settings-search-none" hidden>見つかりませんでした</p>
         </aside>
 
         <div class="settings-panel__body">

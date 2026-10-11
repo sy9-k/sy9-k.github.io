@@ -590,6 +590,18 @@ body.tb-home-page .snackbar, body.tb-home-page .tsy-snackbar { z-index: 1021; }
 .tbs-nav__item { flex: none; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 24px 0 16px; border: 0; border-radius: 999px; background: none; color: var(--md-on-surface-variant); font: 500 14px/20px var(--md-font, inherit); letter-spacing: .1px; text-align: left; white-space: nowrap; cursor: pointer; }
 .tbs-nav__item .msr { font-size: 24px; }
 .tbs-nav__img { width: 24px; height: 24px; border-radius: 7px; flex: none; }
+.tbs-nav__ic { display: inline-flex; flex: none; }
+.tbs-nav__text { display: flex; flex-direction: column; min-width: 0; }
+.tbs-nav__sub { display: none; }
+/* 一覧のいちばん上（大きな「設定」・アカウント・検索）。パソコンでは検索だけ */
+.tbs-listhead { position: relative; padding: 4px 0 12px; }
+.tbs-listhead__title, .tbs-listhead__me { display: none; }
+.tbs-search { display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; border-radius: 24px; background: var(--md-surface-container-high); color: var(--md-on-surface-variant); cursor: text; }
+.tbs-search .msr { font-size: 22px; }
+.tbs-search input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent; color: var(--md-on-surface); font: 400 16px/24px var(--md-font, inherit); }
+.tbs-search:focus-within { box-shadow: inset 0 0 0 2px var(--md-primary); }
+.tbs-search__none { margin: 16px; font-size: 14px; color: var(--md-on-surface-variant); }
+.tbs-nav__item[hidden], .tbs-nav__heading[hidden] { display: none; }
 .tbs-nav__item.is-active { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
 .tbs-layout .tbs-body { min-height: 0; overflow-y: auto; width: 100%; max-width: 760px; padding: 8px 24px calc(56px + env(safe-area-inset-bottom)); }
 .tbs-page { display: flex; flex-direction: column; animation: m3-fade-up .3s cubic-bezier(.05, .7, .1, 1) both; }
@@ -617,17 +629,38 @@ body.tb-home-page .snackbar, body.tb-home-page .tsy-snackbar { z-index: 1021; }
 .tbs-item--update[data-state="new"] .tbs-update__mark { background: var(--md-tertiary-container, var(--md-secondary-container)); color: var(--md-on-tertiary-container, var(--md-on-secondary-container)); }
 .tbs-item--update[data-state="error"] .tbs-update__mark { background: var(--md-error-container); color: var(--md-on-error-container); }
 @keyframes tbs-spin { to { transform: rotate(360deg); } }
+.tbs-body__back { display: none; }
+/* スマホ（せまい画面）: スマホの設定アプリと同じ形。最初はカテゴリの一覧（大きな行）、押すと中身に切りかわる。戻るで一覧へ */
 @media (max-width: 820px) {
   .tbs-layout { display: flex; flex-direction: column; }
-  .tbs-nav { flex: none; flex-direction: row; gap: 8px; padding: 4px 16px 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
-  .tbs-nav::-webkit-scrollbar { display: none; }
-  .tbs-nav__heading { display: none; }
-  .tbs-nav__item { height: 32px; gap: 8px; padding: 0 16px 0 8px; border: 1px solid var(--md-outline-variant); border-radius: 8px; }
-  .tbs-nav__item .msr { font-size: 18px; }
-  .tbs-nav__img { width: 18px; height: 18px; border-radius: 5px; }
-  .tbs-nav__item.is-active { border-color: transparent; }
+  .tbs-layout:not(.is-detail) > .tbs-body { display: none; }
+  .tbs-layout.is-detail > .tbs-nav { display: none; }
+  /* Android（Pixel）の設定アプリと同じ形: 大きな「設定」・右上のアカウント・「設定を検索」、
+     その下に、アイコン・名前・要約の 2 行を、背景や区切りの線なしで並べる。中身のページでは、上の帯は戻るボタンだけ */
+  .tbs-bar__title { display: none; }
+  .tbs-nav { flex: 1; min-height: 0; flex-direction: column; gap: 0; padding: 0 0 calc(32px + env(safe-area-inset-bottom)); overflow-x: hidden; overflow-y: auto; }
+  .tbs-listhead { padding: 0 16px 8px; }
+  .tbs-listhead__title { display: block; margin: 24px 8px 28px; font-size: 36px; line-height: 44px; font-weight: 400; color: var(--md-on-surface); }
+  .tbs-listhead__me { display: grid; place-items: center; position: absolute; top: -52px; right: 16px; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: var(--md-surface-container-high); color: var(--md-on-surface-variant); font-size: 20px; font-weight: 500; text-decoration: none; }
+  .tbs-listhead__me img { width: 100%; height: 100%; object-fit: cover; }
+  .tbs-listhead__me .msr { font-size: 28px; }
+  .tbs-search { height: 56px; border-radius: 28px; padding: 0 20px; gap: 16px; }
+  .tbs-nav__heading { margin: 20px 24px 4px; color: var(--md-primary); }
+  .tbs-nav__item { height: auto; min-height: 72px; gap: 24px; padding: 12px 24px; border: 0; border-radius: 0; background: none; color: var(--md-on-surface); white-space: normal; }
+  .tbs-nav__item.is-active { background: none; color: var(--md-on-surface); }
+  .tbs-nav__ic { display: grid; place-items: center; width: 24px; height: 24px; color: var(--md-on-surface-variant); }
+  .tbs-nav__ic .msr { font-size: 24px; color: inherit; }
+  .tbs-nav__img { width: 28px; height: 28px; border-radius: 8px; margin: 0 -2px; }
+  .tbs-nav__title { font-size: 20px; line-height: 28px; font-weight: 400; letter-spacing: 0; }
+  .tbs-nav__sub { display: block; font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: .1px; color: var(--md-on-surface-variant); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* 設定のページ（/toolbox/settings/）は、ページの見出しがあるので大きな「設定」は出さない */
+  .tbs-layout:not(.tbs-panel *) .tbs-listhead__title { display: none; }
+  .tbs-layout:not(.tbs-panel *) .tbs-listhead__me { position: static; margin: 0 0 12px auto; }
   .tbs-layout .tbs-body { flex: 1; max-width: none; padding: 0 16px calc(40px + env(safe-area-inset-bottom)); }
   .tbs-page .tbs-section > .tbs-item { padding: 12px 16px; }
+  /* 設定のページ（/toolbox/settings/）では、中身のいちばん上に「← 設定」（ダイアログでは上の帯の戻るボタンが代わり） */
+  .tbs-layout:not(.tbs-panel *) .tbs-body__back { display: inline-flex; align-items: center; gap: 8px; height: 40px; margin: 0 0 4px -8px; padding: 0 16px 0 8px; border: 0; border-radius: 20px; background: none; color: var(--md-primary); font: 500 14px/20px var(--md-font, inherit); cursor: pointer; }
+}
 }
 .tbs-item--backup { flex-wrap: wrap; }
 .tbs-backup__btns { display: flex; align-items: center; gap: 8px; }

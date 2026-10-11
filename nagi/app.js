@@ -470,9 +470,28 @@
     var body = document.querySelector("#settings .settings-panel__body");
     if (body) body.scrollTop = 0;
   }
+  // スマホ（せまい画面）: 最初はカテゴリの一覧だけ。押すとその中身に切りかわり（is-detail）、戻るボタンで一覧に戻る
+  var settingsLayout = document.querySelector("#settings .settings-layout");
+  function narrow() { return window.matchMedia && matchMedia("(max-width: 820px)").matches; }
   settingsNav.forEach(function (b) {
-    b.addEventListener("click", function () { showSettingsSection(b.getAttribute("data-settings-target")); });
+    b.addEventListener("click", function () {
+      showSettingsSection(b.getAttribute("data-settings-target"));
+      settingsLayout.classList.add("is-detail");
+    });
   });
+  // 設定を検索: カテゴリの名前・要約と、そのページの中の文字で、一覧をしぼる
+  var settingsSearch = $("settings-search");
+  function filterSettings() {
+    var v = settingsSearch.value.trim().toLowerCase(), any = false;
+    settingsNav.forEach(function (b) {
+      var sec = document.getElementById(b.getAttribute("data-settings-target"));
+      var hit = !v || (b.textContent + " " + (sec ? sec.textContent : "")).toLowerCase().indexOf(v) >= 0;
+      b.hidden = !hit;
+      if (hit) any = true;
+    });
+    $("settings-search-none").hidden = any;
+  }
+  settingsSearch.addEventListener("input", filterSettings);
   // 開く・閉じるときの動きは MALU と同じ（元の画面が少し沈んで消えてから、設定が右から入る。閉じるときは逆）
   var settingsDialog = $("settings");
   var mainParts = [document.querySelector(".top-bar"), document.querySelector(".page")];
@@ -489,6 +508,9 @@
     if (settingsDialog.open || settingsBusy) return;
     fillSettings();
     showSettingsSection("settings-general");
+    settingsLayout.classList.remove("is-detail");
+    settingsSearch.value = "";
+    filterSettings();
     showVersion();
     if (reduced()) { settingsDialog.showModal(); return; }
     settingsBusy = true;
@@ -514,7 +536,12 @@
   }
   $("settings-button").addEventListener("click", openSettings);
   // 戻るボタン（form method="dialog"）と Esc キーも、動きをつけて閉じる
-  settingsDialog.querySelector("form").addEventListener("submit", function (e) { e.preventDefault(); closeSettings(); });
+  settingsDialog.querySelector("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    // スマホで中身を見ているときは、まずカテゴリの一覧に戻る
+    if (narrow() && settingsLayout.classList.contains("is-detail")) { settingsLayout.classList.remove("is-detail"); return; }
+    closeSettings();
+  });
   settingsDialog.addEventListener("cancel", function (e) { e.preventDefault(); closeSettings(); });
 
   // 押したところから広がる波紋（MALU と同じ）

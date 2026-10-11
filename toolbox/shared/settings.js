@@ -669,7 +669,70 @@
     var body = el("div", "tbs-body");
     layout.append(side, body);
     var navBtns = [], pages = [];
-    function show(id) {
+    // カテゴリの一覧のいちばん上（Android の設定アプリと同じ: 大きな「設定」・右上のアカウント・「設定を検索」）
+    var listHead = el("div", "tbs-listhead");
+    var bigTitle = el("h2", "tbs-listhead__title", t("設定"));
+    var me = el("a", "tbs-listhead__me");
+    me.href = lp("/account/");
+    function drawMe() {
+      var hint = readHint();
+      me.textContent = "";
+      me.setAttribute("aria-label", hint ? (hint.name || hint.email || t("SK Hub Systems アカウント")) : t("ログイン"));
+      if (hint && hint.photo) {
+        var img = el("img");
+        img.src = hint.photo;
+        img.alt = "";
+        img.referrerPolicy = "no-referrer";
+        me.appendChild(img);
+      } else if (hint) {
+        me.textContent = hint.letter || "?";
+        me.style.background = hint.color || "#2563eb";
+        me.style.color = "#fff";
+      } else {
+        me.appendChild(icon("account_circle"));
+      }
+    }
+    updaters.push(drawMe);
+    var search = el("label", "tbs-search");
+    search.appendChild(icon("search"));
+    var q = el("input");
+    q.type = "search";
+    q.placeholder = t("設定を検索");
+    q.setAttribute("aria-label", t("設定を検索"));
+    search.appendChild(q);
+    var none = el("p", "tbs-search__none", t("見つかりませんでした"));
+    none.hidden = true;
+    if (!IN_LINE) listHead.appendChild(me);
+    listHead.append(bigTitle, search);
+    side.appendChild(listHead);
+    // 検索: カテゴリの名前・要約と、そのページの中の文字で、一覧をしぼる
+    q.addEventListener("input", function () {
+      var v = q.value.trim().toLowerCase(), any = false;
+      navBtns.forEach(function (b, i) {
+        var hit = !v || (b.textContent + " " + pages[i].textContent).toLowerCase().indexOf(v) >= 0;
+        b.hidden = !hit;
+        if (hit) any = true;
+      });
+      [].forEach.call(side.querySelectorAll(".tbs-nav__heading"), function (h) {
+        var n = h.nextElementSibling, vis = false;
+        while (n && !n.classList.contains("tbs-nav__heading")) { if (n.classList.contains("tbs-nav__item") && !n.hidden) vis = true; n = n.nextElementSibling; }
+        h.hidden = !vis;
+      });
+      none.hidden = any;
+    });
+    // スマホ（せまい画面）: 最初はカテゴリの一覧だけ。押すとその中身に切りかわり、戻るで一覧に戻る（is-detail）。パソコンでは左右に両方出す
+    var back = el("button", "tbs-body__back m3-state");
+    back.type = "button";
+    back.append(icon("arrow_back"), el("span", "", t("設定")));
+    back.addEventListener("click", function () { toList(); });
+    body.appendChild(back);
+    function toList() {
+      layout.classList.remove("is-detail");
+      side.scrollTop = 0;
+    }
+    layout.toList = toList;
+    function show(id, open) {
+      if (open) layout.classList.add("is-detail");
       pages.forEach(function (p) { p.hidden = p.getAttribute("data-page") !== id; });
       navBtns.forEach(function (b) {
         var on = b.getAttribute("data-page") === id;
@@ -682,7 +745,8 @@
       body.scrollTop = 0;
       roundCards(body);
     }
-    function page(id, ic, title, img) {
+    // カテゴリの行。スマホでは Android の設定アプリと同じ形（色つきの丸のアイコン・名前・中身の要約）。パソコンでは要約は出さない
+    function page(id, ic, title, img, sub, color) {
       var b = el("button", "tbs-nav__item m3-state");
       b.type = "button";
       b.setAttribute("data-page", id);
@@ -691,9 +755,17 @@
         im.src = img;
         im.alt = "";
         b.appendChild(im);
-      } else b.appendChild(icon(ic));
-      b.appendChild(el("span", "", title));
-      b.addEventListener("click", function () { show(id); });
+      } else {
+        var ics = el("span", "tbs-nav__ic");
+        if (color) ics.style.setProperty("--c", color);
+        ics.appendChild(icon(ic));
+        b.appendChild(ics);
+      }
+      var txt = el("span", "tbs-nav__text");
+      txt.appendChild(el("span", "tbs-nav__title", title));
+      if (sub) txt.appendChild(el("span", "tbs-nav__sub", sub));
+      b.appendChild(txt);
+      b.addEventListener("click", function () { show(id, true); });
       side.appendChild(b);
       navBtns.push(b);
       var p = el("section", "tbs-page");
@@ -708,7 +780,7 @@
     var installed = (window.matchMedia && matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: minimal-ui)").matches) || navigator.standalone === true;
 
     // ---- 全般 ----
-    var general = page("general", "tune", t("全般"));
+    var general = page("general", "tune", t("全般"), null, t("言語・ホームの最初の画面"), "#3b82f6");
     // お知らせ: sk-hub.jp への引っ越し（/domain/。LINE の中では出さない。アプリを開いたときの 1 回だけの知らせは /assets/domain-snack.js）
     if (!IN_LINE) {
       var news = section(t("お知らせ"));
@@ -741,7 +813,7 @@
 
     // ---- アカウントと同期（LINE の中では、ログインとオンライン同期は出さない。LINE の中の画面では Google のログインができないため）----
     if (!IN_LINE) {
-      var acc = page("account", "account_circle", t("アカウントと同期"));
+      var acc = page("account", "account_circle", t("アカウントと同期"), null, t("SK Hub Systems アカウント・オンライン同期"), "#0ea5a4");
       acc.appendChild(accountSection());
       // オンライン同期（任意。中身は /toolbox/shared/sync.js）
       var syncSec = section(t("オンライン同期"));
@@ -751,14 +823,14 @@
       if (window.SKToolboxSync) SKToolboxSync.mount(syncBox);
       acc.appendChild(syncSec);
     } else {
-      var linePage = page("line", "chat", "LINE");
+      var linePage = page("line", "chat", "LINE", null, t("LINE の中の SK's Toolbox"), "#06c755");
       var lineSec = section("LINE");
       lineSec.appendChild(el("p", "tbs-text", t("LINE の中の SK's Toolbox です。データはこの LINE の中だけに保存されます。ほかの端末と同期したり、SK Hub Systems アカウントを使ったりするときは、ブラウザで開いてください。")));
       linePage.appendChild(lineSec);
     }
 
     // ---- 見た目 ----
-    var look = page("look", "palette", t("見た目"));
+    var look = page("look", "palette", t("見た目"), null, t("テーマ・テーマカラー・動き"), "#8b5cf6");
     var lookSec = section(t("色"));
     var themeRow = segRow(t("テーマ"), scope === "clock" ? t("Clock は、時計の下のボタンでテーマを選びます") : "",
       [["auto", "brightness_auto", t("端末に合わせる")], ["light", "light_mode", t("ライト")], ["dark", "dark_mode", t("ダーク")]],
@@ -797,7 +869,7 @@
     look.appendChild(motionSec);
 
     // ---- 操作 ----
-    var usePage = page("use", "touch_app", t("操作"));
+    var usePage = page("use", "touch_app", t("操作"), null, navigator.windowControlsOverlay && !IN_LINE ? t("振動・アイコンの数字・タイトルバー") : t("振動・アイコンの数字"), "#f08c00");
     var use = section(t("タッチとアイコン"));
     use.appendChild(switchRow(t("押したときに振動する"), t("Calc のキーと、Todo のチェック。対応している端末（Android など）だけです"),
       function () { return settings.haptics; }, function (on) { set({ haptics: on }); vibrate(); }));
@@ -816,7 +888,7 @@
 
     // ---- 通知（LINE の中では出さない）----
     if (!IN_LINE && "Notification" in window) {
-      var notifyPage = page("notify", "notifications", t("通知"));
+      var notifyPage = page("notify", "notifications", t("通知"), null, t("許可・Todo・Clock"), "#ef4444");
       var perm = section(t("このブラウザ"));
       var permRow = el("div", "tbs-item");
       permRow.appendChild(icon("notifications_active"));
@@ -845,7 +917,7 @@
     }
 
     // ---- データ ----
-    var dataPage = page("data", "storage", t("データ"));
+    var dataPage = page("data", "storage", t("データ"), null, t("アプリごとのデータ・バックアップ・引っ越し"), "#22a06b");
     var data = section(t("この端末のデータ"));
     var dataNote = el("p", "tbs-text");
     data.appendChild(dataNote);
@@ -938,7 +1010,7 @@
     dataPage.appendChild(backup);
 
     // ---- このアプリについて ----
-    var about = page("about", "info", t("このアプリについて"));
+    var about = page("about", "info", t("このアプリについて"), null, t("更新・バージョン・規約"), "#64748b");
     about.appendChild(aboutHead("/toolbox/icon.svg", "SK's Toolbox", t("毎日ちょっと使う、小さなアプリを集めた SK の道具箱です。")));
     var aboutSec = section("");
     // 更新の確認（Nagi・MALU と同じ。この画面の Service Worker に新しい版がないか確かめる。見つけたらボタンが「再読み込み」に変わる）
@@ -1003,7 +1075,7 @@
     // ---- アプリ別 ----
     side.appendChild(el("p", "tbs-nav__heading", t("アプリ")));
     APPS.forEach(function (a) {
-      var p = page("app-" + a.app, null, a.name, "/toolbox/" + a.app + "/icon.svg");
+      var p = page("app-" + a.app, null, a.name, "/toolbox/" + a.app + "/icon.svg", APP_DESC[a.app] || "");
       p.appendChild(aboutHead("/toolbox/" + a.app + "/icon.svg", a.name, APP_DESC[a.app] || ""));
       var opts = section(t("設定"));
       var any = true;
@@ -1043,6 +1115,7 @@
       p.appendChild(more);
     });
 
+    side.appendChild(none);
     show("general");
     refreshUi();
     var round = function () { roundCards(body); };
@@ -1103,7 +1176,11 @@
     document.body.appendChild(dialog);
     document.body.classList.add("tbs-open");
     close.focus();
-    close.addEventListener("click", closeSettings);
+    close.addEventListener("click", function () {
+      var lay = panel.querySelector(".tbs-layout");
+      if (lay && lay.classList.contains("is-detail") && window.matchMedia("(max-width: 820px)").matches) lay.toList();
+      else closeSettings();
+    });
     dialog.addEventListener("click", function (e) { if (e.target === dialog) closeSettings(); });
     dialog.addEventListener("keydown", function (e) { if (e.key === "Escape") { e.stopPropagation(); closeSettings(); } });
     history.pushState(Object.assign({}, history.state, { tbSettings: true }), "");
