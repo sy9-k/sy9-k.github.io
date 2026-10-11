@@ -3013,5 +3013,9 @@
   "表示・言語など": "Appearance, language and more",
   "表示・言語・お知らせの既読": "Appearance, language and read announcements",
   "集中の記録・目標・連続日数": "Focus history, goal and streak",
-  "<b>このページは準備中です。</b>いまはまだデータを見たり、移動したりしません。": "<b>This page is still being prepared.</b> It doesn't look at your data or take you anywhere yet."
+  "<b>このページは準備中です。</b>いまはまだデータを見たり、移動したりしません。": "<b>This page is still being prepared.</b> It doesn't look at your data or take you anywhere yet.",
+  "SK のサイトとすべてのアプリで使う言語です": "The language used across the SK website and all SK apps",
+  "SK's Toolbox で使う言語を選ぶ画面。": "Choose the language to use in SK's Toolbox.",
+  "使用中": "Current",
+  "言語 | SK's Toolbox": "Language | SK's Toolbox"
 }

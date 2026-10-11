@@ -114,7 +114,7 @@
       { label: t("サポートと情報"), run: go(sitePath("/support/")) },
       { label: t("アカウント"), run: go(sitePath("/account/")) },
       "-",
-      { label: t("言語…"), run: go("/lang/?next=" + encodeURIComponent(location.pathname)) }
+      { label: t("言語…"), run: go("/toolbox/lang/?next=" + encodeURIComponent(location.pathname + location.search)) }
     ];
   }
   function menus() {
