@@ -8,7 +8,18 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Timetable">
-<title>Timetable | SK's Toolbox</title>
+<title>Timetable — 時間割アプリ | SK's Toolbox</title>
+<!-- 検索とシェアのための情報（正式な URL・カード・アプリの情報） -->
+<link rel="canonical" href="https://sy9-k.github.io/toolbox/timetable/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SK's Toolbox">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="Timetable — 時間割アプリ | SK&#x27;s Toolbox">
+<meta property="og:description" content="曜日と時限の時間割。いまの授業と次の授業がすぐ分かります。クラスの時間割の配信にも対応。この端末に保存されます。">
+<meta property="og:url" content="https://sy9-k.github.io/toolbox/timetable/">
+<meta property="og:image" content="https://sy9-k.github.io/toolbox/timetable/icon-512.png">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Timetable — SK's Toolbox", "url": "https://sy9-k.github.io/toolbox/timetable/", "description": "曜日と時限の時間割。いまの授業と次の授業がすぐ分かります。クラスの時間割の配信にも対応。この端末に保存されます。", "applicationCategory": "EducationalApplication", "operatingSystem": "Web", "inLanguage": "ja", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"}, "image": "https://sy9-k.github.io/toolbox/timetable/icon-512.png", "isPartOf": {"@type": "WebSite", "name": "SK's Toolbox", "url": "https://sy9-k.github.io/toolbox/"}, "author": {"@type": "Person", "name": "SK", "url": "https://sy9-k.github.io/"}}</script>
 <!-- 多言語: /lang/ で選んだ言語で表示する（/assets/i18n.js。body の最後で translatePage()） -->
 <script src="/assets/i18n.js"></script>
 <!-- 文字は M PLUS 1、アイコンは Material Symbols（Google のマテリアルデザイン） -->
@@ -21,6 +32,8 @@
 <script src="/toolbox/shared/m3.js"></script>
 <!-- パソコンでアプリとして入れたときのタイトルバー（画面の切りかえでも動かさないよう、最初から入れる） -->
 <script src="/toolbox/shared/titlebar.js"></script>
+<!-- タイトルバーの真ん中（コマンドバー・アイランドなど。Toolbox の設定で選ぶ） -->
+<script src="/toolbox/shared/tbcenter.js"></script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -30,6 +43,7 @@
     <header class="app-bar">
       <a class="tb-back m3-state" href="/toolbox/" aria-label="SK's Toolbox に戻る"><span class="msr" aria-hidden="true">arrow_back</span><span>SK's Toolbox</span></a>
       <span class="app-bar__space"></span>
+      <button type="button" class="icon-btn m3-state" id="btn-admin" hidden aria-label="管理者の画面" title="管理者の画面"><span class="msr" aria-hidden="true">admin_panel_settings</span></button>
       <button type="button" class="icon-btn m3-state" id="btn-setup" aria-label="時間割の設定（曜日・時限・時刻）" title="時間割の設定（曜日・時限・時刻）"><span class="msr" aria-hidden="true">edit_calendar</span></button>
       <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
       <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
@@ -37,8 +51,14 @@
         <button type="button" class="icon-btn m3-state" id="btn-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="menu" aria-label="その他" title="その他"><span class="msr" aria-hidden="true">more_vert</span></button>
         <div class="menu" id="menu" role="menu" hidden>
           <button type="button" class="m3-state" role="menuitem" data-menu="setup" id="menu-setup"><span class="msr" aria-hidden="true">tune</span><span>時間割の設定（曜日・時限・時刻）</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="admin" id="menu-admin" hidden><span class="msr" aria-hidden="true">admin_panel_settings</span><span>管理者の画面</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="join"><span class="msr" aria-hidden="true">group_add</span><span>招待コードで参加</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="notice" id="menu-notice" hidden><span class="msr" aria-hidden="true">campaign</span><span>クラスへの連絡を書く</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="special"><span class="msr" aria-hidden="true">event_note</span><span>特別な日程を追加（試験・行事・休み）</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="share" id="menu-share" hidden><span class="msr" aria-hidden="true">campaign</span><span>配信（管理者）</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="refresh" id="menu-refresh" hidden><span class="msr" aria-hidden="true">sync</span><span>配信された時間割を更新</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="line-today" hidden data-line-only><span class="msr" aria-hidden="true">send</span><span>今日の時間割を LINE で送る</span></button>
+          <button type="button" class="m3-state" role="menuitem" data-menu="line-tomorrow" hidden data-line-only><span class="msr" aria-hidden="true">send</span><span>明日の時間割を LINE で送る</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="export"><span class="msr" aria-hidden="true">download</span><span>バックアップを書き出す</span></button>
           <button type="button" class="m3-state" role="menuitem" data-menu="import"><span class="msr" aria-hidden="true">upload</span><span>バックアップを読み込む</span></button>
         </div>
@@ -47,6 +67,9 @@
     </header>
 
     <main>
+      <!-- 管理者の画面（#admin。管理者だけ） -->
+      <section class="admin" id="admin" aria-label="管理者の画面" data-i18n-skip></section>
+
       <div class="head">
         <h1 class="head__title" id="title" data-i18n-skip>Timetable</h1>
         <p class="head__sub" id="sub" data-i18n-skip></p>
@@ -55,8 +78,17 @@
       <!-- 自分の時間割と、配信された時間割の切りかえ（配信されたものがあるときだけ） -->
       <div class="views" id="views" role="tablist" aria-label="時間割の切りかえ" hidden data-i18n-skip></div>
 
+      <!-- クラスへの連絡（配信された時間割の連絡・自分が書いた連絡） -->
+      <section class="notices" id="notices" aria-label="連絡" hidden data-i18n-skip></section>
+
       <!-- いまの授業・次の授業 -->
       <section class="now" id="now" aria-live="polite" data-i18n-skip></section>
+
+      <!-- 特別な日程（試験の週・行事・休みなど） -->
+      <section class="specials" id="specials" aria-label="特別な日程" hidden data-i18n-skip></section>
+
+      <!-- 表の切りかえ（今週に試験などの特別な日程があるとき: 今週の日程・いつもの時間割） -->
+      <div class="views grid-mode" id="grid-mode" role="tablist" aria-label="表の切りかえ" hidden data-i18n-skip></div>
 
       <!-- 時間割の表 -->
       <div class="grid-wrap">
@@ -78,6 +110,9 @@
   <script>window.SKI18N && SKI18N.translatePage();</script>
   <!-- 横断検索（Ctrl+K） -->
   <script src="/toolbox/shared/search.js"></script>
+  <!-- LINE の中で開いたとき（LINE ミニアプリ）と「LINE で送る」 -->
+  <script src="/toolbox/shared/line.js"></script>
   <script src="/toolbox/shared/pwa.js"></script>
+  <script src="/assets/domain-snack.js" defer></script>
 </body>
 </html>

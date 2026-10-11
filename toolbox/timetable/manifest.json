@@ -9,6 +9,12 @@
   "display_override": [
     "window-controls-overlay"
   ],
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  },
   "background_color": "#f6fafd",
   "theme_color": "#f6fafd",
   "icons": [

@@ -26,7 +26,7 @@
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
   function icon(name) { var s = el("span", "msr", name); s.setAttribute("aria-hidden", "true"); return s; }
 
-  // 基本のダイアログ。body は中身の要素、actions は [{ label, value, danger, primary }]
+  // 基本のダイアログ。body は中身の要素、actions は [{ label, value, danger, primary }]。autofocus: false で、最初に文字の欄に入らない
   function dialog(opts) {
     return new Promise(function (resolve) {
       var scrim = el("div", "tbs-dialog-scrim");
@@ -38,7 +38,8 @@
       h.id = "m3-dialog-title-" + Date.now();
       box.setAttribute("aria-labelledby", h.id);
       box.appendChild(h);
-      if (opts.body) box.appendChild(opts.body);
+      // 中身が画面より長いときは、中身だけスクロール（ボタンはいつも見える）
+      if (opts.body) { opts.body.classList.add("m3-dialog__body"); box.appendChild(opts.body); }
       var actions = el("div", "tbs-dialog__actions");
       var buttons = (opts.actions || []).map(function (a) {
         var b = el("button", (a.primary ? "m3-btn" : "text-btn") + (a.danger ? " tbs-danger" : "") + " m3-state", a.label);
@@ -51,8 +52,10 @@
       scrim.appendChild(box);
       document.body.appendChild(scrim);
       var before = document.activeElement;
-      var first = box.querySelector("input, textarea, select, [data-autofocus]") || buttons[0];
+      // autofocus: false … 文字の欄に入れない（スマホでキーボードがすぐ出ないように）。ダイアログそのものに入れる
+      var first = opts.autofocus === false ? null : box.querySelector("input, textarea, select, [data-autofocus]") || buttons[0];
       if (first) first.focus();
+      else { box.tabIndex = -1; box.style.outline = "none"; box.focus({ preventScroll: true }); }
       function focusables() { return Array.prototype.slice.call(box.querySelectorAll("button, input, textarea, select, [tabindex='0']")).filter(function (x) { return !x.disabled && x.offsetParent !== null; }); }
       function onKey(e) {
         if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(opts.cancelValue === undefined ? null : opts.cancelValue); }
