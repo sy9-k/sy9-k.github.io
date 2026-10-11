@@ -1075,6 +1075,8 @@
     // ---- アプリ別 ----
     side.appendChild(el("p", "tbs-nav__heading", t("アプリ")));
     APPS.forEach(function (a) {
+      // LINE の中では、LINE 版で外している Calc・Memo のページは出さない（ホームの .tbh-app--noline と同じ）
+      if (IN_LINE && (a.app === "calc" || a.app === "memo")) return;
       var p = page("app-" + a.app, null, a.name, "/toolbox/" + a.app + "/icon.svg", APP_DESC[a.app] || "");
       p.appendChild(aboutHead("/toolbox/" + a.app + "/icon.svg", a.name, APP_DESC[a.app] || ""));
       var opts = section(t("設定"));
