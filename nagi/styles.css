@@ -235,13 +235,39 @@ body.is-running .fab { border-radius: 48px; }
 .account-user small { display: block; color: var(--on-surface-variant); font-size: 12.5px; }
 
 /* ---------- ホーム画面に追加（M3 の Elevated card）・Snackbar ---------- */
-.install { position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 30; display: flex; align-items: center; gap: 12px; max-width: 560px; margin: 0 auto; padding: 12px 12px 12px 16px; border-radius: 16px; background: var(--surface-container-low); box-shadow: 0 2px 6px 2px var(--shadow); animation: dialog-in .4s var(--ease-emph); }
+.install { position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 30; display: flex; align-items: center; gap: 12px; max-width: 560px; margin: 0 auto; padding: 12px 12px 12px 16px; border-radius: 16px; background: var(--surface-container-low); box-shadow: 0 2px 6px 2px var(--shadow); animation: snackbarUp .3s var(--ease-emph) both; }
 .install img { border-radius: 10px; flex: none; }
 .install-text { flex: 1; min-width: 0; font-size: 14px; }
 .install-text strong { display: block; font-weight: 500; }
 .install-text span { color: var(--on-surface-variant); font-size: 13px; }
-.snackbar { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 40; min-height: 48px; max-width: min(560px, calc(100% - 32px)); display: flex; align-items: center; padding: 14px 16px; border-radius: 4px; background: var(--inverse-surface); color: var(--inverse-on-surface); font-size: 14px; letter-spacing: .25px; box-shadow: 0 3px 6px var(--shadow); opacity: 0; transform: translate(-50%, 16px); pointer-events: none; transition: opacity .2s var(--ease), transform .35s var(--ease-emph); }
+.snackbar { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 40; min-height: 48px; max-width: min(560px, calc(100% - 32px)); display: flex; align-items: center; padding: 14px 16px; border-radius: 4px; background: var(--inverse-surface); color: var(--inverse-on-surface); font-size: 14px; letter-spacing: .25px; box-shadow: 0 3px 6px var(--shadow); opacity: 0; transform: translate(-50%, 12px); pointer-events: none; transition: opacity .3s var(--ease-emph), transform .3s var(--ease-emph); }
 .snackbar.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- 動き（MALU と同じ。時間とカーブは dictionary/styles.css の fadeUp・viewExit・viewEnter・settingsEnter・settingsLeave・softPop・ripple と同じ）---------- */
+:root { --ease-accel: cubic-bezier(.3, 0, .8, .15); }  /* M3 の強調の加速 */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } }
+@keyframes snackbarUp { from { opacity: 0; transform: translateY(12px); } }
+@keyframes viewExit { to { opacity: 0; transform: translateY(8px); } }
+@keyframes viewEnter { from { opacity: 0; transform: translateY(12px); } }
+@keyframes settingsEnter { from { opacity: 0; transform: translateX(24px); } }
+@keyframes settingsLeave { to { opacity: 0; transform: translateX(24px); } }
+@keyframes softPop { 0% { transform: scale(.96); } 60% { transform: scale(1.03); } 100% { transform: scale(1); } }
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+/* 開いたとき: タイマーと記録のカードが、少しずつずれて下から出る（MALU の時計・検索・履歴と同じ） */
+.timer-column { animation: fadeUp .5s var(--ease-emph) backwards; }
+.cards > :nth-child(1) { animation: fadeUp .5s var(--ease-emph) .05s backwards; }
+.cards > :nth-child(2) { animation: fadeUp .5s var(--ease-emph) .1s backwards; }
+.cards > :nth-child(3) { animation: fadeUp .5s var(--ease-emph) .15s backwards; }
+/* 設定を開く・閉じる（app.js の openSettings・closeSettings） */
+.view-exit { animation: viewExit .18s var(--ease-accel) both; }
+.view-enter { animation: viewEnter .4s var(--ease-emph) both; }
+.settings-view--enter { animation: settingsEnter .4s var(--ease-emph) both; }
+.settings-view--leave { animation: settingsLeave .2s var(--ease-accel) both; }
+/* 選んだボタンが小さく弾む */
+.segmented button.is-pop { animation: softPop .3s var(--ease) both; }
+/* 押したところから広がる波紋（app.js。MALU と同じ） */
+.icon-btn, .filled-btn, .text-btn, .outlined-btn, .tonal-icon-btn, .fab, .segmented button, .settings-nav__item, .settings-action, .chip { isolation: isolate; }
+.ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .12; transform: scale(0); pointer-events: none; z-index: -1; animation: ripple .55s var(--ease) forwards; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -280,8 +306,6 @@ body.is-zen.is-idle { cursor: none; }
 /* ---------- 設定（MALU の設定と同じ形の全画面。index.html の #settings。カテゴリの切りかえは app.js） ---------- */
 .dialog.settings-view { width: 100%; max-width: none; height: 100%; max-height: none; margin: 0; padding: 0; border-radius: 0; background: var(--surface); box-shadow: none; overflow: hidden; }
 .dialog.settings-view::backdrop { background: var(--surface); }
-.dialog.settings-view[open] { animation: settings-enter .4s var(--ease-emph); }
-@keyframes settings-enter { from { opacity: 0; transform: translateX(24px); } }
 .settings-panel { display: flex; flex-direction: column; height: 100%; }
 .settings-panel__header { flex: none; display: flex; align-items: center; gap: 4px; height: 64px; padding: 0 16px 0 8px; padding-top: env(safe-area-inset-top); }
 .settings-panel__header h2 { margin: 0; font-size: 22px; line-height: 28px; font-weight: 400; color: var(--on-surface); }
@@ -297,8 +321,7 @@ body.is-zen.is-idle { cursor: none; }
 .settings-nav__item.active { background: var(--secondary-container); color: var(--on-secondary-container); }
 .settings-panel__body { min-height: 0; overflow-y: auto; width: 100%; max-width: 760px; padding: 8px 24px calc(56px + env(safe-area-inset-bottom)); }
 .settings-section { display: none; flex-direction: column; gap: 2px; }
-.settings-section--active { display: flex; animation: settings-fade .3s var(--ease-emph) both; }
-@keyframes settings-fade { from { opacity: 0; transform: translateY(12px); } }
+.settings-section--active { display: flex; animation: fadeUp .3s var(--ease-emph) both; }
 .settings-view .settings-section h3 { margin: 0; padding: 14px 4px 16px; font-size: 24px; line-height: 32px; font-weight: 400; letter-spacing: 0; color: var(--on-surface); }
 .settings-item { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 72px; padding: 16px 20px; border-radius: 4px; background: var(--surface-container); }
 label.settings-item { cursor: pointer; }
@@ -349,5 +372,5 @@ label.settings-item { cursor: pointer; }
   .about-status .settings-action { grid-column: 1 / -1; justify-self: start; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .dialog.settings-view[open], .settings-section--active { animation: none; }
+  .settings-section--active { animation: none; }
 }

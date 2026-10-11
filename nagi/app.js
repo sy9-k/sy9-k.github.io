@@ -328,7 +328,10 @@
     document.body.classList.toggle("is-running", !!timer.running);
     if (typeof updateWakeLock === "function") { updateWakeLock(); poke(); }
     document.querySelectorAll("[data-mode]").forEach(function (btn) {
-      btn.setAttribute("aria-selected", String(btn.dataset.mode === timer.mode));
+      var on = btn.dataset.mode === timer.mode;
+      // 選んだものが変わったら、小さく弾ませる（MALU の辞書の選択と同じ）
+      if (on && btn.getAttribute("aria-selected") === "false" && typeof animateEl === "function") animateEl(btn, "is-pop", 300);
+      btn.setAttribute("aria-selected", String(on));
     });
     var fresh = !timer.running && timer.remaining === durationOf(timer.mode);
     $("start-label").textContent = timer.running ? t("一時停止") : fresh ? t("はじめる") : t("つづける");
@@ -470,7 +473,65 @@
   settingsNav.forEach(function (b) {
     b.addEventListener("click", function () { showSettingsSection(b.getAttribute("data-settings-target")); });
   });
-  $("settings-button").addEventListener("click", function () { fillSettings(); showSettingsSection("settings-general"); showVersion(); $("settings").showModal(); });
+  // 開く・閉じるときの動きは MALU と同じ（元の画面が少し沈んで消えてから、設定が右から入る。閉じるときは逆）
+  var settingsDialog = $("settings");
+  var mainParts = [document.querySelector(".top-bar"), document.querySelector(".page")];
+  function reduced() { return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  function animateEl(el, cls, ms) {
+    if (!el || reduced()) return;
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+    setTimeout(function () { el.classList.remove(cls); }, ms);
+  }
+  var settingsBusy = false;
+  function openSettings() {
+    if (settingsDialog.open || settingsBusy) return;
+    fillSettings();
+    showSettingsSection("settings-general");
+    showVersion();
+    if (reduced()) { settingsDialog.showModal(); return; }
+    settingsBusy = true;
+    mainParts.forEach(function (el) { el.classList.add("view-exit"); });
+    setTimeout(function () {
+      mainParts.forEach(function (el) { el.classList.remove("view-exit"); });
+      settingsDialog.showModal();
+      animateEl(settingsDialog, "settings-view--enter", 400);
+      settingsBusy = false;
+    }, 180);
+  }
+  function closeSettings() {
+    if (!settingsDialog.open || settingsBusy) return;
+    if (reduced()) { settingsDialog.close(); return; }
+    settingsBusy = true;
+    settingsDialog.classList.add("settings-view--leave");
+    setTimeout(function () {
+      settingsDialog.classList.remove("settings-view--leave");
+      settingsDialog.close();
+      mainParts.forEach(function (el) { animateEl(el, "view-enter", 400); });
+      settingsBusy = false;
+    }, 200);
+  }
+  $("settings-button").addEventListener("click", openSettings);
+  // 戻るボタン（form method="dialog"）と Esc キーも、動きをつけて閉じる
+  settingsDialog.querySelector("form").addEventListener("submit", function (e) { e.preventDefault(); closeSettings(); });
+  settingsDialog.addEventListener("cancel", function (e) { e.preventDefault(); closeSettings(); });
+
+  // 押したところから広がる波紋（MALU と同じ）
+  var RIPPLE = ".icon-btn, .filled-btn, .text-btn, .outlined-btn, .tonal-icon-btn, .fab, .segmented button, .settings-nav__item, .settings-action, .chip";
+  document.addEventListener("pointerdown", function (e) {
+    var target = e.target.closest && e.target.closest(RIPPLE);
+    if (!target || target.disabled || reduced()) return;
+    var r = target.getBoundingClientRect();
+    var size = Math.hypot(r.width, r.height) * 2;
+    var dot = document.createElement("span");
+    dot.className = "ripple";
+    dot.style.width = dot.style.height = size + "px";
+    dot.style.left = (e.clientX - r.left - size / 2) + "px";
+    dot.style.top = (e.clientY - r.top - size / 2) + "px";
+    target.appendChild(dot);
+    dot.addEventListener("animationend", function () { dot.remove(); });
+  });
 
   // 更新の確認（MALU と同じ。Service Worker に新しい版がないか確かめる。見つけたら、ボタンが「再読み込み」に変わる）
   var updateBox = document.querySelector("#settings .about-status");
