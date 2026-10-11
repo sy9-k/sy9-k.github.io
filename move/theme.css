@@ -1,0 +1,73 @@
+/* 引っ越しのページ（/move/・/moved/）の共通: 色（Material 3。SK's Toolbox と同じブルー系。/toolbox/home.css）と土台
+   部品（ボタン・波紋・スナックバー・ダイアログ）は /toolbox/shared/m3.css・m3.js を使う */
+:root {
+  --md-primary: #415f91; --md-on-primary: #ffffff;
+  --md-primary-container: #d6e3ff; --md-on-primary-container: #284777;
+  --md-secondary-container: #dae2f9; --md-on-secondary-container: #3e4759;
+  --md-tertiary-container: #fad8fd; --md-on-tertiary-container: #573e5c;
+  --md-error: #ba1a1a; --md-error-container: #ffdad6; --md-on-error-container: #93000a;
+  --md-surface: #f9f9ff; --md-on-surface: #191c20; --md-on-surface-variant: #44474e;
+  --md-surface-container-low: #f3f3fa; --md-surface-container: #ededf4;
+  --md-surface-container-high: #e7e8ee; --md-surface-container-highest: #e2e2e9;
+  --md-outline: #74777f; --md-outline-variant: #c4c6d0;
+  --md-inverse-surface: #2e3036; --md-inverse-on-surface: #f0f0f7; --md-inverse-primary: #aac7ff;
+  --md-font: "M PLUS 1", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+  --md-emphasized: cubic-bezier(.2, 0, 0, 1);
+  /* アプリごとの色（丸いアイコン） */
+  --c-toolbox: #d6e3ff; --c-toolbox-ink: #284777; --c-nagi: #bcece6; --c-nagi-ink: #00504a;
+  --c-malu: #e1e0ff; --c-malu-ink: #3e3f8f; --c-lab: #f2daff; --c-lab-ink: #5b3a73; --ok: #1b6c3a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --md-primary: #aac7ff; --md-on-primary: #0a305f;
+    --md-primary-container: #284777; --md-on-primary-container: #d6e3ff;
+    --md-secondary-container: #3e4759; --md-on-secondary-container: #dae2f9;
+    --md-tertiary-container: #573e5c; --md-on-tertiary-container: #fad8fd;
+    --md-error: #ffb4ab; --md-error-container: #93000a; --md-on-error-container: #ffdad6;
+    --md-surface: #111318; --md-on-surface: #e2e2e9; --md-on-surface-variant: #c4c6d0;
+    --md-surface-container-low: #191c20; --md-surface-container: #1d2024;
+    --md-surface-container-high: #282a2f; --md-surface-container-highest: #333539;
+    --md-outline: #8e9099; --md-outline-variant: #44474e;
+    --md-inverse-surface: #e2e2e9; --md-inverse-on-surface: #2e3036; --md-inverse-primary: #415f91;
+    --c-toolbox: #284777; --c-toolbox-ink: #d6e3ff; --c-nagi: #00504a; --c-nagi-ink: #bcece6;
+    --c-malu: #3e3f8f; --c-malu-ink: #e1e0ff; --c-lab: #5b3a73; --c-lab-ink: #f2daff; --ok: #8bd6a0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --md-primary: #aac7ff; --md-on-primary: #0a305f;
+  --md-primary-container: #284777; --md-on-primary-container: #d6e3ff;
+  --md-secondary-container: #3e4759; --md-on-secondary-container: #dae2f9;
+  --md-tertiary-container: #573e5c; --md-on-tertiary-container: #fad8fd;
+  --md-error: #ffb4ab; --md-error-container: #93000a; --md-on-error-container: #ffdad6;
+  --md-surface: #111318; --md-on-surface: #e2e2e9; --md-on-surface-variant: #c4c6d0;
+  --md-surface-container-low: #191c20; --md-surface-container: #1d2024;
+  --md-surface-container-high: #282a2f; --md-surface-container-highest: #333539;
+  --md-outline: #8e9099; --md-outline-variant: #44474e;
+  --md-inverse-surface: #e2e2e9; --md-inverse-on-surface: #2e3036; --md-inverse-primary: #415f91;
+  --c-toolbox: #284777; --c-toolbox-ink: #d6e3ff; --c-nagi: #00504a; --c-nagi-ink: #bcece6;
+  --c-malu: #3e3f8f; --c-malu-ink: #e1e0ff; --c-lab: #5b3a73; --c-lab-ink: #f2daff; --ok: #8bd6a0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--md-surface); color: var(--md-on-surface); font: 400 16px/24px var(--md-font); letter-spacing: .01em; overflow-x: hidden; }
+button { font-family: inherit; }
+h1:focus { outline: none; }
+
+/* ボタン（m3.css より大きめ） */
+.m3-btn { height: 48px; padding: 0 24px; border-radius: 24px; font-size: 15px; white-space: nowrap; }
+.m3-btn:has(.msr) { padding-left: 16px; }
+.m3-btn .msr { font-size: 20px; }
+.text-btn { height: 48px; padding: 0 16px; border-radius: 24px; font-size: 15px; gap: 8px; white-space: nowrap; }
+.text-btn .msr { font-size: 20px; }
+
+/* 準備中のお知らせ（本番にするとき、ページの .prep を消す） */
+.prep { display: flex; gap: 12px; align-items: flex-start; margin: 8px 0 0; padding: 12px 16px; border-radius: 16px; background: var(--md-tertiary-container); color: var(--md-on-tertiary-container); font-size: 14px; line-height: 20px; }
+.prep .msr { font-size: 20px; }
+.prep b { font-weight: 500; }
+.prep-text { margin: 0; }
+.prep-switch { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; }
+.prep-switch button { padding: 0; border: 0; background: none; color: inherit; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; opacity: .75; }
+.prep-switch button[aria-pressed="true"] { opacity: 1; font-weight: 500; text-decoration-thickness: 2px; }
