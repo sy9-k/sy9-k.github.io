@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-countdown-v16';
+const CACHE_NAME = 'sk-countdown-v17';
 const ASSETS = [
   '/toolbox/countdown/',
   '/toolbox/countdown/index.html',
@@ -14,6 +14,7 @@ const ASSETS = [
   '/toolbox/shared/settings.js',
   '/toolbox/shared/remind.js',
   '/toolbox/shared/search.js',
+  '/toolbox/shared/line.js',
   '/toolbox/shared/sync.js',
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',

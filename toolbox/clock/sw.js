@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-clock-v24';
+const CACHE_NAME = 'sk-clock-v25';
 const ASSETS = [
   '/toolbox/clock/',
   '/toolbox/clock/index.html',
@@ -15,6 +15,7 @@ const ASSETS = [
   '/toolbox/shared/settings.js',
   '/toolbox/shared/remind.js',
   '/toolbox/shared/search.js',
+  '/toolbox/shared/line.js',
   '/toolbox/shared/sync.js',
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',
