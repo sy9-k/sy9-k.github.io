@@ -59,11 +59,12 @@ EXTRA = {
     "status.html": ('  <script src="/status/status.js" defer></script>\n', None),
     # 言語の画面。どこから開いたか（戻り先の next・LINE の中・アプリとして開いているか）を、画面が出る前に <html> に付ける
     #   data-lang-from="toolbox|malu|nagi|lab" … 戻り先のアプリ（?from= で指定もできる）
+    #     Toolbox のときは、Toolbox の言語の画面（/toolbox/lang/。マテリアルデザイン）に移る
     #   data-lang-app … アプリから開いたとき。サイトのヘッダー・フッター・お知らせを隠し、アプリ用の画面にする（/assets/site.css・/lang/lang.js）
     "lang.html": (
         '  <script>(function(){try{var d=document.documentElement,q=new URLSearchParams(location.search),n=q.get("next")||"/",f=q.get("from")||"",'
         'A={toolbox:/^\\/toolbox\\//,malu:/^\\/dictionary\\//,nagi:/^\\/nagi\\//,lab:/^\\/(qr-prj|smart-dash)\\//};'
-        'if(!A[f]){f="";for(var k in A)if(A[k].test(n))f=k;}'
+        'if(!A[f]){f="";for(var k in A)if(A[k].test(n))f=k;}if(f==="toolbox"){location.replace("/toolbox/lang/"+location.search);return;}'
         'var line=!!sessionStorage.getItem("sk_line")||/[?&]line=/.test(n),'
         'pwa=window.matchMedia&&matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: fullscreen), (display-mode: minimal-ui)").matches||navigator.standalone===true;'
         'if(f)d.setAttribute("data-lang-from",f);if(f||line||pwa)d.setAttribute("data-lang-app","");if(line)d.setAttribute("data-lang-line","");'
@@ -114,7 +115,7 @@ RUNTIME_SOURCES = [
     "nagi/app.js", "nagi/account.js", "brand/brand.js", "assets/hub/account-button.js",
     "toolbox/clock/clock.js", "toolbox/calc/calc.js", "toolbox/memo/memo.js", "toolbox/todo/todo.js", "toolbox/countdown/countdown.js", "toolbox/clock/clock-tools.js", "toolbox/shared/settings.js", "toolbox/shared/m3.js", "toolbox/shared/remind.js", "toolbox/home.js",
     "toolbox/shared/sync.js", "toolbox/shared/titlebar.js", "toolbox/shared/tbcenter.js", "toolbox/shared/pwa.js", "toolbox/shared/search.js", "toolbox/shared/line.js",
-    "toolbox/timetable/timetable.js", "toolbox/roulette/roulette.js",
+    "toolbox/timetable/timetable.js", "toolbox/roulette/roulette.js", "toolbox/lang/lang.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
 STANDALONE_PAGES = [
@@ -122,7 +123,7 @@ STANDALONE_PAGES = [
     "dictionary/index.html", "dictionary/offline.html",
     "nagi/index.html",
     "toolbox/clock/index.html", "toolbox/calc/index.html", "toolbox/memo/index.html", "toolbox/todo/index.html", "toolbox/countdown/index.html", "toolbox/settings/index.html",
-    "toolbox/timetable/index.html", "toolbox/roulette/index.html", "toolbox/install/index.html",
+    "toolbox/timetable/index.html", "toolbox/roulette/index.html", "toolbox/install/index.html", "toolbox/lang/index.html",
 ]
 # 英語だけに訳すページ（SK's Lab のツール。<html data-i18n-langs="ja en">）。ページの文とスクリプトの t("…") の両方を探す
 EN_ONLY_PAGES = ["qr-prj/index.html", "smart-dash/index.html"]

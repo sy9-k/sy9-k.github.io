@@ -1169,7 +1169,7 @@ a.acct-notice-title:hover { color: var(--acct-link); text-decoration: underline;
 .lang-cancel:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
 /* 引っ越しのお知らせ（.sk-dn）は、言語の画面では出さない */
 .lang-page .sk-dn { display: none; }
-/* アプリ（Toolbox・MALU・Nagi・SK's Lab・LINE の中・アプリとして入れたもの）から開いたとき（<html data-lang-app>。/lang/lang.js）
+/* アプリ（MALU・Nagi・SK's Lab・LINE の中・アプリとして入れたもの。Toolbox は /toolbox/lang/）から開いたとき（<html data-lang-app>。/lang/lang.js）
    サイトのヘッダー・フッター・アクセス解析のカードを隠し、上に戻るボタンとアプリの名前の帯を出す */
 .lang-appbar { display: none; }
 [data-lang-app] .lang-page .site-header, [data-lang-app] .lang-page .hd-menu, [data-lang-app] .lang-page .hd-backdrop,

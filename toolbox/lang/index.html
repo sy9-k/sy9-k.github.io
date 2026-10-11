@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="SK's Toolbox で使う言語を選ぶ画面。">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f9f9ff" id="theme-color">
+<title>言語 | SK's Toolbox</title>
+<!-- SK's Toolbox の言語の画面（/toolbox/lang/?next=戻り先）。サイトの /lang/ の Toolbox 版（マテリアルデザイン）
+     Toolbox の中（PWA のスコープの中）にあるので、アプリとして開いているときもブラウザの帯が出ない。
+     選んだ言語は /lang/ と同じく localStorage の sk_lang に入り、サイトとすべてのアプリに効く。動きは ./lang.js -->
+<!-- 多言語: /lang/ で選んだ言語で表示する（/assets/i18n.js。body の最後で translatePage()） -->
+<script src="/assets/i18n.js"></script>
+<script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@300;400;500;700&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>
+<link rel="stylesheet" href="/toolbox/shared/m3.css">
+<style>
+  /* 色は Toolbox の設定のページと同じ（ブルー系）。テーマカラーを選ぶと settings.js が上書きする */
+  :root {
+    --md-primary: #415f91; --md-on-primary: #ffffff;
+    --md-secondary-container: #dae2f9; --md-on-secondary-container: #3e4759;
+    --md-surface: #f9f9ff; --md-on-surface: #191c20; --md-on-surface-variant: #44474e;
+    --md-surface-container: #ededf4; --md-surface-container-high: #e7e8ee; --md-surface-container-highest: #e2e2e9;
+    --md-outline: #74777f; --md-outline-variant: #c4c6d0;
+    --md-inverse-surface: #2e3036; --md-inverse-on-surface: #f0f0f7; --md-inverse-primary: #aac7ff;
+    --md-font: "M PLUS 1", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --md-primary: #aac7ff; --md-on-primary: #0a305f;
+      --md-secondary-container: #3e4759; --md-on-secondary-container: #dae2f9;
+      --md-surface: #111318; --md-on-surface: #e2e2e9; --md-on-surface-variant: #c4c6d0;
+      --md-surface-container: #1d2024; --md-surface-container-high: #282a2f; --md-surface-container-highest: #333539;
+      --md-outline: #8e9099; --md-outline-variant: #44474e;
+      --md-inverse-surface: #e2e2e9; --md-inverse-on-surface: #2e3036; --md-inverse-primary: #415f91;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --md-primary: #aac7ff; --md-on-primary: #0a305f;
+    --md-secondary-container: #3e4759; --md-on-secondary-container: #dae2f9;
+    --md-surface: #111318; --md-on-surface: #e2e2e9; --md-on-surface-variant: #c4c6d0;
+    --md-surface-container: #1d2024; --md-surface-container-high: #282a2f; --md-surface-container-highest: #333539;
+    --md-outline: #8e9099; --md-outline-variant: #44474e;
+    --md-inverse-surface: #e2e2e9; --md-inverse-on-surface: #2e3036; --md-inverse-primary: #415f91;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { min-height: 100dvh; background: var(--md-surface); color: var(--md-on-surface); font-family: var(--md-font); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--md-primary); outline-offset: 2px; }
+  .page { max-width: 640px; margin: 0 auto; padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) calc(max(16px, env(safe-area-inset-bottom)) + 96px) max(8px, env(safe-area-inset-left)); }
+  .app-bar { display: flex; align-items: center; min-height: 64px; padding: 0 4px; }
+  h1 { margin: 8px 16px 4px; font-size: 32px; font-weight: 400; line-height: 40px; transition: opacity .15s linear; }
+  .lead { margin: 0 16px 24px; color: var(--md-on-surface-variant); font-size: 14px; line-height: 20px; letter-spacing: .01em; transition: opacity .15s linear; }
+  .is-switching h1, .is-switching .lead { opacity: 0; }
+
+  /* 言語の一覧（ラジオボタンのリスト） */
+  .langs { margin: 0 8px; padding: 8px 0; border-radius: 28px; background: var(--md-surface-container); }
+  .lang { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 64px; padding: 8px 24px 8px 16px; border: 0; background: none; cursor: pointer; text-align: left; color: var(--md-on-surface); }
+  .lang__text { display: flex; flex-direction: column; min-width: 0; }
+  .lang__name { font-size: 16px; line-height: 24px; letter-spacing: .03em; }
+  .lang__sub { font-size: 14px; line-height: 20px; color: var(--md-on-surface-variant); }
+  .lang__sub:empty { display: none; }
+  .lang__now { margin-left: auto; flex: none; padding: 0 8px; height: 24px; display: inline-flex; align-items: center; border-radius: 8px; background: var(--md-secondary-container); color: var(--md-on-secondary-container); font-size: 12px; font-weight: 500; }
+  /* ラジオボタン（Material 3） */
+  .radio { position: relative; flex: none; width: 20px; height: 20px; margin: 10px; border-radius: 50%; border: 2px solid var(--md-on-surface-variant); transition: border-color .15s linear; }
+  .radio::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--md-primary); transform: scale(0); transition: transform .2s cubic-bezier(.2, 0, 0, 1); }
+  .lang[aria-checked="true"] .radio { border-color: var(--md-primary); }
+  .lang[aria-checked="true"] .radio::after { transform: scale(1); }
+  .lang[aria-checked="true"] .lang__name { font-weight: 500; }
+
+  /* 下の「続行」（言語を選ぶと出る） */
+  .bottom { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; justify-content: center; padding: 16px max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); background: linear-gradient(transparent, var(--md-surface) 40%); pointer-events: none; transform: translateY(110%); transition: transform .35s cubic-bezier(.2, 0, 0, 1); }
+  .bottom.is-shown { transform: none; }
+  .bottom .m3-btn { pointer-events: auto; width: 100%; max-width: 608px; height: 56px; border-radius: 28px; font-size: 16px; }
+  @media (prefers-reduced-motion: reduce) { .bottom, h1, .lead, .radio::after { transition: none; } }
+</style>
+<!-- SK's Toolbox の共通の設定（テーマ・テーマカラー・LINE の中か） -->
+<script src="/toolbox/shared/settings.js" data-scope="page"></script>
+<script src="/toolbox/shared/m3.js"></script>
+<!-- パソコンでアプリとして入れたときのタイトルバー -->
+<script src="/toolbox/shared/titlebar.js"></script>
+<script src="/toolbox/shared/tbcenter.js"></script>
+<script src="/toolbox/lang/lang.js" defer></script>
+</head>
+<body>
+  <div class="page" data-lang-page>
+    <header class="app-bar">
+      <a class="icon-btn m3-state" href="/toolbox/" data-lang-back aria-label="戻る"><span class="msr" aria-hidden="true">arrow_back</span></a>
+    </header>
+    <h1 data-lang-title>言語</h1>
+    <p class="lead" data-lang-lead>SK のサイトとすべてのアプリで使う言語です</p>
+    <div class="langs" role="radiogroup" aria-label="言語" data-lang-list></div>
+  </div>
+  <div class="bottom" data-lang-bottom>
+    <button type="button" class="m3-btn m3-state" data-lang-continue></button>
+  </div>
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <!-- 同意のカード・アクセス解析・引っ越しのお知らせは、この画面では出さない（下の「続行」に重なるため。各アプリの画面で出る） -->
+</body>
+</html>

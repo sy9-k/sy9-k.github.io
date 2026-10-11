@@ -1,7 +1,7 @@
 // 言語を選ぶページ（/lang/?next=戻り先）。選んだ言語は localStorage の sk_lang に保存し、戻り先の同じ言語のページへ移る
 //   どこから開いたかは、<head> の小さなスクリプト（_build/build.py の EXTRA）が <html> に付けている
-//     data-lang-from="toolbox|malu|nagi|lab" … 戻り先のアプリ
-//     data-lang-app … アプリ（Toolbox・MALU・Nagi・SK's Lab・LINE の中・アプリとして入れたもの）から開いた。
+//     data-lang-from="malu|nagi|lab" … 戻り先のアプリ（Toolbox のときは、<head> で Toolbox の言語の画面 /toolbox/lang/ に移っている）
+//     data-lang-app … アプリ（MALU・Nagi・SK's Lab・LINE の中・アプリとして入れたもの）から開いた。
 //                     サイトのヘッダー・フッター・お知らせを隠し、上に戻るボタンとアプリの名前の帯を出す（/assets/site.css）
 (function () {
   "use strict";
@@ -28,7 +28,6 @@
 
   // 開いていたアプリ（上の帯に出す）
   const APPS = {
-    toolbox: { name: "SK's Toolbox", icon: "/toolbox/icon.svg" },
     malu: { name: "MALU", icon: "/dictionary/ico/icon-192.png" },
     nagi: { name: "Nagi", icon: "/nagi/ico/apple-touch-icon.png" },
     lab: { name: "SK's Lab", icon: "/assets/logo.svg" }
@@ -40,9 +39,9 @@
     document.querySelector("[data-lang-app-icon]").src = app.icon;
   }
 
-  // 戻り先（このサイトの中だけ）
+  // 戻り先（このサイトの中だけ。「//」「/\」で始まるものは、ほかのサイトに出てしまうので使わない）
   const raw = new URLSearchParams(location.search).get("next") || "/";
-  const back = raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
+  const back = /^\/(?![\/\\])/.test(raw) ? raw : "/";
 
   // 戻る: 戻り先から来たときは履歴を戻る（アプリの画面をそのまま戻す）。直接開いたときは戻り先へ
   function goBack() {

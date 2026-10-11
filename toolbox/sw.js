@@ -1,6 +1,6 @@
 // SK's Toolbox のホーム画面（/toolbox/）の Service Worker。スコープは /toolbox/ 全体
 // 各アプリは自分のフォルダに自分の sw.js を持つ（スコープがせまいほうが使われる）。まだ開いたことのないアプリは、ここで開ける
-const CACHE_NAME = 'sk-toolbox-v23';
+const CACHE_NAME = 'sk-toolbox-v24';
 const ASSETS = [
   // ホーム画面と、4 つのアプリ（ホーム画面から開いたことがなくても、オフラインで開けるように）
   '/toolbox/',
@@ -29,6 +29,8 @@ const ASSETS = [
   '/toolbox/shared/badges/timetable.png',
   '/assets/badge-skhub.png',
   '/toolbox/settings/',
+  '/toolbox/lang/',
+  '/toolbox/lang/lang.js',
   '/toolbox/install/',
   '/toolbox/clock/',
   '/toolbox/clock/index.html',

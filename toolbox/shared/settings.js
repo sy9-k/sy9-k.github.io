@@ -795,10 +795,10 @@
     var basic = section(t("基本"));
     var langName = "";
     if (I18N) I18N.LANGS.forEach(function (l) { if (l.code === I18N.lang) langName = l.name; });
-    // 言語を選んだら、いま開いているアプリ（またはこの設定のページ）に戻る（/lang/?next=戻り先。/lang/lang.js）
-    var langLink = linkRow("/lang/", "language", t("言語"), langName);
-    updaters.push(function () { langLink.href = "/lang/?next=" + encodeURIComponent(location.pathname + location.search + location.hash); });
-    langLink.addEventListener("click", function () { langLink.href = "/lang/?next=" + encodeURIComponent(location.pathname + location.search + location.hash); });
+    // 言語を選んだら、いま開いているアプリ（またはこの設定のページ）に戻る（Toolbox の言語の画面 /toolbox/lang/?next=戻り先）
+    var langLink = linkRow("/toolbox/lang/", "language", t("言語"), langName);
+    updaters.push(function () { langLink.href = "/toolbox/lang/?next=" + encodeURIComponent(location.pathname + location.search + location.hash); });
+    langLink.addEventListener("click", function () { langLink.href = "/toolbox/lang/?next=" + encodeURIComponent(location.pathname + location.search + location.hash); });
     basic.appendChild(langLink);
     // ホーム（/toolbox/）を開いたときに、ウィジェットとアプリ一覧のどちらを出すか（/toolbox/home.js と、ホームの <head> の小さなスクリプト）
     basic.appendChild(segRow(t("ホームの最初の画面"), t("SK's Toolbox のホームを開いたときに出す画面"),
