@@ -1,6 +1,6 @@
 // SK's Toolbox のホーム画面（/toolbox/）
-//   ・あいさつ（時間帯で変わる）と、Todo・Memo・Calc のウィジェット。時計は Clock の ?embed を iframe で出す（_build/pages/toolbox.html。build で /toolbox/index.html になる）
-//   ・ウィジェットは各アプリが localStorage に保存したもの（sk_todo・sk_memo・sk_calc）を読むだけ。
+//   ・あいさつ（時間帯で変わる）と、Todo・Memo・Calc のウィジェット。上の切りかえで、アプリ一覧（大きなアイコン）にもできる（#apps）。時計は Clock の ?embed を iframe で出す（_build/pages/toolbox.html。build で /toolbox/index.html になる）
+//   ・ウィジェットは各アプリが localStorage に保存したもの（sk_todo・sk_memo・sk_calc・sk_countdown・sk_timetable・sk_roulette）を読むだけ。
 //     Todo だけは、ここでチェックすると完了にできる（Todo アプリと同じ形で sk_todo に書く）
 //   ・ほかのタブ・アプリで変えたら（storage イベント）、戻ってきたら（visibilitychange）、1 分ごとに出し直す
 (function () {
@@ -18,7 +18,10 @@
   // ---- あいさつ ----
   function greet() {
     var h = new Date().getHours();
-    $("greet").textContent = h >= 4 && h < 10 ? t("おはようございます") : h >= 10 && h < 17 ? t("こんにちは") : t("こんばんは");
+    var hello = h >= 4 && h < 10 ? t("おはようございます") : h >= 10 && h < 17 ? t("こんにちは") : t("こんばんは");
+    // LINE の中（/toolbox/shared/line.js）では、LINE の名前で
+    var name = window.SKLine && SKLine.name;
+    $("greet").textContent = name ? t("{hello}、{name} さん", { hello: hello, name: name }) : hello;
   }
 
   // ---- 日付（Todo と同じ）----
@@ -248,8 +251,118 @@
     $("cd-empty").hidden = list.length > 0;
   }
 
+  // ---- Timetable（今日の授業。表示中の時間割（自分のもの・配信されたもの）。いまの授業を強調）----
+  function hmMin(s) { var m = /^(\d{2}):(\d{2})$/.exec(s || ""); return m ? +m[1] * 60 + +m[2] : null; }
+  function renderTimetable() {
+    var data = readJson("sk_timetable") || {};
+    var tb = data.view && data.view !== "mine" && data.received && data.received[data.view] ? data.received[data.view].table : data.table;
+    var list = $("tt-list"), empty = $("tt-empty"), action = $("tt-action");
+    list.textContent = "";
+    var cells = tb && tb.cells && typeof tb.cells === "object" ? tb.cells : {};
+    var hasAny = Object.keys(cells).length > 0;
+    action.hidden = hasAny;
+    var now = new Date(), w = now.getDay(), di = w === 0 ? -1 : w - 1;
+    var days = tb && tb.days === 6 ? 6 : 5, periods = tb ? Math.min(10, Number(tb.periods) || 6) : 6;
+    var nowMin = now.getHours() * 60 + now.getMinutes(), current = null, count = 0;
+    if (hasAny && di >= 0 && di < days) {
+      for (var p = 0; p < periods; p++) {
+        var c = cells[di + "-" + p];
+        if (!c || typeof c.subject !== "string") continue;
+        count++;
+        var tm = Array.isArray(tb.times) && tb.times[p] ? tb.times[p] : {};
+        var s = hmMin(tm.s), e = hmMin(tm.e);
+        var li = el("li", "w-tt__row");
+        li.style.setProperty("--cc", /^#[0-9a-f]{6}$/i.test(c.color || "") ? c.color : "#0891b2");
+        if (s !== null && e !== null && nowMin >= s && nowMin < e) { li.classList.add("is-now"); current = p + 1 + " " + c.subject; }
+        else if (e !== null && nowMin >= e) li.classList.add("is-done");
+        li.append(el("b", "w-tt__p", String(p + 1)), el("span", "w-tt__subject", c.subject), el("span", "w-tt__room", c.room || tm.s || ""));
+        list.appendChild(li);
+      }
+    }
+    $("tt-meta").textContent = current ? t("いま {n} 限", { n: current.split(" ")[0] }) : count ? t("今日 {n} コマ", { n: count }) : "";
+    empty.hidden = !hasAny || count > 0;
+    empty.textContent = di < 0 || di >= days ? t("今日は授業がありません") : t("今日の時間割はまだ入っていません");
+    if (!hasAny) { empty.hidden = false; empty.textContent = t("時間割を作ると、今日の授業がここに出ます。"); }
+  }
+
+  // ---- Roulette（いまのルーレットと、最後の結果）----
+  function renderRoulette() {
+    var data = readJson("sk_roulette") || {};
+    var wheels = Array.isArray(data.wheels) ? data.wheels : [];
+    var w = wheels.filter(function (x) { return x && x.id === data.current; })[0] || wheels[0];
+    $("rl-meta").textContent = w && typeof w.name === "string" ? w.name : t("今日のごはん");
+    var h = Array.isArray(data.history) && data.history[0];
+    var last = $("rl-last");
+    last.textContent = "";
+    if (h && typeof h.text === "string") last.append(el("small", "", t("前回の結果")), el("b", "", h.text));
+    else last.append(el("small", "", t("押して回してみましょう")));
+  }
+
+  // ---- ウィジェットとアプリ一覧の切りかえ（最後に見たほうを覚える。localStorage の sk_toolbox_view。#apps・#widgets で開くこともできる。
+  //      Toolbox の設定の「ホームの最初の画面」（homeStart）でどちらかに決めることもできる）----
+  var VIEW = "sk_toolbox_view", view = "widgets";
+  try {
+    var savedView = localStorage.getItem(VIEW);
+    // LINE の中（ミニアプリ）では、まだ選んでいなければアプリ一覧から
+    var inLine = /[?&]line=/.test(location.search) || !!sessionStorage.getItem("sk_line");
+    view = savedView === "apps" || (!savedView && inLine) ? "apps" : "widgets";
+    // Toolbox の設定の「ホームの最初の画面」でウィジェットかアプリ一覧に決めていれば、そちら（「前回の画面」なら上のとおり）
+    var start = window.SKToolbox ? SKToolbox.get().homeStart : "last";
+    if (start === "widgets" || start === "apps") view = start;
+  } catch (e) { /* ウィジェット */ }
+  if (location.hash === "#apps" || location.hash === "#widgets") view = location.hash.slice(1);
+  function setView(v, save, animate) {
+    view = v;
+    if (v === "apps" && editing) setEditing(false);
+    ["widgets", "apps"].forEach(function (k) { $("view-" + k).setAttribute("aria-selected", String(k === v)); });
+    $("bento").hidden = v !== "widgets";
+    $("apps").hidden = v !== "apps";
+    $("home-edit").hidden = v !== "widgets";
+    document.body.classList.toggle("is-home-apps", v === "apps");
+    if (save) {
+      try { localStorage.setItem(VIEW, v); } catch (e) { /* このページだけ */ }
+      if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    }
+    if (v === "apps") renderBadges();
+    if (animate && window.M3 && M3.stagger) M3.stagger(v === "apps" ? $("apps") : $("bento"));
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".tbh-view"), function (b) {
+    b.addEventListener("click", function () { if (view !== b.dataset.view) setView(b.dataset.view, true, true); });
+    b.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      e.preventDefault();
+      var next = view === "apps" ? "widgets" : "apps";
+      setView(next, true, true);
+      $("view-" + next).focus();
+    });
+  });
+  window.addEventListener("hashchange", function () { if (location.hash === "#apps" || location.hash === "#widgets") setView(location.hash.slice(1), false, true); });
+  // アプリの数字（Todo: 今日と期限切れ。Timetable: まだ読んでいない連絡）
+  function renderBadges() {
+    var badges = {};
+    try {
+      var open = R ? openTasks(R.load().tasks) : [];
+      var n = open.filter(function (x) { var i = dueInfo(x.due); return i && (i.today || i.over); }).length;
+      if (n) badges.todo = String(n);
+    } catch (e) { /* 読めない */ }
+    var tt = readJson("sk_timetable");
+    if (tt && tt.received && typeof tt.received === "object") {
+      var seen = Array.isArray(tt.seen) ? tt.seen : [], unread = 0, today = ymd(new Date());
+      Object.keys(tt.received).forEach(function (id) {
+        var nts = tt.received[id] && tt.received[id].table && Array.isArray(tt.received[id].table.notices) ? tt.received[id].table.notices : [];
+        nts.forEach(function (x) { if (x && seen.indexOf(x.id) < 0 && (x.until || x.date || "9999") >= today) unread++; });
+      });
+      if (unread) badges.timetable = String(unread);
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("[data-badge]"), function (b) {
+      var v = badges[b.dataset.badge];
+      b.hidden = !v;
+      b.textContent = v || "";
+    });
+  }
+
   // ---- ホームを編集（タイルの順番・表示と非表示。localStorage の sk_toolbox_home）----
-  var HOME = "sk_toolbox_home", TILES = ["clock", "todo", "memo", "countdown", "calc", "look"];
+  var HOME = "sk_toolbox_home", TILES = ["clock", "todo", "timetable", "memo", "countdown", "calc", "roulette", "look"];
   var bento = $("bento"), editing = false;
   function readHome() {
     var h = readJson(HOME) || {};
@@ -259,7 +372,7 @@
   }
   var home = readHome();
   function saveHome() { try { localStorage.setItem(HOME, JSON.stringify(home)); } catch (e) { /* 保存できなくても、このページでは反映する */ } }
-  var TILE_NAMES = { clock: "Clock", todo: "Todo", memo: "Memo", countdown: "Countdown", calc: "Calc", look: t("見た目") };
+  var TILE_NAMES = { clock: "Clock", todo: "Todo", timetable: "Timetable", memo: "Memo", countdown: "Countdown", calc: "Calc", roulette: "Roulette", look: t("見た目") };
   function applyHome() {
     home.order.forEach(function (k, i) {
       var tile = bento.querySelector('[data-tile="' + k + '"]');
@@ -328,6 +441,9 @@
     renderMemo();
     renderCalc();
     renderCountdown();
+    renderTimetable();
+    renderRoulette();
+    if (view === "apps") renderBadges();
   }
   renderAll();
   // 動き: Todo の数字を数え上げる
@@ -341,10 +457,15 @@
   if (window.SKToolbox) SKToolbox.onChange(function (st) { applyTheme(); renderLook(st); }); else applyTheme();
 
   window.addEventListener("storage", function (e) {
-    if (!e.key || /^sk_(todo|memo|calc|countdown)$/.test(e.key)) renderAll();
+    if (!e.key || /^sk_(todo|memo|calc|countdown|timetable|roulette)$/.test(e.key)) renderAll();
     if (e.key === HOME) { home = readHome(); applyHome(); }
   });
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") renderAll(); });
   window.addEventListener("pageshow", function (e) { if (e.persisted) renderAll(); });
   setInterval(function () { if (document.visibilityState === "visible") { greet(); renderTodo(); } }, 60000);
+  setView(view, false, false);
+  document.addEventListener("sk-line-ready", greet);
+  // LINE の中: 友だちにすすめる（/toolbox/shared/line.js）
+  var rec = $("line-recommend");
+  if (rec) rec.addEventListener("click", function () { if (window.SKLine) SKLine.recommend(); });
 })();

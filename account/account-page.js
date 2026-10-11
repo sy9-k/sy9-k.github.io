@@ -2,8 +2,9 @@
 // ログイン → アカウントの作成（規約への同意）→ アカウントの確認・プロフィール・お知らせ・設定の同期・データのダウンロード・削除
 // サービスのページから ?next=/y-filter/ のように来たときは、使えるようになったら戻す。
 import {
-  PROFILE_COLORS, PROFILE_NAME_MAX, SERVICES, SYNC_AT_KEY, agreeLatestTerms, connectService, disconnectService, isConnected, confirmWithGoogle, db, deleteLogin, markNoticesSeen,
-  profileOf, register, rememberAccount, safeNext, saveLanguage, saveProfile, signIn, signOutAccount, syncSettings, watchAccount
+  LOGIN_PROVIDERS, PROFILE_COLORS, PROFILE_NAME_MAX, SERVICES, SYNC_AT_KEY, agreeLatestTerms, availableLogins, confirmIdentity,
+  connectService, disconnectService, isConnected, db, deleteLogin, linkLogin, loginsOf, markNoticesSeen, profileOf, register, rememberAccount,
+  safeNext, saveLanguage, saveProfile, signIn, signInAndLinkPending, signOutAccount, syncSettings, unlinkLogin, watchAccount
 } from "/assets/hub/account.js";
 import {
   arrayRemove, collection, deleteDoc, deleteField, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, updateDoc, where,
@@ -29,6 +30,11 @@ const errText = (err) => {
   if (code === "auth/popup-blocked") return t("ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。");
   if (code === "auth/network-request-failed" || code === "unavailable") return t("通信できませんでした。インターネットの接続を確認してください。");
   if (code === "permission-denied") return t("SK Hub Systems がこの操作を受け付けませんでした。時間をおいて再度お試しください。");
+  if (code === "auth/operation-not-allowed") return t("このログインの方法は、まだ使えません。");
+  if (code === "auth/credential-already-in-use" || code === "auth/email-already-in-use") return t("そのアカウントは、ほかの SK Hub Systems アカウントにつながっています。");
+  if (code === "auth/provider-already-linked") return t("その方法は、もうつながっています。");
+  if (code === "auth/requires-recent-login") return t("安全のため、もう一度ログインしてからお試しください。");
+  if (code === "sk/last-login") return t("ログインの方法は、少なくとも 1 つ残す必要があります。");
   return t("うまくいきませんでした（{code}）", { code: code || err?.message || err });
 };
 const toDate = (v) => (v && typeof v.toDate === "function" ? v.toDate() : v ? new Date(v) : null);
@@ -148,7 +154,7 @@ function render(state) {
     $("[data-acct-register-title]").textContent = outdated ? t("規約が新しくなりました") : t("アカウントを作成");
     $("[data-acct-register-lead]").textContent = outdated
       ? t("SK Hub Systems アカウント規約が新しくなりました。引き続き使うには、内容を確認して同意してください。")
-      : t("この Google アカウントで SK Hub Systems アカウントを作成します。内容を確認して、同意してください。");
+      : t("このアカウントで SK Hub Systems アカウントを作成します。内容を確認して、同意してください。");
     $("[data-acct-register]").textContent = outdated ? t("同意して続ける") : t("アカウントを作成");
     $("[data-acct-agree]").checked = false;
     // 年齢の確認は、アカウントを作るときだけ
@@ -183,6 +189,7 @@ function render(state) {
   renderSettings();
   renderOverview(user, account);
   renderPrivacyTiles();
+  renderLogins(user);
   // 開発者なら受信箱・記事エディターの項目を出す（config/developers は登録された本人だけが読める）
   getDoc(doc(db, "config", "developers"))
     .then(() => {
@@ -190,6 +197,64 @@ function render(state) {
       if (location.hash === "#developer") showSection("developer");
     })
     .catch(() => { root.querySelectorAll("[data-acct-dev]").forEach((el) => { el.hidden = true; }); });
+}
+
+// ---------- ログインの方法（サインインとセキュリティ） ----------
+// つないでいる方法を並べ、つなぐ・外す。最後の 1 つは外せない
+function renderLogins(user) {
+  const box = $("[data-acct-logins]");
+  if (!box) return;
+  const linked = loginsOf(user);
+  const keys = availableLogins().concat(linked.filter((k) => !availableLogins().includes(k)));
+  box.replaceChildren(...keys.map((key) => {
+    const info = LOGIN_PROVIDERS[key], on = linked.includes(key);
+    const row = document.createElement("div");
+    row.className = "acct-login-row";
+    const logo = document.createElement("span");
+    logo.className = "acct-login-logo acct-login-logo--" + key;
+    logo.setAttribute("aria-hidden", "true");
+    const text = document.createElement("div");
+    text.className = "acct-login-text";
+    const name = document.createElement("strong");
+    name.textContent = info.name;
+    const state = document.createElement("small");
+    state.textContent = on ? t("つながっています") : t("つないでいません");
+    text.append(name, state);
+    row.append(logo, text);
+    if (on) {
+      const sec = document.createElement("a");
+      sec.className = "acct-login-link";
+      sec.href = info.security;
+      sec.target = "_blank";
+      sec.rel = "noopener";
+      sec.textContent = t("セキュリティ");
+      row.appendChild(sec);
+    }
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "acct-login-btn" + (on ? " is-unlink" : "");
+    btn.textContent = on ? t("外す") : t("つなぐ");
+    btn.disabled = on && linked.length <= 1;
+    if (btn.disabled) btn.title = t("ログインの方法は、少なくとも 1 つ残す必要があります。");
+    btn.addEventListener("click", async () => {
+      if (busy) return;
+      if (on && !confirm(t("{name} でのログインを外しますか？ 外したあとは、{name} ではログインできなくなります。", { name: info.name }))) return;
+      setBusy(true, btn);
+      try {
+        if (on) await unlinkLogin(current.user, key);
+        else await linkLogin(current.user, key);
+        await current.user.reload();
+        renderLogins(current.user);
+        message(on ? t("{name} を外しました", { name: info.name }) : t("{name} をつなぎました。次から {name} でもログインできます。", { name: info.name }));
+      } catch (err) {
+        message(errText(err));
+      } finally {
+        setBusy(false, btn);
+      }
+    });
+    row.appendChild(btn);
+    return row;
+  }));
 }
 
 // ---------- プロフィール ----------
@@ -206,7 +271,7 @@ function renderProfile(user, account) {
   const p = profileOf(user, account);
   paintAvatar($("[data-acct-photo]"), $("[data-acct-letter]"), p);
   $("[data-acct-name]").textContent = p.name || t("（名前なし）");
-  $("[data-acct-profile-summary]").textContent = `${p.name || t("（名前なし）")} · ${p.photo ? t("Google アカウントの写真") : t("名前の頭文字")}`;
+  $("[data-acct-profile-summary]").textContent = `${p.name || t("（名前なし）")} · ${p.photo ? t("ログインに使っているアカウントの写真") : t("名前の頭文字")}`;
 }
 
 const profileDialog = document.querySelector("[data-acct-profile-dialog]");
@@ -702,17 +767,62 @@ async function renderConsole(user) {
 
 // ---------- 操作 ----------
 
+// ログインのボタン（data-acct-signin="google" | "github" | "microsoft"）。使える方法（/assets/hub/account.js の availableLogins）だけ出す
+const logins = availableLogins();
+root.querySelectorAll("[data-acct-signin]").forEach((btn) => { btn.hidden = !logins.includes(btn.dataset.acctSignin || "google"); });
+// 説明の文も、使える方法に合わせる（例:「Google か GitHub」）
+{
+  const names = logins.map((k) => LOGIN_PROVIDERS[k].name);
+  if (names.length === 1) {
+    $("[data-acct-signin-lead]").textContent = t("SK のサービスを、ひとつの Google アカウントで。パスワードを新しく作る必要はありません。");
+    $("[data-acct-signin-note]").textContent = t("SK Hub Systems アカウントのログインは、Google アカウントだけに対応しています。はじめての方も、このボタンからアカウントを作成できます。");
+    $("[data-acct-security-lead]").textContent = t("このアカウントには Google アカウントでログインします。SK がパスワードを発行・保存することはありません。");
+  } else {
+    const list = names.length === 2 ? t("{a} か {b}", { a: names[0], b: names[1] }) : t("{a} か {b}", { a: names.slice(0, -1).join(", "), b: names[names.length - 1] });
+    $("[data-acct-signin-lead]").textContent = t("SK のサービスを、ひとつのアカウントで。いつもの {names} のアカウントで入れて、パスワードを新しく作る必要はありません。", { names: list });
+    $("[data-acct-signin-note]").textContent = t("{names} のアカウントでログインします。はじめての方も、このボタンからアカウントを作成できます。", { names: list });
+    $("[data-acct-security-lead]").textContent = t("このアカウントには、{names} のアカウントでログインします。SK がパスワードを発行・保存することはありません。2 段階認証などは、それぞれのアカウントで設定します。", { names: list });
+  }
+}
 root.querySelectorAll("[data-acct-signin]").forEach((btn) => btn.addEventListener("click", async () => {
   if (busy) return;
   setBusy(true, btn);
+  $("[data-acct-link]").hidden = true;
   try {
-    await signIn();
+    await signIn(btn.dataset.acctSignin || "google");
   } catch (err) {
-    message(errText(err));
+    if (err?.code === "sk/link-needed") showLinkNeeded(btn.dataset.acctSignin || "google", err.others || []);
+    else message(errText(err));
   } finally {
     setBusy(false, btn);
   }
 }));
+// 同じメールアドレスで、別の方法の SK Hub Systems アカウントがあるとき: 前に使った方法でログインしてもらい、今回の方法をつなぐ
+function showLinkNeeded(key, others) {
+  const box = $("[data-acct-link]");
+  $("[data-acct-link-text]").textContent = t("このメールアドレスの SK Hub Systems アカウントは、前に別の方法で作られています。前に使った方法でログインすると、{name} もつないで、次からどちらでもログインできるようにします。", { name: LOGIN_PROVIDERS[key].name });
+  const wrap = $("[data-acct-link-buttons]");
+  wrap.replaceChildren(...others.map((k) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "acct-google";
+    b.textContent = t("{name} でログインしてつなぐ", { name: LOGIN_PROVIDERS[k].name });
+    b.addEventListener("click", async () => {
+      if (busy) return;
+      setBusy(true, b);
+      try {
+        await signInAndLinkPending(k);
+        box.hidden = true;
+      } catch (err) {
+        message(errText(err));
+      } finally {
+        setBusy(false, b);
+      }
+    });
+    return b;
+  }));
+  box.hidden = false;
+}
 
 $$("[data-acct-signout], [data-acct-cancel]").forEach((btn) => btn.addEventListener("click", () => signOutAccount()));
 $("[data-acct-retry]").addEventListener("click", () => location.reload());
@@ -746,7 +856,7 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
   if (busy || !user) return;
   setBusy(true, btn);
   try {
-    const [teams, devices, notices, maluWords, maluHistory, backups, nagiData, ...toolboxDocs] = await Promise.all([
+    const [teams, devices, notices, maluWords, maluHistory, backups, nagiData, timetableInbox, ...toolboxDocs] = await Promise.all([
       getDocs(query(collection(db, "teams"), where("members", "array-contains", user.uid))),
       getDocs(query(collection(db, "devices"), where("ownerUid", "==", user.uid))),
       getDocs(collection(db, "accounts", user.uid, "notices")),
@@ -754,6 +864,7 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
       getDoc(doc(db, "accounts", user.uid, "malu", "history")),
       getDocs(collection(db, "teams", user.uid, "backups")),
       getDoc(doc(db, "accounts", user.uid, "nagi", "data")),
+      getDoc(inboxRef()).catch(() => null),
       ...TOOLBOX_DOCS.map((id) => getDoc(doc(db, "accounts", user.uid, "toolbox", id)))
     ]);
     // 日時は ISO 8601、バイト列（Toolbox の暗号文）は Base64 にする
@@ -786,6 +897,8 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
       nagi: nagiData.exists() ? plain(nagiData.data()) : null,
       // SK's Toolbox の同期のデータ（端末で暗号化したもの。同期用のパスフレーズがないと読めません）
       toolbox: Object.fromEntries(toolboxDocs.filter((d) => d.exists()).map((d) => [d.id, plain(d.data())])),
+      // SK's Toolbox の時間割の配信で、このアカウントのメールアドレスあてに配信された時間割の ID
+      timetableInbox: timetableInbox && timetableInbox.exists() ? plain(timetableInbox.data()) : null,
       yFilterConsole: {
         teams: teams.docs.map((d) => ({ id: d.id, role: d.id === user.uid ? "owner" : "co-admin", ...plain(d.data()) })),
         devices: devices.docs.map((d) => ({ id: d.id, ...plain(d.data()) })),
@@ -828,8 +941,8 @@ dialog.addEventListener("close", async () => {
   const label = btn.querySelector("[data-acct-delete-label]");
   label.textContent = t("削除しています…");
   try {
-    // 途中で止まらないように、データを消す前に Google で本人を確認する
-    await confirmWithGoogle(user);
+    // 途中で止まらないように、データを消す前に本人を確認する（つないでいるログインの方法で）
+    await confirmIdentity(user);
     await deleteServiceData(user.uid);
     await deleteDoc(doc(db, "accounts", user.uid));
     await deleteLogin(user);
@@ -850,11 +963,19 @@ async function deleteServiceData(uid) {
   await deleteMaluData(uid);
   await deleteNagiData(uid);
   await deleteToolboxData(uid);
+  await deleteTimetableInbox();
   await deleteConsoleData(uid);
 }
 
+// SK's Toolbox の時間割の配信: 自分のメールアドレスあての受け取り箱（配信された時間割の ID の一覧）
+const inboxRef = () => doc(db, "timetableInbox", String(current.user?.email || "").toLowerCase() || "-");
+async function deleteTimetableInbox() {
+  if (!current.user?.email) return;
+  await deleteRefs([inboxRef()]).catch(() => { /* ない・確認していないメールアドレス */ });
+}
+
 // SK's Toolbox のデータ: 同期した暗号化されたデータと、パスフレーズを確かめるための値
-const TOOLBOX_DOCS = ["key", "settings", "todo", "memo", "countdown", "calc"];
+const TOOLBOX_DOCS = ["key", "settings", "todo", "memo", "countdown", "calc", "timetable", "roulette"];
 async function deleteToolboxData(uid) {
   await deleteRefs(TOOLBOX_DOCS.map((id) => doc(db, "accounts", uid, "toolbox", id)));
 }

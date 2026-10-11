@@ -7,6 +7,8 @@
 // 使い方: <script src="/assets/analytics.js" defer></script>（サイトのテンプレート・MALU・SK's Lab のツール）
 (function () {
   "use strict";
+  // LINE のミニアプリ（SK's Toolbox）の中では、アクセス解析をしない（同意を聞くカードも出さないため）
+  if ((function () { try { return /[?&]line=/.test(location.search) || /[?&]liff\.state=/.test(location.search) || !!sessionStorage.getItem("sk_line"); } catch (e) { return false; } })()) return;
 
   // Google アナリティクスの測定 ID（G-XXXXXXXXXX）。空のあいだは何もしない
   // （Firebase と一緒に作られたアカウント「Default Account for Firebase」のプロパティ、データストリーム「SK」）

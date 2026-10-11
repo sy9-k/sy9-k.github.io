@@ -1,6 +1,6 @@
 // SK's Toolbox のオンライン同期（任意。最初はオフ）。/toolbox/shared/settings.js が読み込む
 //   ・SK Hub Systems アカウントでログインし、アカウントで Toolbox に接続し、Toolbox の設定で「同期を始める」を選んだ端末だけが同期する
-//   ・同期するもの（アプリごとに選べる）: Toolbox の設定とホームの並び・Todo・Memo の文章（画像はしない）・Countdown・Calc の履歴
+//   ・同期するもの（アプリごとに選べる）: Toolbox の設定とホームの並び・Todo・Memo の文章（画像はしない）・Countdown・Calc の履歴・自分の時間割・ルーレット
 //   ・中身は端末で暗号化してから送る（/toolbox/shared/sync-core.js）。同期用のパスフレーズは本人が決め、サーバーには送らない
 //   ・この端末の同期の設定は localStorage の sk_toolbox_sync（鍵を含むので、バックアップには入れない。ログアウトすると消える）
 //       { uid, key, keyId, apps: { settings: true, … }, base: { アプリ: 前回そろえたときの指紋 }, at: 最後に同期した時刻, results: { アプリ: 結果 } }
@@ -27,9 +27,11 @@
     { key: "todo", name: "Todo", what: t("リストとタスク"), icon: "/toolbox/todo/icon.svg" },
     { key: "memo", name: "Memo", what: t("メモの文章（画像は同期しません）"), icon: "/toolbox/memo/icon.svg" },
     { key: "countdown", name: "Countdown", what: t("日の一覧"), icon: "/toolbox/countdown/icon.svg" },
-    { key: "calc", name: "Calc", what: t("計算の履歴"), icon: "/toolbox/calc/icon.svg" }
+    { key: "calc", name: "Calc", what: t("計算の履歴"), icon: "/toolbox/calc/icon.svg" },
+    { key: "timetable", name: "Timetable", what: t("自分の時間割"), icon: "/toolbox/timetable/icon.svg" },
+    { key: "roulette", name: "Roulette", what: t("ルーレットと結果の履歴"), icon: "/toolbox/roulette/icon.svg" }
   ];
-  var STORAGE = { settings: ["sk_toolbox", "sk_toolbox_home"], todo: ["sk_todo"], memo: ["sk_memo"], countdown: ["sk_countdown"], calc: ["sk_calc"] };
+  var STORAGE = { settings: ["sk_toolbox", "sk_toolbox_home"], todo: ["sk_todo"], memo: ["sk_memo"], countdown: ["sk_countdown"], calc: ["sk_calc"], timetable: ["sk_timetable"], roulette: ["sk_roulette"] };
 
   // ---- この端末の同期の設定 ----
   function readJson(key) { try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; } }
@@ -195,7 +197,8 @@
   function noticeUrl() { return lp("/account/") + "#notices"; }
   function wantsPush(c) { return !!(c && c.notify !== false && window.Notification && Notification.permission === "granted"); }
   function push(title, body, tag) {
-    var opts = { body: body, tag: tag, icon: "/assets/apple-touch-icon.png", badge: "/assets/apple-touch-icon.png", data: { url: noticeUrl() } };
+    // 通知の形は Toolbox のアプリとそろえる（タイトル … いちばん大事なこと、本文の 1 行目 … 「SK Hub Systems · お知らせ」）
+    var opts = { body: "SK Hub Systems · " + t("お知らせ") + (body ? "\n" + body : ""), tag: tag, renotify: true, timestamp: Date.now(), icon: "/assets/apple-touch-icon.png", badge: "/assets/badge-skhub.png", data: { url: noticeUrl() } };
     function fallback() { try { new Notification(title, opts); } catch (e) { /* 出せない */ } }
     if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
       navigator.serviceWorker.getRegistration().then(function (reg) { if (reg && reg.showNotification) reg.showNotification(title, opts); else fallback(); }).catch(fallback);
@@ -211,8 +214,9 @@
       var known = Array.isArray(n.notified) ? n.notified : [];
       var fresh = res.items.filter(function (x) { return known.indexOf(x.id) < 0; });
       if (fresh.length) {
-        var title = t("SK Hub Systems のお知らせ");
-        var body = fresh.length === 1 ? fresh[0].title : t("新しいお知らせが {n} 件あります", { n: fresh.length }) + " — " + fresh[0].title;
+        var title = fresh.length === 1 ? fresh[0].title : t("新しいお知らせが {n} 件あります", { n: fresh.length });
+        var body = fresh.length === 1 ? "" : fresh[0].title;
+        document.dispatchEvent(new CustomEvent("sk-island-flash", { detail: { icon: "mail", text: t("SK Hub Systems のお知らせ") + ": " + fresh[0].title, color: "#AFA9EC" } }));
         if (wantsPush(cfg())) push(title, body, "skhub-notice-" + fresh[0].id);
         else if (document.visibilityState === "visible") toast(t("新しいお知らせがあります: {title}", { title: fresh[0].title }), t("見る"), function () { location.href = noticeUrl(); });
       }

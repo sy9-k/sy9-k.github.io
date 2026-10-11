@@ -6,7 +6,15 @@
   "start_url": "/toolbox/memo/",
   "scope": "/toolbox/memo/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay"],
+  "display_override": [
+    "window-controls-overlay"
+  ],
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  },
   "background_color": "#faebe0",
   "theme_color": "#faebe0",
   "icons": [
