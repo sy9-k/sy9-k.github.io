@@ -26,6 +26,7 @@
   <script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap"></script>
   <link rel="stylesheet" href="/assets/header.css">
   <link rel="stylesheet" href="/assets/site.css">
+  <script>(function(){try{var d=document.documentElement,q=new URLSearchParams(location.search),n=q.get("next")||"/",f=q.get("from")||"",A={toolbox:/^\/toolbox\//,malu:/^\/dictionary\//,nagi:/^\/nagi\//,lab:/^\/(qr-prj|smart-dash)\//};if(!A[f]){f="";for(var k in A)if(A[k].test(n))f=k;}var line=!!sessionStorage.getItem("sk_line")||/[?&]line=/.test(n),pwa=window.matchMedia&&matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: fullscreen), (display-mode: minimal-ui)").matches||navigator.standalone===true;if(f)d.setAttribute("data-lang-from",f);if(f||line||pwa)d.setAttribute("data-lang-app","");if(line)d.setAttribute("data-lang-line","");}catch(e){}})();</script>
   <script src="/lang/lang.js" defer></script>
 </head>
 <body class="lang-page">
@@ -55,6 +56,11 @@
 
   <main id="main">
     <section class="lang-screen band band--plain">
+      <!-- アプリから開いたときだけ出す上の帯（戻るボタンと、開いていたアプリ。<html data-lang-app>） -->
+      <div class="lang-appbar" data-lang-appbar>
+        <a class="lang-appbar-back" href="/" data-lang-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M5 12l6-6M5 12l6 6"/></svg></a>
+        <span class="lang-appbar-app"><img src="/assets/logo.svg" alt="" width="22" height="22" data-lang-app-icon><span data-lang-app-name>SK</span></span>
+      </div>
       <div class="lang-card" data-lang-card>
         <div class="lang-head">
           <div class="lang-globe" data-lang-globe aria-hidden="true">
@@ -70,8 +76,11 @@
           <button type="button" class="lang-item" role="radio" aria-checked="false" data-lang="zh-TW" lang="zh-TW">繁體中文</button>
           <button type="button" class="lang-item" role="radio" aria-checked="false" data-lang="ko" lang="ko">한국어</button>
         </div>
+        <p class="lang-note" data-lang-note>Applies to the SK website and all SK apps</p>
         <button type="button" class="lang-continue" data-lang-continue disabled>Continue</button>
       </div>
+      <!-- サイトから開いたときの「戻る」（アプリから開いたときは上の帯の戻るボタン） -->
+      <a class="lang-cancel" href="/" data-lang-back>Back</a>
     </section>
   </main>
 

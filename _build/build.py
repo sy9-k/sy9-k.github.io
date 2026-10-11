@@ -57,7 +57,20 @@ EXTRA = {
     "contact.html": ('  <script src="/contact/contact.js" defer></script>\n', None),
     "support.html": ('  <script src="/support/help.js" defer></script>\n', None),
     "status.html": ('  <script src="/status/status.js" defer></script>\n', None),
-    "lang.html": ('  <script src="/lang/lang.js" defer></script>\n', "lang-page"),
+    # 言語の画面。どこから開いたか（戻り先の next・LINE の中・アプリとして開いているか）を、画面が出る前に <html> に付ける
+    #   data-lang-from="toolbox|malu|nagi|lab" … 戻り先のアプリ（?from= で指定もできる）
+    #   data-lang-app … アプリから開いたとき。サイトのヘッダー・フッター・お知らせを隠し、アプリ用の画面にする（/assets/site.css・/lang/lang.js）
+    "lang.html": (
+        '  <script>(function(){try{var d=document.documentElement,q=new URLSearchParams(location.search),n=q.get("next")||"/",f=q.get("from")||"",'
+        'A={toolbox:/^\\/toolbox\\//,malu:/^\\/dictionary\\//,nagi:/^\\/nagi\\//,lab:/^\\/(qr-prj|smart-dash)\\//};'
+        'if(!A[f]){f="";for(var k in A)if(A[k].test(n))f=k;}'
+        'var line=!!sessionStorage.getItem("sk_line")||/[?&]line=/.test(n),'
+        'pwa=window.matchMedia&&matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: fullscreen), (display-mode: minimal-ui)").matches||navigator.standalone===true;'
+        'if(f)d.setAttribute("data-lang-from",f);if(f||line||pwa)d.setAttribute("data-lang-app","");if(line)d.setAttribute("data-lang-line","");'
+        '}catch(e){}})();</script>\n'
+        '  <script src="/lang/lang.js" defer></script>\n',
+        "lang-page",
+    ),
     # 隠しコマンド（assets/nf-secret.js）
     "404.html": ('  <script src="/assets/nf-secret.js" defer></script>\n', None),
     # SK Hub Systems の紹介ページ（スクロールで見せる。/sk-hub-systems/hub.js）

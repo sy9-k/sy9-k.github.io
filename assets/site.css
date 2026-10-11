@@ -1143,7 +1143,7 @@ a.acct-notice-title:hover { color: var(--acct-link); text-decoration: underline;
 }
 
 /* ---------- 言語を選ぶ（/lang/） ---------- */
-.lang-screen { min-height: calc(100vh - 52px); display: grid; place-items: center; padding: 48px 16px 96px; }
+.lang-screen { min-height: calc(100vh - 52px); display: grid; place-items: center; align-content: center; gap: 14px; padding: 48px 16px 96px; }
 .lang-card { width: 100%; max-width: 440px; padding: 36px 28px 28px; background: var(--surface); border-radius: 32px; corner-shape: superellipse(1.5); box-shadow: 0 30px 80px -30px rgba(13, 16, 20, .28), 0 0 0 1px var(--line); text-align: center; transition: padding .35s cubic-bezier(.22, 1, .36, 1); }
 .lang-head { min-height: 132px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .lang-globe { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; color: var(--accent); background: radial-gradient(circle at 30% 25%, var(--tint-blue), var(--green-soft)); box-shadow: inset 0 0 0 1px var(--accent-line); }
@@ -1152,7 +1152,7 @@ a.acct-notice-title:hover { color: var(--acct-link); text-decoration: underline;
 @keyframes lang-spin { from { transform: rotate(-120deg) scale(.6); opacity: 0; } }
 .lang-title { font-size: 24px; font-weight: 800; margin-top: 16px; transition: opacity .2s ease, transform .2s ease; }
 .lang-desc { color: var(--muted); margin-top: 4px; font-size: 15px; transition: opacity .2s ease, transform .2s ease; }
-.lang-card.is-switching .lang-title, .lang-card.is-switching .lang-desc { opacity: 0; transform: translateY(6px); }
+.lang-card.is-switching .lang-title, .lang-card.is-switching .lang-desc, .lang-card.is-switching .lang-note { opacity: 0; transform: translateY(6px); }
 .lang-card.is-chosen .lang-globe { animation: lang-pop .5s cubic-bezier(.34, 1.56, .64, 1); }
 @keyframes lang-pop { 40% { transform: scale(.86); } }
 .lang-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
@@ -1164,6 +1164,30 @@ a.acct-notice-title:hover { color: var(--acct-link); text-decoration: underline;
 .lang-continue { font: inherit; font-size: 16px; font-weight: 800; width: 100%; height: 0; margin-top: 0; border: 0; border-radius: 999px; background: var(--accent); color: var(--accent-ink); cursor: pointer; opacity: 0; overflow: hidden; transform: translateY(8px); transition: height .35s cubic-bezier(.22, 1, .36, 1), margin .35s cubic-bezier(.22, 1, .36, 1), opacity .3s ease, transform .35s cubic-bezier(.22, 1, .36, 1); }
 .lang-card.is-chosen .lang-continue { height: 54px; margin-top: 18px; opacity: 1; transform: none; box-shadow: 0 12px 28px -12px color-mix(in srgb, var(--accent) 70%, transparent); }
 .lang-continue:hover { background: color-mix(in srgb, var(--accent) 85%, #000); }
+.lang-note { color: var(--muted); font-size: 12.5px; margin-top: 14px; transition: opacity .2s ease, transform .2s ease; }
+.lang-cancel { font-size: 14px; font-weight: 700; color: var(--muted); text-decoration: none; padding: 8px 14px; border-radius: 999px; }
+.lang-cancel:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+/* 引っ越しのお知らせ（.sk-dn）は、言語の画面では出さない */
+.lang-page .sk-dn { display: none; }
+/* アプリ（Toolbox・MALU・Nagi・SK's Lab・LINE の中・アプリとして入れたもの）から開いたとき（<html data-lang-app>。/lang/lang.js）
+   サイトのヘッダー・フッター・アクセス解析のカードを隠し、上に戻るボタンとアプリの名前の帯を出す */
+.lang-appbar { display: none; }
+[data-lang-app] .lang-page .site-header, [data-lang-app] .lang-page .hd-menu, [data-lang-app] .lang-page .hd-backdrop,
+[data-lang-app] .lang-page .site-footer, [data-lang-app] .lang-page .skip, [data-lang-app] .lang-page .lang-cancel, [data-lang-app] .sk-analytics { display: none !important; }
+[data-lang-app] .lang-screen { min-height: 100vh; min-height: 100dvh; padding: calc(env(safe-area-inset-top) + 72px) 16px calc(env(safe-area-inset-bottom) + 32px); }
+[data-lang-app] .lang-appbar { position: fixed; z-index: 10; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 6px; height: calc(env(safe-area-inset-top) + 60px); padding: env(safe-area-inset-top) max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left)); }
+.lang-appbar-back { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: var(--ink); }
+.lang-appbar-back:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.lang-appbar-back svg { width: 24px; height: 24px; }
+.lang-appbar-app { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--ink); }
+.lang-appbar-app img { width: 22px; height: 22px; border-radius: 6px; }
+/* スマホでは、カードの枠をなくしてアプリの画面のように */
+@media (max-width: 560px) {
+  [data-lang-app] .lang-screen { align-content: start; }
+  [data-lang-app] .lang-card { background: transparent; box-shadow: none; padding: 8px 4px; }
+  [data-lang-app] .lang-item { background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+  [data-lang-app] .lang-item[aria-checked="true"] { background: var(--ink); box-shadow: 0 10px 24px -10px rgba(13, 16, 20, .5); }
+}
 
 /* ---------- 404 ---------- */
 .nf { min-height: calc(100vh - 52px - 80px); display: grid; place-items: center; text-align: center; padding: 64px 0; }
