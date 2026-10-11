@@ -2686,5 +2686,11 @@
   "ログインの方法": "Sign-in methods",
   "ログインの方法は、少なくとも 1 つ残す必要があります。": "You need to keep at least one sign-in method.",
   "安全のため、もう一度ログインしてからお試しください。": "For your security, please sign in again and try once more.",
-  "空欄にすると、ログインに使っているアカウントの名前を使います。": "Leave blank to use the name from the account you sign in with."
+  "空欄にすると、ログインに使っているアカウントの名前を使います。": "Leave blank to use the name from the account you sign in with.",
+  "GitHub でログイン": "Sign in with GitHub",
+  "SK のサービスを、ひとつのアカウントで。いつもの {names} のアカウントで入れて、パスワードを新しく作る必要はありません。": "All SK services with one account. Sign in with your usual {names} account — no new password needed.",
+  "{names} のアカウントでログインします。はじめての方も、このボタンからアカウントを作成できます。": "Sign in with a {names} account. New here? You can create an account with these buttons too.",
+  "このアカウントには、{names} のアカウントでログインします。SK がパスワードを発行・保存することはありません。2 段階認証などは、それぞれのアカウントで設定します。": "You sign in to this account with a {names} account. SK never issues or stores passwords. Set up 2-step verification and similar in each account.",
+  "このメールアドレスの SK Hub Systems アカウントは、前に別の方法で作られています。前に使った方法でログインすると、{name} もつないで、次からどちらでもログインできるようにします。": "An SK Hub Systems account with this email address was created with a different method. Sign in with that method and we'll connect {name} too, so you can use either next time.",
+  "{a} か {b}": "{a} or {b}"
 }

@@ -2,7 +2,7 @@
 // ログイン → アカウントの作成（規約への同意）→ アカウントの確認・プロフィール・お知らせ・設定の同期・データのダウンロード・削除
 // サービスのページから ?next=/y-filter/ のように来たときは、使えるようになったら戻す。
 import {
-  LOGIN_PROVIDERS, MICROSOFT_LOGIN, PROFILE_COLORS, PROFILE_NAME_MAX, SERVICES, SYNC_AT_KEY, agreeLatestTerms, availableLogins, confirmIdentity,
+  LOGIN_PROVIDERS, PROFILE_COLORS, PROFILE_NAME_MAX, SERVICES, SYNC_AT_KEY, agreeLatestTerms, availableLogins, confirmIdentity,
   connectService, disconnectService, isConnected, db, deleteLogin, linkLogin, loginsOf, markNoticesSeen, profileOf, register, rememberAccount,
   safeNext, saveLanguage, saveProfile, signIn, signInAndLinkPending, signOutAccount, syncSettings, unlinkLogin, watchAccount
 } from "/assets/hub/account.js";
@@ -767,13 +767,22 @@ async function renderConsole(user) {
 
 // ---------- 操作 ----------
 
-// ログインのボタン（data-acct-signin="google" | "microsoft"）。Microsoft は MICROSOFT_LOGIN のときだけ出す
-root.querySelectorAll('[data-acct-signin="microsoft"]').forEach((btn) => { btn.hidden = !MICROSOFT_LOGIN; });
-// Microsoft をまだ出していないあいだは、説明も Google だけに
-if (!MICROSOFT_LOGIN) {
-  $("[data-acct-signin-lead]").textContent = t("SK のサービスを、ひとつの Google アカウントで。パスワードを新しく作る必要はありません。");
-  $("[data-acct-signin-note]").textContent = t("SK Hub Systems アカウントのログインは、Google アカウントだけに対応しています。はじめての方も、このボタンからアカウントを作成できます。");
-  $("[data-acct-security-lead]").textContent = t("このアカウントには Google アカウントでログインします。SK がパスワードを発行・保存することはありません。");
+// ログインのボタン（data-acct-signin="google" | "github" | "microsoft"）。使える方法（/assets/hub/account.js の availableLogins）だけ出す
+const logins = availableLogins();
+root.querySelectorAll("[data-acct-signin]").forEach((btn) => { btn.hidden = !logins.includes(btn.dataset.acctSignin || "google"); });
+// 説明の文も、使える方法に合わせる（例:「Google か GitHub」）
+{
+  const names = logins.map((k) => LOGIN_PROVIDERS[k].name);
+  if (names.length === 1) {
+    $("[data-acct-signin-lead]").textContent = t("SK のサービスを、ひとつの Google アカウントで。パスワードを新しく作る必要はありません。");
+    $("[data-acct-signin-note]").textContent = t("SK Hub Systems アカウントのログインは、Google アカウントだけに対応しています。はじめての方も、このボタンからアカウントを作成できます。");
+    $("[data-acct-security-lead]").textContent = t("このアカウントには Google アカウントでログインします。SK がパスワードを発行・保存することはありません。");
+  } else {
+    const list = names.length === 2 ? t("{a} か {b}", { a: names[0], b: names[1] }) : t("{a} か {b}", { a: names.slice(0, -1).join(", "), b: names[names.length - 1] });
+    $("[data-acct-signin-lead]").textContent = t("SK のサービスを、ひとつのアカウントで。いつもの {names} のアカウントで入れて、パスワードを新しく作る必要はありません。", { names: list });
+    $("[data-acct-signin-note]").textContent = t("{names} のアカウントでログインします。はじめての方も、このボタンからアカウントを作成できます。", { names: list });
+    $("[data-acct-security-lead]").textContent = t("このアカウントには、{names} のアカウントでログインします。SK がパスワードを発行・保存することはありません。2 段階認証などは、それぞれのアカウントで設定します。", { names: list });
+  }
 }
 root.querySelectorAll("[data-acct-signin]").forEach((btn) => btn.addEventListener("click", async () => {
   if (busy) return;
@@ -782,32 +791,38 @@ root.querySelectorAll("[data-acct-signin]").forEach((btn) => btn.addEventListene
   try {
     await signIn(btn.dataset.acctSignin || "google");
   } catch (err) {
-    if (err?.code === "sk/link-needed") {
-      // 同じメールアドレスで、別の方法のアカウントがある: その方法でログインしてから、今回の方法をつなぐ
-      const name = LOGIN_PROVIDERS[err.existing].name;
-      $("[data-acct-link-text]").textContent = t("{email} は、{name} でログインする SK Hub Systems アカウントがあります。{name} でログインすると、{other} もつないで、次からどちらでもログインできるようにします。", { email: err.email || t("このメールアドレス"), name, other: LOGIN_PROVIDERS[btn.dataset.acctSignin].name });
-      const go = $("[data-acct-link-go]");
-      go.textContent = t("{name} でログインしてつなぐ", { name });
-      go.dataset.key = err.existing;
-      $("[data-acct-link]").hidden = false;
-    } else message(errText(err));
+    if (err?.code === "sk/link-needed") showLinkNeeded(btn.dataset.acctSignin || "google", err.others || []);
+    else message(errText(err));
   } finally {
     setBusy(false, btn);
   }
 }));
-$("[data-acct-link-go]").addEventListener("click", async (e) => {
-  const btn = e.currentTarget;
-  if (busy) return;
-  setBusy(true, btn);
-  try {
-    await signInAndLinkPending(btn.dataset.key);
-    $("[data-acct-link]").hidden = true;
-  } catch (err) {
-    message(errText(err));
-  } finally {
-    setBusy(false, btn);
-  }
-});
+// 同じメールアドレスで、別の方法の SK Hub Systems アカウントがあるとき: 前に使った方法でログインしてもらい、今回の方法をつなぐ
+function showLinkNeeded(key, others) {
+  const box = $("[data-acct-link]");
+  $("[data-acct-link-text]").textContent = t("このメールアドレスの SK Hub Systems アカウントは、前に別の方法で作られています。前に使った方法でログインすると、{name} もつないで、次からどちらでもログインできるようにします。", { name: LOGIN_PROVIDERS[key].name });
+  const wrap = $("[data-acct-link-buttons]");
+  wrap.replaceChildren(...others.map((k) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "acct-google";
+    b.textContent = t("{name} でログインしてつなぐ", { name: LOGIN_PROVIDERS[k].name });
+    b.addEventListener("click", async () => {
+      if (busy) return;
+      setBusy(true, b);
+      try {
+        await signInAndLinkPending(k);
+        box.hidden = true;
+      } catch (err) {
+        message(errText(err));
+      } finally {
+        setBusy(false, b);
+      }
+    });
+    return b;
+  }));
+  box.hidden = false;
+}
 
 $$("[data-acct-signout], [data-acct-cancel]").forEach((btn) => btn.addEventListener("click", () => signOutAccount()));
 $("[data-acct-retry]").addEventListener("click", () => location.reload());

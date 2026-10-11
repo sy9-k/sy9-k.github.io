@@ -1,4 +1,4 @@
-// SK Hub Systems アカウント（ログインは Google と Microsoft。Microsoft は MICROSOFT_LOGIN が true のときだけ出す）
+// SK Hub Systems アカウント（ログインは Google・GitHub・Microsoft。GitHub は GITHUB_LOGIN、Microsoft は MICROSOFT_LOGIN が true のときだけ出す）
 // sy9-k.github.io のページ（管理コンソール・これからのサービス）で共通に使うモジュール。
 //   ・ログイン状態は同じサイトの中で共有される（Firebase Authentication がブラウザに保存する）
 //   ・アカウントの登録 = accounts/{UID} に規約への同意を記録すること。Google の名前・メールアドレスは Firebase Authentication にだけある
@@ -10,7 +10,7 @@
 //   watchAccount(({ status, user }) => { if (status !== "ready") location.href = accountPageUrl(); ... });
 import { getApp, getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  GoogleAuthProvider, OAuthProvider, deleteUser, getAuth, linkWithCredential, linkWithPopup, onAuthStateChanged, reauthenticateWithPopup,
+  GithubAuthProvider, GoogleAuthProvider, OAuthProvider, deleteUser, getAuth, linkWithCredential, linkWithPopup, onAuthStateChanged, reauthenticateWithPopup,
   signInWithPopup, signOut, unlink
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
@@ -129,14 +129,25 @@ export function setUnreadHint(count) {
 
 // ---------- ログイン ----------
 // ---------- ログインの方法 ----------
-// Microsoft でのログインは、Azure にアプリを登録し、Firebase の「ログイン方法」で Microsoft を有効にしてから true にする
+// GitHub は、GitHub に OAuth アプリを登録し、Firebase の「ログイン方法」で GitHub を有効にしてから true にする
+export const GITHUB_LOGIN = false;
+// Microsoft は、Azure にアプリを登録し（ディレクトリが必要）、Firebase で有効にしてから true にする（2026-10 時点では見送り）
 export const MICROSOFT_LOGIN = false;
 export const LOGIN_PROVIDERS = {
   google: { id: "google.com", name: "Google", security: "https://myaccount.google.com/security" },
+  github: { id: "github.com", name: "GitHub", security: "https://github.com/settings/security" },
   microsoft: { id: "microsoft.com", name: "Microsoft", security: "https://account.microsoft.com/security" }
 };
-export const availableLogins = () => Object.keys(LOGIN_PROVIDERS).filter((k) => k !== "microsoft" || MICROSOFT_LOGIN);
+export const availableLogins = () => Object.keys(LOGIN_PROVIDERS).filter((k) => (k !== "microsoft" || MICROSOFT_LOGIN) && (k !== "github" || GITHUB_LOGIN));
 function provider(key = "google") {
+  if (key === "github") {
+    // 名前・アイコンと、メールアドレス（非公開にしている人のも）を読む
+    const p = new GithubAuthProvider();
+    p.addScope("read:user");
+    p.addScope("user:email");
+    p.setCustomParameters({ allow_signup: "true" });
+    return p;
+  }
   if (key === "microsoft") {
     // 個人の Microsoft アカウントと、職場・学校のアカウントの両方（Azure の登録で「すべてのアカウント」）
     const p = new OAuthProvider("microsoft.com");
@@ -168,10 +179,12 @@ export async function signIn(key = "google") {
     return await signInWithPopup(auth, provider(key));
   } catch (err) {
     if (err?.code === "auth/account-exists-with-different-credential") {
-      pending = { key, credential: OAuthProvider.credentialFromError(err) };
+      const cred = key === "github" ? GithubAuthProvider.credentialFromError(err) : key === "google" ? GoogleAuthProvider.credentialFromError(err) : OAuthProvider.credentialFromError(err);
+      pending = { key, credential: cred };
       const e = new Error("link-needed");
       e.code = "sk/link-needed";
-      e.existing = key === "google" ? "microsoft" : "google";
+      // どの方法で作ったかは（なりすまし対策で）教えてもらえないので、ほかの方法を全部出す
+      e.others = availableLogins().filter((k) => k !== key);
       e.email = err.customData?.email || "";
       throw e;
     }
