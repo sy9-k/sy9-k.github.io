@@ -130,7 +130,7 @@ export function setUnreadHint(count) {
 // ---------- ログイン ----------
 // ---------- ログインの方法 ----------
 // GitHub は、GitHub に OAuth アプリを登録し、Firebase の「ログイン方法」で GitHub を有効にしてから true にする
-export const GITHUB_LOGIN = false;
+export const GITHUB_LOGIN = true;
 // Microsoft は、Azure にアプリを登録し（ディレクトリが必要）、Firebase で有効にしてから true にする（2026-10 時点では見送り）
 export const MICROSOFT_LOGIN = false;
 export const LOGIN_PROVIDERS = {

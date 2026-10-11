@@ -1280,7 +1280,7 @@
   }
   function doJoin(code) {
     if (!hint()) {
-      window.M3.dialog({ title: t("ログインしてください"), icon: "login", body: el("p", "tbs-dialog__text", t("招待コードで参加するには、SK Hub Systems アカウント（Google）でログインします。ログインしたあと、もう一度招待のリンクを開いてください。")),
+      window.M3.dialog({ title: t("ログインしてください"), icon: "login", body: el("p", "tbs-dialog__text", t("招待コードで参加するには、SK Hub Systems アカウント（Google・GitHub）でログインします。ログインしたあと、もう一度招待のリンクを開いてください。")),
         actions: [{ label: t("キャンセル"), value: null }, { label: t("ログイン"), primary: true, value: "login" }] })
         .then(function (v) { if (v === "login") location.href = loginUrl(location.pathname + "?join=" + encodeURIComponent(code)); });
       return;
