@@ -172,7 +172,9 @@
 
   // ---- 表示用の文字 ----
   var SYM = { "*": "×", "/": "÷", "-": "−" };
-  function group(intPart) { return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  // Toolbox の設定のアプリ別の設定（calc.group … 3 けたごとに区切る・calc.history … 計算の履歴を残す）
+  function opt(k) { return !(window.SKToolbox && SKToolbox.app && SKToolbox.app("calc")[k] === false); }
+  function group(intPart) { return opt("group") ? intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : intPart; }
   function fmtExpr(s) {
     return s.replace(/(\d+)(\.\d*)?(e[+\-]?\d+)?|[*\/\-]/gi, function (m, int, frac, exp) {
       return int !== undefined ? group(int) + (frac || "") + (exp || "") : SYM[m];
@@ -349,6 +351,7 @@
   var dayFmt = new Intl.DateTimeFormat(locale, { month: "long", day: "numeric" });
 
   function addHistory(e, r) {
+    if (!opt("history")) return;
     data.history.unshift({ e: e, r: r, t: Date.now() });
     if (data.history.length > MAX_HISTORY) data.history.length = MAX_HISTORY;
     save();
@@ -540,4 +543,6 @@
     renderHistory();
   });
   window.addEventListener("resize", render);
+  // Toolbox の設定（3 けたの区切りなど）を変えたとき
+  if (window.SKToolbox) SKToolbox.onChange(function () { render(); renderHistory(); });
 })();
