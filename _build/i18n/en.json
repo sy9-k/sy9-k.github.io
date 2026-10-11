@@ -2725,5 +2725,17 @@
   "明日の時間割を LINE で送る": "Send tomorrow's timetable with LINE",
   "時間割の招待": "Timetable invite",
   "時間割を開く": "Open timetable",
-  "自分も回す": "Spin it yourself"
+  "自分も回す": "Spin it yourself",
+  "LINE で使う SK's Toolbox": "SK's Toolbox in LINE",
+  "LINE の中の SK's Toolbox です。データはこの LINE の中だけに保存されます。ほかの端末と同期したり、SK Hub Systems アカウントを使ったりするときは、ブラウザで開いてください。": "This is SK's Toolbox inside LINE. Your data is saved only inside this LINE app. To sync with other devices or use your SK Hub Systems account, open it in a browser.",
+  "SK's Toolbox をすすめます": "Try SK's Toolbox",
+  "SK's Toolbox（時計・Todo・時間割・ルーレットなど）": "SK's Toolbox (clock, to-dos, timetable, roulette and more)",
+  "おすすめ": "Recommended",
+  "ブラウザで開いて参加します": "Join in your browser",
+  "ブラウザで開く": "Open in browser",
+  "ルーレットの結果や時間割、Countdown を、友だちやグループにカードで送れます。": "Send roulette results, timetables and Countdowns to friends and groups as cards.",
+  "友だちにすすめる": "Recommend to friends",
+  "招待コードでの参加には、SK Hub Systems アカウントでのログインが必要です。LINE の中ではログインできないので、ブラウザで開きます。": "Joining with an invite code requires signing in with your SK Hub Systems account. You can't sign in inside LINE, so this opens in your browser.",
+  "時計・Todo・時間割・Countdown・ルーレットが、LINE の中ですぐ使えます。結果や時間割を友だちにカードで送れます。": "Clock, Todo, Timetable, Countdown and Roulette, ready to use right inside LINE. Send results and timetables to friends as cards.",
+  "開いてみる": "Open it"
 }

@@ -28,6 +28,17 @@
   var root = document.documentElement;
   var I18N = window.SKI18N;
 
+  // LINE のミニアプリとして開いているか（?line=dev・?line=1 などで来て、このタブのあいだ覚える。/toolbox/shared/line.js も同じ）
+  //   <html class="in-line"> を、画面が出る前に付ける（ヘッダーやボタンが一瞬見えないように）
+  var IN_LINE = (function () {
+    try {
+      var p = new URLSearchParams(location.search).get("line");
+      if (p) sessionStorage.setItem("sk_line", p === "dev" || p === "review" ? p : "prod");
+      return !!sessionStorage.getItem("sk_line") || /[?&]liff\.state=/.test(location.search);
+    } catch (e) { return /[?&]line=/.test(location.search); }
+  })();
+  if (IN_LINE) root.classList.add("in-line");
+
   // 画面の切りかえのアニメーションは /toolbox/shared/m3.css のもの（タイトルバーを動かさないフェードスルー）。
   // frameworks/check.js がサイト共通の切りかえを後から入れて上書きしないよう、check.js が見る印を付けておく
   if (!document.querySelector('[data-RedCheckOSS-style="view-transition"]')) {
@@ -500,15 +511,22 @@
   function buildSettings() {
     updaters = [];
     var body = el("div", "tbs-body");
-    body.appendChild(accountSection());
+    // LINE の中では、ログインとオンライン同期は出さない（LINE の中の画面では Google のログインができないため）
+    if (!IN_LINE) {
+      body.appendChild(accountSection());
 
-    // オンライン同期（任意。中身は /toolbox/shared/sync.js）
-    var syncSec = section(t("オンライン同期"));
-    var syncBox = el("div");
-    syncBox.setAttribute("data-tb-sync", "");
-    syncSec.appendChild(syncBox);
-    if (window.SKToolboxSync) SKToolboxSync.mount(syncBox);
-    body.appendChild(syncSec);
+      // オンライン同期（任意。中身は /toolbox/shared/sync.js）
+      var syncSec = section(t("オンライン同期"));
+      var syncBox = el("div");
+      syncBox.setAttribute("data-tb-sync", "");
+      syncSec.appendChild(syncBox);
+      if (window.SKToolboxSync) SKToolboxSync.mount(syncBox);
+      body.appendChild(syncSec);
+    } else {
+      var lineSec = section("LINE");
+      lineSec.appendChild(el("p", "tbs-text", t("LINE の中の SK's Toolbox です。データはこの LINE の中だけに保存されます。ほかの端末と同期したり、SK Hub Systems アカウントを使ったりするときは、ブラウザで開いてください。")));
+      body.appendChild(lineSec);
+    }
 
     // 見た目
     var look = section(t("見た目"));
@@ -568,7 +586,7 @@
     use.appendChild(switchRow(t("押したときに振動する"), t("Calc のキーと、Todo のチェック。対応している端末（Android など）だけです"),
       function () { return settings.haptics; }, function (on) { set({ haptics: on }); vibrate(); }));
     // アプリのアイコンの数字（Badging API。対応しているブラウザで、アプリとして入れたとき）
-    if (navigator.setAppBadge) {
+    if (navigator.setAppBadge && !IN_LINE) {
       use.appendChild(switchRow(t("アイコンに数字を出す"), t("アプリとして入れたとき、Dock やホーム画面のアイコンに、期限切れと今日の Todo の数を出します"),
         function () { return settings.badge; }, function (on) {
           set({ badge: on });
@@ -579,14 +597,14 @@
     body.appendChild(use);
 
     // タイトルバー（パソコンの Chrome・Edge でアプリとして入れ、タイトルバーを Toolbox のものにしたとき）
-    if (navigator.windowControlsOverlay) body.appendChild(titlebarSection());
+    if (navigator.windowControlsOverlay && !IN_LINE) body.appendChild(titlebarSection());
 
     // この端末のデータ
     var data = section(t("この端末のデータ"));
     var dataNote = el("p", "tbs-text");
     data.appendChild(dataNote);
     // データを消されにくくする（storage.persist。アプリとして入れると、たいてい自動でオンになる）
-    if (navigator.storage && navigator.storage.persisted) {
+    if (navigator.storage && navigator.storage.persisted && !IN_LINE) {
       var keep = el("div", "tbs-item tbs-item--keep");
       keep.appendChild(icon("verified_user"));
       var keepLabel = label(t("データの保護"), t("確認中…"));
@@ -716,7 +734,7 @@
     // 最新の版に更新（古いファイルが残って、新しい機能が出てこないとき）
     // アプリとして入れる方法（/toolbox/install/。アプリとして開いているときは出さない）
     var installed = (window.matchMedia && matchMedia("(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: minimal-ui)").matches) || navigator.standalone === true;
-    if (!installed) more.appendChild(linkRow("/toolbox/install/", "install_mobile", t("アプリとして入れる方法"), t("ホーム画面・Dock から開けて、オフラインでも使えます")));
+    if (!installed && !IN_LINE) more.appendChild(linkRow("/toolbox/install/", "install_mobile", t("アプリとして入れる方法"), t("ホーム画面・Dock から開けて、オフラインでも使えます")));
     var updRow = el("button", "tbs-item tbs-item--link tbs-item--button m3-state");
     updRow.type = "button";
     updRow.appendChild(icon("system_update"));
@@ -826,11 +844,12 @@
     colors: [{ key: "app", name: t("アプリの色"), note: t("Calc は青、Memo はオレンジ、Todo は緑") }].concat(COLORS),
     openSettings: openSettings,
     renderSettings: renderSettings,
-    forceUpdate: forceUpdate
+    forceUpdate: forceUpdate,
+    inLine: IN_LINE
   };
 
   // オンライン同期（任意）。見本（?embed）では読み込まない
-  if (!/[?&]embed\b/.test(location.search)) {
+  if (!/[?&]embed\b/.test(location.search) && !IN_LINE) {
     var sync = document.createElement("script");
     sync.src = "/toolbox/shared/sync.js";
     (document.head || document.documentElement).appendChild(sync);

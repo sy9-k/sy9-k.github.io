@@ -8,6 +8,9 @@
 //       name / picture    … LINE の名前とアイコン（画面に出すだけ。保存も送信もしない）
 //       card(o)           … カード（Flex Message）を作る { alt, kicker, title, sub, rows: [[左, 右]], color, url, button }
 //       share(card, text) … LINE の友だち・グループに送る。LINE の外（ふつうのブラウザ）では、text を LINE の共有のリンクで送る
+//                            LINE の中では、カードのボタンの URL（/toolbox/ のページ）を、LINE のミニアプリで開くリンク（パーマネントリンク）に変える
+//       openExternal(url) … ふつうのブラウザで開く（LINE の中ではできないこと: ログイン・オンライン同期・招待コードでの参加）
+//       recommend()       … SK's Toolbox を友だちにすすめるカード
 //   ・LINE の名前・アイコンは画面に出すだけで、どこにも保存・送信しない。カードは、利用者が選んだ相手に、利用者の操作で送る
 (function () {
   "use strict";
@@ -71,13 +74,33 @@
     if (!w) location.href = url;
     return Promise.resolve("link");
   }
+  // LINE の中: カードのボタンを、ミニアプリで開くリンクに（できなければ、そのままの URL）
+  function toLineLink(card) {
+    var btn = card.contents && card.contents.footer && card.contents.footer.contents[0];
+    var uri = btn && btn.action && btn.action.uri;
+    var liff = window.liff;
+    if (!uri || uri.indexOf("https://sy9-k.github.io/toolbox/") !== 0 || !liff || !liff.permanentLink || !liff.permanentLink.createUrlBy) return Promise.resolve(card);
+    return liff.permanentLink.createUrlBy(uri).then(function (u) { if (u) btn.action.uri = u; return card; }, function () { return card; });
+  }
   api.share = function (card, text) {
     if (!api.inLine) return shareLink(text);
     return api.ready.then(function () {
       var liff = window.liff;
       if (!liff || !liff.isApiAvailable || !liff.isApiAvailable("shareTargetPicker")) return shareLink(text);
-      return liff.shareTargetPicker([card], { isMultiple: true }).then(function (res) { return res ? "sent" : "cancel"; });
+      return toLineLink(card).then(function (c) { return liff.shareTargetPicker([c], { isMultiple: true }); }).then(function (res) { return res ? "sent" : "cancel"; });
     });
+  };
+  api.openExternal = function (url) {
+    var full = new URL(url, location.href).href;
+    if (api.inLine && window.liff && window.liff.openWindow) { try { window.liff.openWindow({ url: full, external: true }); return; } catch (e) { /* 下へ */ } }
+    location.href = full;
+  };
+  api.recommend = function () {
+    var url = "https://sy9-k.github.io/toolbox/";
+    return api.share(api.card({
+      alt: t("SK's Toolbox をすすめます"), kicker: t("おすすめ"), title: "SK's Toolbox",
+      sub: t("時計・Todo・時間割・Countdown・ルーレットが、LINE の中ですぐ使えます。結果や時間割を友だちにカードで送れます。"), color: "#2563eb", url: url, button: t("開いてみる")
+    }), t("SK's Toolbox（時計・Todo・時間割・ルーレットなど）") + "\n" + url);
   };
 
   if (!api.inLine) return;

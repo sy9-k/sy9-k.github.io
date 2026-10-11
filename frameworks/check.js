@@ -8,6 +8,10 @@
 (function() {
     "use strict";
 
+    // SK's Toolbox を LINE のミニアプリとして開いているときは、同意カード・情報ウィジェット・チェックを出さない
+    //（/toolbox/shared/line.js。規約とポリシーは、Toolbox の設定・LINE の同意の画面から読める）
+    if ((function () { try { return /[?&]line=/.test(location.search) || /[?&]liff\.state=/.test(location.search) || !!sessionStorage.getItem("sk_line"); } catch (e) { return false; } })()) return;
+
     const LOG_PREFIX = "[SKHubCheck]";
     const HEAVY_SCRIPT_ATTR = "data-RedCheckOSS-heavy-script";
 

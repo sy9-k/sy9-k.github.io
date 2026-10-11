@@ -461,4 +461,7 @@
   setInterval(function () { if (document.visibilityState === "visible") { greet(); renderTodo(); } }, 60000);
   setView(view, false, false);
   document.addEventListener("sk-line-ready", greet);
+  // LINE の中: 友だちにすすめる（/toolbox/shared/line.js）
+  var rec = $("line-recommend");
+  if (rec) rec.addEventListener("click", function () { if (window.SKLine) SKLine.recommend(); });
 })();

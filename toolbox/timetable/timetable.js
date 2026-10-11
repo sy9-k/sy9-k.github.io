@@ -457,7 +457,7 @@
     head.appendChild(h);
     // 受け取る人: 通知をまだ決めていなければ「通知をオン」
     if (readonly && window.Notification && Notification.permission === "default") {
-      var on = el("button", "text-btn m3-state");
+      var on = el("button", "text-btn m3-state tt-notify-on");
       on.type = "button";
       on.append(icon("notifications"), el("span", "", t("新しい連絡を通知する")));
       on.addEventListener("click", function () { Notification.requestPermission().then(function () { render(); }); });
@@ -1323,6 +1323,13 @@
     window.M3.prompt({ title: t("招待コードで参加"), label: t("招待コード（例: K7QM-3XRA）"), placeholder: "XXXX-XXXX", ok: t("次へ"), maxLength: 20 }).then(function (v) { if (v) doJoin(v); });
   }
   function doJoin(code) {
+    // LINE の中では、ログイン（Google）ができないので、ブラウザで開いて参加してもらう
+    if (window.SKLine && SKLine.inLine) {
+      window.M3.dialog({ title: t("ブラウザで開いて参加します"), icon: "open_in_browser", body: el("p", "tbs-dialog__text", t("招待コードでの参加には、SK Hub Systems アカウントでのログインが必要です。LINE の中ではログインできないので、ブラウザで開きます。")),
+        actions: [{ label: t("キャンセル"), value: null }, { label: t("ブラウザで開く"), primary: true, value: "open" }] })
+        .then(function (v) { if (v === "open") SKLine.openExternal("/toolbox/timetable/?join=" + encodeURIComponent(code)); });
+      return;
+    }
     if (!hint()) {
       window.M3.dialog({ title: t("ログインしてください"), icon: "login", body: el("p", "tbs-dialog__text", t("招待コードで参加するには、SK Hub Systems アカウント（Google・GitHub）でログインします。ログインしたあと、もう一度招待のリンクを開いてください。")),
         actions: [{ label: t("キャンセル"), value: null }, { label: t("ログイン"), primary: true, value: "login" }] })
