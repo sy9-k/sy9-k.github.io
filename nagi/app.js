@@ -472,6 +472,50 @@
   });
   $("settings-button").addEventListener("click", function () { fillSettings(); showSettingsSection("settings-general"); showVersion(); $("settings").showModal(); });
 
+  // 更新の確認（MALU と同じ。Service Worker に新しい版がないか確かめる。見つけたら、ボタンが「再読み込み」に変わる）
+  var updateBox = document.querySelector("#settings .about-status");
+  var updateStatus = $("about-update-status");
+  var updateButton = $("check-update");
+  var updateFound = false;
+  function setUpdateState(state, text) {
+    updateBox.classList.toggle("is-checking", state === "checking");
+    updateBox.classList.toggle("is-new", state === "new");
+    updateBox.classList.toggle("is-error", state === "error");
+    updateBox.querySelector(".about-status__mark .ms").textContent = state === "checking" ? "progress_activity" : state === "new" ? "upgrade" : state === "error" ? "error" : "check";
+    updateStatus.textContent = text;
+  }
+  function checkUpdate() {
+    if (updateFound) { location.reload(); return; }
+    if (!("serviceWorker" in navigator)) { setUpdateState("error", t("この端末では更新を確認できません")); return; }
+    updateButton.disabled = true;
+    setUpdateState("checking", t("更新を確認しています…"));
+    navigator.serviceWorker.getRegistration().then(function (reg) {
+      if (!reg) throw new Error("no registration");
+      return reg.update().then(function () { return reg; });
+    }).then(function (reg) {
+      updateFound = !!(reg.installing || reg.waiting);
+      if (updateFound) {
+        setUpdateState("new", t("新しい版が見つかりました"));
+        updateButton.textContent = t("再読み込み");
+      } else {
+        setUpdateState("ok", t("Nagi は最新です"));
+      }
+    }).catch(function () {
+      setUpdateState("error", t("更新を確認できませんでした。インターネットの接続を確かめてください"));
+    }).then(function () { updateButton.disabled = false; });
+  }
+  updateButton.addEventListener("click", checkUpdate);
+
+  // キャッシュを消して読み込み直す（Nagi が保存したファイルだけ。localStorage の記録と設定には触らない）
+  $("reset-cache").addEventListener("click", function () {
+    var btn = this;
+    btn.disabled = true;
+    var jobs = [];
+    if (window.caches && caches.keys) jobs.push(caches.keys().then(function (names) { return Promise.all(names.filter(function (n) { return /^nagi-/.test(n); }).map(function (n) { return caches.delete(n); })); }));
+    if (navigator.serviceWorker) jobs.push(navigator.serviceWorker.getRegistration().then(function (reg) { return reg && reg.unregister(); }));
+    Promise.all(jobs).catch(function () {}).then(function () { location.reload(); });
+  });
+
   // バージョン（このアプリについて）。「1.0（ビルド 6）」… ビルドは、この端末に入っている Service Worker のキャッシュの番号（nagi/sw.js の CACHE_NAME）
   var APP_VERSION = "1.0";
   function showVersion() {

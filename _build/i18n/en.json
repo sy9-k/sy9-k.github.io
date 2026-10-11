@@ -2830,5 +2830,12 @@
   "集中のあとは鉄琴、休憩のあとは風鈴の音": "A glockenspiel after focusing, a wind chime after a break",
   "集中の記録": "Focus records",
   "集中（分）": "Focus (minutes)",
-  "（ビルド {build}）": "(build {build})"
+  "（ビルド {build}）": "(build {build})",
+  "Nagi は最新です": "Nagi is up to date",
+  "この端末では更新を確認できません": "Updates can't be checked on this device",
+  "オフライン用に保存してあるファイルを消して、Nagi を最新の状態で読み込み直します。記録と設定は消えません。": "Deletes the files saved for offline use and reloads Nagi in its latest state. Your records and settings are kept.",
+  "新しい版が見つかりました": "A new version is available",
+  "更新は、開いたときに自動で確かめて反映します。": "Updates are checked and applied automatically when you open Nagi.",
+  "更新を確認しています…": "Checking for updates…",
+  "更新を確認できませんでした。インターネットの接続を確かめてください": "Couldn't check for updates. Please check your internet connection."
 }

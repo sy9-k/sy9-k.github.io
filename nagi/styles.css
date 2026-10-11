@@ -320,6 +320,14 @@ label.settings-item { cursor: pointer; }
 .settings-number:hover { border-color: var(--on-surface); }
 .settings-number:focus { outline: 0; border: 2px solid var(--primary); padding: 0 13px; }
 .settings-card { padding: 20px; border-radius: 20px; background: var(--surface-container); }
+.about-status { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; }
+.about-status__mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--primary-container); color: var(--on-primary-container); }
+.about-status__mark .ms { font-size: 20px; }
+.about-status.is-checking .about-status__mark .ms { animation: settings-spin 1s linear infinite; }
+.about-status.is-new .about-status__mark { background: var(--tertiary-container); color: var(--on-tertiary-container); }
+.about-status.is-error .about-status__mark { background: var(--error-container); color: var(--on-error-container); }
+@keyframes settings-spin { to { transform: rotate(360deg); } }
+.settings-action:disabled { background: color-mix(in srgb, var(--on-surface) 12%, transparent); color: color-mix(in srgb, var(--on-surface) 38%, transparent); cursor: default; }
 .about-header { display: flex; align-items: center; gap: 20px; padding: 8px 4px 24px; }
 .about-icon { width: 72px; height: 72px; border-radius: 16px; flex: none; }
 .about-name { margin: 0 0 4px; font-size: 24px; line-height: 32px; font-weight: 400; color: var(--on-surface); }
@@ -337,6 +345,8 @@ label.settings-item { cursor: pointer; }
   .settings-item { flex-wrap: wrap; gap: 12px 16px; }
   .settings-item > div { flex: 1 1 160px; min-width: 0; }
   .settings-number { width: 88px; }
+  .about-status { grid-template-columns: auto minmax(0, 1fr); }
+  .about-status .settings-action { grid-column: 1 / -1; justify-self: start; }
 }
 @media (prefers-reduced-motion: reduce) {
   .dialog.settings-view[open], .settings-section--active { animation: none; }

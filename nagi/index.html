@@ -230,6 +230,13 @@
               </div>
               <button type="button" id="clear-button" class="settings-action settings-action--danger">このブラウザの記録を消す</button>
             </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">キャッシュ</p>
+                <p class="settings-item__description">オフライン用に保存してあるファイルを消して、Nagi を最新の状態で読み込み直します。記録と設定は消えません。</p>
+              </div>
+              <button type="button" id="reset-cache" class="settings-action">再読み込み</button>
+            </div>
           </section>
 
           <section id="settings-about" class="settings-section" aria-labelledby="settings-about-title">
@@ -240,6 +247,15 @@
                 <p class="about-name">Nagi</p>
                 <p class="about-description">集中と休憩をくり返して、勉強や作業の時間を記録する集中タイマーです。</p>
               </div>
+            </div>
+            <!-- 更新の確認（MALU と同じ。中身は app.js の checkUpdate） -->
+            <div class="settings-item about-status">
+              <span class="about-status__mark" aria-hidden="true"><span class="ms">check</span></span>
+              <div>
+                <p id="about-update-status" class="settings-item__title">Nagi は最新です</p>
+                <p class="settings-item__description">更新は、開いたときに自動で確かめて反映します。</p>
+              </div>
+              <button type="button" id="check-update" class="settings-action">更新を確認</button>
             </div>
             <div class="settings-item">
               <div>
