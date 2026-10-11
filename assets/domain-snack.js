@@ -1,6 +1,7 @@
 // sk-hub.jp への引っ越しのお知らせ（アプリ用。SK's Toolbox の各アプリ・Nagi・MALU・SK's Lab）
 //   ・アプリにはサイトのヘッダーがないので、ヘッダーの下の帯（index.html の #sk-dn）の代わりに、
 //     最初に開いたとき 1 回だけ、画面の下に小さな知らせ（スナックバー）を出す。設定の画面にも同じお知らせを置いている
+//   ・アプリの下のボタン（Todo の「新規リマインダー」・Clock のドックなど）にかぶらないよう、下から 88px あける
 //   ・1 回出したら、同じ段階（STAGE）のあいだは出さない（localStorage の sk_domain_notice_snack）
 //     サイトの帯を閉じた人（sk_domain_notice が同じ段階）にも出さない
 //   ・日程が決まった・切り替えたときは、STAGE を index.html の #sk-dn の data-stage とそろえて変える
@@ -21,7 +22,7 @@
 
   var CSS =
     ".sk-snack{--sk-snack-bg:#303134;--sk-snack-ink:#f1f3f4;--sk-snack-a:#a8c7fa;" +
-    "position:fixed;z-index:10001;left:50%;bottom:calc(24px + env(safe-area-inset-bottom, 0px));translate:-50% 0;box-sizing:border-box;" +
+    "position:fixed;z-index:10001;left:50%;bottom:calc(88px + env(safe-area-inset-bottom, 0px));translate:-50% 0;box-sizing:border-box;" +
     "width:max-content;max-width:min(560px,calc(100vw - 32px));min-height:48px;display:flex;align-items:center;gap:4px;padding:6px 6px 6px 16px;" +
     "border-radius:8px;background:var(--sk-snack-bg);color:var(--sk-snack-ink);box-shadow:0 3px 5px rgba(0,0,0,.2),0 1px 18px rgba(0,0,0,.12);" +
     "font:14px/20px Inter,\"Noto Sans JP\",\"Hiragino Sans\",\"Yu Gothic UI\",Meiryo,system-ui,sans-serif;letter-spacing:.01em;" +
