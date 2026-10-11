@@ -25,7 +25,7 @@ pages = [
     ("updates.html", "updates/index.html", "アップデート | SK", "SK のサイトとプロダクト（Y-FILTER.・SK Hub Systems・SK's Lab）のアップデート情報。", True, True),
     ("toolbox.html", "toolbox/index.html", "SK's Toolbox", "毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」、時間割の「Timetable」、回して決める「Roulette」。", False, True),
     ("lab.html", "lab/index.html", "SK's Lab | SK", "SK の実験的なツールを置いている場所。QR Drop やスマートダッシュボードなど。", False, True),
-    ("domain.html", "domain/index.html", "sk-hub.jp への引っ越しのお知らせ | SK", "SK のサイトとプロダクトのアドレスが、sy9-k.github.io から sk-hub.jp に変わります。変わること・変わらないこと・切り替えのときにしてほしいこと。", True, True),
+    ("domain.html", "domain/index.html", "sk-hub.jp への引っ越しのお知らせ | SK", "SK のサイトとプロダクトのアドレスが、sy9-k.github.io から sk-hub.jp に変わります。変わること・新しくできるようになること・変わらないこと・切り替えのときにしてほしいこと。", True, True),
     ("status.html", "status/index.html", "システム稼働状況 | SK", "SK のサイトとプロダクト（SK Hub Systems・Y-FILTER.・MALU）のシステム稼働状況。", True, True),
     ("credits.html", "credits/index.html", "Link & Credit | SK", "SK のサイトとプロダクトで使わせてもらっているもの（RedCheck など）と、つながりのあるサイト。", True, True),
     ("about.html", "about/index.html", "私について | SK", "Y-FILTER. と MALU を開発している SK の自己紹介と、これまでにつくったもの。", False, True),
