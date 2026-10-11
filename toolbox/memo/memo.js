@@ -5,7 +5,7 @@
 //         notes: [{ id, html, text, folder, pinned, created, updated, deleted? }] }
 //       html … 本文（下の sanitize() を通した HTML。画像は <img data-img="id"> だけで、中身は IndexedDB）
 //       text … 本文の文字だけ（一覧・検索・ホーム画面のウィジェット用。1 行目がタイトル）
-//       deleted … 「最近削除した項目」に入れた時刻。30 日たつと完全に消す
+//       deleted … 「最近削除した項目」に入れた時刻。30 日（Toolbox の設定で 7・90 日にもできる）たつと完全に消す
 //     テーマなどは共通の設定（/toolbox/shared/settings.js）
 //   ・画像は IndexedDB（sk_toolbox_memo の images）に保存する。localStorage に入れると、すぐ容量がいっぱいになるため。
 //     どちらも、この端末のブラウザの中だけ。大きい画像は長い辺 1600px に縮めてから保存する
@@ -111,7 +111,9 @@
   // ================================================================
   // 保存（localStorage）
   // ================================================================
-  var STORE = "sk_memo", DEFAULT_FOLDER = "notes", TRASH_DAYS = 30;
+  var STORE = "sk_memo", DEFAULT_FOLDER = "notes";
+  // ごみ箱（最近削除した項目）に残す日数。Toolbox の設定のアプリ別の設定（memo.trashDays。7・30・90。ふつうは 30）
+  function trashDays() { var d = window.SKToolbox && SKToolbox.app && SKToolbox.app("memo").trashDays; return d === 7 || d === 90 ? d : 30; }
   var data = { version: 2, sort: "updated", view: "all", folders: [], notes: [], lock: null };
   function validNote(n) { return n && typeof n.id === "string" && (typeof n.html === "string" || typeof n.text === "string"); }
   function upgrade(n) {
@@ -363,8 +365,8 @@
     ].map(upgrade);
   } else {
     load();
-    // 30 日たった「最近削除した項目」を消す
-    var limit = Date.now() - TRASH_DAYS * 864e5;
+    // 決めた日数（ふつうは 30 日）たった「最近削除した項目」を消す
+    var limit = Date.now() - trashDays() * 864e5;
     var before = data.notes.length;
     data.notes = data.notes.filter(function (n) { return !n.deleted || n.deleted > limit; });
     if (data.notes.length !== before) save();
@@ -513,7 +515,7 @@
     var empty = $("list-empty");
     empty.hidden = notes.length > 0;
     $("list-empty-text").textContent = q ? t("見つかりませんでした。")
-      : data.view === "trash" ? t("最近削除した項目はありません。削除したメモは、ここに 30 日間残ります。")
+      : data.view === "trash" ? t("最近削除した項目はありません。削除したメモは、ここに {n} 日間残ります。", { n: trashDays() })
       : t("メモはまだありません。「新しいメモ」から書きはじめましょう。");
   }
 
@@ -547,7 +549,7 @@
     $("count").textContent = t("{n} 文字", { n: Array.from(noteText(n).replace(/\s/g, "")).length.toLocaleString(locale) });
     $("dates").textContent = t("作成 {date}", { date: longFmt.format(new Date(n.created || 0)) });
     $("date-line").textContent = n.deleted
-      ? t("{date} に削除。{n} 日後に完全に削除されます", { date: longFmt.format(new Date(n.deleted)), n: Math.max(1, Math.ceil((n.deleted + TRASH_DAYS * 864e5 - Date.now()) / 864e5)) })
+      ? t("{date} に削除。{n} 日後に完全に削除されます", { date: longFmt.format(new Date(n.deleted)), n: Math.max(1, Math.ceil((n.deleted + trashDays() * 864e5 - Date.now()) / 864e5)) })
       : longFmt.format(new Date(n.updated || 0));
   }
 

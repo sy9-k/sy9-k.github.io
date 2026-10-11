@@ -54,6 +54,8 @@ body.tb-home-page { background: var(--md-surface); }
 
 /* 背景で淡い光がゆっくり漂う（Nagi・Clock と同じ雰囲気。動きを減らす設定では止まる） */
 .tbh { position: relative; isolation: isolate; }
+/* 飾りの光（::before・::after）が画面の右にはみ出して、スマホで横にずれないように（画面の端で切る。clip なので sticky などはそのまま） */
+body.tb-home-page main { overflow-x: clip; }
 .tbh::before, .tbh::after {
   content: ""; position: absolute; z-index: -1; pointer-events: none; border-radius: 50%; filter: blur(60px);
 }

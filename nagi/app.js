@@ -328,7 +328,10 @@
     document.body.classList.toggle("is-running", !!timer.running);
     if (typeof updateWakeLock === "function") { updateWakeLock(); poke(); }
     document.querySelectorAll("[data-mode]").forEach(function (btn) {
-      btn.setAttribute("aria-selected", String(btn.dataset.mode === timer.mode));
+      var on = btn.dataset.mode === timer.mode;
+      // 選んだものが変わったら、小さく弾ませる（MALU の辞書の選択と同じ）
+      if (on && btn.getAttribute("aria-selected") === "false" && typeof animateEl === "function") animateEl(btn, "is-pop", 300);
+      btn.setAttribute("aria-selected", String(on));
     });
     var fresh = !timer.running && timer.remaining === durationOf(timer.mode);
     $("start-label").textContent = timer.running ? t("一時停止") : fresh ? t("はじめる") : t("つづける");
@@ -455,7 +458,164 @@
     });
   });
 
-  $("settings-button").addEventListener("click", function () { fillSettings(); $("settings").showModal(); });
+  // 設定（MALU の設定と同じ形。左のカテゴリで中身を切りかえる。開くたびに「基本設定」から）
+  var settingsNav = [].slice.call(document.querySelectorAll("#settings [data-settings-target]"));
+  function showSettingsSection(id) {
+    [].forEach.call(document.querySelectorAll("#settings .settings-section"), function (sec) { sec.classList.toggle("settings-section--active", sec.id === id); });
+    settingsNav.forEach(function (b) {
+      var on = b.getAttribute("data-settings-target") === id;
+      b.classList.toggle("active", on);
+      if (on) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current");
+    });
+    var body = document.querySelector("#settings .settings-panel__body");
+    if (body) body.scrollTop = 0;
+  }
+  // スマホ（せまい画面）: 最初はカテゴリの一覧だけ。押すとその中身に切りかわり（is-detail）、戻るボタンで一覧に戻る
+  var settingsLayout = document.querySelector("#settings .settings-layout");
+  function narrow() { return window.matchMedia && matchMedia("(max-width: 820px)").matches; }
+  settingsNav.forEach(function (b) {
+    b.addEventListener("click", function () {
+      showSettingsSection(b.getAttribute("data-settings-target"));
+      settingsLayout.classList.add("is-detail");
+    });
+  });
+  // 設定を検索: カテゴリの名前・要約と、そのページの中の文字で、一覧をしぼる
+  var settingsSearch = $("settings-search");
+  function filterSettings() {
+    var v = settingsSearch.value.trim().toLowerCase(), any = false;
+    settingsNav.forEach(function (b) {
+      var sec = document.getElementById(b.getAttribute("data-settings-target"));
+      var hit = !v || (b.textContent + " " + (sec ? sec.textContent : "")).toLowerCase().indexOf(v) >= 0;
+      b.hidden = !hit;
+      if (hit) any = true;
+    });
+    $("settings-search-none").hidden = any;
+  }
+  settingsSearch.addEventListener("input", filterSettings);
+  // 開く・閉じるときの動きは MALU と同じ（元の画面が少し沈んで消えてから、設定が右から入る。閉じるときは逆）
+  var settingsDialog = $("settings");
+  var mainParts = [document.querySelector(".top-bar"), document.querySelector(".page")];
+  function reduced() { return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  function animateEl(el, cls, ms) {
+    if (!el || reduced()) return;
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+    setTimeout(function () { el.classList.remove(cls); }, ms);
+  }
+  var settingsBusy = false;
+  function openSettings() {
+    if (settingsDialog.open || settingsBusy) return;
+    fillSettings();
+    showSettingsSection("settings-general");
+    settingsLayout.classList.remove("is-detail");
+    settingsSearch.value = "";
+    filterSettings();
+    showVersion();
+    if (reduced()) { settingsDialog.showModal(); return; }
+    settingsBusy = true;
+    mainParts.forEach(function (el) { el.classList.add("view-exit"); });
+    setTimeout(function () {
+      mainParts.forEach(function (el) { el.classList.remove("view-exit"); });
+      settingsDialog.showModal();
+      animateEl(settingsDialog, "settings-view--enter", 400);
+      settingsBusy = false;
+    }, 180);
+  }
+  function closeSettings() {
+    if (!settingsDialog.open || settingsBusy) return;
+    if (reduced()) { settingsDialog.close(); return; }
+    settingsBusy = true;
+    settingsDialog.classList.add("settings-view--leave");
+    setTimeout(function () {
+      settingsDialog.classList.remove("settings-view--leave");
+      settingsDialog.close();
+      mainParts.forEach(function (el) { animateEl(el, "view-enter", 400); });
+      settingsBusy = false;
+    }, 200);
+  }
+  $("settings-button").addEventListener("click", openSettings);
+  // 戻るボタン（form method="dialog"）と Esc キーも、動きをつけて閉じる
+  settingsDialog.querySelector("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    // スマホで中身を見ているときは、まずカテゴリの一覧に戻る
+    if (narrow() && settingsLayout.classList.contains("is-detail")) { settingsLayout.classList.remove("is-detail"); return; }
+    closeSettings();
+  });
+  settingsDialog.addEventListener("cancel", function (e) { e.preventDefault(); closeSettings(); });
+
+  // 押したところから広がる波紋（MALU と同じ）
+  var RIPPLE = ".icon-btn, .filled-btn, .text-btn, .outlined-btn, .tonal-icon-btn, .fab, .segmented button, .settings-nav__item, .settings-action, .chip";
+  document.addEventListener("pointerdown", function (e) {
+    var target = e.target.closest && e.target.closest(RIPPLE);
+    if (!target || target.disabled || reduced()) return;
+    var r = target.getBoundingClientRect();
+    var size = Math.hypot(r.width, r.height) * 2;
+    var dot = document.createElement("span");
+    dot.className = "ripple";
+    dot.style.width = dot.style.height = size + "px";
+    dot.style.left = (e.clientX - r.left - size / 2) + "px";
+    dot.style.top = (e.clientY - r.top - size / 2) + "px";
+    target.appendChild(dot);
+    dot.addEventListener("animationend", function () { dot.remove(); });
+  });
+
+  // 更新の確認（MALU と同じ。Service Worker に新しい版がないか確かめる。見つけたら、ボタンが「再読み込み」に変わる）
+  var updateBox = document.querySelector("#settings .about-status");
+  var updateStatus = $("about-update-status");
+  var updateButton = $("check-update");
+  var updateFound = false;
+  function setUpdateState(state, text) {
+    updateBox.classList.toggle("is-checking", state === "checking");
+    updateBox.classList.toggle("is-new", state === "new");
+    updateBox.classList.toggle("is-error", state === "error");
+    updateBox.querySelector(".about-status__mark .ms").textContent = state === "checking" ? "progress_activity" : state === "new" ? "upgrade" : state === "error" ? "error" : "check";
+    updateStatus.textContent = text;
+  }
+  function checkUpdate() {
+    if (updateFound) { location.reload(); return; }
+    if (!("serviceWorker" in navigator)) { setUpdateState("error", t("この端末では更新を確認できません")); return; }
+    updateButton.disabled = true;
+    setUpdateState("checking", t("更新を確認しています…"));
+    navigator.serviceWorker.getRegistration().then(function (reg) {
+      if (!reg) throw new Error("no registration");
+      return reg.update().then(function () { return reg; });
+    }).then(function (reg) {
+      updateFound = !!(reg.installing || reg.waiting);
+      if (updateFound) {
+        setUpdateState("new", t("新しい版が見つかりました"));
+        updateButton.textContent = t("再読み込み");
+      } else {
+        setUpdateState("ok", t("Nagi は最新です"));
+      }
+    }).catch(function () {
+      setUpdateState("error", t("更新を確認できませんでした。インターネットの接続を確かめてください"));
+    }).then(function () { updateButton.disabled = false; });
+  }
+  updateButton.addEventListener("click", checkUpdate);
+
+  // キャッシュを消して読み込み直す（Nagi が保存したファイルだけ。localStorage の記録と設定には触らない）
+  $("reset-cache").addEventListener("click", function () {
+    var btn = this;
+    btn.disabled = true;
+    var jobs = [];
+    if (window.caches && caches.keys) jobs.push(caches.keys().then(function (names) { return Promise.all(names.filter(function (n) { return /^nagi-/.test(n); }).map(function (n) { return caches.delete(n); })); }));
+    if (navigator.serviceWorker) jobs.push(navigator.serviceWorker.getRegistration().then(function (reg) { return reg && reg.unregister(); }));
+    Promise.all(jobs).catch(function () {}).then(function () { location.reload(); });
+  });
+
+  // バージョン（このアプリについて）。「1.0（ビルド 6）」… ビルドは、この端末に入っている Service Worker のキャッシュの番号（nagi/sw.js の CACHE_NAME）
+  var APP_VERSION = "1.0";
+  function showVersion() {
+    var out = $("app-version");
+    out.textContent = APP_VERSION;
+    if (!window.caches || !caches.keys) return;
+    caches.keys().then(function (names) {
+      var build = 0;
+      names.forEach(function (n) { var m = /^nagi-v(\d+)$/.exec(n); if (m) build = Math.max(build, +m[1]); });
+      if (build) out.textContent = t("{version}（ビルド {build}）", { version: APP_VERSION, build: build });
+    }).catch(function () {});
+  }
   $("clear-button").addEventListener("click", function () {
     if (!confirm(t("このブラウザに保存した集中の記録を消します。SK Hub Systems アカウントで同期している記録は消えません。よろしいですか？"))) return;
     sessions = [];

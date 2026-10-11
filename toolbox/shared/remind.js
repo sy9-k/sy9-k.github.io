@@ -212,6 +212,8 @@
   var BADGES = { todo: "todo", clock: "clock", timetable: "timetable" };
   function notify(title, body, tag, app, extra) {
     if (!(window.Notification && Notification.permission === "granted")) return;
+    // Toolbox の設定の「通知」でオフにしたアプリ（todo.notify・clock.notify）は、通知を出さない（Clock を開いているときの音と画面はそのまま）
+    if (window.SKToolbox && SKToolbox.app && SKToolbox.app(app).notify === false) return;
     extra = extra || {};
     var data = Object.assign({ url: "/toolbox/" + app + "/" }, extra.data || {});
     var head = (APP_NAMES[app] || "SK's Toolbox") + (extra.context ? " · " + extra.context : "");

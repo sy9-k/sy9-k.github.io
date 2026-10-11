@@ -50,11 +50,15 @@
   body { min-height: 100dvh; background: var(--md-surface); color: var(--md-on-surface); font-family: var(--md-font); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
   button { font: inherit; color: inherit; }
   :focus-visible { outline: 3px solid var(--md-primary); outline-offset: 2px; }
-  .page { max-width: 640px; margin: 0 auto; padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
+  .page { max-width: 1120px; margin: 0 auto; padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
   .app-bar { display: flex; align-items: center; min-height: 64px; padding: 0 4px; }
   h1 { margin: 8px 16px 8px; font-size: 32px; font-weight: 400; line-height: 40px; }
   /* ページでは、ダイアログの面の色ではなくページの色で */
   .page .tbs-body { padding-bottom: 0; overflow: visible; }
+  /* 設定のページ: 右の中身はページといっしょにスクロールし、左のカテゴリは画面に残して、それだけでもスクロールできる */
+  .page .tbs-layout { grid-template-rows: auto; }
+  .page .tbs-layout > .tbs-body { overflow: visible; }
+  @media (min-width: 821px) { .page .tbs-layout > .tbs-nav { position: sticky; top: calc(var(--tbt-h, 0px) + 8px); align-self: start; max-height: calc(100dvh - 16px - var(--tbt-h, 0px)); } }
   @media (min-width: 601px) { .page .tbs-section__title, .page .tbs-text, .page .tbs-version { margin-left: 16px; margin-right: 16px; } .page .tbs-item { padding-left: 16px; padding-right: 16px; } }
 </style>
 <!-- SK's Toolbox の共通の設定 -->
@@ -89,4 +93,5 @@
   <script src="/toolbox/shared/search.js"></script>
   <script src="/frameworks/check.js" defer></script>
   <script src="/assets/analytics.js" defer></script>
+  <script src="/assets/domain-snack.js" defer></script>
 </body>
