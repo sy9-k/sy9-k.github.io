@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dictionary-v12';
+const CACHE_NAME = 'dictionary-v13';
 const urlsToCache = [
   '/dictionary/',
   '/dictionary/index.html',
