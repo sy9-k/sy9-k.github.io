@@ -116,6 +116,7 @@ RUNTIME_SOURCES = [
     "toolbox/clock/clock.js", "toolbox/calc/calc.js", "toolbox/memo/memo.js", "toolbox/todo/todo.js", "toolbox/countdown/countdown.js", "toolbox/clock/clock-tools.js", "toolbox/shared/settings.js", "toolbox/shared/m3.js", "toolbox/shared/remind.js", "toolbox/home.js",
     "toolbox/shared/sync.js", "toolbox/shared/titlebar.js", "toolbox/shared/tbcenter.js", "toolbox/shared/pwa.js", "toolbox/shared/search.js", "toolbox/shared/line.js",
     "toolbox/timetable/timetable.js", "toolbox/roulette/roulette.js", "toolbox/lang/lang.js",
+    "move/move.js", "moved/moved.js",
 ]
 # build で作らないページ（ブラウザでページごと訳す）
 STANDALONE_PAGES = [
@@ -124,6 +125,7 @@ STANDALONE_PAGES = [
     "nagi/index.html",
     "toolbox/clock/index.html", "toolbox/calc/index.html", "toolbox/memo/index.html", "toolbox/todo/index.html", "toolbox/countdown/index.html", "toolbox/settings/index.html",
     "toolbox/timetable/index.html", "toolbox/roulette/index.html", "toolbox/install/index.html", "toolbox/lang/index.html",
+    "move/index.html", "moved/index.html",
 ]
 # 英語だけに訳すページ（SK's Lab のツール。<html data-i18n-langs="ja en">）。ページの文とスクリプトの t("…") の両方を探す
 EN_ONLY_PAGES = ["qr-prj/index.html", "smart-dash/index.html"]

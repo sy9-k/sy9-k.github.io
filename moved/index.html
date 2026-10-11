@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="robots" content="noindex" />
+<meta name="description" content="SK のサイトとプロダクトは sk-hub.jp に移りました。" />
+<meta name="theme-color" content="#f9f9ff" />
+<title>このアドレスは使われていません | SK</title>
+<!-- 移行期間が終わったあとの、古いアドレス（sy9-k.github.io）のページ。最後は、古いアドレスのどのページを開いてもこの中身を出す（404.html）
+       ・端末に古いデータが残っていない（data-state="none"）→ sk-hub.jp の同じページへ自動で移動
+       ・残っている（data-state="left"）→ 自動では移動しない。ファイルに書き出す・このアドレスのデータを消す を出す
+     見た目は Material 3（/move/theme.css・/moved/moved.css。部品は /toolbox/shared/m3.css・m3.js）、動きは /moved/moved.js
+     いまは形だけ（データを見ない・移動しない）。.prep の中のボタンで 2 つの状態を切り替えて見られる。本番にするときは .prep を消し、moved.js の PREVIEW を false にする -->
+<!-- 表示（ライト・ダーク）。サイトで選んだものに合わせる -->
+<script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}");if(t.mode==="light"||t.mode==="dark")document.documentElement.setAttribute("data-theme",t.mode);}catch(e){}})();</script>
+<!-- 文字は M PLUS 1（M+）。アイコンは Material Symbols -->
+<script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;500;700&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>
+<!-- 多言語: /lang/ で選んだ言語で表示する（/assets/i18n.js。body の最後で translatePage()） -->
+<script src="/assets/i18n.js"></script>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/toolbox/shared/m3.css" />
+<link rel="stylesheet" href="/move/theme.css" />
+<link rel="stylesheet" href="/moved/moved.css" />
+</head>
+<body>
+<main id="page" data-state="none">
+  <div class="prep">
+    <span class="msr" aria-hidden="true">construction</span>
+    <div>
+      <p class="prep-text"><b>このページは準備中です。</b>いまはまだデータを見たり、移動したりしません。</p>
+      <div class="prep-switch" role="group" aria-label="見せる状態">
+        <button type="button" data-demo="none" aria-pressed="true">データが残っていない人</button>
+        <button type="button" data-demo="left" aria-pressed="false">データが残っている人</button>
+      </div>
+    </div>
+  </div>
+
+  <span class="hero-ico" aria-hidden="true"><span class="msr">move_location</span></span>
+  <h1>このアドレスは使われていません</h1>
+  <p class="supporting">SK のサイトとプロダクトは、sk-hub.jp に移りました。アドレスの「/」から後ろはそのままです。</p>
+
+  <a class="dest m3-state to-new" href="https://sk-hub.jp/">
+    <span class="lead-ico" aria-hidden="true"><span class="msr">language</span></span>
+    <div><small>いまのアドレス</small><b>sk-hub.jp<span class="path">/</span></b></div>
+    <span class="msr" aria-hidden="true">open_in_new</span>
+  </a>
+
+  <!-- 残っていない人: 自動で移動 -->
+  <div class="go" aria-live="polite">
+    <div class="ring" aria-hidden="true"><svg viewBox="0 0 48 48"><circle class="bg" cx="24" cy="24" r="20"/><circle class="fg" id="fg" cx="24" cy="24" r="20"/></svg><b id="sec">5</b></div>
+    <p><span id="sec-text">5</span> 秒後に sk-hub.jp へ移動します</p>
+  </div>
+  <div class="go-actions">
+    <a class="m3-btn m3-state to-new" href="https://sk-hub.jp/"><span class="msr">arrow_forward</span>いますぐ開く</a>
+    <button class="text-btn m3-state" type="button" id="stay">移動しない</button>
+  </div>
+  <a class="sync-row m3-state" href="https://sk-hub.jp/account/">
+    <span class="msr" aria-hidden="true">cloud_sync</span>
+    <span><b>SK Hub Systems で同期していた人へ</b><small>データはアカウントに残っています。sk-hub.jp でログインすると戻ります。</small></span>
+    <span class="msr" aria-hidden="true">chevron_right</span>
+  </a>
+
+  <!-- 残っている人 -->
+  <section class="left" aria-labelledby="left-h">
+    <div class="left-head">
+      <span class="msr" aria-hidden="true">inventory_2</span>
+      <div>
+        <h2 id="left-h">この端末に、古いデータが残っています</h2>
+        <p>sk-hub.jp からは見えないので、ファイルにして移してください。</p>
+      </div>
+    </div>
+    <div class="left-body">
+      <div class="chips" aria-label="残っているデータ">
+        <span class="chip"><span class="msr">home_repair_service</span>SK's Toolbox</span>
+        <span class="chip"><span class="msr">timer</span>Nagi</span>
+        <span class="chip"><span class="msr">menu_book</span>MALU</span>
+      </div>
+      <ol class="steps">
+        <li><b>ファイルに書き出す</b><small>データを 1 つのファイルにまとめて保存します</small></li>
+        <li><b>sk-hub.jp/move/ で読み込む</b><small>新しいアドレスで、そのファイルを選びます</small></li>
+        <li><b>ここのデータを消す</b><small>移せたのを確かめてから</small></li>
+      </ol>
+      <div class="alt">
+        <span class="msr" aria-hidden="true">cloud_sync</span>
+        <div><b>SK Hub Systems で同期していたデータは</b><small>ファイルにしなくても、sk-hub.jp でログインすると戻ります。同期していなかったデータだけ、ファイルで移してください。</small></div>
+      </div>
+      <div class="left-actions">
+        <button class="m3-btn m3-state" type="button" id="export"><span class="msr">download</span>ファイルに書き出す</button>
+        <button class="text-btn m3-state danger" type="button" id="erase"><span class="msr">delete</span>このアドレスのデータを消す</button>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot"><span class="msr" aria-hidden="true">verified_user</span><span>SK の公式のアドレスは sk-hub.jp だけです。このアドレスで、ログインやパスワードの入力を求めることはありません。</span></p>
+</main>
+
+<div class="snackbar" id="snack" role="status"><span id="snack-text"></span></div>
+
+<!-- 先に訳す（訳すと文の中の要素が作り直されるので、動きのスクリプトより前） -->
+<script>window.SKI18N && SKI18N.translatePage();</script>
+<script src="/toolbox/shared/m3.js"></script>
+<script src="/moved/moved.js"></script>
+</body>
+</html>
