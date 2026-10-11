@@ -298,13 +298,17 @@
     else last.append(el("small", "", t("押して回してみましょう")));
   }
 
-  // ---- ウィジェットとアプリ一覧の切りかえ（最後に見たほうを覚える。localStorage の sk_toolbox_view。#apps・#widgets で開くこともできる）----
+  // ---- ウィジェットとアプリ一覧の切りかえ（最後に見たほうを覚える。localStorage の sk_toolbox_view。#apps・#widgets で開くこともできる。
+  //      Toolbox の設定の「ホームの最初の画面」（homeStart）でどちらかに決めることもできる）----
   var VIEW = "sk_toolbox_view", view = "widgets";
   try {
     var savedView = localStorage.getItem(VIEW);
     // LINE の中（ミニアプリ）では、まだ選んでいなければアプリ一覧から
     var inLine = /[?&]line=/.test(location.search) || !!sessionStorage.getItem("sk_line");
     view = savedView === "apps" || (!savedView && inLine) ? "apps" : "widgets";
+    // Toolbox の設定の「ホームの最初の画面」でウィジェットかアプリ一覧に決めていれば、そちら（「前回の画面」なら上のとおり）
+    var start = window.SKToolbox ? SKToolbox.get().homeStart : "last";
+    if (start === "widgets" || start === "apps") view = start;
   } catch (e) { /* ウィジェット */ }
   if (location.hash === "#apps" || location.hash === "#widgets") view = location.hash.slice(1);
   function setView(v, save, animate) {

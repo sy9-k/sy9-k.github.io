@@ -204,7 +204,7 @@
       </div>
 
       <!-- 前にアプリ一覧を見ていたら、最初からアプリ一覧に（home.js を待つと、ウィジェットが一瞬見えてしまうため） -->
-      <script>try { if (location.hash === "#apps" || (location.hash !== "#widgets" && (localStorage.getItem("sk_toolbox_view") === "apps" || (!localStorage.getItem("sk_toolbox_view") && (/[?&]line=/.test(location.search) || sessionStorage.getItem("sk_line")))))) { document.getElementById("apps").hidden = false; document.getElementById("bento").hidden = true; document.getElementById("view-apps").setAttribute("aria-selected", "true"); document.getElementById("view-widgets").setAttribute("aria-selected", "false"); document.getElementById("home-edit").hidden = true; } } catch (e) {}</script>
+      <script>try { var hs = (JSON.parse(localStorage.getItem("sk_toolbox") || "{}") || {}).homeStart; if (location.hash === "#apps" || (location.hash !== "#widgets" && hs !== "widgets" && (hs === "apps" || localStorage.getItem("sk_toolbox_view") === "apps" || (!localStorage.getItem("sk_toolbox_view") && (/[?&]line=/.test(location.search) || sessionStorage.getItem("sk_line")))))) { document.getElementById("apps").hidden = false; document.getElementById("bento").hidden = true; document.getElementById("view-apps").setAttribute("aria-selected", "true"); document.getElementById("view-widgets").setAttribute("aria-selected", "false"); document.getElementById("home-edit").hidden = true; } } catch (e) {}</script>
 
       <footer class="tbh-foot">
         <ul class="tbh-tips">
