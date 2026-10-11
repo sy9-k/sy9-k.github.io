@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sk-calc-v24';
+const CACHE_NAME = 'sk-calc-v25';
 const ASSETS = [
   '/toolbox/calc/',
   '/toolbox/calc/index.html',
