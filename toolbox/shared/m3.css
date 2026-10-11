@@ -577,7 +577,13 @@ body:has(.tbs-dialog-scrim) .RedCheckOSS-info-widget { display: none !important;
 .tbs-panel { width: 100%; height: 100%; max-height: none; border-radius: 0; background: var(--md-surface); box-shadow: none; animation: tbs-enter .4s cubic-bezier(.05, .7, .1, 1) both; padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left); }
 @keyframes tbs-enter { from { opacity: 0; transform: translateX(24px); } }
 .tbs-bar { padding: 0 16px 0 4px; min-height: 64px; }
-.tbs-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 280px minmax(0, 1fr); font-family: var(--md-font, inherit); }
+.tbs-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 280px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); font-family: var(--md-font, inherit); }
+/* 左（カテゴリ）と右（中身）は、それぞれでスクロールする（行の高さを中身で伸ばさない） */
+.tbs-layout > .tbs-nav, .tbs-layout > .tbs-body { min-height: 0; overscroll-behavior: contain; }
+/* /toolbox/ のホーム: サイトのヘッダー（z-index 1000）より上に出す（戻るボタンが隠れないように）。中で開く確認・スナックバーもその上 */
+body.tb-home-page .tbs-overlay { z-index: 1001; }
+body.tb-home-page .tbs-dialog-scrim { z-index: 1011; }
+body.tb-home-page .snackbar, body.tb-home-page .tsy-snackbar { z-index: 1021; }
 .tbs-nav { display: flex; flex-direction: column; gap: 0; padding: 4px 12px 24px; overflow-y: auto; }
 .tbs-nav__heading { margin: 16px 16px 8px; font-size: 14px; font-weight: 500; line-height: 20px; color: var(--md-on-surface-variant); }
 .tbs-nav__item { flex: none; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 24px 0 16px; border: 0; border-radius: 999px; background: none; color: var(--md-on-surface-variant); font: 500 14px/20px var(--md-font, inherit); letter-spacing: .1px; text-align: left; white-space: nowrap; cursor: pointer; }
