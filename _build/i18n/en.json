@@ -2882,5 +2882,8 @@
   "通知するもの": "What to notify",
   "通知の許可": "Notification permission",
   "過ぎた日の表示は、Countdown の画面で切りかえられます。": "Showing past days can be switched in Countdown.",
-  "関数電卓にもなる電卓": "A calculator that's also scientific"
+  "関数電卓にもなる電卓": "A calculator that's also scientific",
+  "sk-hub.jp に切り替えたときに、この端末のデータをそのまま新しいアドレスへ移します。切り替えの準備ができたら使えるようになります。": "When we switch to sk-hub.jp, this moves the data on this device to the new address as-is. It will become available once the switch is ready.",
+  "引っ越し": "Moving",
+  "新しいアドレスへの引っ越し": "Move to the new address"
 }

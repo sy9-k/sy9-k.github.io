@@ -67,6 +67,7 @@
   font-size: 14px; font-weight: 500; letter-spacing: .01em; white-space: nowrap;
 }
 .m3-btn--tonal { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+.m3-btn:disabled { background: color-mix(in srgb, var(--md-on-surface) 12%, transparent); color: color-mix(in srgb, var(--md-on-surface) 38%, transparent); cursor: default; transform: none; }
 
 /* ---- スナックバー ---- */
 .snackbar {

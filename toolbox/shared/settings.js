@@ -886,6 +886,17 @@
     var appsData = section(t("アプリごとのデータ"));
     APPS.forEach(function (a) { appsData.appendChild(dataRow(a)); });
     dataPage.appendChild(appsData);
+    // 新しいアドレス（sk-hub.jp）への引っ越し。まだ使えない（形だけ。切り替えのときに中身を作る。/domain/）
+    var move = section(t("引っ越し"));
+    var moveRow = el("div", "tbs-item");
+    moveRow.appendChild(icon("local_shipping"));
+    moveRow.appendChild(label(t("新しいアドレスへの引っ越し"), t("sk-hub.jp に切り替えたときに、この端末のデータをそのまま新しいアドレスへ移します。切り替えの準備ができたら使えるようになります。")));
+    var moveBtn = el("button", "m3-btn m3-btn--tonal m3-state", t("準備中"));
+    moveBtn.type = "button";
+    moveBtn.disabled = true;
+    moveRow.appendChild(moveBtn);
+    move.appendChild(moveRow);
+    dataPage.appendChild(move);
     // まとめてバックアップ（Clock・Calc・Memo（画像も）・Todo・Countdown・Timetable・Roulette・この設定）
     var backup = section(t("バックアップ"));
     var backupRow = el("div", "tbs-item tbs-item--backup");
