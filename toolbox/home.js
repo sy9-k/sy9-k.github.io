@@ -18,7 +18,10 @@
   // ---- あいさつ ----
   function greet() {
     var h = new Date().getHours();
-    $("greet").textContent = h >= 4 && h < 10 ? t("おはようございます") : h >= 10 && h < 17 ? t("こんにちは") : t("こんばんは");
+    var hello = h >= 4 && h < 10 ? t("おはようございます") : h >= 10 && h < 17 ? t("こんにちは") : t("こんばんは");
+    // LINE の中（/toolbox/shared/line.js）では、LINE の名前で
+    var name = window.SKLine && SKLine.name;
+    $("greet").textContent = name ? t("{hello}、{name} さん", { hello: hello, name: name }) : hello;
   }
 
   // ---- 日付（Todo と同じ）----
@@ -297,7 +300,12 @@
 
   // ---- ウィジェットとアプリ一覧の切りかえ（最後に見たほうを覚える。localStorage の sk_toolbox_view。#apps・#widgets で開くこともできる）----
   var VIEW = "sk_toolbox_view", view = "widgets";
-  try { view = localStorage.getItem(VIEW) === "apps" ? "apps" : "widgets"; } catch (e) { /* ウィジェット */ }
+  try {
+    var savedView = localStorage.getItem(VIEW);
+    // LINE の中（ミニアプリ）では、まだ選んでいなければアプリ一覧から
+    var inLine = /[?&]line=/.test(location.search) || !!sessionStorage.getItem("sk_line");
+    view = savedView === "apps" || (!savedView && inLine) ? "apps" : "widgets";
+  } catch (e) { /* ウィジェット */ }
   if (location.hash === "#apps" || location.hash === "#widgets") view = location.hash.slice(1);
   function setView(v, save, animate) {
     view = v;
@@ -452,4 +460,5 @@
   window.addEventListener("pageshow", function (e) { if (e.persisted) renderAll(); });
   setInterval(function () { if (document.visibilityState === "visible") { greet(); renderTodo(); } }, 60000);
   setView(view, false, false);
+  document.addEventListener("sk-line-ready", greet);
 })();

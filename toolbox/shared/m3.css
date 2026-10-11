@@ -595,3 +595,13 @@ body:has(.tbs-dialog-scrim) .RedCheckOSS-info-widget { display: none !important;
 :root[data-motion="reduce"]::view-transition-old(root), :root[data-motion="reduce"]::view-transition-new(root),
 :root[data-motion="reduce"]::view-transition-old(sk-titlebar), :root[data-motion="reduce"]::view-transition-new(sk-titlebar),
 :root[data-motion="reduce"]::view-transition-old(sk-header), :root[data-motion="reduce"]::view-transition-new(sk-header) { animation: none; }
+
+/* ---- LINE の中（LINE ミニアプリ。/toolbox/shared/line.js が <html class="in-line">）---- */
+/* アプリとして入れるボタン・案内と、Toolbox のホームのサイトのヘッダーは出さない（LINE の画面の上には LINE のバーがある） */
+html.in-line [data-install], html.in-line .tbh-tip--install { display: none !important; }
+html.in-line body.tb-home-page .site-header, html.in-line body.tb-home-page .hd-backdrop, html.in-line body.tb-home-page .hd-menu { display: none !important; }
+html.in-line body.tb-home-page { padding-top: max(8px, env(safe-area-inset-top)) !important; }
+/* 「LINE で送る」のボタン（どの画面でも同じ見た目） */
+.line-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 18px 0 14px; border: 0; border-radius: 999px; background: #06c755; color: #fff; font: 600 14px/1 var(--md-font, system-ui, sans-serif); cursor: pointer; }
+.line-btn:hover { background: #05b34c; }
+.line-btn svg { width: 20px; height: 20px; flex: none; }

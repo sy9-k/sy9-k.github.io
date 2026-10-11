@@ -189,13 +189,13 @@
       </div>
 
       <!-- 前にアプリ一覧を見ていたら、最初からアプリ一覧に（home.js を待つと、ウィジェットが一瞬見えてしまうため） -->
-      <script>try { if (location.hash === "#apps" || (location.hash !== "#widgets" && localStorage.getItem("sk_toolbox_view") === "apps")) { document.getElementById("apps").hidden = false; document.getElementById("bento").hidden = true; document.getElementById("view-apps").setAttribute("aria-selected", "true"); document.getElementById("view-widgets").setAttribute("aria-selected", "false"); document.getElementById("home-edit").hidden = true; } } catch (e) {}</script>
+      <script>try { if (location.hash === "#apps" || (location.hash !== "#widgets" && (localStorage.getItem("sk_toolbox_view") === "apps" || (!localStorage.getItem("sk_toolbox_view") && (/[?&]line=/.test(location.search) || sessionStorage.getItem("sk_line")))))) { document.getElementById("apps").hidden = false; document.getElementById("bento").hidden = true; document.getElementById("view-apps").setAttribute("aria-selected", "true"); document.getElementById("view-widgets").setAttribute("aria-selected", "false"); document.getElementById("home-edit").hidden = true; } } catch (e) {}</script>
 
       <footer class="tbh-foot">
         <ul class="tbh-tips">
           <li><span class="msr" aria-hidden="true">search</span><span><kbd>Ctrl</kbd> + <kbd>K</kbd>（Mac は <kbd>⌘</kbd> + <kbd>K</kbd>）で、メモ・タスク・予定をまとめて検索</span></li>
           <li><span class="msr" aria-hidden="true">dashboard_customize</span><span>右上の「ホームを編集」で、タイルの順番と表示を変えられます</span></li>
-          <li><span class="msr" aria-hidden="true">install_mobile</span><span>ホーム画面に追加すると、アプリのように開いてオフラインでも使えます（<a href="/toolbox/install/">入れ方</a>）</span></li>
+          <li class="tbh-tip--install"><span class="msr" aria-hidden="true">install_mobile</span><span>ホーム画面に追加すると、アプリのように開いてオフラインでも使えます（<a href="/toolbox/install/">入れ方</a>）</span></li>
           <li><span class="msr" aria-hidden="true">shield</span><span>データはこの端末のブラウザに保存。オンライン同期（任意）は端末で暗号化してから</span></li>
         </ul>
         <p class="tbh-note"><a href="/toolbox/settings/">Toolbox の設定</a> · <a href="/products/">SK のプロダクト</a> · <a href="/policies/">利用規約・プライバシーポリシー</a></p>
@@ -207,6 +207,8 @@
     <script src="/toolbox/home.js"></script>
     <!-- 横断検索（Ctrl+K） -->
     <script src="/toolbox/shared/search.js"></script>
+    <!-- LINE の中で開いたとき（LINE ミニアプリ） -->
+    <script src="/toolbox/shared/line.js"></script>
     <!-- アクセスチェック・アクセス解析は、ページの最後でサイトと同じように読み込むので、ここでは読み込まない -->
     <script src="/toolbox/shared/pwa.js" data-no-check></script>
   </main>

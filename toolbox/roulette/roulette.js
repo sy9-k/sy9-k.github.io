@@ -233,8 +233,26 @@
     $("win-text").style.setProperty("--ic", it.color);
     $("win-remove").hidden = wheel().removeWinner || active().length < 3;
     winBox.hidden = false;
+    lineButton();
     confetti(it.color);
     $("win-again").focus();
+  }
+  // 結果を LINE の友だち・グループにカードで送る（/toolbox/shared/line.js。LINE の外では LINE の共有のリンク）
+  var lineBtn = null;
+  function lineButton() {
+    if (lineBtn || !window.SKLine) return;
+    lineBtn = SKLine.button(t("LINE で送る"));
+    lineBtn.classList.add("win__line");
+    lineBtn.addEventListener("click", function () {
+      if (!lastWin) return;
+      var url = "https://sy9-k.github.io/toolbox/roulette/";
+      var name = wheel().name;
+      SKLine.share(SKLine.card({
+        alt: t("ルーレットの結果: {text}", { text: lastWin.text }), kicker: t("ルーレット · {name}", { name: name }), title: lastWin.text,
+        sub: t("SK's Toolbox のルーレットで決まりました"), color: lastWin.color, url: url, button: t("自分も回す")
+      }), t("ルーレットの結果: {text}", { text: lastWin.text }) + "（" + name + "）\n" + url).then(function (r) { if (r === "sent") say(t("LINE で送りました")); });
+    });
+    $("win").querySelector(".win__actions").appendChild(lineBtn);
   }
   function closeWin() { if (!winBox.hidden) { winBox.hidden = true; $("confetti").textContent = ""; } }
   function confetti(main) {
