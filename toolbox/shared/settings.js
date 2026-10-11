@@ -25,6 +25,8 @@
   var script = document.currentScript;
   var scope = (script && script.dataset.scope) || "app";
   var currentApp = (script && script.dataset.app) || "";
+  // SK's Toolbox のバージョン（大きく変えたときに上げる。設定の画面のいちばん下に出す）
+  var VERSION = "1.0";
   var root = document.documentElement;
   var I18N = window.SKI18N;
 
@@ -759,7 +761,25 @@
       forceUpdate();
     });
     more.appendChild(updRow);
-    more.appendChild(el("p", "tbs-version", "SK's Toolbox · 1.0"));
+    // バージョン。「SK's Toolbox 1.0（ビルド 22）· Clock（ビルド 25）」… ビルドは、この端末に入っている Service Worker のキャッシュの番号
+    //   （/toolbox/sw.js の sk-toolbox-v… と、各アプリの sw.js の sk-<アプリ>-v…）
+    var ver = el("p", "tbs-version", "SK's Toolbox " + VERSION);
+    more.appendChild(ver);
+    if (window.caches && caches.keys) caches.keys().then(function (names) {
+      function build(prefix) {
+        var n = 0;
+        names.forEach(function (c) { var m = new RegExp("^" + prefix + "-v(\\d+)$").exec(c); if (m) n = Math.max(n, +m[1]); });
+        return n;
+      }
+      var parts = [];
+      var home = build("sk-toolbox");
+      parts.push("SK's Toolbox " + (home ? t("{version}（ビルド {build}）", { version: VERSION, build: home }) : VERSION));
+      var app = null;
+      APPS.forEach(function (a) { if (a.app === currentApp) app = a; });
+      var own = app ? build("sk-" + app.app) : 0;
+      if (own) parts.push(app.name + " " + t("（ビルド {build}）", { build: own }));
+      ver.textContent = parts.join(" · ");
+    }).catch(function () {});
     body.appendChild(more);
 
     refreshUi();

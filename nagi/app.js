@@ -455,7 +455,35 @@
     });
   });
 
-  $("settings-button").addEventListener("click", function () { fillSettings(); $("settings").showModal(); });
+  // 設定（MALU の設定と同じ形。左のカテゴリで中身を切りかえる。開くたびに「基本設定」から）
+  var settingsNav = [].slice.call(document.querySelectorAll("#settings [data-settings-target]"));
+  function showSettingsSection(id) {
+    [].forEach.call(document.querySelectorAll("#settings .settings-section"), function (sec) { sec.classList.toggle("settings-section--active", sec.id === id); });
+    settingsNav.forEach(function (b) {
+      var on = b.getAttribute("data-settings-target") === id;
+      b.classList.toggle("active", on);
+      if (on) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current");
+    });
+    var body = document.querySelector("#settings .settings-panel__body");
+    if (body) body.scrollTop = 0;
+  }
+  settingsNav.forEach(function (b) {
+    b.addEventListener("click", function () { showSettingsSection(b.getAttribute("data-settings-target")); });
+  });
+  $("settings-button").addEventListener("click", function () { fillSettings(); showSettingsSection("settings-general"); showVersion(); $("settings").showModal(); });
+
+  // バージョン（このアプリについて）。「1.0（ビルド 6）」… ビルドは、この端末に入っている Service Worker のキャッシュの番号（nagi/sw.js の CACHE_NAME）
+  var APP_VERSION = "1.0";
+  function showVersion() {
+    var out = $("app-version");
+    out.textContent = APP_VERSION;
+    if (!window.caches || !caches.keys) return;
+    caches.keys().then(function (names) {
+      var build = 0;
+      names.forEach(function (n) { var m = /^nagi-v(\d+)$/.exec(n); if (m) build = Math.max(build, +m[1]); });
+      if (build) out.textContent = t("{version}（ビルド {build}）", { version: APP_VERSION, build: build });
+    }).catch(function () {});
+  }
   $("clear-button").addEventListener("click", function () {
     if (!confirm(t("このブラウザに保存した集中の記録を消します。SK Hub Systems アカウントで同期している記録は消えません。よろしいですか？"))) return;
     sessions = [];

@@ -277,3 +277,67 @@ body.is-zen .waves { height: 26vh; }
 body.is-zen.is-running.is-idle .controls, body.is-zen.is-running.is-idle .top-bar { opacity: 0; transition: opacity .8s var(--ease); }
 body.is-zen.is-idle { cursor: none; }
 .controls, .top-bar { transition: opacity .3s var(--ease); }
+/* ---------- 設定（MALU の設定と同じ形の全画面。index.html の #settings。カテゴリの切りかえは app.js） ---------- */
+.dialog.settings-view { width: 100%; max-width: none; height: 100%; max-height: none; margin: 0; padding: 0; border-radius: 0; background: var(--surface); box-shadow: none; overflow: hidden; }
+.dialog.settings-view::backdrop { background: var(--surface); }
+.dialog.settings-view[open] { animation: settings-enter .4s var(--ease-emph); }
+@keyframes settings-enter { from { opacity: 0; transform: translateX(24px); } }
+.settings-panel { display: flex; flex-direction: column; height: 100%; }
+.settings-panel__header { flex: none; display: flex; align-items: center; gap: 4px; height: 64px; padding: 0 16px 0 8px; padding-top: env(safe-area-inset-top); }
+.settings-panel__header h2 { margin: 0; font-size: 22px; line-height: 28px; font-weight: 400; color: var(--on-surface); }
+.settings-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 300px minmax(0, 1fr); }
+.settings-sidebar { padding: 4px 12px 24px; overflow-y: auto; }
+.settings-sidebar__title { margin: 0; padding: 18px 16px; font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: .1px; color: var(--on-surface-variant); }
+.settings-nav { display: flex; flex-direction: column; }
+.settings-nav__item { position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 24px 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--on-surface-variant); font: inherit; font-size: 14px; font-weight: 500; letter-spacing: .1px; white-space: nowrap; cursor: pointer; text-align: left; }
+.settings-nav__item::after { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity .15s var(--ease); pointer-events: none; }
+.settings-nav__item:hover::after { opacity: .08; }
+.settings-nav__item:active::after { opacity: .12; }
+.settings-nav__item:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.settings-nav__item.active { background: var(--secondary-container); color: var(--on-secondary-container); }
+.settings-panel__body { min-height: 0; overflow-y: auto; width: 100%; max-width: 760px; padding: 8px 24px calc(56px + env(safe-area-inset-bottom)); }
+.settings-section { display: none; flex-direction: column; gap: 2px; }
+.settings-section--active { display: flex; animation: settings-fade .3s var(--ease-emph) both; }
+@keyframes settings-fade { from { opacity: 0; transform: translateY(12px); } }
+.settings-view .settings-section h3 { margin: 0; padding: 14px 4px 16px; font-size: 24px; line-height: 32px; font-weight: 400; letter-spacing: 0; color: var(--on-surface); }
+.settings-item { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 72px; padding: 16px 20px; border-radius: 4px; background: var(--surface-container); }
+label.settings-item { cursor: pointer; }
+.settings-section h3 + .settings-item, .settings-section .about-header + .settings-item, .settings-item--news + .settings-item { border-top-left-radius: 20px; border-top-right-radius: 20px; }
+.settings-section > .settings-item:last-child { border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+.settings-item__title { margin: 0; font-size: 16px; line-height: 24px; letter-spacing: .15px; color: var(--on-surface); }
+.settings-item__description { margin: 0; font-size: 14px; line-height: 20px; letter-spacing: .25px; color: var(--on-surface-variant); }
+.settings-item__hint:empty { display: none; }
+.settings-item__hint { margin-top: 4px; color: var(--primary); }
+.settings-item--news { margin-bottom: 12px; border-radius: 20px; background: var(--secondary-container); }
+.settings-item--news .settings-item__title, .settings-item--news .settings-item__description { color: var(--on-secondary-container); }
+.settings-action { position: relative; overflow: hidden; flex: none; display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 24px; border: 0; border-radius: 999px; background: var(--secondary-container); color: var(--on-secondary-container); font: inherit; font-size: 14px; font-weight: 500; letter-spacing: .1px; white-space: nowrap; text-decoration: none; cursor: pointer; }
+.settings-action::after { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity .15s var(--ease); }
+.settings-action:hover::after { opacity: .08; }
+.settings-action:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.settings-item--news .settings-action { background: var(--surface-container-lowest); color: var(--primary); }
+.settings-action--danger { background: var(--error-container); color: var(--on-error-container); }
+.settings-number { flex: none; width: 112px; height: 48px; padding: 0 14px; border: 1px solid var(--outline); border-radius: 4px; background: transparent; color: var(--on-surface); font: inherit; font-size: 16px; font-variant-numeric: tabular-nums; text-align: right; }
+.settings-number:hover { border-color: var(--on-surface); }
+.settings-number:focus { outline: 0; border: 2px solid var(--primary); padding: 0 13px; }
+.settings-card { padding: 20px; border-radius: 20px; background: var(--surface-container); }
+.about-header { display: flex; align-items: center; gap: 20px; padding: 8px 4px 24px; }
+.about-icon { width: 72px; height: 72px; border-radius: 16px; flex: none; }
+.about-name { margin: 0 0 4px; font-size: 24px; line-height: 32px; font-weight: 400; color: var(--on-surface); }
+.about-description { margin: 0; font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
+@media (max-width: 820px) {
+  .settings-layout { display: flex; flex-direction: column; }
+  .settings-sidebar { flex: none; padding: 0 0 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .settings-sidebar::-webkit-scrollbar { display: none; }
+  .settings-sidebar__title { display: none; }
+  .settings-nav { flex-direction: row; gap: 8px; min-width: max-content; padding: 4px 16px; }
+  .settings-nav__item { height: 32px; gap: 8px; padding: 0 16px 0 8px; border: 1px solid var(--outline-variant); border-radius: 8px; }
+  .settings-nav__item .ms { font-size: 18px; }
+  .settings-nav__item.active { border-color: transparent; }
+  .settings-panel__body { flex: 1; max-width: none; padding: 0 16px calc(40px + env(safe-area-inset-bottom)); }
+  .settings-item { flex-wrap: wrap; gap: 12px 16px; }
+  .settings-item > div { flex: 1 1 160px; min-width: 0; }
+  .settings-number { width: 88px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog.settings-view[open], .settings-section--active { animation: none; }
+}

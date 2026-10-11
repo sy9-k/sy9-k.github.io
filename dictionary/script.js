@@ -1053,6 +1053,14 @@ window.addEventListener('DOMContentLoaded', () => {
   updateClearHistoryState();
   if (appVersion) {
     appVersion.textContent = APP_VERSION;
+    // ビルド … この端末に入っている Service Worker のキャッシュの番号（dictionary/sw.js の CACHE_NAME）
+    if (window.caches && caches.keys) {
+      caches.keys().then((names) => {
+        let build = 0;
+        names.forEach((n) => { const m = /^dictionary-v(\d+)$/.exec(n); if (m) build = Math.max(build, Number(m[1])); });
+        if (build) appVersion.textContent = t('{version}（ビルド {build}）', { version: APP_VERSION, build });
+      }).catch(() => {});
+    }
   }
   updateCategorySelection();
   updatePwaInstallState();
