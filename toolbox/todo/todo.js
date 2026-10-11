@@ -737,6 +737,15 @@
     return id;
   }
 
+  // タスクを LINE の友だち・グループにカードで送る（/toolbox/shared/line.js。宿題や持ち物の共有に）
+  function shareTask(x) {
+    var list = listById(x.list), when = x.due ? dueText(x) : "";
+    var url = "https://sy9-k.github.io/toolbox/todo/";
+    SKLine.share(SKLine.card({
+      alt: x.text, kicker: "Todo" + (list ? " · " + list.name : ""), title: x.text,
+      sub: [when ? t("期限 {due}", { due: when }) : "", x.notes || ""].filter(Boolean).join("\n"), color: list ? list.color : "#16a34a", url: url, button: t("Todo を開く")
+    }), x.text + (when ? "（" + t("期限 {due}", { due: when }) + "）" : "") + (x.notes ? "\n" + x.notes : "")).then(function (r) { if (r === "sent") say(t("LINE で送りました")); });
+  }
   function openDetail(x) {
     var body = el("div", "detail__body");
     function changed() { x.updated = Date.now(); save(); render(); }
@@ -943,13 +952,16 @@
 
     window.M3.dialog({
       title: t("詳細"), body: body, cancelValue: "close",
-      actions: [{ label: t("削除"), danger: true, value: "delete" }, { label: t("完了"), primary: true, value: "close" }],
+      // スマホ（指で操作）では、開いたときにキーボードを出さない（タイトルを押すと出る）
+      autofocus: !(window.matchMedia && matchMedia("(pointer: coarse)").matches),
+      actions: (window.SKLine ? [{ label: t("LINE で送る"), value: "line" }] : []).concat([{ label: t("削除"), danger: true, value: "delete" }, { label: t("完了"), primary: true, value: "close" }]),
       onReady: function (close, box) {
         box.classList.add("detail");
         box.parentElement.classList.add("detail-scrim");
       }
     }).then(function (v) {
       if (v === "delete") removeTask(x);
+      else if (v === "line") { render(); shareTask(x); }
       else render();
     });
   }
@@ -1158,6 +1170,19 @@
       say(t("{n} 件のタスクを読み込みました", { n: added }));
     }).catch(function () { say(t("読み込めませんでした。Todo のバックアップのファイルを選んでください")); });
   });
+
+  // 横断検索の「Todo に追加」（/toolbox/shared/search.js が sessionStorage の sk_quick_todo に入れて、ここを開く）
+  var quick = null;
+  try { quick = sessionStorage.getItem("sk_quick_todo"); sessionStorage.removeItem("sk_quick_todo"); } catch (e) { /* 使えない */ }
+  if (quick && quick.trim()) {
+    var qq = R.parseQuick(quick.trim().slice(0, 500)), qnow = Date.now();
+    var qx = R.upgradeTask({ id: newId(), list: data.lists[0].id, text: qq.text || quick.trim(), due: qq.due, time: qq.time, repeat: qq.repeat, priority: qq.priority, created: qnow, updated: qnow }, data.lists);
+    data.tasks.push(qx);
+    lastAdded = qx.id;
+    save();
+    openView(qx.list, false);
+    say(t("Todo に追加しました: {text}", { text: qx.text }));
+  }
 
   // #task-ID で開いたとき（横断検索など）: そのタスクのリストを開いて、くわしい情報を出す
   var deep = /^#task-(.+)$/.exec(location.hash);

@@ -8,7 +8,7 @@
   <!-- 表示（ライト・ダーク・テーマカラー）。ちらつかないよう、CSS より先に <html> に付ける（選ぶのはヘッダーのアカウントのメニューの「表示」。assets/site.js） -->
   <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}"),d=document.documentElement;if(t.mode==="light"||t.mode==="dark")d.setAttribute("data-theme",t.mode);if(/^[a-z]{2,12}$/.test(t.accent||"")&&t.accent!=="blue")d.setAttribute("data-accent",t.accent);}catch(e){}})();</script>
   <title>SK's Toolbox</title>
-  <meta name="description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」。">
+  <meta name="description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」、時間割の「Timetable」、回して決める「Roulette」。">
   <meta name="theme-color" content="#ffffff" data-theme-color>
   <link rel="canonical" href="https://sy9-k.github.io/toolbox/">
   <!-- SNS で共有したときの表示（各ページのタイトル・説明・URL は build で入れ替える） -->
@@ -16,7 +16,7 @@
   <meta property="og:site_name" content="SK">
   <meta property="og:locale" content="ja_JP">
   <meta property="og:title" content="SK's Toolbox">
-  <meta property="og:description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」。">
+  <meta property="og:description" content="毎日ちょっと使う、小さなアプリを集めた SK の道具箱。時計とアラームの「Clock」、関数電卓にもなる「Calc」、画像も入るメモ帳「Memo」、リマインダー「Todo」、あと何日を数える「Countdown」、時間割の「Timetable」、回して決める「Roulette」。">
   <meta property="og:url" content="https://sy9-k.github.io/toolbox/">
   <meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
   <meta property="og:image:width" content="1200">
@@ -31,6 +31,8 @@
   <link rel="stylesheet" href="/toolbox/shared/m3.css">
   <link rel="stylesheet" href="/toolbox/home.css">
   <script src="/toolbox/shared/settings.js" data-app="home" data-scope="site"></script>
+  <script src="/toolbox/shared/titlebar.js"></script>
+  <script src="/toolbox/shared/tbcenter.js"></script>
   <link rel="manifest" href="/toolbox/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="SK's Toolbox">
@@ -51,6 +53,14 @@
   </header>
   <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
   <div class="hd-backdrop" id="hd-backdrop"></div>
+  <!-- sk-hub.jp への引っ越しのお知らせ（ヘッダーの下の帯。スタイルは /assets/site.css の sk-dn）
+       閉じたら、同じ段階（data-stage）のあいだは出さない（localStorage の sk_domain_notice）。日程が決まった・切り替えたときは data-stage と文を変える -->
+  <div class="sk-dn" id="sk-dn" data-stage="prep" role="region" aria-label="お知らせ" hidden>
+    <p class="sk-dn-text"><strong>SK のサイトは sk-hub.jp に引っ越します</strong><span>いまは準備中です。日程は決まりしだいお知らせします。</span></p>
+    <a class="sk-dn-more" href="/domain/">詳しく</a>
+    <button class="sk-dn-close" type="button" aria-label="閉じる"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <script>(function(){var b=document.getElementById("sk-dn"),k="sk_domain_notice",s=b.getAttribute("data-stage");try{if(localStorage.getItem(k)===s||/^\/domain\//.test(location.pathname)||/[?&](embed|line)\b/.test(location.search)||sessionStorage.getItem("sk_line"))return;}catch(e){return;}b.hidden=false;function done(){try{localStorage.setItem(k,s);}catch(e){}}b.querySelector(".sk-dn-close").addEventListener("click",function(){done();b.hidden=true;});b.querySelector(".sk-dn-more").addEventListener("click",done);})();</script>
 
   <main id="main">
     <!-- SK's Toolbox のホーム画面（Bento グリッド。見た目は /toolbox/home.css、中身は /toolbox/home.js。クラスは tbh- で始める） -->
@@ -65,6 +75,31 @@
         <button type="button" class="icon-btn m3-state" data-install hidden aria-label="アプリとして追加" title="アプリとして追加"><span class="msr" aria-hidden="true">install_mobile</span></button>
         <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
       </div>
+
+      <!-- ウィジェットとアプリ一覧の切りかえ（/toolbox/#apps でアプリ一覧から開く） -->
+      <div class="tbh-views" role="tablist" aria-label="ホームの表示">
+        <button type="button" class="tbh-view m3-state" role="tab" id="view-widgets" data-view="widgets" aria-selected="true" aria-controls="bento"><span class="msr" aria-hidden="true">dashboard</span><span>ウィジェット</span></button>
+        <button type="button" class="tbh-view m3-state" role="tab" id="view-apps" data-view="apps" aria-selected="false" aria-controls="apps"><span class="msr" aria-hidden="true">apps</span><span>アプリ</span></button>
+      </div>
+
+      <!-- LINE の中だけ（/toolbox/shared/line.js）: 友だちにすすめる -->
+      <section class="tbh-line" aria-label="LINE">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#06c755"/><path fill="#fff" d="M12 5c-4.3 0-7.7 2.8-7.7 6.3 0 3.2 2.7 5.8 6.5 6.3.3.1.6.2.7.4.1.2.1.5 0 .7l-.1.7c0 .2-.2.8.7.4.9-.4 4.6-2.7 6.3-4.6 1.2-1.3 1.7-2.6 1.7-3.9C19.7 7.8 16.3 5 12 5z"/></svg>
+        <p><b>LINE で使う SK's Toolbox</b><span>ルーレットの結果や時間割、Countdown を、友だちやグループにカードで送れます。</span></p>
+        <button type="button" class="line-btn" id="line-recommend"><span>友だちにすすめる</span></button>
+      </section>
+
+      <!-- アプリ一覧（スマホのホーム画面のように、アプリを大きなアイコンで並べる） -->
+      <nav class="tbh-apps" id="apps" role="tabpanel" aria-labelledby="view-apps" hidden>
+        <a class="tbh-app m3-state" href="/toolbox/clock/"><img src="/toolbox/clock/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Clock</span><span class="tbh-app__desc">時計・アラーム・タイマー</span><span class="tbh-app__badge" data-badge="clock" hidden data-i18n-skip></span></a>
+        <a class="tbh-app m3-state" href="/toolbox/todo/"><img src="/toolbox/todo/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Todo</span><span class="tbh-app__desc">リマインダー・やること</span><span class="tbh-app__badge" data-badge="todo" hidden data-i18n-skip></span></a>
+        <a class="tbh-app m3-state" href="/toolbox/timetable/"><img src="/toolbox/timetable/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Timetable</span><span class="tbh-app__desc">時間割・クラスの連絡</span><span class="tbh-app__badge" data-badge="timetable" hidden data-i18n-skip></span></a>
+        <a class="tbh-app tbh-app--noline m3-state" href="/toolbox/memo/"><img src="/toolbox/memo/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Memo</span><span class="tbh-app__desc">画像も入るメモ帳</span></a>
+        <a class="tbh-app tbh-app--noline m3-state" href="/toolbox/calc/"><img src="/toolbox/calc/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Calc</span><span class="tbh-app__desc">電卓・関数電卓</span></a>
+        <a class="tbh-app m3-state" href="/toolbox/countdown/"><img src="/toolbox/countdown/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Countdown</span><span class="tbh-app__desc">あと何日</span></a>
+        <a class="tbh-app m3-state" href="/toolbox/roulette/"><img src="/toolbox/roulette/icon.svg" alt="" width="64" height="64"><span class="tbh-app__name">Roulette</span><span class="tbh-app__desc">ルーレット・抽選</span></a>
+        <a class="tbh-app tbh-app--settings m3-state" href="/toolbox/settings/"><span class="tbh-app__icon"><span class="msr" aria-hidden="true">settings</span></span><span class="tbh-app__name">設定</span><span class="tbh-app__desc">見た目・同期・データ</span></a>
+      </nav>
 
       <!-- ホームの編集中: タイルの並べ替え・表示と非表示 -->
       <div class="tbh-editbar" id="home-editbar" hidden>
@@ -96,6 +131,18 @@
             <input type="text" id="todo-add-text" placeholder="タスクを追加" aria-label="タスクを追加" maxlength="300" enterkeyhint="done">
             <button type="submit" class="icon-btn m3-state" aria-label="追加" title="追加"><span class="msr" aria-hidden="true">arrow_upward</span></button>
           </form>
+        </section>
+
+        <!-- Timetable（今日の授業。いまの授業を強調） -->
+        <section class="tbh-tile tbh-tile--timetable" data-tile="timetable" aria-labelledby="w-tt-title">
+          <a class="tbh-tile__head m3-state" href="/toolbox/timetable/">
+            <img src="/toolbox/timetable/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-tt-title">Timetable</h2><span class="tbh-tile__meta" id="tt-meta" data-i18n-skip></span></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </a>
+          <ol class="w-tt" id="tt-list" data-i18n-skip></ol>
+          <p class="tbh-tile__empty" id="tt-empty" hidden data-i18n-skip></p>
+          <a class="m3-btn tbh-tile__action m3-state" id="tt-action" href="/toolbox/timetable/" hidden><span class="msr" aria-hidden="true">edit_calendar</span><span>時間割を作る</span></a>
         </section>
 
         <!-- Memo（最近のメモ） -->
@@ -133,6 +180,17 @@
           <span class="w-calc__res" id="calc-res" data-i18n-skip></span>
         </a>
 
+        <!-- Roulette（いまのルーレットと、最後の結果） -->
+        <a class="tbh-tile tbh-tile--roulette m3-state" data-tile="roulette" href="/toolbox/roulette/" aria-labelledby="w-rl-title">
+          <span class="tbh-tile__head">
+            <img src="/toolbox/roulette/icon.svg" alt="" width="32" height="32">
+            <span class="tbh-tile__name"><h2 id="w-rl-title">Roulette</h2><span class="tbh-tile__meta" id="rl-meta" data-i18n-skip></span></span>
+            <span class="msr" aria-hidden="true">arrow_outward</span>
+          </span>
+          <span class="w-rl" aria-hidden="true"><span class="w-rl__wheel"></span></span>
+          <span class="w-rl__last" id="rl-last" data-i18n-skip></span>
+        </a>
+
         <!-- 見た目（テーマカラー・ライト／ダークをその場で） -->
         <section class="tbh-tile tbh-tile--look" data-tile="look" aria-labelledby="w-look-title">
           <div class="tbh-tile__head">
@@ -145,11 +203,14 @@
         </section>
       </div>
 
+      <!-- 前にアプリ一覧を見ていたら、最初からアプリ一覧に（home.js を待つと、ウィジェットが一瞬見えてしまうため） -->
+      <script>try { var hs = (JSON.parse(localStorage.getItem("sk_toolbox") || "{}") || {}).homeStart; if (location.hash === "#apps" || (location.hash !== "#widgets" && hs !== "widgets" && (hs === "apps" || localStorage.getItem("sk_toolbox_view") === "apps" || (!localStorage.getItem("sk_toolbox_view") && (/[?&]line=/.test(location.search) || sessionStorage.getItem("sk_line")))))) { document.getElementById("apps").hidden = false; document.getElementById("bento").hidden = true; document.getElementById("view-apps").setAttribute("aria-selected", "true"); document.getElementById("view-widgets").setAttribute("aria-selected", "false"); document.getElementById("home-edit").hidden = true; } } catch (e) {}</script>
+
       <footer class="tbh-foot">
         <ul class="tbh-tips">
           <li><span class="msr" aria-hidden="true">search</span><span><kbd>Ctrl</kbd> + <kbd>K</kbd>（Mac は <kbd>⌘</kbd> + <kbd>K</kbd>）で、メモ・タスク・予定をまとめて検索</span></li>
           <li><span class="msr" aria-hidden="true">dashboard_customize</span><span>右上の「ホームを編集」で、タイルの順番と表示を変えられます</span></li>
-          <li><span class="msr" aria-hidden="true">install_mobile</span><span>ホーム画面に追加すると、アプリのように開いてオフラインでも使えます</span></li>
+          <li class="tbh-tip--install"><span class="msr" aria-hidden="true">install_mobile</span><span>ホーム画面に追加すると、アプリのように開いてオフラインでも使えます（<a href="/toolbox/install/">入れ方</a>）</span></li>
           <li><span class="msr" aria-hidden="true">shield</span><span>データはこの端末のブラウザに保存。オンライン同期（任意）は端末で暗号化してから</span></li>
         </ul>
         <p class="tbh-note"><a href="/toolbox/settings/">Toolbox の設定</a> · <a href="/products/">SK のプロダクト</a> · <a href="/policies/">利用規約・プライバシーポリシー</a></p>
@@ -161,6 +222,8 @@
     <script src="/toolbox/home.js"></script>
     <!-- 横断検索（Ctrl+K） -->
     <script src="/toolbox/shared/search.js"></script>
+    <!-- LINE の中で開いたとき（LINE ミニアプリ） -->
+    <script src="/toolbox/shared/line.js"></script>
     <!-- アクセスチェック・アクセス解析は、ページの最後でサイトと同じように読み込むので、ここでは読み込まない -->
     <script src="/toolbox/shared/pwa.js" data-no-check></script>
   </main>

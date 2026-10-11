@@ -118,44 +118,183 @@
     <button type="button" id="install-button" class="filled-btn">追加</button>
   </div>
 
-  <!-- 設定 -->
-  <dialog id="settings" class="dialog" aria-labelledby="settings-title">
-    <form method="dialog" class="dialog-inner">
-      <div class="dialog-head">
-        <button type="submit" class="icon-btn" aria-label="閉じる" title="閉じる"><span class="ms" aria-hidden="true">close</span></button>
+  <!-- 設定（MALU の設定と同じ形の全画面。左にカテゴリ、右に中身。スマホではカテゴリが上に横並び。切りかえは app.js） -->
+  <dialog id="settings" class="dialog settings-view" aria-labelledby="settings-title">
+    <form method="dialog" class="settings-panel">
+      <div class="settings-panel__header">
+        <button type="submit" class="icon-btn" aria-label="戻る" title="戻る"><span class="ms" aria-hidden="true">arrow_back</span></button>
         <h2 id="settings-title">設定</h2>
+        <!-- アカウント（Android の設定アプリの右上のように） -->
+        <sk-account-button class="settings-me" app="nagi" style="--ska-size:36px"></sk-account-button>
       </div>
-      <div class="dialog-body">
-        <h3>時間（分）</h3>
-        <div class="fields">
-          <label class="field"><input type="number" id="set-focus" min="1" max="180" inputmode="numeric"><span>集中</span></label>
-          <label class="field"><input type="number" id="set-short" min="1" max="60" inputmode="numeric"><span>休憩</span></label>
-          <label class="field"><input type="number" id="set-long" min="1" max="90" inputmode="numeric"><span>長い休憩</span></label>
-          <label class="field"><input type="number" id="set-every" min="2" max="10" inputmode="numeric"><span>長い休憩までの回数</span></label>
+      <div class="settings-layout">
+        <aside class="settings-sidebar" aria-label="設定のカテゴリ">
+          <p class="settings-sidebar__title">Nagi</p>
+          <!-- スマホでは Android の設定アプリと同じ: 大きな「設定」と「設定を検索」（検索は app.js） -->
+          <div class="settings-listhead">
+            <p class="settings-listhead__title" aria-hidden="true">設定</p>
+            <label class="settings-search"><span class="ms" aria-hidden="true">search</span><input type="search" id="settings-search" placeholder="設定を検索" aria-label="設定を検索" autocomplete="off"></label>
+          </div>
+          <nav class="settings-nav">
+            <button type="button" class="settings-nav__item active" data-settings-target="settings-general"><span class="ms" aria-hidden="true">tune</span><span class="settings-nav__text"><span>基本設定</span><small>集中・休憩の長さ・1日の目標</small></span></button>
+            <button type="button" class="settings-nav__item" data-settings-target="settings-flow"><span class="ms" aria-hidden="true">notifications</span><span class="settings-nav__text"><span>進め方と知らせ方</span><small>自動ではじめる・音・通知</small></span></button>
+            <button type="button" class="settings-nav__item" data-settings-target="settings-account"><span class="ms" aria-hidden="true">person</span><span class="settings-nav__text"><span>アカウント</span><small>SK Hub Systems アカウントで同期</small></span></button>
+            <button type="button" class="settings-nav__item" data-settings-target="settings-data"><span class="ms" aria-hidden="true">storage</span><span class="settings-nav__text"><span>データ</span><small>記録・キャッシュ・引っ越し</small></span></button>
+            <button type="button" class="settings-nav__item" data-settings-target="settings-about"><span class="ms" aria-hidden="true">info</span><span class="settings-nav__text"><span>このアプリについて</span><small>更新・バージョン・規約</small></span></button>
+          </nav>
+          <p class="settings-search__none" id="settings-search-none" hidden>見つかりませんでした</p>
+        </aside>
+
+        <div class="settings-panel__body">
+          <section id="settings-general" class="settings-section settings-section--active" aria-labelledby="settings-general-title">
+            <h3 id="settings-general-title">基本設定</h3>
+            <div class="settings-item settings-item--news">
+              <div>
+                <p class="settings-item__title">SK のサイトは sk-hub.jp に引っ越します</p>
+                <p class="settings-item__description">いまは準備中です。日程は決まりしだいお知らせします。</p>
+              </div>
+              <a class="settings-action" href="/domain/">詳しく</a>
+            </div>
+            <label class="settings-item">
+              <div>
+                <p class="settings-item__title">集中</p>
+                <p class="settings-item__description">1 回の集中の長さ（分）</p>
+              </div>
+              <input type="number" id="set-focus" class="settings-number" min="1" max="180" inputmode="numeric" aria-label="集中（分）">
+            </label>
+            <label class="settings-item">
+              <div>
+                <p class="settings-item__title">休憩</p>
+                <p class="settings-item__description">集中のあとの休憩の長さ（分）</p>
+              </div>
+              <input type="number" id="set-short" class="settings-number" min="1" max="60" inputmode="numeric" aria-label="休憩（分）">
+            </label>
+            <label class="settings-item">
+              <div>
+                <p class="settings-item__title">長い休憩</p>
+                <p class="settings-item__description">何回か集中したあとの、長めの休憩（分）</p>
+              </div>
+              <input type="number" id="set-long" class="settings-number" min="1" max="90" inputmode="numeric" aria-label="長い休憩（分）">
+            </label>
+            <label class="settings-item">
+              <div>
+                <p class="settings-item__title">長い休憩までの回数</p>
+                <p class="settings-item__description">この回数だけ集中したら、長い休憩にします</p>
+              </div>
+              <input type="number" id="set-every" class="settings-number" min="2" max="10" inputmode="numeric" aria-label="長い休憩までの回数">
+            </label>
+            <label class="settings-item">
+              <div>
+                <p class="settings-item__title">1日の目標</p>
+                <p class="settings-item__description">1 日に集中したい時間（分）。達成すると連続日数が増えます</p>
+              </div>
+              <input type="number" id="set-goal" class="settings-number" min="10" max="1440" step="10" inputmode="numeric" aria-label="1日の目標（分）">
+            </label>
+          </section>
+
+          <section id="settings-flow" class="settings-section" aria-labelledby="settings-flow-title">
+            <h3 id="settings-flow-title">進め方と知らせ方</h3>
+            <label class="settings-item">
+              <div>
+                <p class="settings-item__title">集中が終わったら、休憩を自動ではじめる</p>
+              </div>
+              <input type="checkbox" id="set-auto-break" class="switch" role="switch">
+            </label>
+            <label class="settings-item">
+              <div>
+                <p class="settings-item__title">休憩が終わったら、集中を自動ではじめる</p>
+              </div>
+              <input type="checkbox" id="set-auto-focus" class="switch" role="switch">
+            </label>
+            <label class="settings-item">
+              <div>
+                <p class="settings-item__title">終わったら音を鳴らす</p>
+                <p class="settings-item__description">集中のあとは鉄琴、休憩のあとは風鈴の音</p>
+              </div>
+              <input type="checkbox" id="set-sound" class="switch" role="switch">
+            </label>
+            <label class="settings-item">
+              <div>
+                <p class="settings-item__title">終わったら通知する</p>
+                <p class="settings-item__description">ほかのタブを見ていても気づけます</p>
+                <p class="settings-item__description settings-item__hint" id="notify-hint"></p>
+              </div>
+              <input type="checkbox" id="set-notify" class="switch" role="switch">
+            </label>
+          </section>
+
+          <section id="settings-account" class="settings-section" aria-labelledby="settings-account-title">
+            <h3 id="settings-account-title">アカウント</h3>
+            <!-- SK Hub Systems アカウントでの同期（中身は account.js が作る） -->
+            <div id="nagi-account" class="account-box settings-card"><p class="support">確認中…</p></div>
+          </section>
+
+          <section id="settings-data" class="settings-section" aria-labelledby="settings-data-title">
+            <h3 id="settings-data-title">データ</h3>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">集中の記録</p>
+                <p class="settings-item__description">集中の記録と設定は、このブラウザの中に保存します。SK Hub Systems アカウントで同期しているときは、アカウントにも保存します。</p>
+              </div>
+              <button type="button" id="clear-button" class="settings-action settings-action--danger">このブラウザの記録を消す</button>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">キャッシュ</p>
+                <p class="settings-item__description">オフライン用に保存してあるファイルを消して、Nagi を最新の状態で読み込み直します。記録と設定は消えません。</p>
+              </div>
+              <button type="button" id="reset-cache" class="settings-action">再読み込み</button>
+            </div>
+            <!-- 新しいアドレス（sk-hub.jp）への引っ越し。まだ使えない（形だけ。切り替えのときに中身を作る。/domain/） -->
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">新しいアドレスへの引っ越し</p>
+                <p class="settings-item__description">sk-hub.jp に切り替えたときに、この端末のデータをそのまま新しいアドレスへ移します。切り替えの準備ができたら使えるようになります。</p>
+              </div>
+              <button type="button" class="settings-action" disabled>準備中</button>
+            </div>
+          </section>
+
+          <section id="settings-about" class="settings-section" aria-labelledby="settings-about-title">
+            <h3 id="settings-about-title">このアプリについて</h3>
+            <div class="about-header">
+              <img class="about-icon" src="ico/icon-192.png" alt="" width="72" height="72">
+              <div>
+                <p class="about-name">Nagi</p>
+                <p class="about-description">集中と休憩をくり返して、勉強や作業の時間を記録する集中タイマーです。</p>
+              </div>
+            </div>
+            <!-- 更新の確認（MALU と同じ。中身は app.js の checkUpdate） -->
+            <div class="settings-item about-status">
+              <span class="about-status__mark" aria-hidden="true"><span class="ms">check</span></span>
+              <div>
+                <p id="about-update-status" class="settings-item__title">Nagi は最新です</p>
+                <p class="settings-item__description">更新は、開いたときに自動で確かめて反映します。</p>
+              </div>
+              <button type="button" id="check-update" class="settings-action">更新を確認</button>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">バージョン</p>
+                <p id="app-version" class="settings-item__description">1.0</p>
+              </div>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">利用規約・プライバシーポリシー</p>
+                <p class="settings-item__description">Nagi は SK 利用規約・SK プライバシーポリシーのもとで提供しています。</p>
+              </div>
+              <a class="settings-action" href="/policies/" target="_blank" rel="noopener">開く</a>
+            </div>
+            <div class="settings-item">
+              <div>
+                <p class="settings-item__title">Nagi について</p>
+                <p class="settings-item__description">使い方と、記録の同期について</p>
+              </div>
+              <a class="settings-action" href="/products/nagi/">詳しく</a>
+            </div>
+          </section>
         </div>
-
-        <h3>1日の目標</h3>
-        <div class="fields">
-          <label class="field"><input type="number" id="set-goal" min="10" max="1440" step="10" inputmode="numeric"><span>目標（分）</span></label>
-        </div>
-
-        <h3>進め方と知らせ方</h3>
-        <div class="list">
-          <label class="list-item"><span class="ms lead" aria-hidden="true">coffee</span><span class="list-text">集中が終わったら、休憩を自動ではじめる</span><input type="checkbox" id="set-auto-break" class="switch" role="switch"></label>
-          <label class="list-item"><span class="ms lead" aria-hidden="true">self_improvement</span><span class="list-text">休憩が終わったら、集中を自動ではじめる</span><input type="checkbox" id="set-auto-focus" class="switch" role="switch"></label>
-          <label class="list-item"><span class="ms lead" aria-hidden="true">volume_up</span><span class="list-text">終わったら音を鳴らす</span><input type="checkbox" id="set-sound" class="switch" role="switch"></label>
-          <label class="list-item"><span class="ms lead" aria-hidden="true">notifications</span><span class="list-text">終わったら通知する<small>ほかのタブを見ていても気づけます</small></span><input type="checkbox" id="set-notify" class="switch" role="switch"></label>
-        </div>
-        <p class="support" id="notify-hint"></p>
-
-        <h3>SK Hub Systems アカウント</h3>
-        <!-- 同期（account.js が中身を作る） -->
-        <div id="nagi-account" class="account-box"><p class="support">確認中…</p></div>
-
-        <h3>記録</h3>
-        <p class="support">集中の記録と設定は、このブラウザの中に保存します。SK Hub Systems アカウントで同期しているときは、アカウントにも保存します。</p>
-        <button type="button" id="clear-button" class="outlined-btn danger">このブラウザの記録を消す</button>
-        <p class="support small">Nagi は <a href="/policies/#sk-terms" target="_blank" rel="noopener">SK 利用規約</a>・<a href="/policies/#sk-privacy" target="_blank" rel="noopener">SK プライバシーポリシー</a>のもとで提供しています。</p>
       </div>
     </form>
   </dialog>
@@ -172,5 +311,6 @@
   <script src="/frameworks/check.js" defer></script>
   <!-- アクセス解析（Google アナリティクス。許可した人だけ） -->
   <script src="/assets/analytics.js" defer></script>
+  <script src="/assets/domain-snack.js" defer></script>
 </body>
 </html>

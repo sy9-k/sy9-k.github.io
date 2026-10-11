@@ -1,5 +1,5 @@
 // SK's Toolbox のオンライン同期の本体（ES モジュール。/toolbox/shared/sync.js が、同期を使うときだけ読み込む）
-//   ・保存先: SK Hub Systems アカウント accounts/{UID}/toolbox/{settings|todo|memo|countdown|calc}（アカウントで Toolbox に接続したときだけ書ける）
+//   ・保存先: SK Hub Systems アカウント accounts/{UID}/toolbox/{settings|todo|memo|countdown|calc|timetable|roulette}（アカウントで Toolbox に接続したときだけ書ける）
 //   ・中身は端末で暗号化してから送る（エンドツーエンド暗号化）。SK（Firebase の管理者）にも中身は読めない
 //       鍵 … 本人が決めた「同期用のパスフレーズ」から PBKDF2（SHA-256・31 万回）で作る AES-GCM 256 ビットの鍵。パスフレーズと鍵はサーバーに送らない
 //       accounts/{UID}/toolbox/key … { v, id, salt, iter, iv, check }（パスフレーズが合っているかを確かめるための暗号文と、鍵を作るための salt）
@@ -18,7 +18,7 @@ export { APP_KEYS };
 const ITERATIONS = 310000;
 const CHECK = "sk-toolbox-sync-v1";
 // 暗号文の大きさの上限（バイト。Firestore のセキュリティルールと同じ）
-export const LIMITS = { settings: 20000, todo: 400000, memo: 1000000, countdown: 100000, calc: 50000 };
+export const LIMITS = { settings: 20000, todo: 400000, memo: 1000000, countdown: 100000, calc: 50000, timetable: 100000, roulette: 50000 };
 
 const te = new TextEncoder();
 const td = new TextDecoder();

@@ -259,14 +259,23 @@ p,h1,h2,h3{margin:0}
   .clock-card{padding:20px 24px 24px}
   .search-area-title{font-size:1.375rem;line-height:1.75rem}
 
+  /* Android（Pixel）の設定アプリと同じ形。最初はカテゴリの一覧（大きな「設定」・検索・アイコンと名前と要約の 2 行）、押すと中身に。戻るで一覧へ（script.js の is-detail） */
+  .settings-panel__header h2{display:none}
   .settings-layout{display:block}
-  .settings-sidebar{padding:0 0 8px;overflow-x:auto;scrollbar-width:none}
-  .settings-sidebar::-webkit-scrollbar{display:none}
+  .settings-layout:not(.is-detail) .settings-panel__body{display:none}
+  .settings-layout.is-detail .settings-sidebar{display:none}
+  .settings-panel:has(.settings-layout.is-detail) .settings-me{display:none}
+  .settings-sidebar{padding:0 0 32px}
   .settings-sidebar__title{display:none}
-  .settings-nav{flex-direction:row;gap:8px;min-width:max-content;padding:4px 16px}
-  .settings-nav__item{height:32px;gap:8px;padding:0 16px 0 8px;border:1px solid var(--md-outline-variant);border-radius:var(--md-shape-sm)}
-  .settings-nav__item svg{width:18px;height:18px}
-  .settings-nav__item.active{border-color:transparent}
+  .settings-listhead{padding:0 16px 8px}
+  .settings-listhead__title{display:block;margin:16px 8px 28px;font-size:2.25rem;line-height:2.75rem;font-weight:400;color:var(--md-on-surface)}
+  .settings-search{height:56px;border-radius:28px;padding:0 20px;gap:16px}
+  .settings-nav{gap:0}
+  .settings-nav__item{height:auto;min-height:72px;gap:24px;padding:12px 24px;border-radius:0;color:var(--md-on-surface);white-space:normal}
+  .settings-nav__item.active{--_bg:transparent;color:var(--md-on-surface)}
+  .settings-nav__item svg{color:var(--md-on-surface-variant)}
+  .settings-nav__text span{font-size:1.25rem;line-height:1.75rem;font-weight:400;letter-spacing:0}
+  .settings-nav__text small{display:block;font-size:.875rem;line-height:1.25rem;font-weight:400;letter-spacing:.01em;color:var(--md-on-surface-variant)}
   .settings-panel__body{max-width:none;padding:0 16px 40px}
   .settings-item{flex-direction:column;align-items:stretch;gap:12px}
   .select-field{min-width:0}
@@ -336,3 +345,22 @@ p,h1,h2,h3{margin:0}
 .malu-toast{position:fixed;left:50%;bottom:24px;z-index:100;max-width:calc(100% - 32px);padding:14px 20px;border-radius:var(--md-shape-xs);background:var(--md-inverse-surface);color:var(--md-inverse-on-surface);font-size:.875rem;box-shadow:var(--md-elevation-3);transform:translate(-50%,16px);opacity:0;pointer-events:none;transition:opacity .2s var(--md-easing-standard),transform .2s var(--md-easing-standard)}
 .malu-toast.is-shown{opacity:1;transform:translate(-50%,0)}
 @media (max-width:600px){.wordbook-body{padding:8px 16px 48px}}
+/* sk-hub.jp への引っ越しのお知らせ（設定の基本設定のいちばん上） */
+.settings-item--news{margin-bottom:12px;border-radius:20px !important;background:var(--md-secondary-container)}
+.settings-item--news .settings-action{display:inline-flex;align-items:center;text-decoration:none;--_bg:var(--md-surface-container)}
+.settings-item--news + .settings-item{border-top-left-radius:20px;border-top-right-radius:20px}
+/* 設定のカテゴリの要約・検索・アカウント（スマホの形は上の @media (max-width:820px)） */
+.settings-nav__text{display:flex;flex-direction:column;min-width:0;text-align:left}
+.settings-nav__item[hidden]{display:none}
+.settings-search{display:flex;align-items:center;background:var(--md-surface-container-high);color:var(--md-on-surface-variant);cursor:text}
+@media (min-width:821px){
+  .settings-nav__text small{display:none}
+  .settings-listhead{padding:4px 0 12px}
+  .settings-listhead__title{display:none}
+  .settings-search{gap:12px;height:48px;padding:0 16px;border-radius:24px}
+}
+.settings-search svg{flex:none}
+.settings-search input{flex:1;min-width:0;height:100%;border:0;outline:0;background:transparent;color:var(--md-on-surface);font:inherit;font-size:1rem}
+.settings-search:focus-within{box-shadow:inset 0 0 0 2px var(--md-primary)}
+.settings-search__none{margin:16px;font-size:.875rem;color:var(--md-on-surface-variant)}
+.settings-me{margin-left:auto}

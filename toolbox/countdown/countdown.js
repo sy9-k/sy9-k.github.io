@@ -103,6 +103,17 @@
     return { num: (-inf.days).toLocaleString(locale), unit: t("日前") };
   }
 
+  // この日を LINE の友だち・グループにカードで送る（/toolbox/shared/line.js）
+  function shareLine(ev) {
+    var inf = info(ev, new Date());
+    var big = inf.days === 0 ? t("今日です") : inf.days > 0 ? t("あと {n} 日", { n: inf.days.toLocaleString(locale) }) : t("{n} 日前", { n: (-inf.days).toLocaleString(locale) });
+    var title = (ev.emoji ? ev.emoji + " " : "") + ev.name;
+    var url = "https://sy9-k.github.io/toolbox/countdown/";
+    SKLine.share(SKLine.card({
+      alt: title + " " + big, kicker: "Countdown", title: big, sub: title + "\n" + dateText(ev, inf), color: ev.color, url: url, button: t("SK's Toolbox で数える")
+    }), title + " " + big + "（" + dateText(ev, inf) + "）\n" + url).then(function (r) { if (r === "sent") say(t("LINE で送りました")); });
+  }
+
   // ================================================================
   // 表示
   // ================================================================
@@ -258,7 +269,9 @@
     body.append(field(t("名前"), nameIn), row, emojis, colors, yearly);
     var actions = [{ label: t("キャンセル"), value: null }, { label: ev ? t("保存") : t("追加"), primary: true, value: "save" }];
     if (ev) actions.unshift({ label: t("削除"), danger: true, value: "delete" });
+    if (ev && window.SKLine) actions.unshift({ label: t("LINE で送る"), value: "line" });
     window.M3.dialog({ title: ev ? t("日を編集") : t("日を追加"), body: body, actions: actions }).then(function (v) {
+      if (v === "line") { shareLine(ev); return; }
       if (v === "delete") {
         var removed = JSON.parse(JSON.stringify(ev));
         data.events = data.events.filter(function (x) { return x.id !== ev.id; });

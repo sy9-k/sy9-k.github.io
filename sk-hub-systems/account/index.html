@@ -45,6 +45,14 @@
   </header>
   <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
   <div class="hd-backdrop" id="hd-backdrop"></div>
+  <!-- sk-hub.jp への引っ越しのお知らせ（ヘッダーの下の帯。スタイルは /assets/site.css の sk-dn）
+       閉じたら、同じ段階（data-stage）のあいだは出さない（localStorage の sk_domain_notice）。日程が決まった・切り替えたときは data-stage と文を変える -->
+  <div class="sk-dn" id="sk-dn" data-stage="prep" role="region" aria-label="お知らせ" hidden>
+    <p class="sk-dn-text"><strong>SK のサイトは sk-hub.jp に引っ越します</strong><span>いまは準備中です。日程は決まりしだいお知らせします。</span></p>
+    <a class="sk-dn-more" href="/domain/">詳しく</a>
+    <button class="sk-dn-close" type="button" aria-label="閉じる"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <script>(function(){var b=document.getElementById("sk-dn"),k="sk_domain_notice",s=b.getAttribute("data-stage");try{if(localStorage.getItem(k)===s||/^\/domain\//.test(location.pathname)||/[?&](embed|line)\b/.test(location.search)||sessionStorage.getItem("sk_line"))return;}catch(e){return;}b.hidden=false;function done(){try{localStorage.setItem(k,s);}catch(e){}}b.querySelector(".sk-dn-close").addEventListener("click",function(){done();b.hidden=true;});b.querySelector(".sk-dn-more").addEventListener("click",done);})();</script>
 
   <main id="main">
     <!-- SK Hub Systems アカウントの紹介ページ（ログインや設定は /account/）。スタイルは SK Hub Systems のページと同じ hx-、このページだけのものは ha-。動きは /sk-hub-systems/hub.js -->
@@ -64,9 +72,9 @@
         <div class="ha-hero-text">
           <p class="hx-kicker">SK Hub Systems アカウント</p>
           <h1 class="hx-display ha-display">ひとつのアカウントで、<br>ぜんぶつながる。</h1>
-          <p class="hx-sub">管理コンソールも、MALU も、Nagi も、SK's Toolbox も。いつもの Google アカウントでログインするだけ。パスワードを新しく作る必要はありません。</p>
+          <p class="hx-sub">管理コンソールも、MALU も、Nagi も、SK's Toolbox も。いつもの Google か GitHub のアカウントでログインするだけ。パスワードを新しく作る必要はありません。</p>
           <div class="hx-cta">
-            <a class="hx-pill" href="/account/">Google でログイン</a>
+            <a class="hx-pill" href="/account/">ログイン</a>
             <a class="hx-link" href="/sk-hub-systems/">SK Hub Systems について</a>
           </div>
         </div>
@@ -95,7 +103,7 @@
           <div class="hx-lock ha-key-ico" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="32" r="11"/><path d="M33 32h22M47 32v8M53 32v6"/></svg></div>
           <p class="hx-eyebrow">ログイン</p>
           <h2 class="hx-title hx-title--xl">パスワードは、<br>増やさない。</h2>
-          <p class="hx-lead">ログインは Google アカウントだけ。SK がパスワードを発行・保存することはありません。2 段階認証などの安全の設定も、Google アカウントのものがそのまま守ってくれます。</p>
+          <p class="hx-lead">ログインは Google か GitHub のアカウントで。SK がパスワードを発行・保存することはありません。2 段階認証などの安全の設定も、それぞれのアカウントのものがそのまま守ってくれます。1 つのアカウントに両方をつないでおくこともできます。</p>
         </header>
       </div>
     </section>
@@ -180,7 +188,7 @@
           <article class="hx-tile ha-tile-profile" data-reveal>
             <p class="hx-tile-kicker">プロフィール</p>
             <h3>名前とアイコンは、<br>自分で決める。</h3>
-            <p>SK のサービスやサイトのヘッダーに出る名前とアイコンを選べます。Google アカウントの名前や写真は変わりません。</p>
+            <p>SK のサービスやサイトのヘッダーに出る名前とアイコンを選べます。Google や GitHub のアカウントの名前や写真は変わりません。</p>
             <div class="ha-avatars" aria-hidden="true">
               <span class="ha-avatar ha-avatar--sm" style="--c:#2563eb">A</span>
               <span class="ha-avatar ha-avatar--sm is-on" style="--c:#db2777">ゆ</span>
@@ -213,14 +221,14 @@
         </header>
         <div class="hx-privacy">
           <ul class="hx-never" data-reveal>
-            <li>Google アカウントのパスワード</li>
+            <li>Google・GitHub のアカウントのパスワード</li>
             <li>閲覧履歴・検索語</li>
-            <li>Gmail・Google ドライブなどの中身</li>
+            <li>Gmail・Google ドライブ・GitHub のリポジトリなどの中身</li>
           </ul>
           <div class="hx-uses" data-reveal>
             <h3>保存する情報</h3>
             <ul>
-              <li>Google アカウントの識別子・名前・メールアドレス・アイコン（ログインに使います）</li>
+              <li>ログインに使うアカウント（Google・GitHub）の識別子・名前・メールアドレス・アイコン（ログインに使います）</li>
               <li>アカウントの作成日と、規約に同意した日</li>
               <li>プロフィール（決めた場合の表示名とアイコン）と、端末のあいだで同期する設定（表示言語・アプリの設定）</li>
               <li>SK からのお知らせ（お問い合わせへの返事など）</li>
@@ -265,9 +273,9 @@
       <div class="wrap" data-reveal>
         <span class="ha-avatar ha-avatar--lg">S</span>
         <h2 class="hx-title">さあ、<br>はじめよう。</h2>
-        <p class="hx-lead">はじめての方も、Google でログインするだけでアカウントを作成できます。</p>
+        <p class="hx-lead">はじめての方も、Google か GitHub でログインするだけでアカウントを作成できます。</p>
         <div class="hx-cta">
-          <a class="hx-pill" href="/account/">Google でログイン</a>
+          <a class="hx-pill" href="/account/">ログイン</a>
           <a class="hx-link" href="/policies/#sk-hub-account">SK Hub Systems アカウント規約</a>
         </div>
       </div>

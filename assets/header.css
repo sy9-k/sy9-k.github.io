@@ -90,6 +90,34 @@
   .hd-menu-list li { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
 
+/* 細いヘッダー（<html class="hd-compact">）。SK's Toolbox をアプリとして開いたときに使う（/toolbox/shared/settings.js が付ける）。
+   画面の幅によらず、スマホと同じ「ロゴ＋メニューのボタン」にして、高さも 44px にする（assets/site.js の isMobile() もスマホとして扱う） */
+html.hd-compact { --hd-h: 44px; }
+html.hd-compact body { padding-top: 44px; }
+html.hd-compact .site-header { height: 44px; justify-content: space-between; padding: 0 8px; }
+html.hd-compact .site-header > a:not(.hd-logo) { display: none; }
+html.hd-compact .site-header > .hd-logo { width: 40px; height: 44px; padding: 0; flex: 0 0 40px; }
+html.hd-compact .hd-logo-image img { width: 22px; height: 22px; }
+html.hd-compact .hd-logo.is-back .hd-logo-image { display: none; }
+html.hd-compact .hd-logo.is-back .hd-logo-back { display: inline-flex; }
+html.hd-compact .hd-menu-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 40px;
+  width: 40px; height: 40px; padding: 0; margin: 0; border: 0; background: transparent; color: var(--hd-text, #000);
+  appearance: none; -webkit-appearance: none; cursor: pointer;
+}
+html.hd-compact .hd-menu-btn span {
+  position: absolute; left: 11px; width: 18px; height: 1.5px; border-radius: 999px; background: currentColor;
+  transition: transform 180ms cubic-bezier(.22, 1, .36, 1);
+}
+html.hd-compact .hd-menu-btn span:first-child { transform: translateY(-3px); }
+html.hd-compact .hd-menu-btn span:last-child { transform: translateY(3px); }
+html.hd-compact .hd-menu-btn.is-open span:first-child { transform: rotate(45deg); }
+html.hd-compact .hd-menu-btn.is-open span:last-child { transform: rotate(-45deg); }
+html.hd-compact .hd-backdrop { top: 43px; }
+html.hd-compact .hd-menu { padding-top: 44px; }
+html.hd-compact .hd-menu-inner { width: min(560px, calc(100% - 40px)); padding: 22px 0 28px; }
+html.hd-compact .hd-menu-link { font-size: 18px; }
+
 /* 言語の切り替え（PC は地球のアイコンだけ。スマホの一覧では「言語」と出る） */
 .site-header > a.hd-lang { display: inline-flex; align-items: center; padding-left: 10px; padding-right: 10px; }
 .hd-lang svg { width: 17px; height: 17px; }

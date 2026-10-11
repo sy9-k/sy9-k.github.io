@@ -1,6 +1,6 @@
 // SK's Toolbox のホーム画面（/toolbox/）の Service Worker。スコープは /toolbox/ 全体
 // 各アプリは自分のフォルダに自分の sw.js を持つ（スコープがせまいほうが使われる）。まだ開いたことのないアプリは、ここで開ける
-const CACHE_NAME = 'sk-toolbox-v7';
+const CACHE_NAME = 'sk-toolbox-v23';
 const ASSETS = [
   // ホーム画面と、4 つのアプリ（ホーム画面から開いたことがなくても、オフラインで開けるように）
   '/toolbox/',
@@ -17,10 +17,19 @@ const ASSETS = [
   '/toolbox/shared/settings.js',
   '/toolbox/shared/remind.js',
   '/toolbox/shared/search.js',
+  '/toolbox/shared/line.js',
   '/toolbox/shared/sync.js',
   '/toolbox/shared/sync-merge.js',
   '/toolbox/shared/sync-core.js',
+  '/toolbox/shared/titlebar.js',
+  '/toolbox/shared/tbcenter.js',
+  '/toolbox/shared/badges/toolbox.png',
+  '/toolbox/shared/badges/clock.png',
+  '/toolbox/shared/badges/todo.png',
+  '/toolbox/shared/badges/timetable.png',
+  '/assets/badge-skhub.png',
   '/toolbox/settings/',
+  '/toolbox/install/',
   '/toolbox/clock/',
   '/toolbox/clock/index.html',
   '/toolbox/clock/clock.css',
@@ -54,6 +63,19 @@ const ASSETS = [
   '/toolbox/countdown/manifest.json',
   '/toolbox/countdown/icon.svg',
   '/toolbox/countdown/icon-192.png',
+  '/toolbox/timetable/',
+  '/toolbox/timetable/index.html',
+  '/toolbox/timetable/timetable.css',
+  '/toolbox/timetable/timetable.js',
+  '/toolbox/timetable/manifest.json',
+  '/toolbox/timetable/icon-192.png',
+  '/toolbox/roulette/',
+  '/toolbox/roulette/index.html',
+  '/toolbox/roulette/roulette.css',
+  '/toolbox/roulette/roulette.js',
+  '/toolbox/roulette/manifest.json',
+  '/toolbox/roulette/icon-192.png',
+  '/toolbox/timetable/share.js',
   '/toolbox/todo/manifest.json',
   '/toolbox/todo/icon.svg',
   '/toolbox/todo/icon-192.png',
@@ -63,6 +85,8 @@ const ASSETS = [
   '/assets/site.js',
   '/assets/logo.svg',
   '/assets/favicon.svg',
+  '/toolbox/timetable/icon.svg',
+  '/toolbox/roulette/icon.svg',
   // 多言語（オフラインでも選んだ言語で表示できるように）
   '/assets/i18n.js',
   '/assets/i18n/en.js',
@@ -127,13 +151,24 @@ self.addEventListener('fetch', (e) => {
 });
 
 // 通知（Todo のリマインダー・Clock・SK Hub Systems のお知らせ）を押したら、そのページを開く（開いていれば前に出す）
+// 通知のボタン（完了にする・10 分後・スヌーズ・止める）は、開いている Toolbox のページに伝えて、そこで処理する
+// （/toolbox/shared/remind.js。開いているページがなければ、?skact= を付けて開き、開いたページで処理する）
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
-  const url = (e.notification.data && e.notification.data.url) || '/toolbox/todo/';
+  const data = e.notification.data || {};
+  const url = data.url || '/toolbox/todo/';
   // 通知のページ（Todo・Clock・SK Hub Systems のお知らせ）が開いていれば前に出す
   const path = new URL(url, self.location.origin).pathname;
   e.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      if (e.action) {
+        if (e.action === 'stop') return null;
+        const msg = { type: 'sk-notification-action', action: e.action, kind: data.kind, id: data.id };
+        const target = list.find((c) => new URL(c.url).pathname.startsWith('/toolbox/'));
+        if (target) { target.postMessage(msg); return null; }
+        const q = new URLSearchParams({ skact: e.action, skkind: data.kind || '', skid: data.id || '' });
+        return self.clients.openWindow(path + '?' + q.toString());
+      }
       for (const c of list) {
         if (new URL(c.url).pathname.startsWith(path) && 'focus' in c) return c.focus();
       }
