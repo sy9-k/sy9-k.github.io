@@ -131,10 +131,30 @@
       if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
       if (audio.state === "suspended") audio.resume();
     } catch (e) { audio = null; }
+    loadBreakSound();
   }
-  // 風鈴のような、やわらかい 3 つの音
-  function chime() {
+  // 集中から休憩に変わるときの音（効果音ラボ「クイズ正解2」。鉄琴のフレーズ）。読めなかったら風鈴の音
+  var breakSound = null, breakLoading = false;
+  function loadBreakSound() {
+    if (!audio || breakSound || breakLoading) return;
+    breakLoading = true;
+    fetch("sound/break.mp3").then(function (r) { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+      .then(function (b) { return new Promise(function (ok, ng) { audio.decodeAudioData(b, ok, ng); }); })
+      .then(function (buf) { breakSound = buf; }, function () { breakLoading = false; });
+  }
+  // kind … "break"（集中のあと）なら鉄琴の音、それ以外（休憩のあと）は風鈴の音
+  function chime(kind) {
     if (!settings.sound || !audio) return;
+    if (kind === "break" && breakSound) {
+      var src = audio.createBufferSource();
+      var vol = audio.createGain();
+      vol.gain.value = 0.8;
+      src.buffer = breakSound;
+      src.connect(vol).connect(audio.destination);
+      src.start();
+      return;
+    }
+    // 風鈴のような、やわらかい 3 つの音
     var now = audio.currentTime;
     [880, 1318.5, 1760].forEach(function (freq, i) {
       var osc = audio.createOscillator();
@@ -257,7 +277,7 @@
     if (!wasFocus) timer.round = timer.mode === "long" ? 1 : timer.round + 1;
     setMode(next, true);
     if (natural) {
-      chime();
+      chime(wasFocus ? "break" : "focus");
       if (wasFocus) notify(t("集中おつかれさまでした"), next === "long" ? t("長い休憩にしましょう。") : t("少し休憩しましょう。"), doneText);
       else notify(t("休憩おわり"), t("次の集中をはじめましょう。"), doneText);
       var auto = wasFocus ? settings.autoBreak : settings.autoFocus;
