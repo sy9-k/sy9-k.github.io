@@ -3,6 +3,9 @@
 //   ・記録と設定はこのブラウザの localStorage（nagi_sessions / nagi_settings / nagi_timer）
 //   ・SK Hub Systems アカウントとの同期は account.js（window.NAGI でやり取りする）
 //   ・残り時間は「終わる時刻」から計算する（タブが裏にあっても、閉じて開き直しても、ずれない）
+//   ・タイマーの状態は、同じブラウザのほかのタブ（storage イベント）と、アカウントで同期しているほかの端末（account.js）にそろえる
+//     （あとで操作したほう = changedAt が新しいほうに合わせる）
+//   ・残り時間は、ピクチャー イン ピクチャー（PiP）の小さな窓でも見られる
 (function () {
   "use strict";
 
@@ -54,10 +57,19 @@
   var sessions = (load(SESSIONS_KEY, []) || []).filter(function (x) { return x && x.i && isFinite(x.s) && isFinite(x.m); });
 
   // タイマーの状態
-  //   mode: focus / short / long, running, endAt（動いているとき）, remaining（止まっているとき、ミリ秒）
+  //   mode: focus / short / long, running, endAt（動いているとき）, remaining（止まっているとき、ミリ秒）, total: その回の長さ（ミリ秒）
   //   round: 今のサイクルで何回目の集中か, focusStart: 集中を始めた時刻, focusedMs: 一時停止までに集中した時間, resumedAt
-  var timer = load(TIMER_KEY, null) || {};
-  if (!/^(focus|short|long)$/.test(timer.mode)) timer = { mode: "focus", running: false, remaining: settings.focus * 60000, round: 1, focusStart: 0, focusedMs: 0, resumedAt: 0 };
+  //   changedAt: 最後に操作した時刻（ほかのタブ・端末とそろえるときに、新しいほうを選ぶ）
+  function normalizeTimer(x) {
+    if (!x || !/^(focus|short|long)$/.test(x.mode)) return null;
+    var num = function (v) { v = Number(v); return isFinite(v) && v > 0 ? v : 0; };
+    return {
+      mode: x.mode, running: !!x.running, endAt: num(x.endAt), remaining: num(x.remaining), total: num(x.total),
+      round: Math.max(1, Math.round(num(x.round)) || 1), focusStart: num(x.focusStart), focusedMs: num(x.focusedMs), resumedAt: num(x.resumedAt),
+      changedAt: num(x.changedAt)
+    };
+  }
+  var timer = normalizeTimer(load(TIMER_KEY, null)) || { mode: "focus", running: false, endAt: 0, remaining: settings.focus * 60000, total: settings.focus * 60000, round: 1, focusStart: 0, focusedMs: 0, resumedAt: 0, changedAt: 0 };
 
   var listeners = [];
   function changed(kind) {
@@ -66,6 +78,10 @@
 
   function durationOf(mode) {
     return (mode === "focus" ? settings.focus : mode === "short" ? settings.short : settings.long) * 60000;
+  }
+  // 今の回の長さ（ほかの端末で始めたときは、その端末の長さ）
+  function totalOf() {
+    return timer.total || durationOf(timer.mode);
   }
 
   // ---------- 日付と集計 ----------
@@ -110,7 +126,10 @@
   function record(startMs, focusedMs) {
     if (focusedMs < MIN_RECORD_MS) return false;
     var before = (dayTotals()[dayKey(Date.now())] || 0) >= settings.goal;
-    sessions.push({ i: startMs.toString(36) + "-" + Math.random().toString(36).slice(2, 6), s: startMs, m: Math.round(focusedMs / 600) / 100 });
+    // ID は始めた時刻から決める（同期しているほかの端末も同じ集中を記録したとき、同じ ID で 1 件にまとまる）
+    var id = startMs.toString(36) + "-f";
+    sessions = sessions.filter(function (x) { return x.i !== id; });
+    sessions.push({ i: id, s: startMs, m: Math.round(focusedMs / 600) / 100 });
     sessions.sort(function (a, b) { return a.s - b.s; });
     if (sessions.length > SESSIONS_MAX) sessions = sessions.slice(-SESSIONS_MAX);
     save(SESSIONS_KEY, sessions);
@@ -209,7 +228,12 @@
   var doneTimer = null;
   var tickTimer = null;
 
-  function persist() { save(TIMER_KEY, timer); }
+  // at … 操作した時刻（時間が来て切りかわったときは、終わる時刻。ふつうは今）
+  function persist(at) {
+    timer.changedAt = at || Date.now();
+    save(TIMER_KEY, timer);
+    changed("timer");
+  }
 
   function remainingMs() {
     return timer.running ? Math.max(0, timer.endAt - Date.now()) : timer.remaining;
@@ -245,15 +269,15 @@
     return timer.focusedMs + (timer.running ? Math.min(Date.now(), timer.endAt) - timer.resumedAt : 0);
   }
 
-  function setMode(mode, keepRound) {
+  function setMode(mode, keepRound, at) {
     unschedule();
     timer.mode = mode;
     timer.running = false;
-    timer.remaining = durationOf(mode);
+    timer.remaining = timer.total = durationOf(mode);
     timer.focusStart = 0;
     timer.focusedMs = 0;
     if (!keepRound && mode === "focus") timer.round = timer.round || 1;
-    persist();
+    persist(at);
     render();
   }
 
@@ -267,6 +291,7 @@
 
   function finish(natural) {
     var wasFocus = timer.mode === "focus";
+    var endedAt = natural ? timer.endAt : 0;
     // 通知の 1 行目: 終わったもの（「集中 25 分」「休憩 5 分」「長い休憩 15 分」）
     var doneMin = timer.mode === "focus" ? settings.focus : timer.mode === "short" ? settings.short : settings.long;
     var doneText = t(timer.mode === "focus" ? "集中 {n} 分" : timer.mode === "short" ? "休憩 {n} 分" : "長い休憩 {n} 分", { n: doneMin });
@@ -275,7 +300,7 @@
     }
     var next = nextMode();
     if (!wasFocus) timer.round = timer.mode === "long" ? 1 : timer.round + 1;
-    setMode(next, true);
+    setMode(next, true, endedAt);
     if (natural) {
       chime(wasFocus ? "break" : "focus");
       if (wasFocus) notify(t("集中おつかれさまでした"), next === "long" ? t("長い休憩にしましょう。") : t("少し休憩しましょう。"), doneText);
@@ -316,10 +341,11 @@
     var rem = remainingMs();
     var clock = formatClock(rem);
     $("time").textContent = clock;
-    var total = durationOf(timer.mode);
-    var ratio = total ? rem / total : 0;
+    var total = totalOf();
+    var ratio = total ? Math.min(1, rem / total) : 0;
     $("ring-progress").style.strokeDashoffset = String(RING * (1 - ratio));
     document.title = timer.running ? clock + " · " + MODE_LABEL[timer.mode] + " | Nagi" : "Nagi";
+    renderPip(clock, ratio);
     if (timer.running && rem <= 0 && !doneTimer) finish(true);
   }
 
@@ -333,7 +359,7 @@
       if (on && btn.getAttribute("aria-selected") === "false" && typeof animateEl === "function") animateEl(btn, "is-pop", 300);
       btn.setAttribute("aria-selected", String(on));
     });
-    var fresh = !timer.running && timer.remaining === durationOf(timer.mode);
+    var fresh = !timer.running && timer.remaining === totalOf();
     $("start-label").textContent = timer.running ? t("一時停止") : fresh ? t("はじめる") : t("つづける");
     $("start-icon").textContent = timer.running ? "pause" : "play_arrow";
     $("mode-name").textContent = MODE_LABEL[timer.mode];
@@ -342,6 +368,7 @@
       ? (timer.mode === "focus" ? t("集中しています") : t("休憩しています"))
       : fresh ? (timer.mode === "focus" ? t("準備ができたら「はじめる」") : t("ひと休みしましょう")) : t("一時停止中");
     $("round").textContent = t("集中 {n} / {every} 回目", { n: ((timer.round - 1) % settings.every) + 1, every: settings.every });
+    renderPipState(fresh);
     // スマホのブラウザの上の帯は、背景（M3 の surface）に合わせる
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--surface").trim() || "#f4fbf8");
@@ -432,7 +459,7 @@
     if (goalChanged) settings.goalUpdatedAt = Date.now();
     save(SETTINGS_KEY, settings);
     // 止まっていて、まだ始めていないタイマーは、新しい時間にそろえる
-    if (!timer.running && !timer.focusStart) { timer.remaining = durationOf(timer.mode); persist(); }
+    if (!timer.running && !timer.focusStart && timer.remaining !== durationOf(timer.mode)) { timer.remaining = timer.total = durationOf(timer.mode); persist(); }
     render();
     renderStats();
     if (goalChanged) changed("goal");
@@ -636,7 +663,7 @@
       setMode(btn.dataset.mode, true);
     });
   });
-  // キーボード: Space はじめる・一時停止 / R リセット / N 次へ / F 拡大表示 / Esc 拡大表示をやめる（入力中・設定を開いているときは除く）
+  // キーボード: Space はじめる・一時停止 / R リセット / N 次へ / F 拡大表示 / P 小さな窓（PiP） / Esc 拡大表示をやめる（入力中・設定を開いているときは除く）
   document.addEventListener("keydown", function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest("input, textarea, select, dialog[open]")) return;
     if (e.code === "Space") {
@@ -646,6 +673,7 @@
     } else if (e.code === "KeyR") { e.preventDefault(); reset(); }
     else if (e.code === "KeyN") { e.preventDefault(); skip(); }
     else if (e.code === "KeyF") { e.preventDefault(); setZen(!isZen()); }
+    else if (e.code === "KeyP" && !$("pip-button").hidden) { e.preventDefault(); openPip(); }
     else if (e.code === "Escape" && isZen() && !document.fullscreenElement) { setZen(false); }
   });
 
@@ -714,6 +742,252 @@
     window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
   }
 
+  // ---------- ほかのタブ・端末のタイマーに合わせる ----------
+  // 自分のより新しい（changedAt が大きい）ときだけ入れかえる。入れかえたことは、ほかへは知らせない（行ったり来たりしないように）
+  function applyTimer(remote) {
+    var next = normalizeTimer(remote);
+    if (!next || !(next.changedAt > (timer.changedAt || 0))) return false;
+    unschedule();
+    timer = next;
+    save(TIMER_KEY, timer);
+    catchUp();
+    render();
+    return true;
+  }
+  // 同じブラウザのほかのタブで操作したとき
+  window.addEventListener("storage", function (e) {
+    if (e.key !== TIMER_KEY || !e.newValue) return;
+    try { applyTimer(JSON.parse(e.newValue)); } catch (x) { /* 読めない値は無視 */ }
+  });
+
+  // ---------- ピクチャー イン ピクチャー（残り時間を小さな窓で、ほかのアプリの上に出す） ----------
+  //   Document Picture-in-Picture に対応したブラウザ（パソコンの Chrome・Edge など）… 輪と残り時間と、はじめる・一時停止・次へのボタン
+  //   それ以外で動画の PiP に対応したブラウザ（Safari・iPhone・iPad・Android など）… 残り時間を描いた動画を小さな窓に出す
+  //     （窓の再生・一時停止のボタンで、タイマーをはじめる・一時停止できる）
+  var pip = null; // { kind: "document" | "video", win / video, ... }
+  var docPipOk = "documentPictureInPicture" in window;
+  var videoPipOk = !!(document.pictureInPictureEnabled && HTMLCanvasElement.prototype.captureStream);
+  if (docPipOk || videoPipOk) $("pip-button").hidden = false;
+
+  function pipColors() {
+    var cs = getComputedStyle(document.body);
+    var v = function (name, fb) { return cs.getPropertyValue(name).trim() || fb; };
+    return { bg: v("--surface", "#f4fbf8"), fg: v("--on-surface", "#161d1b"), sub: v("--on-surface-variant", "#3f4946"), primary: v("--primary", "#006a60"), track: v("--secondary-container", "#cce8e2") };
+  }
+
+  function openPip() {
+    if (pip) { closePip(); return; }
+    if (docPipOk) openDocumentPip();
+    else if (videoPipOk) openVideoPip();
+  }
+
+  function openDocumentPip() {
+    window.documentPictureInPicture.requestWindow({ width: 280, height: 320 }).then(function (win) {
+      var d = win.document;
+      // 本体と同じ見た目にする（CSS・フォント・ライト／ダーク）
+      [].forEach.call(document.querySelectorAll('link[rel="stylesheet"], style'), function (n) { d.head.appendChild(n.cloneNode(true)); });
+      var theme = document.documentElement.getAttribute("data-theme");
+      if (theme) d.documentElement.setAttribute("data-theme", theme);
+      d.documentElement.lang = document.documentElement.lang;
+      d.title = "Nagi";
+      d.body.className = "pip-body";
+      d.body.innerHTML =
+        '<div class="pip">' +
+          '<span class="mode-chip pip-chip"><span class="ms" aria-hidden="true" data-pip="icon"></span><span data-pip="mode"></span></span>' +
+          '<div class="pip-timer">' +
+            '<svg class="ring" viewBox="0 0 240 240" aria-hidden="true"><circle class="ring-track" cx="120" cy="120" r="108"/><circle class="ring-progress" data-pip="ring" cx="120" cy="120" r="108"/></svg>' +
+            '<div class="pip-time" data-pip="time"></div>' +
+          '</div>' +
+          '<div class="pip-controls">' +
+            '<button type="button" class="tonal-icon-btn" data-pip="reset"><span class="ms" aria-hidden="true">restart_alt</span></button>' +
+            '<button type="button" class="fab pip-fab" data-pip="start"><span class="ms" aria-hidden="true" data-pip="start-icon"></span></button>' +
+            '<button type="button" class="tonal-icon-btn" data-pip="skip"><span class="ms" aria-hidden="true">skip_next</span></button>' +
+          '</div>' +
+        '</div>';
+      var q = function (k) { return d.querySelector('[data-pip="' + k + '"]'); };
+      q("reset").setAttribute("aria-label", t("リセット")); q("reset").title = t("リセット");
+      q("skip").setAttribute("aria-label", t("次へ")); q("skip").title = t("次へ");
+      q("start").addEventListener("click", function () { if (timer.running) pause(); else start(); });
+      q("reset").addEventListener("click", reset);
+      q("skip").addEventListener("click", skip);
+      d.addEventListener("keydown", function (e) {
+        if (e.code === "Space") { e.preventDefault(); if (timer.running) pause(); else start(); }
+      });
+      pip = { kind: "document", win: win, q: q, last: "" };
+      win.addEventListener("pagehide", function () { if (pip && pip.win === win) { pip = null; renderPipButton(); } });
+      // 窓が見えているあいだは、窓の描画のたびに残り時間を合わせる（本体のタブが裏にあって、タイマーが間引かれても止まらない）
+      (function loop() {
+        if (!pip || pip.win !== win) return;
+        renderTime();
+        win.requestAnimationFrame(function () { setTimeout(loop, 200); });
+      })();
+      render();
+      renderPipButton();
+    }).catch(function () {
+      // 窓を開けなかった（ボタンを押した直後でないなど）。動画の PiP が使えれば、そちらで
+      if (videoPipOk) openVideoPip();
+    });
+  }
+
+  // 動画の PiP の用意（Safari は、押したその場で PiP にしないと開けないので、動画は先に作っておく）
+  var pipVideo = null;
+  function prepareVideoPip() {
+    if (pipVideo || !videoPipOk) return pipVideo;
+    var canvas = document.createElement("canvas");
+    canvas.width = 640;
+    canvas.height = 360;
+    var video = document.createElement("video");
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    video.setAttribute("aria-hidden", "true");
+    // 画面の外に置く（見えないと PiP にできないブラウザがあるので、display: none にはしない）
+    video.style.cssText = "position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:0;pointer-events:none;";
+    document.body.appendChild(video);
+    pipVideo = { canvas: canvas, video: video };
+    drawPipCanvas(true, canvas);
+    video.srcObject = canvas.captureStream();
+    // 窓の再生・一時停止のボタンで、タイマーをはじめる・一時停止する（PiP で出しているときだけ）
+    video.addEventListener("play", function () { if (pip && pip.ready && !timer.running) start(); });
+    video.addEventListener("pause", function () { if (pip && pip.ready && timer.running && document.pictureInPictureElement === video) pause(); });
+    video.addEventListener("leavepictureinpicture", function () { if (pip && pip.kind === "video") closePip(); });
+    return pipVideo;
+  }
+
+  function openVideoPip() {
+    var pv = prepareVideoPip();
+    if (!pv) return;
+    var video = pv.video;
+    pip = { kind: "video", canvas: pv.canvas, video: video, last: "", ready: false };
+    drawPipCanvas(true);
+    // タブが裏にあっても描き続けるように、時間を数えるのは Worker にまかせる（メインのタイマーは裏で間引かれる）
+    try {
+      var src = "setInterval(function(){postMessage(0)},250)";
+      pip.ticker = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
+      pip.ticker.onmessage = function () { drawPipCanvas(false); };
+    } catch (e) { pip.ticker = null; }
+    var mine = pip;
+    video.play().catch(function () {});
+    // play() を待たずに、押したその場で PiP にする
+    video.requestPictureInPicture().then(function () {
+      if (pip !== mine) return;
+      mine.ready = true;
+      renderPipButton();
+      render();
+    }).catch(function () {
+      if (pip !== mine) return;
+      closePip();
+      toast(t("ピクチャー イン ピクチャーを開けませんでした"));
+    });
+  }
+
+  function closePip() {
+    var p = pip;
+    pip = null;
+    if (!p) return;
+    if (p.kind === "document") {
+      try { p.win.close(); } catch (e) { /* もう閉じている */ }
+    } else {
+      if (p.ticker) p.ticker.terminate();
+      if (document.pictureInPictureElement === p.video && document.exitPictureInPicture) document.exitPictureInPicture().catch(function () {});
+      p.video.pause();
+    }
+    renderPipButton();
+  }
+
+  function renderPipButton() {
+    var on = !!pip;
+    $("pip-icon").textContent = on ? "picture_in_picture_off" : "picture_in_picture_alt";
+    var label = on ? t("小さな窓を閉じる") : t("小さな窓で表示");
+    $("pip-button").setAttribute("aria-label", label);
+    $("pip-button").title = label;
+  }
+
+  // 残り時間（renderTime から）
+  function renderPip(clock, ratio) {
+    if (!pip) return;
+    if (pip.kind === "document") {
+      pip.q("time").textContent = clock;
+      pip.q("ring").style.strokeDashoffset = String(RING * (1 - ratio));
+    } else {
+      drawPipCanvas(false);
+    }
+  }
+  // 種類・動いているか（render から）
+  function renderPipState(fresh) {
+    if (!pip) return;
+    if (pip.kind === "document") {
+      var b = pip.win.document.body;
+      b.classList.toggle("is-break", timer.mode !== "focus");
+      b.classList.toggle("is-running", !!timer.running);
+      pip.q("mode").textContent = MODE_LABEL[timer.mode];
+      pip.q("icon").textContent = timer.mode === "focus" ? "self_improvement" : "coffee";
+      pip.q("start-icon").textContent = timer.running ? "pause" : "play_arrow";
+      var label = timer.running ? t("一時停止") : fresh ? t("はじめる") : t("つづける");
+      pip.q("start").setAttribute("aria-label", label);
+      pip.q("start").title = label;
+    } else {
+      drawPipCanvas(true);
+      // 窓の再生・一時停止のボタンの形を、タイマーに合わせる（イベントが返ってきても、タイマーと同じなので何もしない）
+      if (!pip.ready) return;
+      var v = pip.video;
+      if (timer.running && v.paused) v.play().catch(function () {});
+      else if (!timer.running && !v.paused) v.pause();
+    }
+  }
+
+  // 動画の PiP に出す絵（残り時間・種類・進み具合の線）。秒が変わったときだけ描き直す
+  function drawPipCanvas(force, canvas) {
+    var p = canvas ? { canvas: canvas } : pip;
+    if (!p || !p.canvas) return;
+    var rem = remainingMs();
+    var clock = formatClock(rem);
+    var key = clock + timer.mode + timer.running;
+    if (!force && key === p.last) {
+      // 止まった絵でも、動画として流れ続けるように 1 秒に 1 回は描く
+      if (Date.now() - (p.drawnAt || 0) < 1000) return;
+    }
+    p.last = key;
+    p.drawnAt = Date.now();
+    var c = pipColors();
+    var g = p.canvas.getContext("2d");
+    var W = p.canvas.width, H = p.canvas.height;
+    var font = getComputedStyle(document.body).fontFamily;
+    g.fillStyle = c.bg;
+    g.fillRect(0, 0, W, H);
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    g.fillStyle = c.primary;
+    g.font = "700 34px " + font;
+    g.fillText(MODE_LABEL[timer.mode] + (timer.running ? "" : " · " + t("一時停止中")), W / 2, 74);
+    g.fillStyle = c.fg;
+    g.font = "500 150px " + font;
+    g.fillText(clock, W / 2, 190);
+    // 進み具合（残りの割合）
+    var total = totalOf();
+    var ratio = total ? Math.min(1, rem / total) : 0;
+    var x = 64, y = 300, w = W - 128, h = 14;
+    g.fillStyle = c.track;
+    roundRect(g, x, y, w, h, h / 2);
+    if (ratio > 0) {
+      g.fillStyle = c.primary;
+      roundRect(g, x, y, Math.max(h, w * ratio), h, h / 2);
+    }
+  }
+  function roundRect(g, x, y, w, h, r) {
+    g.beginPath();
+    g.moveTo(x + r, y);
+    g.arcTo(x + w, y, x + w, y + h, r);
+    g.arcTo(x + w, y + h, x, y + h, r);
+    g.arcTo(x, y + h, x, y, r);
+    g.arcTo(x, y, x + w, y, r);
+    g.closePath();
+    g.fill();
+  }
+  $("pip-button").addEventListener("click", openPip);
+  // Document PiP がないブラウザでは、動画の PiP を先に用意しておく
+  if (!docPipOk && videoPipOk) prepareVideoPip();
+
   // ---------- account.js（同期）とのやり取り ----------
   window.NAGI = {
     t: t,
@@ -738,19 +1012,28 @@
       save(SETTINGS_KEY, settings);
       renderStats();
     },
-    onChange: function (fn) { listeners.push(fn); }
+    onChange: function (fn) { listeners.push(fn); },
+    // タイマーの状態（ほかの端末との同期）
+    getTimer: function () { return Object.assign({}, timer); },
+    applyTimer: applyTimer
   };
 
   // ---------- 起動 ----------
   // 閉じているあいだに終わっていたら、そこで区切る（自動では次を始めない）
-  if (timer.running && timer.endAt <= Date.now()) {
-    if (timer.mode === "focus") record(timer.focusStart || timer.endAt - durationOf("focus"), timer.focusedMs + (timer.endAt - timer.resumedAt));
-    var nm = nextMode();
-    if (timer.mode !== "focus") timer.round = timer.mode === "long" ? 1 : timer.round + 1;
-    setMode(nm, true);
-  } else if (timer.running) {
-    schedule();
+  //   切りかわった時刻は「終わる時刻」にする（そのあとにほかの端末で始めた次の回のほうが新しい、とわかるように）
+  function catchUp() {
+    if (timer.running && timer.endAt <= Date.now()) {
+      if (timer.mode === "focus") record(timer.focusStart || timer.endAt - totalOf(), timer.focusedMs + (timer.endAt - timer.resumedAt));
+      var nm = nextMode();
+      if (timer.mode !== "focus") timer.round = timer.mode === "long" ? 1 : timer.round + 1;
+      setMode(nm, true, timer.endAt);
+    } else if (timer.running) {
+      schedule();
+    } else {
+      unschedule();
+    }
   }
+  catchUp();
   render();
   renderStats();
   // 日付が変わったら、今日の集計を切り替える

@@ -856,7 +856,7 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
   if (busy || !user) return;
   setBusy(true, btn);
   try {
-    const [teams, devices, notices, maluWords, maluHistory, backups, nagiData, timetableInbox, ...toolboxDocs] = await Promise.all([
+    const [teams, devices, notices, maluWords, maluHistory, backups, nagiData, nagiTimer, timetableInbox, ...toolboxDocs] = await Promise.all([
       getDocs(query(collection(db, "teams"), where("members", "array-contains", user.uid))),
       getDocs(query(collection(db, "devices"), where("ownerUid", "==", user.uid))),
       getDocs(collection(db, "accounts", user.uid, "notices")),
@@ -864,6 +864,7 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
       getDoc(doc(db, "accounts", user.uid, "malu", "history")),
       getDocs(collection(db, "teams", user.uid, "backups")),
       getDoc(doc(db, "accounts", user.uid, "nagi", "data")),
+      getDoc(doc(db, "accounts", user.uid, "nagi", "timer")).catch(() => null),
       getDoc(inboxRef()).catch(() => null),
       ...TOOLBOX_DOCS.map((id) => getDoc(doc(db, "accounts", user.uid, "toolbox", id)))
     ]);
@@ -895,6 +896,8 @@ $("[data-acct-export]").addEventListener("click", async (e) => {
       },
       // Nagi の集中の記録（s = 始めた時刻（ミリ秒）、m = 集中した分）と 1 日の目標
       nagi: nagiData.exists() ? plain(nagiData.data()) : null,
+      // Nagi のタイマーの状態（ほかの端末とそろえるためのもの。endAt = 終わる時刻（ミリ秒））
+      nagiTimer: nagiTimer && nagiTimer.exists() ? plain(nagiTimer.data()) : null,
       // SK's Toolbox の同期のデータ（端末で暗号化したもの。同期用のパスフレーズがないと読めません）
       toolbox: Object.fromEntries(toolboxDocs.filter((d) => d.exists()).map((d) => [d.id, plain(d.data())])),
       // SK's Toolbox の時間割の配信で、このアカウントのメールアドレスあてに配信された時間割の ID
@@ -980,9 +983,9 @@ async function deleteToolboxData(uid) {
   await deleteRefs(TOOLBOX_DOCS.map((id) => doc(db, "accounts", uid, "toolbox", id)));
 }
 
-// Nagi のデータ: 同期した集中の記録と目標
+// Nagi のデータ: 同期した集中の記録と目標・タイマーの状態
 async function deleteNagiData(uid) {
-  await deleteRefs([doc(db, "accounts", uid, "nagi", "data")]);
+  await deleteRefs([doc(db, "accounts", uid, "nagi", "data"), doc(db, "accounts", uid, "nagi", "timer")]);
 }
 
 // MALU のデータ: 単語帳と、同期した検索履歴
