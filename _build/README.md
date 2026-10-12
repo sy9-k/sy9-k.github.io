@@ -50,7 +50,7 @@ URL は変えずに、`/lang/` で選んだ言語でページを訳して表示�
 - **お問い合わせ・アクセスチェックの記録の保存期間**: 開発者が `/inbox/` を開いたときに、期限を過ぎたものを削除します。ときどき開いてください。
 - **Firestore のルール**: y-filter リポジトリの `systems/firestore.rules`。`systems` で `firebase deploy --only firestore:rules` で反映します。
 - **Google アナリティクス**: 測定 ID `G-LLN7RGHRTE`（アカウント「Default Account for Firebase」→ プロパティ「y-filter-system」→ データストリーム「SK」）。読み込みは `assets/analytics.js`（許可した人だけ）。プライバシーポリシー第四条の二に合わせて、データの保持は 2 か月、Google シグナルはオフ、拡張計測機能の「サイト内検索」「フォームの操作」はオフにしています。変えるときはポリシーも直します。
-- **SK Share（/view/）**: パスワードを入れると、YouTube の限定公開動画と HTML 文書を見られるページです。作る・直す・止めるのは `/view/editor/`（開発者だけ）。データは Firestore の `viewPages`（ID = パスワードから作った値。くわしくは `view/view-core.js` と y-filter リポジトリの `systems/firestore.rules`）。One UI 版の試作は `_mockups/view-oneui/`（配信しない）。
+- **SK Share（/view/）**: パスワードを入れると、YouTube の限定公開動画・HTML 文書・Google ドライブのファイル（PDF・ドキュメント・スライド・フォルダなど）を見られるページです。作る・直す・止めるのは `/view/editor/`（開発者だけ）。データは Firestore の `viewPages`（ID = パスワードから作った値。くわしくは `view/view-core.js` と y-filter リポジトリの `systems/firestore.rules`）。One UI 版の試作は `_mockups/view-oneui/`（配信しない）。
 - **`google4b04249061c7d95f.html`（サイトの一番上）**: Google Search Console で sy9-k.github.io の持ち主であることを示すファイルです。Google のログイン画面に「SK Hub Systems」と出すためのブランドの確認に使うので、消さないでください。
 
 ## build で作らないページ
