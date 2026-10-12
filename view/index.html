@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- QR コードの URL（/view/#p=パスワード）: アクセスチェックの記録・履歴・アナリティクスに残らないよう、いちばん先に URL から消して、このタブの中だけに持つ -->
+<script>
+  (function () {
+    var m = /^#p=([^&]*)/.exec(location.hash);
+    if (!m) return;
+    try { sessionStorage.setItem("sk_view_p", decodeURIComponent(m[1])); } catch (e) {}
+    history.replaceState(null, "", location.pathname + location.search);
+  })();
+</script>
+<meta name="description" content="SK から受け取ったパスワードで、限定公開の動画や文書を見るページです。">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#faf8ff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11131b" media="(prefers-color-scheme: dark)">
+<title>限定公開ページ | SK</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SK">
+<meta property="og:title" content="限定公開ページ | SK">
+<meta property="og:description" content="SK から受け取ったパスワードで、限定公開の動画や文書を見るページです。">
+<meta property="og:image" content="https://sy9-k.github.io/assets/og.png">
+<!-- 多言語: /lang/ で選んだ言語で表示する（/assets/i18n.js。body の最後で translatePage()） -->
+<script src="/assets/i18n.js"></script>
+<!-- 文字は M PLUS 1、アイコンは Material Symbols（Google のマテリアルデザイン） -->
+<script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;500;700;800&display=swap" data-icons="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block"></script>
+<link rel="stylesheet" href="/toolbox/shared/m3.css">
+<link rel="stylesheet" href="/view/view.css">
+<script src="/toolbox/shared/m3.js" defer></script>
+<script type="module" src="/view/view.js"></script>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+</head>
+<body>
+  <div class="vw-page">
+    <header class="vw-bar">
+      <a class="vw-brand m3-state" href="/" aria-label="SK のトップページ"><img src="/assets/logo.svg" alt="" width="28" height="28"><span>限定公開ページ</span></a>
+      <span class="vw-bar__space"></span>
+      <button type="button" class="icon-btn m3-state" data-vw-close hidden aria-label="閉じる" title="閉じる"><span class="msr" aria-hidden="true">close</span></button>
+    </header>
+
+    <main id="main">
+      <!-- パスワードの入力 -->
+      <section class="vw-gate" data-vw-view="gate">
+        <form class="vw-gate__card" data-vw-form novalidate>
+          <span class="vw-gate__icon" aria-hidden="true"><span class="msr msr--fill">lock</span></span>
+          <h1 class="vw-gate__title">パスワードを入力</h1>
+          <p class="vw-gate__lead">配られたお知らせやメッセージに書かれているパスワードを入れると、動画や文書を見られます。</p>
+
+          <div class="vw-field" data-vw-field>
+            <input class="vw-field__input" id="vw-password" name="password" type="password" placeholder=" " autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="80" required>
+            <label class="vw-field__label" for="vw-password">パスワード</label>
+            <button type="button" class="vw-field__toggle icon-btn m3-state" data-vw-reveal aria-label="パスワードを表示" aria-pressed="false" title="パスワードを表示"><span class="msr" aria-hidden="true">visibility</span></button>
+          </div>
+          <p class="vw-field__support" data-vw-support>大文字・小文字、ハイフン（-）の有無は区別しません。</p>
+
+          <button type="submit" class="m3-btn m3-state vw-gate__submit" data-vw-submit>
+            <span class="vw-spinner" aria-hidden="true"></span><span data-vw-submit-label>ひらく</span>
+          </button>
+        </form>
+        <p class="vw-foot">SK Hub Systems で配信しています · <a href="/policies/">利用規約・プライバシーポリシー</a></p>
+      </section>
+
+      <!-- 中身 -->
+      <section class="vw-content" data-vw-view="content" hidden>
+        <header class="vw-head">
+          <p class="vw-head__kicker"><span class="msr msr--fill" aria-hidden="true">verified</span><span>限定公開</span></p>
+          <h1 class="vw-head__title" data-vw-title data-i18n-skip></h1>
+          <p class="vw-head__note" data-vw-note data-i18n-skip></p>
+          <p class="vw-head__expires" data-vw-expires hidden></p>
+        </header>
+        <nav class="vw-chips" data-vw-chips aria-label="目次" hidden></nav>
+        <div class="vw-items" data-vw-items></div>
+        <p class="vw-foot">このページの URL やパスワードを、関係のない人に教えないでください。</p>
+        <p class="vw-foot vw-foot--tight">SK Hub Systems で配信しています · <a href="/policies/">利用規約・プライバシーポリシー</a></p>
+      </section>
+    </main>
+  </div>
+
+  <!-- 文書を大きく見る（全画面のダイアログ） -->
+  <dialog class="vw-full" data-vw-full>
+    <div class="vw-full__bar">
+      <button type="button" class="icon-btn m3-state" data-vw-full-close aria-label="閉じる" title="閉じる"><span class="msr" aria-hidden="true">close</span></button>
+      <strong class="vw-full__title" data-vw-full-title data-i18n-skip></strong>
+    </div>
+    <div class="vw-full__body" data-vw-full-body></div>
+  </dialog>
+
+  <div class="snackbar" data-vw-toast role="status" aria-live="polite"><span data-vw-toast-text></span></div>
+
+  <script>window.SKI18N && SKI18N.translatePage();</script>
+  <!-- SK Hub Systems のアクセスチェック・アナリティクス（許可した人だけ） -->
+  <script src="/frameworks/check.js" defer></script>
+  <script src="/assets/analytics.js" defer></script>
+  <script src="/assets/domain-snack.js" defer></script>
+</body>
+</html>
