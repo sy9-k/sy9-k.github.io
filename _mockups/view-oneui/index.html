@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>限定公開ページ（One UI の試作）</title>
+<!--
+  限定公開ページ（/view/）の One UI 版の試作。配信しない（_ で始まるフォルダなので GitHub Pages には出ない）
+  Firebase にはつながず、見本のデータで動く。パスワード「demo-2026」でひらく
+  One UI らしさ: 画面の上 3 分の 1 の大きなタイトル（スクロールで小さくなる）・指の届く下に操作をまとめる・
+                角の丸い白いカード（影なし）・灰色の背景・下線の入力欄・太字の丸いボタン
+  ローカルで見る: python3 -m http.server 8765 → http://localhost:8765/_mockups/view-oneui/
+-->
+<style>
+  :root {
+    --bg: #f2f2f2; --card: #ffffff; --ink: #000000; --sub: #6f6f6f; --line: #e2e2e2;
+    --accent: #0072de; --accent-ink: #ffffff; --accent-soft: #e3effc; --error: #e52b2b;
+    --font: "SamsungOne", "Samsung Sans", "SamsungOneUI", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #000000; --card: #171717; --ink: #fafafa; --sub: #9b9b9b; --line: #2b2b2b; --accent: #3e91ff; --accent-ink: #ffffff; --accent-soft: #10263f; --error: #ff6b6b; color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { min-height: 100dvh; background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  button, input { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+  .page { max-width: 640px; margin: 0 auto; padding: 0 12px calc(120px + env(safe-area-inset-bottom)); }
+
+  /* 大きなタイトル（One UI の拡張アプリバー）。スクロールすると上の小さなバーに変わる */
+  .hero { display: flex; flex-direction: column; justify-content: flex-end; min-height: 36vh; padding: 0 12px 28px; text-align: center; }
+  .hero__title { margin: 0; font-size: clamp(30px, 8vw, 38px); font-weight: 400; letter-spacing: -.01em; line-height: 1.25; overflow-wrap: anywhere; }
+  .hero__sub { margin: 10px 0 0; font-size: 14px; color: var(--sub); }
+  .bar {
+    position: fixed; z-index: 10; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 4px;
+    height: calc(56px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) 8px 0;
+    background: var(--bg); opacity: 0; pointer-events: none; transition: opacity .2s ease;
+  }
+  .bar.is-on { opacity: 1; pointer-events: auto; }
+  .bar__title { flex: 1; margin: 0 8px; font-size: 19px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .round-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+  .round-btn:active { background: color-mix(in srgb, var(--ink) 10%, transparent); }
+  .round-btn svg { width: 24px; height: 24px; }
+
+  /* カード */
+  .card { margin: 0 0 14px; padding: 22px 22px; border-radius: 26px; background: var(--card); }
+  .card + .note { margin-top: -4px; }
+  .note { margin: 0 22px 14px; font-size: 13px; line-height: 1.6; color: var(--sub); }
+
+  /* 下線の入力欄 */
+  .field { display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--line); transition: border-color .15s ease; }
+  .field:focus-within { border-color: var(--accent); }
+  .field.is-error { border-color: var(--error); }
+  .field input { flex: 1; min-width: 0; height: 52px; border: 0; outline: 0; background: none; font-size: 19px; letter-spacing: .03em; }
+  .field input::placeholder { color: var(--sub); letter-spacing: 0; }
+  .field-label { display: block; font-size: 14px; font-weight: 700; color: var(--accent); }
+  .field-help { margin: 10px 0 0; font-size: 13px; color: var(--sub); }
+  .field-help.is-error { color: var(--error); }
+
+  /* 下の操作（指の届くところ） */
+  .bottom {
+    position: fixed; z-index: 10; left: 0; right: 0; bottom: 0; display: flex; justify-content: center;
+    padding: 12px 20px calc(16px + env(safe-area-inset-bottom));
+    background: linear-gradient(transparent, var(--bg) 35%);
+  }
+  .pill {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; max-width: 420px; height: 52px;
+    border: 0; border-radius: 26px; background: var(--accent); color: var(--accent-ink); font-size: 17px; font-weight: 700; cursor: pointer;
+    transition: transform .15s ease, filter .15s ease;
+  }
+  .pill:active { transform: scale(.97); filter: brightness(.92); }
+  .pill:disabled { opacity: .5; }
+  .pill--ghost { background: var(--card); color: var(--accent); }
+
+  /* 目次（One UI の一覧。区切り線は文字の位置から） */
+  .list { padding: 6px 0; }
+  .list__row { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 64px; padding: 10px 22px; border: 0; background: none; text-align: left; cursor: pointer; position: relative; }
+  .list__row + .list__row::before { content: ""; position: absolute; top: 0; left: 74px; right: 22px; border-top: 1px solid var(--line); }
+  .list__row:active { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+  .list__icon { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 12px; background: var(--accent-soft); color: var(--accent); }
+  .list__icon svg { width: 20px; height: 20px; }
+  .list__text { flex: 1; min-width: 0; }
+  .list__title { display: block; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .list__sub { display: block; font-size: 13px; color: var(--sub); }
+
+  /* 動画・文書 */
+  .item { padding: 0; overflow: hidden; scroll-margin-top: 72px; }
+  .item__head { padding: 20px 22px 14px; }
+  .item__kind { margin: 0; font-size: 13px; font-weight: 700; color: var(--accent); }
+  .item__title { margin: 4px 0 0; font-size: 20px; font-weight: 700; line-height: 1.35; }
+  .video { position: relative; aspect-ratio: 16 / 9; margin: 0 12px 12px; border-radius: 18px; overflow: hidden; background: #000; }
+  .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .doc { margin: 0 12px 12px; border-radius: 18px; overflow: hidden; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+  .doc iframe { display: block; width: 100%; height: 200px; border: 0; }
+
+  .lock { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); }
+  .lock svg { width: 30px; height: 30px; }
+  .shake { animation: shake .4s cubic-bezier(.36, .07, .19, .97); }
+  @keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+  .fade { animation: fade .45s cubic-bezier(.2, 0, 0, 1) both; }
+  @keyframes fade { from { opacity: 0; transform: translateY(12px); } }
+  .trial { display: block; width: max-content; margin: 0 auto; padding: 4px 10px; border-radius: 999px; background: #ff9f0a; color: #000; font-size: 11px; font-weight: 700; }
+</style>
+</head>
+<body>
+  <!-- 小さなバー（スクロールしたとき） -->
+  <header class="bar" data-bar>
+    <button type="button" class="round-btn" data-close hidden aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <h2 class="bar__title" data-bar-title>限定公開ページ</h2>
+  </header>
+
+  <div class="page">
+    <!-- パスワード -->
+    <section data-view="gate">
+      <div class="hero">
+        <h1 class="hero__title">限定公開ページ</h1>
+        <p class="hero__sub">SK Hub Systems</p>
+        <span class="trial" style="margin-top:12px">One UI の試作・配信しない</span>
+      </div>
+      <form class="card fade" data-form novalidate>
+        <span class="lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+        <label class="field-label" for="pw">パスワード</label>
+        <div class="field" data-field>
+          <input id="pw" type="password" placeholder="お知らせに書かれたパスワード" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
+          <button type="button" class="round-btn" data-reveal aria-label="パスワードを表示"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <p class="field-help" data-help>大文字・小文字、ハイフンの有無は区別しません。（試作のパスワード: demo-2026）</p>
+      </form>
+      <p class="note">配られたお知らせやメッセージに書かれているパスワードを入れると、動画や文書を見られます。</p>
+    </section>
+
+    <!-- 中身 -->
+    <section data-view="content" hidden>
+      <div class="hero">
+        <h1 class="hero__title" data-title></h1>
+        <p class="hero__sub" data-sub></p>
+      </div>
+      <div class="card fade" style="padding: 18px 22px"><p style="margin:0; font-size:15px; line-height:1.7; white-space:pre-wrap" data-note></p></div>
+      <div class="card list fade" data-list></div>
+      <div data-items></div>
+      <p class="note" style="text-align:center">このページの URL やパスワードを、関係のない人に教えないでください。</p>
+    </section>
+  </div>
+
+  <div class="bottom">
+    <button type="submit" class="pill" form="" data-submit>ひらく</button>
+  </div>
+
+  <script>
+    // 見本のデータ（本番は Cloud Firestore の viewPages）
+    var PAGE = {
+      title: "2026 年度 体育祭の記録",
+      note: "保護者の皆様へ。\n当日の様子を限定公開でお届けします。",
+      expires: "2026年12月31日",
+      items: [
+        { type: "youtube", title: "開会式", videoId: "M7lc1UVf-VE" },
+        { type: "youtube", title: "クラス対抗リレー", videoId: "M7lc1UVf-VE" },
+        { type: "html", title: "当日のプログラム", html: "<h2 style='margin-top:0'>体育祭 プログラム</h2><p>9:00 開会式<br>9:30 100m 走<br>10:15 綱引き<br>11:00 クラス対抗リレー</p>" }
+      ]
+    };
+    var ICONS = {
+      youtube: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>',
+      html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg>'
+    };
+    var $ = function (s) { return document.querySelector(s); };
+    var input = $("#pw"), field = $("[data-field]"), help = $("[data-help]"), submit = $("[data-submit]");
+    var HELP = help.textContent;
+    var normalize = function (s) { return String(s || "").normalize("NFKC").toLowerCase().replace(/[\s\-‐-―ー−]/g, ""); };
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+    function open() {
+      if (!normalize(input.value)) { fail("パスワードを入力してください。"); return; }
+      submit.disabled = true;
+      submit.textContent = "確かめています…";
+      setTimeout(function () {
+        submit.disabled = false;
+        if (normalize(input.value) !== "demo2026") { submit.textContent = "ひらく"; fail("パスワードが違うか、公開が終わっています。"); return; }
+        render();
+      }, 500);
+    }
+    function fail(text) {
+      field.classList.add("is-error"); help.classList.add("is-error"); help.textContent = text;
+      field.classList.remove("shake"); void field.offsetWidth; field.classList.add("shake");
+    }
+    input.addEventListener("input", function () { field.classList.remove("is-error"); help.classList.remove("is-error"); help.textContent = HELP; });
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); open(); } });
+    $("[data-form]").addEventListener("submit", function (e) { e.preventDefault(); open(); });
+    $("[data-reveal]").addEventListener("click", function () { input.type = input.type === "password" ? "text" : "password"; });
+
+    function render() {
+      $("[data-title]").textContent = PAGE.title;
+      $("[data-sub]").textContent = PAGE.expires + " まで公開";
+      $("[data-note]").textContent = PAGE.note;
+      $("[data-bar-title]").textContent = PAGE.title;
+      $("[data-list]").innerHTML = PAGE.items.map(function (it, i) {
+        return '<button type="button" class="list__row" data-jump="' + i + '"><span class="list__icon">' + ICONS[it.type] + '</span><span class="list__text"><span class="list__title">' + esc(it.title) + '</span><span class="list__sub">' + (it.type === "youtube" ? "動画" : "文書") + "</span></span></button>";
+      }).join("");
+      $("[data-items]").innerHTML = PAGE.items.map(function (it, i) {
+        var body = it.type === "youtube"
+          ? '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/' + it.videoId + '?rel=0&playsinline=1" title="' + esc(it.title) + '" allow="encrypted-media; picture-in-picture; fullscreen" loading="lazy"></iframe></div>'
+          : '<div class="doc"><iframe sandbox="allow-same-origin" srcdoc="' + esc('<meta charset=utf-8><style>body{margin:18px;font-family:system-ui,sans-serif;line-height:1.7}</style>' + it.html) + '"></iframe></div>';
+        return '<article class="card item fade" id="item-' + i + '"><div class="item__head"><p class="item__kind">' + (it.type === "youtube" ? "動画" : "文書") + '</p><h3 class="item__title">' + esc(it.title) + "</h3></div>" + body + "</article>";
+      }).join("");
+      document.querySelectorAll("[data-jump]").forEach(function (b) { b.addEventListener("click", function () { $("#item-" + b.dataset.jump).scrollIntoView({ behavior: "smooth" }); }); });
+      $("[data-view=gate]").hidden = true;
+      $("[data-view=content]").hidden = false;
+      $("[data-close]").hidden = false;
+      submit.textContent = "閉じる";
+      submit.classList.add("pill--ghost");
+      scrollTo(0, 0);
+      updateBar();
+    }
+    function close() {
+      $("[data-view=content]").hidden = true;
+      $("[data-view=gate]").hidden = false;
+      $("[data-close]").hidden = true;
+      $("[data-bar-title]").textContent = "限定公開ページ";
+      submit.textContent = "ひらく";
+      submit.classList.remove("pill--ghost");
+      input.value = "";
+      scrollTo(0, 0);
+      updateBar();
+    }
+    submit.addEventListener("click", function () { if ($("[data-view=content]").hidden) open(); else close(); });
+    $("[data-close]").addEventListener("click", close);
+    // 大きなタイトルが隠れたら、上の小さなバーを出す
+    var bar = $("[data-bar]");
+    function updateBar() {
+      var hero = document.querySelector("section:not([hidden]) .hero__title");
+      bar.classList.toggle("is-on", !!hero && hero.getBoundingClientRect().bottom < 56);
+    }
+    addEventListener("scroll", updateBar, { passive: true });
+  </script>
+</body>
+</html>
