@@ -3017,5 +3017,10 @@
   "SK のサイトとすべてのアプリで使う言語です": "The language used across the SK website and all SK apps",
   "SK's Toolbox で使う言語を選ぶ画面。": "Choose the language to use in SK's Toolbox.",
   "使用中": "Current",
-  "言語 | SK's Toolbox": "Language | SK's Toolbox"
+  "言語 | SK's Toolbox": "Language | SK's Toolbox",
+  "<kbd>Space</kbd>はじめる・一時停止 <kbd>R</kbd>リセット <kbd>N</kbd>次へ <kbd>F</kbd>拡大表示 <kbd>P</kbd>小さな窓": "<kbd>Space</kbd>Start / pause <kbd>R</kbd>Reset <kbd>N</kbd>Next <kbd>F</kbd>Enlarge <kbd>P</kbd>Mini window",
+  "ほかの端末のタイマーに合わせました": "Synced with the timer on your other device",
+  "ピクチャー イン ピクチャーを開けませんでした": "Couldn't open picture-in-picture",
+  "小さな窓で表示": "Show in a mini window",
+  "小さな窓を閉じる": "Close the mini window"
 }

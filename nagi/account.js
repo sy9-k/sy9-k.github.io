@@ -5,6 +5,9 @@
 //   ・記録 … accounts/{UID}/nagi/data = { sessions: [{ i, s, m }], goal, goalUpdatedAt, updatedAt }
 //     端末の記録とアカウントの記録を ID でまとめ（どちらかにしかないものは足す）、両方を同じにする。
 //     目標は、あとで変えたほう（goalUpdatedAt が新しいほう）にそろえる
+//   ・タイマー … accounts/{UID}/nagi/timer = { mode, running, endAt, remaining, total, round, focusStart, focusedMs, resumedAt, changedAt, updatedAt }
+//     変わったらすぐ書き、ほかの端末は onSnapshot で受け取って、あとで操作したほう（changedAt が新しいほう）に合わせる。
+//     残り時間は「終わる時刻」で持つので、端末の時計が合っていれば、どの端末でも同じ残り時間になる
 //   ・Nagi の本体（app.js）とは window.NAGI でやり取りする
 const NAGI = window.NAGI || null;
 const t = NAGI ? NAGI.t : (s) => s;
@@ -143,10 +146,53 @@ async function refresh() {
   if (state.status !== "unregistered") hub.rememberAccount(user, account);
   render();
   if (state.status === "connected") {
+    watchTimer();
     await sync(false);
     clearInterval(state.timer);
     state.timer = setInterval(() => sync(false), SYNC_INTERVAL_MS);
   }
+}
+
+// ---------- タイマーの同期（動いているあいだも、ほかの端末に合わせる） ----------
+
+const TIMER_FIELDS = ["mode", "running", "endAt", "remaining", "total", "round", "focusStart", "focusedMs", "resumedAt", "changedAt"];
+let timerUnsub = null;
+let timerPushSoon = null;
+
+function timerRef() {
+  return state.fs.doc(state.hub.db, "accounts", state.user.uid, "nagi", "timer");
+}
+
+function watchTimer() {
+  if (timerUnsub || state.status !== "connected" || !NAGI.getTimer) return; // !getTimer … 更新の直後で app.js が古い
+  timerUnsub = state.fs.onSnapshot(timerRef(), (snap) => {
+    if (snap.metadata.hasPendingWrites) return; // 自分が書いたもの
+    const local = NAGI.getTimer();
+    if (!snap.exists()) { if (local.changedAt) pushTimer(); return; }
+    const remote = snap.data();
+    const remoteAt = Number(remote.changedAt) || 0;
+    if (remoteAt > (local.changedAt || 0)) {
+      if (NAGI.applyTimer(remote)) NAGI.toast(t("ほかの端末のタイマーに合わせました"));
+    } else if (remoteAt < (local.changedAt || 0)) {
+      pushTimer(); // この端末のほうが新しい（オフラインのあいだに操作したなど）
+    }
+  }, () => {
+    // 読めなかった（ルールがまだ新しくないなど）。記録の同期はそのまま続ける
+    timerUnsub = null;
+  });
+}
+
+// 続けて変わったとき（終わって次の回が自動で始まるなど）は、まとめて 1 回書く
+function pushTimer() {
+  if (state.status !== "connected") return;
+  clearTimeout(timerPushSoon);
+  timerPushSoon = setTimeout(async () => {
+    const x = NAGI.getTimer();
+    const data = {};
+    TIMER_FIELDS.forEach((k) => { data[k] = k === "mode" ? x.mode : k === "running" ? !!x.running : Number(x[k]) || 0; });
+    data.updatedAt = state.fs.serverTimestamp();
+    try { await state.fs.setDoc(timerRef(), data); } catch (e) { /* 書けなくても、この端末のタイマーは動く */ }
+  }, 300);
 }
 
 // ---------- 同期 ----------
@@ -200,13 +246,16 @@ let soon = null;
 if (NAGI) {
   NAGI.onChange((kind) => {
     if (kind === "cleared") return; // このブラウザの記録を消しても、アカウントの記録は消さない
+    if (kind === "timer") { pushTimer(); return; }
     clearTimeout(soon);
     soon = setTimeout(() => sync(false), 2000);
   });
 }
 syncButton.addEventListener("click", () => sync(true));
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible" && Date.now() - state.lastSyncAt > 60 * 1000) sync(false);
+  if (document.visibilityState !== "visible") return;
+  watchTimer(); // 読めなくなっていたら、もう一度
+  if (Date.now() - state.lastSyncAt > 60 * 1000) sync(false);
 });
 
 init();

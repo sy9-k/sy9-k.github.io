@@ -33,6 +33,8 @@
     <div class="top-actions">
       <!-- 同期の状態（account.js） -->
       <button type="button" id="sync-button" class="icon-btn" aria-label="同期" title="同期" hidden><span class="ms" aria-hidden="true">sync</span></button>
+      <!-- 小さな窓（ピクチャー イン ピクチャー。対応しているブラウザだけ出す。P キーでも） -->
+      <button type="button" id="pip-button" class="icon-btn" aria-label="小さな窓で表示" title="小さな窓で表示" hidden><span class="ms" aria-hidden="true" id="pip-icon">picture_in_picture_alt</span></button>
       <!-- 拡大表示（タイマーだけを大きく。F キーでも） -->
       <button type="button" id="zen-button" class="icon-btn" aria-label="拡大表示" title="拡大表示（F）"><span class="ms" aria-hidden="true" id="zen-icon">fullscreen</span></button>
       <button type="button" id="settings-button" class="icon-btn" aria-label="設定" title="設定"><span class="ms" aria-hidden="true">settings</span></button>
@@ -76,7 +78,7 @@
     </div>
 
     <!-- キーボードの操作（パソコンだけ出す） -->
-    <p class="shortcuts" aria-hidden="true"><kbd>Space</kbd>はじめる・一時停止 <kbd>R</kbd>リセット <kbd>N</kbd>次へ <kbd>F</kbd>拡大表示</p>
+    <p class="shortcuts" aria-hidden="true"><kbd>Space</kbd>はじめる・一時停止 <kbd>R</kbd>リセット <kbd>N</kbd>次へ <kbd>F</kbd>拡大表示 <kbd>P</kbd>小さな窓</p>
     </div>
 
     <div class="cards">

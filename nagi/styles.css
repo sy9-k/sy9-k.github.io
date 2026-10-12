@@ -288,7 +288,7 @@ body.is-running .fab { border-radius: 48px; }
 }
 
 /* ---------- 拡大表示（タイマーだけを画面いっぱいに。app.js の body.is-zen） ---------- */
-body.is-zen .segmented, body.is-zen .cards, body.is-zen .round, body.is-zen .shortcuts, body.is-zen .brand, body.is-zen #sync-button, body.is-zen #settings-button { display: none !important; }
+body.is-zen .segmented, body.is-zen .cards, body.is-zen .round, body.is-zen .shortcuts, body.is-zen .brand, body.is-zen #sync-button, body.is-zen #pip-button, body.is-zen #settings-button { display: none !important; }
 body.is-zen .top-bar { position: fixed; top: 0; right: 0; left: auto; z-index: 5; max-width: none; background: transparent; }
 body.is-zen .page { display: flex; min-height: 100dvh; max-width: none; justify-content: center; padding: 0 16px; }
 body.is-zen .timer-column { justify-content: center; min-height: 100dvh; }
@@ -301,6 +301,23 @@ body.is-zen .controls { margin-top: 12px; }
 body.is-zen .waves { height: 26vh; }
 /* 拡大表示で動いているあいだは、操作ボタンを控えめにする（マウスを動かすと戻る） */
 body.is-zen.is-running.is-idle .controls, body.is-zen.is-running.is-idle .top-bar { opacity: 0; transition: opacity .8s var(--ease); }
+
+/* ---------- 小さな窓（ピクチャー イン ピクチャー。app.js の openDocumentPip が作る別の窓の中身） ---------- */
+body.pip-body { min-height: 0; height: 100vh; overflow: hidden; }
+.pip { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4vmin; padding: 4vmin; }
+.pip-timer { position: relative; width: min(70vw, 52vh); aspect-ratio: 1; display: grid; place-items: center; }
+.pip-timer .ring { position: absolute; inset: 0; }
+.pip-timer .ring circle { stroke-width: 12; }
+.pip-time { position: relative; font-size: min(15vw, 11vh); font-weight: 400; letter-spacing: -1px; line-height: 1; font-variant-numeric: tabular-nums; }
+.pip-chip { height: auto; min-height: 28px; font-size: 13px; }
+.pip-controls { display: flex; align-items: center; gap: 12px; }
+.pip-controls .tonal-icon-btn { width: 40px; height: 40px; }
+.pip-controls .tonal-icon-btn .ms { font-size: 20px; }
+.pip .pip-fab { width: 56px; height: 56px; min-width: 0; padding: 0; gap: 0; border-radius: 16px; }
+.pip .pip-fab .ms { font-size: 28px; }
+body.pip-body.is-running .pip-fab { border-radius: 28px; }
+/* とても小さくしたときは、残り時間だけ */
+@media (max-height: 220px) { .pip-controls, .pip-chip { display: none; } }
 body.is-zen.is-idle { cursor: none; }
 .controls, .top-bar { transition: opacity .3s var(--ease); }
 /* ---------- 設定（MALU の設定と同じ形の全画面。index.html の #settings。カテゴリの切りかえは app.js） ---------- */

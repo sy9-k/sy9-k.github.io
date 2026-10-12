@@ -2797,5 +2797,10 @@
   "SK のサイトとすべてのアプリで使う言語です": "SK 网站和所有 SK 应用使用的语言",
   "SK's Toolbox で使う言語を選ぶ画面。": "选择 SK's Toolbox 使用的语言。",
   "使用中": "当前",
-  "言語 | SK's Toolbox": "语言 | SK's Toolbox"
+  "言語 | SK's Toolbox": "语言 | SK's Toolbox",
+  "<kbd>Space</kbd>はじめる・一時停止 <kbd>R</kbd>リセット <kbd>N</kbd>次へ <kbd>F</kbd>拡大表示 <kbd>P</kbd>小さな窓": "<kbd>Space</kbd>开始・暂停 <kbd>R</kbd>重置 <kbd>N</kbd>下一个 <kbd>F</kbd>放大显示 <kbd>P</kbd>小窗口",
+  "ほかの端末のタイマーに合わせました": "已与其他设备上的计时器同步",
+  "ピクチャー イン ピクチャーを開けませんでした": "无法打开画中画",
+  "小さな窓で表示": "在小窗口中显示",
+  "小さな窓を閉じる": "关闭小窗口"
 }
