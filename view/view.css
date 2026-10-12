@@ -1,4 +1,4 @@
-/* 限定公開ページ（/view/）と作るページ（/view/editor/）— Google のマテリアルデザイン（Material 3）
+/* SK Share（/view/）と作るページ（/view/editor/）— Google のマテリアルデザイン（Material 3）
    色は SK's Blue から作った M3 の配色（/toolbox/shared/settings.js の blue と同じ）
    共通の部品（アイコン・状態レイヤー・波紋・ボタン・スナックバー）は /toolbox/shared/m3.css */
 :root {

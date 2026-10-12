@@ -1,4 +1,4 @@
-// 限定公開ページ（/view/）: パスワード → ページの ID を作って、Cloud Firestore の viewPages/{ID} を読む
+// SK Share（/view/）: パスワード → ページの ID を作って、Cloud Firestore の viewPages/{ID} を読む
 // パスワードはサーバーに送らない（送るのは PBKDF2 で作った ID だけ）。ログインは不要
 // 中身: YouTube の限定公開動画（youtube-nocookie で埋め込み）と HTML 文書（スクリプトを動かさない iframe）
 // データの形は /view/view-core.js
@@ -150,7 +150,7 @@ function docItem(pageId, item) {
 function render(pageId, page) {
   $("[data-vw-title]").textContent = page.title || "";
   $("[data-vw-note]").textContent = page.note || "";
-  document.title = `${page.title || t("限定公開ページ")} | SK`;
+  document.title = `${page.title ? `${page.title} | ` : ""}SK Share`;
   const expires = $("[data-vw-expires]");
   const until = formatDate(page.expiresAt);
   expires.hidden = !until;
@@ -192,7 +192,7 @@ function close() {
   content.hidden = true;
   gate.hidden = false;
   closeBtn.hidden = true;
-  document.title = `${t("限定公開ページ")} | SK`;
+  document.title = "SK Share";
   input.focus();
 }
 

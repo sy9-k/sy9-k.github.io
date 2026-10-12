@@ -1,4 +1,4 @@
-// 限定公開ページ（/view/）と、作るページ（/view/editor/）で共通に使うもの
+// SK Share（/view/）と、作るページ（/view/editor/）で共通に使うもの
 // データは Cloud Firestore の viewPages（くわしくは y-filter リポジトリの systems/firestore.rules）
 //   viewPages/{ID}              … ページ本体 { title, note, items, enabled, expiresAt, createdAt, updatedAt }
 //                                  ID = パスワードから PBKDF2 で作った 64 文字。ID を知っている人（= パスワードを知っている人）だけが読める。一覧は開発者だけ

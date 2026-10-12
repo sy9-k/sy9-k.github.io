@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>限定公開ページ（One UI の試作）</title>
+<title>SK Share（One UI の試作）</title>
 <!--
-  限定公開ページ（/view/）の One UI 版の試作。配信しない（_ で始まるフォルダなので GitHub Pages には出ない）
+  SK Share（/view/）の One UI 版の試作。配信しない（_ で始まるフォルダなので GitHub Pages には出ない）
   Firebase にはつながず、見本のデータで動く。パスワード「demo-2026」でひらく
   One UI らしさ: 画面の上 3 分の 1 の大きなタイトル（スクロールで小さくなる）・指の届く下に操作をまとめる・
                 角の丸い白いカード（影なし）・灰色の背景・下線の入力欄・太字の丸いボタン
@@ -108,14 +108,14 @@
   <!-- 小さなバー（スクロールしたとき） -->
   <header class="bar" data-bar>
     <button type="button" class="round-btn" data-close hidden aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <h2 class="bar__title" data-bar-title>限定公開ページ</h2>
+    <h2 class="bar__title" data-bar-title>SK Share</h2>
   </header>
 
   <div class="page">
     <!-- パスワード -->
     <section data-view="gate">
       <div class="hero">
-        <h1 class="hero__title">限定公開ページ</h1>
+        <h1 class="hero__title">SK Share</h1>
         <p class="hero__sub">SK Hub Systems</p>
         <span class="trial" style="margin-top:12px">One UI の試作・配信しない</span>
       </div>
@@ -216,7 +216,7 @@
       $("[data-view=content]").hidden = true;
       $("[data-view=gate]").hidden = false;
       $("[data-close]").hidden = true;
-      $("[data-bar-title]").textContent = "限定公開ページ";
+      $("[data-bar-title]").textContent = "SK Share";
       submit.textContent = "ひらく";
       submit.classList.remove("pill--ghost");
       input.value = "";

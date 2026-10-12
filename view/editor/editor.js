@@ -1,4 +1,4 @@
-// 限定公開ページの管理（/view/editor/）。開発者（config/developers に UID がある SK Hub Systems アカウント）だけが使える
+// SK Share の管理（/view/editor/）。開発者（config/developers に UID がある SK Hub Systems アカウント）だけが使える
 // データの形は /view/view-core.js。保存すると /view/ ですぐ見られる
 //   ・ページの ID はパスワードから作るので、パスワードを変える = 新しい ID に中身ごと移して、前の ID を消す（1 回の書き込みでまとめて）
 //   ・パスワードは private/admin に入れておく（開発者だけが読める）。配るときの URL・QR を作り直せるように

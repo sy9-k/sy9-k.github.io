@@ -1,4 +1,4 @@
-/* 限定公開ページの管理（/view/editor/）— Material 3。色・共通の部品は /view/view.css と /toolbox/shared/m3.css */
+/* SK Share の管理（/view/editor/）— Material 3。色・共通の部品は /view/view.css と /toolbox/shared/m3.css */
 .ve-app { max-width: 1240px; margin: 0 auto; padding: max(4px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(112px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
 .ve-bar { position: sticky; top: 0; z-index: 10; background: var(--md-surface); }
 .ve-gate { display: flex; justify-content: center; padding-top: clamp(8px, 8vh, 80px); }
