@@ -4,7 +4,8 @@
 //                                  ID = パスワードから PBKDF2 で作った 64 文字。ID を知っている人（= パスワードを知っている人）だけが読める。一覧は開発者だけ
 //   viewPages/{ID}/docs/{docId} … HTML 文書の中身 { html, updatedAt }（1 件 900KB まで。ページ本体と分けて 1MB の上限に当たらないように）
 //   viewPages/{ID}/private/admin … パスワードと管理用のメモ { password, memo, updatedAt }（開発者だけ）
-//   items … [{ type: "youtube", title, videoId } | { type: "html", title, docId }]
+//   items … [{ type: "youtube", title, videoId } | { type: "html", title, docId } | { type: "drive", title, kind, driveId }]
+//            drive の kind は DRIVE_KINDS（file・document・spreadsheets・presentation・folder）
 
 export const PAGES = "viewPages";
 export const ITEMS_MAX = 30;
@@ -64,6 +65,49 @@ export function youtubeIdOf(input) {
 
 export function youtubeEmbedUrl(videoId) {
   return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0&playsinline=1`;
+}
+
+// Google ドライブの共有リンクから、種類と ID を取り出す（URL はそのまま保存せず、表示用の URL はここで作る）
+//   file … drive.google.com/file/d/ID/…・open?id=ID・uc?id=ID（PDF・画像など）
+//   document・spreadsheets・presentation … docs.google.com/<種類>/d/ID/…
+//   folder … drive.google.com/drive/folders/ID（中のファイルの一覧）
+export const DRIVE_KINDS = {
+  file: { label: "ファイル", icon: "draft" },
+  document: { label: "ドキュメント", icon: "article" },
+  spreadsheets: { label: "スプレッドシート", icon: "table" },
+  presentation: { label: "スライド", icon: "slideshow" },
+  folder: { label: "フォルダ", icon: "folder" }
+};
+const DRIVE_ID = /^[\w-]{10,200}$/;
+export function driveOf(input) {
+  let url;
+  try { url = new URL(String(input || "").trim()); } catch (e) { return null; }
+  let kind = "";
+  let id = "";
+  if (url.hostname === "drive.google.com") {
+    const m = url.pathname.match(/^\/(?:u\/\d+\/)?(file|drive(?:\/u\/\d+)?\/folders)\/(?:d\/)?([\w-]+)/);
+    if (m) { kind = m[1] === "file" ? "file" : "folder"; id = m[2]; }
+    else if (/^\/(open|uc)$/.test(url.pathname) && url.searchParams.get("id")) { kind = "file"; id = url.searchParams.get("id"); }
+  } else if (url.hostname === "docs.google.com") {
+    const m = url.pathname.match(/^\/(document|spreadsheets|presentation)\/(?:u\/\d+\/)?d\/([\w-]+)/);
+    if (m && m[2] !== "e") { kind = m[1]; id = m[2]; } // /d/e/…（「ウェブに公開」の URL）は ID の形が違うので受け付けない
+  }
+  return kind && DRIVE_ID.test(id) ? { kind, id } : null;
+}
+
+export function driveEmbedUrl(kind, id) {
+  const i = encodeURIComponent(id);
+  if (kind === "folder") return `https://drive.google.com/embeddedfolderview?id=${i}#list`;
+  if (kind === "presentation") return `https://docs.google.com/presentation/d/${i}/embed?start=false&loop=false`;
+  if (kind === "file") return `https://drive.google.com/file/d/${i}/preview`;
+  return `https://docs.google.com/${kind}/d/${i}/preview`;
+}
+
+export function driveOpenUrl(kind, id) {
+  const i = encodeURIComponent(id);
+  if (kind === "folder") return `https://drive.google.com/drive/folders/${i}`;
+  if (kind === "file") return `https://drive.google.com/file/d/${i}/view`;
+  return `https://docs.google.com/${kind}/d/${i}/edit?usp=sharing`;
 }
 
 // HTML 文書を、スクリプトを動かさない iframe（sandbox）で見せるための srcdoc を作る

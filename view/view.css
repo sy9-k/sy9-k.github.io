@@ -148,6 +148,12 @@ a { color: var(--md-primary); }
 .vw-item__kind { display: block; font-size: 12px; font-weight: 500; color: var(--md-on-surface-variant); }
 .vw-video { position: relative; aspect-ratio: 16 / 9; background: #000; }
 .vw-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vw-drive { position: relative; margin: 0 12px 12px; border-radius: 16px; overflow: hidden; background: var(--md-surface-container-highest); }
+.vw-drive iframe { display: block; width: 100%; height: 100%; border: 0; }
+.vw-drive--file, .vw-drive--document { height: min(80vh, 900px); }
+.vw-drive--spreadsheets, .vw-drive--folder { height: min(70vh, 640px); }
+.vw-drive--presentation { aspect-ratio: 16 / 9.6; }
+.vw-drive--folder { background: #fff; }
 .vw-doc { margin: 0 12px 12px; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: inset 0 0 0 1px var(--md-outline-variant); }
 .vw-doc-frame { display: block; width: 100%; height: 240px; border: 0; background: #fff; }
 .vw-item__error { margin: 0 20px 20px; font-size: 14px; color: var(--md-error); }

@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   HTML_MAX, ITEMS_MAX, NOTE_MAX, PAGES, PASSWORD_MAX, PASSWORD_MIN, TITLE_MAX,
-  generatePassword, makeHtmlFrame, normalizePassword, pageIdOf, randomId, youtubeIdOf
+  DRIVE_KINDS, driveOf, driveOpenUrl, generatePassword, makeHtmlFrame, normalizePassword, pageIdOf, randomId, youtubeIdOf
 } from "/view/view-core.js";
 
 const $ = (sel) => document.querySelector(sel);
@@ -105,8 +105,16 @@ function setEditing(on) {
 }
 
 function blankItem(type) {
-  return type === "youtube" ? { type, title: "", url: "", videoId: "" } : { type, title: "", docId: randomId(), html: "", fileName: "", changed: true };
+  if (type === "youtube") return { type, title: "", url: "", videoId: "" };
+  if (type === "drive") return { type, title: "", url: "", kind: "", driveId: "" };
+  return { type, title: "", docId: randomId(), html: "", fileName: "", changed: true };
 }
+// 中身の種類ごとのタイトルの欄
+const ITEM_TITLE = {
+  youtube: ["動画のタイトル", "例: 開会式"],
+  html: ["文書のタイトル", "例: 当日のプログラム"],
+  drive: ["ファイルのタイトル", "例: 学年通信 10 月号"]
+};
 
 function newPage() {
   current = { id: null, createdAt: null, items: [], oldDocIds: [], password: generatePassword() };
@@ -134,9 +142,11 @@ async function openPage(id) {
     const html = Object.fromEntries(docs.map((d) => [d.id, d.exists() ? d.data().html : ""]));
     const admin = priv.exists() ? priv.data() : {};
     current.password = admin.password || "";
-    current.items = (p.items || []).map((it) => it.type === "youtube"
-      ? { type: "youtube", title: it.title || "", url: `https://youtu.be/${it.videoId}`, videoId: it.videoId }
-      : { type: "html", title: it.title || "", docId: it.docId, html: html[it.docId] || "", fileName: "", changed: false });
+    current.items = (p.items || []).map((it) => {
+      if (it.type === "youtube") return { type: "youtube", title: it.title || "", url: `https://youtu.be/${it.videoId}`, videoId: it.videoId };
+      if (it.type === "drive") return { type: "drive", title: it.title || "", url: driveOpenUrl(it.kind, it.driveId), kind: it.kind, driveId: it.driveId };
+      return { type: "html", title: it.title || "", docId: it.docId, html: html[it.docId] || "", fileName: "", changed: false };
+    });
     current.oldDocIds = current.items.filter((it) => it.type === "html").map((it) => it.docId);
     current.loading = false;
     fillForm({ ...p, memo: admin.memo || "" });
@@ -181,9 +191,9 @@ function renderItems() {
     const titleInput = el("input", "m3-field__input");
     titleInput.maxLength = 120;
     titleInput.value = item.title;
-    titleInput.placeholder = item.type === "youtube" ? "例: 開会式" : "例: 当日のプログラム";
+    titleInput.placeholder = ITEM_TITLE[item.type][1];
     titleInput.addEventListener("input", () => { item.title = titleInput.value; markDirty(); });
-    titleField.append(el("span", "m3-field__label", item.type === "youtube" ? "動画のタイトル" : "文書のタイトル"), titleInput);
+    titleField.append(el("span", "m3-field__label", ITEM_TITLE[item.type][0]), titleInput);
     fields.append(titleField);
 
     if (item.type === "youtube") {
@@ -211,6 +221,43 @@ function renderItems() {
         markDirty();
       });
       urlField.append(el("span", "m3-field__label", "YouTube の URL"), urlInput);
+      fields.append(urlField);
+    } else if (item.type === "drive") {
+      // ファイルはドライブの縮小画像（共有が「リンクを知っている全員」でないと出ない）。フォルダは画像がないのでアイコン
+      const setThumb = () => {
+        thumb.replaceChildren();
+        const kind = DRIVE_KINDS[item.kind];
+        if (item.driveId && item.kind !== "folder") {
+          const img = el("img");
+          img.src = `https://drive.google.com/thumbnail?id=${encodeURIComponent(item.driveId)}&sz=w320`;
+          img.alt = "";
+          img.referrerPolicy = "no-referrer";
+          img.addEventListener("error", () => img.replaceWith(icon(kind.icon)));
+          thumb.append(img);
+        } else thumb.append(icon(kind ? kind.icon : "add_to_drive"));
+      };
+      setThumb();
+      const urlField = el("label", "m3-field");
+      const urlInput = el("input", "m3-field__input");
+      const label = el("span", "m3-field__label");
+      const setLabel = () => {
+        label.textContent = !item.url ? "Google ドライブの共有リンク"
+          : item.driveId ? `Google ドライブの共有リンク（${DRIVE_KINDS[item.kind].label}）` : "Google ドライブの共有リンク（読み取れません）";
+      };
+      setLabel();
+      urlInput.type = "url";
+      urlInput.value = item.url;
+      urlInput.placeholder = "https://drive.google.com/file/d/…";
+      urlInput.addEventListener("input", () => {
+        const found = driveOf(urlInput.value);
+        item.url = urlInput.value;
+        item.kind = found ? found.kind : "";
+        item.driveId = found ? found.id : "";
+        setLabel();
+        setThumb();
+        markDirty();
+      });
+      urlField.append(label, urlInput);
       fields.append(urlField);
     } else {
       thumb.append(icon("description"));
@@ -343,6 +390,7 @@ function validate() {
   let total = 0;
   for (const [i, it] of current.items.entries()) {
     if (it.type === "youtube" && !it.videoId) return [`${i + 1} 番目: YouTube の URL を読み取れません`, null];
+    if (it.type === "drive" && !it.driveId) return [`${i + 1} 番目: Google ドライブの共有リンクを読み取れません`, null];
     if (it.type === "html") {
       if (!it.html) return [`${i + 1} 番目: HTML ファイルを選んでください`, null];
       const size = bytesOf(it.html);
@@ -383,9 +431,11 @@ form.addEventListener("submit", async (e) => {
     batch.set(pageRef, {
       title: f.title.value.trim(),
       note: f.note.value.trim(),
-      items: current.items.map((it) => (it.type === "youtube"
-        ? { type: "youtube", title: it.title.trim(), videoId: it.videoId }
-        : { type: "html", title: it.title.trim(), docId: it.docId })),
+      items: current.items.map((it) => {
+        if (it.type === "youtube") return { type: "youtube", title: it.title.trim(), videoId: it.videoId };
+        if (it.type === "drive") return { type: "drive", title: it.title.trim(), kind: it.kind, driveId: it.driveId };
+        return { type: "html", title: it.title.trim(), docId: it.docId };
+      }),
       enabled: f.enabled.checked,
       expiresAt: f.expires.value ? endOfDay(f.expires.value) : null,
       createdAt: current.createdAt || serverTimestamp(),

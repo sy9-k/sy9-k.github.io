@@ -1,10 +1,12 @@
 // SK Share（/view/）: パスワード → ページの ID を作って、Cloud Firestore の viewPages/{ID} を読む
 // パスワードはサーバーに送らない（送るのは PBKDF2 で作った ID だけ）。ログインは不要
-// 中身: YouTube の限定公開動画（youtube-nocookie で埋め込み）と HTML 文書（スクリプトを動かさない iframe）
+// 中身: YouTube の限定公開動画（youtube-nocookie で埋め込み）・HTML 文書（スクリプトを動かさない iframe）・Google ドライブのファイル（ドライブのプレビューで埋め込み）
 // データの形は /view/view-core.js
 import { db } from "/assets/hub/account.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { PAGES, makeHtmlFrame, normalizePassword, pageIdOf, youtubeEmbedUrl } from "/view/view-core.js";
+import {
+  DRIVE_KINDS, PAGES, driveEmbedUrl, driveOpenUrl, makeHtmlFrame, normalizePassword, pageIdOf, youtubeEmbedUrl
+} from "/view/view-core.js";
 
 const t = window.SKI18N ? window.SKI18N.t : (s, v) => (v ? s.replace(/\{(\w+)\}/g, (m, k) => (v[k] != null ? v[k] : m)) : s);
 const $ = (sel) => document.querySelector(sel);
@@ -118,6 +120,33 @@ function videoItem(item) {
   return box;
 }
 
+// Google ドライブ（表示用の URL は種類と ID から作る。ファイルの共有が「リンクを知っている全員」になっていないと、ドライブのログイン画面が出る）
+const DRIVE_LABEL = { file: t("ファイル"), document: t("ドキュメント"), spreadsheets: t("スプレッドシート"), presentation: t("スライド"), folder: t("フォルダ") };
+function driveItem(item) {
+  const info = DRIVE_KINDS[item.kind];
+  const box = el("article", "vw-item");
+  const head = itemHead(item, info.icon, DRIVE_LABEL[item.kind]);
+  const openLink = el("a", "icon-btn m3-state");
+  openLink.href = driveOpenUrl(item.kind, item.driveId);
+  openLink.target = "_blank";
+  openLink.rel = "noopener noreferrer";
+  openLink.setAttribute("aria-label", t("Google ドライブで開く"));
+  openLink.title = t("Google ドライブで開く");
+  openLink.append(icon("open_in_new"));
+  head.append(openLink);
+  box.append(head);
+  const wrap = el("div", `vw-drive vw-drive--${item.kind}`);
+  const frame = document.createElement("iframe");
+  frame.src = driveEmbedUrl(item.kind, item.driveId);
+  frame.title = item.title || DRIVE_LABEL[item.kind];
+  frame.loading = "lazy";
+  frame.allow = "fullscreen; autoplay";
+  frame.referrerPolicy = "strict-origin-when-cross-origin";
+  wrap.append(frame);
+  box.append(wrap);
+  return box;
+}
+
 function docItem(pageId, item) {
   const box = el("article", "vw-item");
   const head = itemHead(item, "description", t("文書"));
@@ -162,6 +191,7 @@ function render(pageId, page) {
   const boxes = items.map((item) => {
     if (item.type === "youtube" && item.videoId) return videoItem(item);
     if (item.type === "html" && item.docId) return docItem(pageId, item);
+    if (item.type === "drive" && item.driveId && DRIVE_KINDS[item.kind]) return driveItem(item);
     return null;
   });
   list.replaceChildren(...boxes.filter(Boolean));
@@ -174,7 +204,7 @@ function render(pageId, page) {
     boxes[i].id = `item-${i + 1}`;
     const chip = el("button", "vw-chip m3-state");
     chip.type = "button";
-    chip.append(icon(item.type === "youtube" ? "play_circle" : "description", true), el("span", "", item.title || `${i + 1}`));
+    chip.append(icon(item.type === "youtube" ? "play_circle" : item.type === "drive" ? (DRIVE_KINDS[item.kind] || DRIVE_KINDS.file).icon : "description", true), el("span", "", item.title || `${i + 1}`));
     chip.setAttribute("data-i18n-skip", "");
     chip.addEventListener("click", () => boxes[i].scrollIntoView({ behavior: "smooth", block: "start" }));
     return chip;
