@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>UI のくらべっこ</title>
+<!--
+  SK's Toolbox の設定画面を、iOS・Material 3・Fluent 2・One UI の 4 つのデザインで再現した試作。配信しない（_ で始まるフォルダなので GitHub Pages には出ない）
+  どれも「似せて作った」もので、Apple・Google・Microsoft・Samsung の本物の部品ではない。
+  アイコンは Material 3 だけ Material Symbols（無料で使える）、ほかは自作の線のアイコン（SF Symbols・One UI のアイコンは Web では使えないため）
+  動くところ: スイッチ・テーマ（ページ全体が切りかわる）・アプリの色・消去の確認ダイアログ・同期のお知らせ・スクロールで縮む見出し
+  URL の #ios #md #fluent #oneui #all で開く画面を選べる。キーボードの 1〜4 で切りかえ、A で 4 つ並べる
+  ローカルで見る: python3 -m http.server 8765 → http://localhost:8765/_mockups/ui-compare/
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block">
+<script>(function(){try{var s=JSON.parse(localStorage.getItem("sk_ui_compare")||"{}"),t=s.theme;if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark");}catch(e){if(matchMedia("(prefers-color-scheme: dark)").matches)document.documentElement.classList.add("dark");}})();</script>
+<style>
+  /* ===== ページ（試作の外側） ===== */
+  :root {
+    --p-bg: #e9ecf1; --p-ink: #14171c; --p-sub: #5b6270; --p-line: #d3d8e0; --p-card: #ffffff; --p-acc: #2563eb;
+    color-scheme: light;
+  }
+  :root.dark { --p-bg: #0c0e12; --p-ink: #e8eaee; --p-sub: #9aa1ad; --p-line: #272b33; --p-card: #161920; --p-acc: #7aa2ff; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { min-height: 100dvh; background: var(--p-bg); color: var(--p-ink); font-family: "Noto Sans JP", "Hiragino Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+
+  .top {
+    position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+    padding: 12px 16px; border-bottom: 1px solid var(--p-line);
+    background: color-mix(in srgb, var(--p-bg) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .top__title { margin-right: auto; min-width: 0; }
+  .top h1 { margin: 0; font-size: 17px; font-weight: 700; }
+  .top p { margin: 2px 0 0; font-size: 12px; color: var(--p-sub); }
+  .pills { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--p-line); border-radius: 12px; background: var(--p-card); overflow-x: auto; max-width: 100%; }
+  .pills button {
+    flex: none; height: 32px; padding: 0 12px; border: 0; border-radius: 9px; background: none; cursor: pointer;
+    font: inherit; font-size: 13px; font-weight: 600; color: var(--p-sub); white-space: nowrap;
+  }
+  .pills button:hover { color: var(--p-ink); }
+  .pills button[aria-pressed="true"] { background: var(--p-ink); color: var(--p-bg); }
+  .pills button:focus-visible { outline: 2px solid var(--p-acc); outline-offset: 1px; }
+  .pills small { font-weight: 500; opacity: .7; margin-left: 4px; }
+
+  .stage { display: flex; justify-content: center; align-items: flex-start; gap: 44px; padding: 28px 16px 48px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px 20px; max-width: 1640px; margin: 0 auto; padding: 24px 16px 48px; }
+  .cell { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+  .cap { display: flex; align-items: baseline; gap: 8px; font-size: 15px; }
+  .cap span { font-size: 12px; color: var(--p-sub); }
+  .grid .phone { width: 100%; max-width: 360px; height: 740px; }
+
+  .notes { flex: 1; min-width: 0; max-width: 420px; position: sticky; top: 92px; font-size: 14px; line-height: 1.75; }
+  .notes h2 { margin: 0; font-size: 26px; line-height: 1.3; }
+  .notes .by { margin: 2px 0 16px; color: var(--p-sub); font-size: 13px; }
+  .notes h3 { margin: 20px 0 6px; font-size: 13px; color: var(--p-sub); font-weight: 700; }
+  .notes ul { margin: 0; padding-left: 1.2em; }
+  .notes li + li { margin-top: 4px; }
+  .notes p { margin: 0; }
+  .web { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--p-line); border-radius: 12px; background: var(--p-card); }
+  .web b { flex: none; font-size: 18px; line-height: 1.4; }
+  .fit { padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, var(--p-acc) 10%, var(--p-card)); }
+  .disclaimer { margin-top: 20px !important; font-size: 12px; color: var(--p-sub); }
+
+  @media (max-width: 860px) {
+    .stage { flex-direction: column; align-items: center; gap: 28px; }
+    .notes { position: static; max-width: 390px; width: 100%; }
+  }
+
+  /* ===== 電話（どのデザインにも共通の骨組み） ===== */
+  .phone {
+    position: relative; flex: none; width: 390px; max-width: 100%; height: min(820px, calc(100dvh - 120px)); min-height: 600px;
+    border: 11px solid #0b0b0d; border-radius: 44px; overflow: hidden; isolation: isolate;
+    box-shadow: 0 0 0 1.5px #3a3a40, 0 30px 60px -24px rgba(0, 0, 0, .4);
+    background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased;
+    transition: background .25s, color .25s;
+  }
+  @media (max-width: 440px) {
+    .stage .phone { border-width: 6px; border-radius: 34px; height: calc(100dvh - 150px); }
+  }
+  .phone button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-align: inherit; -webkit-tap-highlight-color: transparent; }
+  .phone button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .phone h2, .phone h3, .phone p { margin: 0; }
+  .i { width: 24px; height: 24px; flex: none; display: block; }
+  .msr {
+    font-family: "Material Symbols Rounded"; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1;
+    letter-spacing: normal; text-transform: none; white-space: nowrap; direction: ltr; display: inline-block;
+    font-feature-settings: "liga"; font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; user-select: none; -webkit-user-select: none;
+  }
+
+  .sb { position: absolute; z-index: 20; top: 0; left: 0; right: 0; height: var(--sbh); display: flex; align-items: center; justify-content: space-between; padding: 0 26px 0 32px; font-size: 15px; font-weight: 600; pointer-events: none; color: var(--ink); }
+  .sb-cam { position: absolute; left: 50%; top: 11px; width: 112px; height: 32px; margin-left: -56px; border-radius: 20px; background: #000; }
+  .sb-icons { display: flex; align-items: center; gap: 5px; }
+  .sb-icons svg { height: 11px; width: auto; fill: currentColor; }
+
+  .scr { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding-bottom: 130px; }
+  .scr::-webkit-scrollbar { display: none; }
+  .bar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 4px; min-height: calc(var(--sbh) + 52px); padding: var(--sbh) 8px 0; transition: background .2s, box-shadow .2s; }
+  .bar-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0; transition: opacity .2s; }
+  .is-scrolled .bar-title { opacity: 1; }
+  .ib { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 50%; }
+  .hero-sub { display: none; }
+
+  .acct { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+  .av { display: grid; place-items: center; flex: none; border-radius: 50%; font-weight: 600; }
+  .acct-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .acct-actions { flex-basis: 100%; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
+
+  .list { position: relative; }
+  .row { position: relative; display: flex; align-items: center; gap: 16px; width: 100%; text-align: left; }
+  .row-ic { display: grid; place-items: center; flex: none; }
+  .row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .row-sub, .row-sub-val, .grp-note { display: none; }
+  .row-end { display: flex; align-items: center; gap: 6px; flex: none; }
+  .row--stack { flex-wrap: wrap; }
+  .row-body { flex-basis: 100%; min-width: 0; }
+  .sw { position: relative; display: block; flex: none; }
+  .sw-k { position: absolute; display: grid; place-items: center; }
+  .sw-t { display: none; }
+  .seg { display: flex; }
+  .seg-ind, .nav-pill, .nav-search, .edgeb { display: none; }
+  .seg-b { display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
+  .seg-b .i, .seg-b .msr { display: none; }
+  .sws { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+  .swt { position: relative; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--c) !important; color: #fff !important; transition: border-radius .3s, box-shadow .2s; }
+  .swt .i, .swt .msr { width: 18px; height: 18px; font-size: 18px; stroke-width: 2.6; opacity: 0; transition: opacity .15s; }
+  .swt[aria-checked="true"] .i, .swt[aria-checked="true"] .msr { opacity: 1; }
+  .foot { margin: 28px 32px 0; font-size: 12px; line-height: 1.6; color: var(--sub); }
+
+  .nav { position: absolute; z-index: 15; display: flex; }
+  .nav-b { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 0; text-align: center; }
+  .nav-ind { display: grid; place-items: center; }
+  .hb { position: absolute; z-index: 16; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: var(--ink); opacity: .85; pointer-events: none; }
+
+  .toast { position: absolute; z-index: 30; display: flex; align-items: center; gap: 8px; opacity: 0; translate: 0 10px; pointer-events: none; transition: opacity .2s, translate .25s; }
+  .toast.is-on { opacity: 1; translate: 0 0; }
+  .toast-ic { display: none; }
+
+  .dlg-wrap { position: absolute; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .32); opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .dlg-wrap.is-on { opacity: 1; pointer-events: auto; }
+  .dlg { transform: scale(.94); transition: transform .25s cubic-bezier(.2, 0, 0, 1); }
+  .is-on > .dlg { transform: none; }
+  .dlg-ic { display: none; }
+  .dlg-acts { display: flex; }
+
+  /* ===== iOS（Apple）。iOS 26 の Liquid Glass =====
+     ガラス（.lg）: 薄い色＋ふちのハイライト（::after）＋内側の光。Chromium では JS が SVG のレンズ（ふちで背景が曲がる）を backdrop-filter に入れる。
+     ほかのブラウザは、ふつうのすりガラス（blur）になる */
+  .ios {
+    --sbh: 50px; --bg: #f2f2f7; --surface: #ffffff; --ink: #000000; --sub: #8a8a8e; --line: #c6c6c8;
+    --fill: rgba(120, 120, 128, .16); --accent: var(--sw); --danger: #ff3b30; --on: #34c759;
+    --lg-tint: rgba(255, 255, 255, .16); --lg-shadow: 0 8px 28px rgba(0, 0, 0, .10), 0 1px 3px rgba(0, 0, 0, .06);
+    --lg-spec: rgba(255, 255, 255, .95); --lg-spec2: rgba(255, 255, 255, .55); --lg-glow: rgba(255, 255, 255, .45); --lg-rim: rgba(255, 255, 255, .9);
+    --pill: rgba(0, 0, 0, .07); --spring: cubic-bezier(.3, 1.35, .45, 1);
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+    border-radius: 56px;
+  }
+  .dark .ios {
+    --bg: #000000; --surface: #1c1c1e; --ink: #ffffff; --sub: #8d8d93; --line: #38383a; --fill: rgba(120, 120, 128, .32);
+    --accent: color-mix(in srgb, var(--sw) 70%, #fff); --danger: #ff453a; --on: #30d158;
+    --lg-tint: rgba(30, 30, 32, .26); --lg-shadow: 0 8px 28px rgba(0, 0, 0, .5), 0 1px 3px rgba(0, 0, 0, .3);
+    --lg-spec: rgba(255, 255, 255, .5); --lg-spec2: rgba(255, 255, 255, .22); --lg-glow: rgba(255, 255, 255, .07); --lg-rim: rgba(255, 255, 255, .45);
+    --pill: rgba(255, 255, 255, .13);
+  }
+  .ios .lg {
+    background: var(--lg-tint);
+    backdrop-filter: blur(12px) saturate(1.8); -webkit-backdrop-filter: blur(12px) saturate(1.8);
+    box-shadow: var(--lg-shadow), inset 1.5px 1.5px 1px -1px var(--lg-spec), inset -1px -1px 1px -.5px var(--lg-spec2), inset 0 0 16px var(--lg-glow);
+  }
+  .ios .lg::after {
+    content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; padding: 1px; pointer-events: none;
+    background: linear-gradient(135deg, var(--lg-rim), transparent 32%, transparent 68%, var(--lg-rim)) border-box;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    opacity: .9;
+  }
+  /* 上と下のふち: バーの代わりに、スクロールした中身をぼかして薄くする（scroll edge effect） */
+  .ios .bar { min-height: calc(var(--sbh) + 52px); padding: var(--sbh) 14px 4px; }
+  .ios .bar::before {
+    content: ""; position: absolute; inset: 0 0 -28px; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .25s;
+    background: linear-gradient(color-mix(in srgb, var(--bg) 82%, transparent) 30%, transparent);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    -webkit-mask-image: linear-gradient(#000 45%, transparent); mask-image: linear-gradient(#000 45%, transparent);
+  }
+  .ios.is-scrolled .bar::before { opacity: 1; }
+  .ios .bar [data-act="search"] { display: none; }
+  .ios .edgeb {
+    display: block; position: absolute; z-index: 14; left: 0; right: 0; bottom: 0; height: 130px; pointer-events: none;
+    background: linear-gradient(transparent, color-mix(in srgb, var(--bg) 40%, transparent));
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(transparent, #000 65%); mask-image: linear-gradient(transparent, #000 65%);
+  }
+  .ios .ib { position: relative; transition: transform .45s var(--spring); }
+  .ios .ib:active, .ios .nav-search:active { transform: scale(1.16); transition-duration: .2s; }
+  .ios .ib .i { width: 22px; height: 22px; stroke-width: 2.2; }
+  .ios .bar-title { text-align: center; font-size: 17px; font-weight: 600; }
+  .ios .hero { padding: 4px 20px 6px; }
+  .ios .hero-title { font-size: 34px; font-weight: 700; letter-spacing: .01em; line-height: 1.2; }
+  .ios .acct { margin: 14px 16px 0; padding: 14px 16px; border-radius: 26px; background: var(--surface); }
+  .ios .av { width: 60px; height: 60px; font-size: 24px; color: #fff; background: linear-gradient(#a8a8ad, #85858b); }
+  .ios .acct-name { font-size: 20px; font-weight: 600; }
+  .ios .acct-sub { font-size: 13px; color: var(--sub); }
+  .ios .btn { height: 36px; padding: 0 16px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); font-size: 15px; font-weight: 600; transition: transform .45s var(--spring); }
+  .ios .btn:active { transform: scale(1.08); transition-duration: .2s; }
+  .ios .btn .i { width: 18px; height: 18px; stroke-width: 2.2; }
+  .ios .grp { margin: 28px 16px 0; }
+  .ios .grp-title { margin: 0 16px 7px; font-size: 13px; font-weight: 400; color: var(--sub); }
+  .ios .list { background: var(--surface); border-radius: 26px; overflow: hidden; }
+  .ios .row { min-height: 52px; padding: 10px 16px; gap: 14px; }
+  .ios .row + .row::before { content: ""; position: absolute; top: 0; left: 60px; right: 0; height: .5px; background: var(--line); }
+  .ios button.row:active { background: var(--fill); }
+  .ios button.row[role="switch"]:active { background: none; }
+  .ios .row-ic { width: 30px; height: 30px; border-radius: 8px; background: var(--tile); color: #fff; }
+  .ios .row-ic .i { width: 19px; height: 19px; stroke-width: 2.1; }
+  .ios .row-label { font-size: 17px; }
+  .ios .row-val { font-size: 17px; color: var(--sub); }
+  .ios .row-chev { color: color-mix(in srgb, var(--sub) 70%, transparent); }
+  .ios .row-chev .i { width: 15px; height: 15px; stroke-width: 2.8; }
+  .ios .row--danger { justify-content: center; }
+  .ios .row--danger .row-ic { display: none; }
+  .ios .row--danger .row-text { align-items: center; }
+  .ios .row--danger .row-label { color: var(--danger); }
+  .ios .row--danger::before { left: 0 !important; }
+  .ios .row-body { padding-left: 44px; }
+  .ios .grp-note { display: block; margin: 7px 16px 0; font-size: 13px; line-height: 1.45; color: var(--sub); }
+  /* スイッチ: 押しているあいだ、つまみがガラスのレンズになって大きくなる */
+  .ios .sw { width: 64px; height: 28px; border-radius: 14px; background: var(--fill); transition: background .25s; }
+  .ios .sw-k {
+    top: 2px; left: 2px; width: 38px; height: 24px; border-radius: 12px; background: #fff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, .15), 0 1px 1px rgba(0, 0, 0, .06);
+    transition: transform .5s var(--spring), background .2s, box-shadow .2s;
+  }
+  .ios [aria-checked="true"] .sw { background: var(--on); }
+  .ios [aria-checked="true"] .sw-k { transform: translateX(22px); }
+  .ios .row[role="switch"]:active .sw-k {
+    transform: translateX(-2px) scale(1.4, 1.55); background: rgba(255, 255, 255, .16); transition-duration: .3s;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .16), inset 1px 1px 1px -.5px rgba(255, 255, 255, 1), inset -1px -1px 1px -.5px rgba(255, 255, 255, .7), inset 0 0 0 .6px rgba(255, 255, 255, .7), inset 0 0 8px rgba(255, 255, 255, .35);
+  }
+  .ios .row[role="switch"][aria-checked="true"]:active .sw-k { transform: translateX(24px) scale(1.4, 1.55); }
+  /* 切りかえ: 選んだところの白い丸がばねのように動き、押しているあいだはガラスになる */
+  .ios .seg { position: relative; margin-top: 10px; padding: 2px; border-radius: 999px; background: var(--fill); }
+  .ios .seg-ind {
+    display: block; position: absolute; top: 2px; bottom: 2px; left: 2px; width: calc((100% - 4px) / 3); border-radius: 999px;
+    background: var(--surface); box-shadow: 0 3px 8px rgba(0, 0, 0, .12), 0 0 0 .5px rgba(0, 0, 0, .04);
+    transform: translateX(calc(var(--i, 0) * 100%)); transition: transform .55s var(--spring), scale .3s var(--spring), background .2s, box-shadow .2s;
+  }
+  .dark .ios .seg-ind { background: #636366; }
+  .ios .seg:active .seg-ind {
+    scale: 1.1 1.3; background: rgba(255, 255, 255, .14);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .14), inset 1px 1px 1px -.5px rgba(255, 255, 255, 1), inset -1px -1px 1px -.5px rgba(255, 255, 255, .6), inset 0 0 0 .6px rgba(255, 255, 255, .7);
+  }
+  .ios .seg-b { position: relative; z-index: 1; flex: 1; height: 32px; border-radius: 999px; font-size: 14px; font-weight: 500; }
+  .ios .seg-b[aria-checked="true"] { font-weight: 600; }
+  .ios .swt { transition: box-shadow .2s, transform .45s var(--spring); }
+  .ios .swt:active { transform: scale(1.15); }
+  .ios .swt[aria-checked="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--c); }
+  .ios .swt .i { display: none; }
+  /* タブバー: 浮いたガラスのカプセル。選んだタブの丸（しずく）がばねで動き、動いているあいだはレンズになる。
+     下へスクロールすると、選んでいるタブだけの丸に縮む（右の検索の丸はそのまま） */
+  .ios .nav {
+    left: 20px; right: 92px; bottom: 26px; height: 62px; padding: 4px; border-radius: 31px;
+    transition: right .5s var(--spring), translate .3s;
+  }
+  .ios .lg.nav { --lg-tint: rgba(255, 255, 255, .2); }
+  .dark .ios .lg.nav { --lg-tint: rgba(30, 30, 32, .34); }
+  .ios.nav-min .nav { right: calc(100% - 20px - 62px); }
+  .ios .nav-b { position: relative; z-index: 1; flex: 1 1 0; min-width: 0; overflow: hidden; border-radius: 27px; font-size: 10px; font-weight: 600; transition: flex-grow .45s var(--spring), opacity .2s, color .2s; }
+  .ios .nav-b .i { width: 25px; height: 25px; stroke-width: 1.9; }
+  .ios .nav-b[aria-current="page"] { color: var(--accent); }
+  .ios .nav-l { transition: opacity .2s; }
+  .ios.nav-min .nav-b:not([aria-current]) { flex-grow: 0; opacity: 0; pointer-events: none; }
+  .ios.nav-min .nav-l { opacity: 0; height: 0; }
+  .ios .nav-pill {
+    display: block; position: absolute; z-index: 3; top: 4px; bottom: 4px; left: 4px; width: 0; border-radius: 27px; pointer-events: none;
+    background: var(--pill); transition: left .6s var(--spring), width .6s var(--spring), scale .35s var(--spring), background .25s, box-shadow .25s;
+  }
+  .ios .nav-pill.is-moving {
+    scale: 1.18 1.28; background: rgba(255, 255, 255, .08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .14), inset 1.5px 1.5px 1px -1px rgba(255, 255, 255, 1), inset -1px -1px 1px -.5px rgba(255, 255, 255, .7), inset 0 0 0 .6px rgba(255, 255, 255, .6), inset 0 0 12px rgba(255, 255, 255, .3);
+  }
+  .ios .nav-search { display: grid; place-items: center; position: absolute; z-index: 15; right: 20px; bottom: 26px; width: 62px; height: 62px; border-radius: 50%; transition: transform .45s var(--spring); }
+  .ios .nav-search .i { width: 25px; height: 25px; stroke-width: 2; }
+  .ios .toast { top: 60px; left: 50%; max-width: calc(100% - 48px); padding: 11px 18px; border-radius: 24px; transform: translateX(-50%); font-size: 14px; font-weight: 600; translate: 0 -12px; scale: .9; transition: opacity .2s, translate .45s var(--spring), scale .45s var(--spring); }
+  .ios .lg.toast { --lg-tint: rgba(255, 255, 255, .55); }
+  .dark .ios .lg.toast { --lg-tint: rgba(36, 36, 38, .6); }
+  .ios .toast.is-on { translate: 0 0; scale: 1; }
+  .ios .toast-ic { display: block; color: var(--on); }
+  .ios .toast-ic .i { width: 20px; height: 20px; stroke-width: 2.6; }
+  .ios .dlg-wrap { background: rgba(0, 0, 0, .18); }
+  .ios .dlg { position: relative; width: 300px; padding: 22px 16px 16px; border-radius: 34px; text-align: center; transform: scale(.86); transition: transform .5s var(--spring); }
+  .ios .lg.dlg { --lg-tint: rgba(255, 255, 255, .62); }
+  .dark .ios .lg.dlg { --lg-tint: rgba(36, 36, 38, .66); }
+  .ios .dlg-title { margin-bottom: 6px; font-size: 17px; font-weight: 600; line-height: 1.35; }
+  .ios .dlg-msg { font-size: 14px; line-height: 1.45; }
+  .ios .dlg-acts { gap: 10px; margin-top: 18px; }
+  .ios .dbtn { flex: 1; height: 48px; border-radius: 24px; background: var(--fill); font-size: 17px; font-weight: 500; text-align: center; transition: transform .45s var(--spring); }
+  .ios .dbtn:active { transform: scale(1.08); transition-duration: .2s; }
+  .ios .dbtn--danger { color: var(--danger); font-weight: 600; }
+
+  /* ===== Material 3（Google）。いまの SK's Toolbox（SK's Blue の M3 配色・M PLUS 1） ===== */
+  .md {
+    --sbh: 40px; --font: "M PLUS 1", "Roboto", "Noto Sans JP", system-ui, sans-serif; --emph: cubic-bezier(.2, 0, 0, 1);
+    --primary: color-mix(in srgb, var(--sw) 62%, #3a3f4a); --on-primary: #ffffff;
+    --pc: color-mix(in srgb, var(--sw) 17%, #ffffff); --on-pc: color-mix(in srgb, var(--sw) 50%, #161a24);
+    --sc: color-mix(in srgb, var(--sw) 13%, #e4e6ec); --on-sc: color-mix(in srgb, var(--sw) 22%, #2c303a);
+    --bg: color-mix(in srgb, var(--sw) 5%, #ececf0); --surface: color-mix(in srgb, var(--sw) 2%, #fdfdff);
+    --c-high: color-mix(in srgb, var(--sw) 7%, #e4e4e9); --c-highest: color-mix(in srgb, var(--sw) 8%, #dedee3);
+    --ink: #1a1c20; --sub: #44474e; --outline: #74777f; --danger: #ba1a1a; --inv: #2e3036; --on-inv: #f0f0f7;
+    --accent: var(--primary);
+    border-radius: 42px;
+  }
+  .dark .md {
+    --primary: color-mix(in srgb, var(--sw) 45%, #e6ecff); --on-primary: color-mix(in srgb, var(--sw) 40%, #0a0f1e);
+    --pc: color-mix(in srgb, var(--sw) 36%, #1a1d24); --on-pc: color-mix(in srgb, var(--sw) 16%, #eef1fa);
+    --sc: color-mix(in srgb, var(--sw) 18%, #30343c); --on-sc: color-mix(in srgb, var(--sw) 10%, #e0e3ec);
+    --bg: color-mix(in srgb, var(--sw) 3%, #101216); --surface: color-mix(in srgb, var(--sw) 5%, #1d2024);
+    --c-high: color-mix(in srgb, var(--sw) 6%, #25282d); --c-highest: color-mix(in srgb, var(--sw) 7%, #333539);
+    --ink: #e2e2e9; --sub: #c4c6d0; --outline: #8e9099; --danger: #ffb4ab; --inv: #e2e2e9; --on-inv: #2e3036;
+  }
+  .md .sb { padding: 0 24px; font-size: 14px; font-weight: 500; }
+  .md .sb-cam, .fl .sb-cam, .one .sb-cam { top: 13px; width: 13px; height: 13px; margin-left: -6.5px; }
+  .md .bar { min-height: calc(var(--sbh) + 64px); padding: var(--sbh) 4px 0; }
+  .md.is-scrolled .bar { background: var(--c-high); }
+  .md .bar-title { font-size: 22px; margin-left: 4px; }
+  .md .ib:active { background: color-mix(in srgb, var(--ink) 10%, transparent); }
+  .md .hero { padding: 4px 20px 20px; }
+  .md .hero-title { font-size: 32px; font-weight: 400; line-height: 40px; }
+  .md .acct { margin: 4px 16px 0; padding: 20px; border-radius: 28px; background: var(--pc); color: var(--on-pc); }
+  .md .av { width: 48px; height: 48px; font-size: 20px; font-weight: 500; background: var(--primary); color: var(--on-primary); }
+  .md .acct-name { font-size: 18px; font-weight: 500; }
+  .md .acct-sub { font-size: 14px; opacity: .8; }
+  .md .btn { height: 40px; padding: 0 24px 0 16px; gap: 8px; border-radius: 20px; background: var(--primary); color: var(--on-primary); font-size: 14px; font-weight: 500; }
+  .md .btn:active { box-shadow: inset 0 0 0 99px rgba(255, 255, 255, .14); }
+  .md .btn .msr { font-size: 18px; }
+  .md .grp { margin: 26px 16px 0; }
+  .md .grp-title { margin: 0 16px 8px; font-size: 14px; font-weight: 500; color: var(--primary); }
+  .md .list { display: flex; flex-direction: column; gap: 2px; }
+  .md .row { min-height: 60px; padding: 14px 16px; border-radius: 4px; background: var(--surface); transition: background .15s; }
+  .md .list > .row:first-child { border-top-left-radius: 20px; border-top-right-radius: 20px; }
+  .md .list > .row:last-child { border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+  .md button.row:active { background: color-mix(in srgb, var(--ink) 10%, var(--surface)); }
+  .md .row-ic { color: var(--sub); }
+  .md .row-label { font-size: 16px; line-height: 24px; }
+  .md .row-sub, .md .row-sub-val { display: block; font-size: 14px; line-height: 20px; color: var(--sub); }
+  .md .row-val, .md .row-chev { display: none; }
+  .md .row--danger .row-ic, .md .row--danger .row-label { color: var(--danger); }
+  .md .row-body { padding-left: 40px; }
+  .md .sw { width: 52px; height: 32px; border-radius: 16px; border: 2px solid var(--outline); background: var(--c-highest); transition: background .2s, border-color .2s; }
+  .md .sw-k { top: 50%; left: 6px; width: 16px; height: 16px; margin-top: -8px; border-radius: 50%; background: var(--outline); transition: all .3s var(--emph); }
+  .md .sw-k .msr { font-size: 16px; opacity: 0; color: var(--on-pc); transition: opacity .2s; }
+  .md [aria-checked="true"] .sw { background: var(--primary); border-color: var(--primary); }
+  .md [aria-checked="true"] .sw-k { left: 22px; width: 24px; height: 24px; margin-top: -12px; background: var(--on-primary); }
+  .md [aria-checked="true"] .sw-k .msr { opacity: 1; }
+  .md .seg { height: 40px; margin-top: 12px; border: 1px solid var(--outline); border-radius: 20px; overflow: hidden; }
+  .md .seg-b { flex: 1; font-size: 14px; font-weight: 500; transition: background .2s; }
+  .md .seg-b + .seg-b { border-left: 1px solid var(--outline); }
+  .md .seg-b[aria-checked="true"] { background: var(--sc); color: var(--on-sc); }
+  .md .seg-b[aria-checked="true"] .msr { display: inline-block; font-size: 18px; }
+  .md .swt[aria-checked="true"] { border-radius: 12px; }
+  .md .nav { left: 0; right: 0; bottom: 0; height: 96px; padding: 12px 0 26px; background: var(--c-high); }
+  .md .nav-b { gap: 4px; font-size: 12px; font-weight: 500; color: var(--sub); }
+  .md .nav-ind { width: 56px; height: 32px; border-radius: 16px; transition: background .2s; }
+  .md .nav-b[aria-current="page"] { color: var(--ink); }
+  .md .nav-b[aria-current="page"] .nav-ind { background: var(--sc); color: var(--on-sc); }
+  .md .nav-b[aria-current="page"] .msr { font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24; }
+  .md .hb { width: 108px; height: 4px; margin-left: -54px; bottom: 7px; }
+  .md .toast { left: 12px; right: 12px; bottom: 108px; padding: 14px 16px; border-radius: 4px; background: var(--inv); color: var(--on-inv); font-size: 14px; box-shadow: 0 3px 10px rgba(0, 0, 0, .2); }
+  .md .dlg { width: calc(100% - 48px); max-width: 312px; padding: 24px; border-radius: 28px; background: var(--c-high); text-align: center; }
+  .md .dlg-ic { display: block; margin-bottom: 16px; color: var(--sub); }
+  .md .dlg-title { margin-bottom: 16px; font-size: 24px; font-weight: 400; line-height: 32px; }
+  .md .dlg-msg { font-size: 14px; line-height: 20px; color: var(--sub); text-align: left; }
+  .md .dlg-acts { justify-content: flex-end; gap: 8px; margin-top: 24px; }
+  .md .dbtn { height: 40px; padding: 0 12px; border-radius: 20px; color: var(--primary); font-size: 14px; font-weight: 500; }
+  .md .dbtn:active { background: color-mix(in srgb, currentColor 12%, transparent); }
+  .md .dbtn--danger { color: var(--danger); }
+
+  /* ===== Fluent 2（Microsoft） ===== */
+  .fl {
+    --sbh: 40px; --font: "Segoe UI Variable Text", "Segoe UI", "Yu Gothic UI", "Meiryo UI", "Noto Sans JP", system-ui, sans-serif;
+    --bg: #f5f5f5; --surface: #ffffff; --stroke: #e0e0e0; --ink: #242424; --sub: #616161; --fill: #f0f0f0;
+    --brand: color-mix(in srgb, var(--sw) 82%, #000); --on-brand: #ffffff; --brand-soft: color-mix(in srgb, var(--sw) 12%, #fff);
+    --danger: #c50f1f; --ok: #107c10; --accent: var(--brand);
+    border-radius: 40px;
+  }
+  .dark .fl {
+    --bg: #1f1f1f; --surface: #2b2b2b; --stroke: #3b3b3b; --ink: #ffffff; --sub: #adadad; --fill: #383838;
+    --brand: color-mix(in srgb, var(--sw) 55%, #fff); --on-brand: #000000; --brand-soft: color-mix(in srgb, var(--sw) 25%, #1f1f1f);
+    --danger: #f1707b; --ok: #54b054;
+  }
+  .fl .sb { padding: 0 24px; font-size: 14px; font-weight: 500; }
+  .fl .i { stroke-width: 1.5; }
+  .fl .bar { min-height: calc(var(--sbh) + 52px); padding: var(--sbh) 8px 0 4px; background: var(--surface); border-bottom: 1px solid var(--stroke); }
+  .fl.is-scrolled .bar { box-shadow: 0 2px 6px rgba(0, 0, 0, .08); }
+  .fl .bar-title { opacity: 1; margin-left: 2px; font-size: 20px; font-weight: 600; }
+  .fl .ib { border-radius: 4px; width: 40px; height: 40px; }
+  .fl .ib:hover { background: var(--fill); }
+  .fl .hero { display: none; }
+  .fl .acct { margin: 16px 16px 0; padding: 16px; border: 1px solid var(--stroke); border-radius: 8px; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .06); }
+  .fl .av { width: 48px; height: 48px; font-size: 18px; background: var(--brand-soft); color: var(--brand); }
+  .fl .acct-name { font-size: 16px; font-weight: 600; }
+  .fl .acct-sub { font-size: 12px; color: var(--sub); }
+  .fl .btn { height: 32px; padding: 0 12px; border-radius: 4px; background: var(--brand); color: var(--on-brand); font-size: 14px; font-weight: 600; }
+  .fl .btn .i { width: 20px; height: 20px; }
+  .fl .grp { margin: 22px 16px 0; }
+  .fl .grp-title { margin: 0 0 8px 2px; font-size: 14px; font-weight: 600; }
+  .fl .list { display: flex; flex-direction: column; gap: 4px; }
+  .fl .row { min-height: 64px; padding: 12px 14px; gap: 14px; border: 1px solid var(--stroke); border-radius: 6px; background: var(--surface); }
+  .fl button.row:hover { background: color-mix(in srgb, var(--fill) 60%, var(--surface)); }
+  .fl button.row:active { background: var(--fill); }
+  .fl .row-ic .i { width: 20px; height: 20px; }
+  .fl .row-label { font-size: 14px; }
+  .fl .row-sub { display: block; font-size: 12px; color: var(--sub); }
+  .fl .row-val { font-size: 14px; color: var(--sub); }
+  .fl .row-chev .i { width: 16px; height: 16px; }
+  .fl .row--danger .row-label, .fl .row--danger .row-ic { color: var(--danger); }
+  .fl .row-body { padding-left: 34px; }
+  .fl .sw-t { display: block; font-size: 14px; margin-right: 6px; }
+  .fl .sw-t::before { content: "オフ"; }
+  .fl [aria-checked="true"] .sw-t::before { content: "オン"; }
+  .fl .sw { width: 40px; height: 20px; border: 1px solid var(--sub); border-radius: 10px; transition: background .15s; }
+  .fl .sw-k { top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--sub); transition: transform .15s ease; }
+  .fl [aria-checked="true"] .sw { background: var(--brand); border-color: var(--brand); }
+  .fl [aria-checked="true"] .sw-k { transform: translateX(20px); background: var(--on-brand); }
+  .fl .seg { display: inline-flex; margin-top: 10px; border: 1px solid var(--stroke); border-radius: 4px; overflow: hidden; background: var(--surface); }
+  .fl .seg-b { height: 32px; padding: 0 16px; font-size: 14px; }
+  .fl .seg-b + .seg-b { border-left: 1px solid var(--stroke); }
+  .fl .seg-b[aria-checked="true"] { background: var(--brand); color: var(--on-brand); font-weight: 600; }
+  .fl .swt { width: 32px; height: 32px; border-radius: 4px; }
+  .fl .swt[aria-checked="true"] { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .fl .nav { left: 0; right: 0; bottom: 0; height: 86px; padding: 6px 0 28px; background: var(--surface); border-top: 1px solid var(--stroke); }
+  .fl .nav-b { font-size: 10px; color: var(--sub); }
+  .fl .nav-b[aria-current="page"] { color: var(--brand); font-weight: 600; }
+  .fl .nav-b[aria-current="page"] .i { stroke-width: 2.1; }
+  .fl .hb { width: 108px; height: 4px; margin-left: -54px; bottom: 7px; }
+  .fl .toast { left: 12px; right: 12px; bottom: 98px; gap: 10px; padding: 12px 14px; border: 1px solid var(--stroke); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 16px rgba(0, 0, 0, .14); font-size: 14px; font-weight: 600; }
+  .fl .toast-ic { display: block; color: var(--ok); }
+  .fl .toast-ic .i { width: 20px; height: 20px; stroke-width: 2; }
+  .fl .dlg { width: calc(100% - 32px); padding: 24px; border: 1px solid var(--stroke); border-radius: 8px; background: var(--surface); box-shadow: 0 32px 64px rgba(0, 0, 0, .24); }
+  .fl .dlg-title { margin-bottom: 8px; font-size: 20px; font-weight: 600; line-height: 1.4; }
+  .fl .dlg-msg { font-size: 14px; line-height: 1.5; }
+  .fl .dlg-acts { justify-content: flex-end; gap: 8px; margin-top: 24px; }
+  .fl .dbtn { min-width: 96px; height: 32px; padding: 0 12px; border: 1px solid var(--stroke); border-radius: 4px; font-size: 14px; font-weight: 600; text-align: center; }
+  .fl .dbtn:hover { background: var(--fill); }
+  .fl .dbtn--danger { order: -1; border-color: transparent; background: var(--brand); color: var(--on-brand); }
+  .fl .dbtn--danger:hover { background: color-mix(in srgb, var(--brand) 88%, #000); }
+
+  /* ===== One UI（Samsung） ===== */
+  .one {
+    --sbh: 40px; --font: "SamsungOne", "Samsung Sans", "Noto Sans JP", "Hiragino Sans", system-ui, sans-serif;
+    --bg: #f2f2f2; --surface: #ffffff; --ink: #000000; --sub: #6f6f6f; --line: #e6e6e6; --fill: rgba(0, 0, 0, .07);
+    --accent: var(--sw); --accent-soft: color-mix(in srgb, var(--sw) 12%, #fff); --danger: #e52b2b;
+    border-radius: 40px;
+  }
+  .dark .one {
+    --bg: #000000; --surface: #171717; --ink: #fafafa; --sub: #9b9b9b; --line: #2b2b2b; --fill: rgba(255, 255, 255, .1);
+    --accent: color-mix(in srgb, var(--sw) 70%, #fff); --accent-soft: color-mix(in srgb, var(--sw) 24%, #000); --danger: #ff6b6b;
+  }
+  .one .sb { padding: 0 24px; font-size: 14px; font-weight: 500; }
+  .one .i { stroke-width: 2; }
+  .one .bar { min-height: calc(var(--sbh) + 56px); padding: var(--sbh) 8px 0; }
+  .one.is-scrolled .bar { background: var(--bg); }
+  .one .bar-title { margin-left: 2px; font-size: 20px; font-weight: 700; }
+  .one .ib:active { background: var(--fill); }
+  .one .hero { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 330px; margin-top: calc(-1 * (var(--sbh) + 56px)); padding: 0 24px 44px; text-align: center; }
+  .one .hero-title { font-size: 36px; font-weight: 400; line-height: 1.25; }
+  .one .hero-sub { display: block; margin-top: 8px; font-size: 14px; color: var(--sub); }
+  .one .acct { margin: 0 12px; padding: 20px 22px; border-radius: 26px; background: var(--surface); }
+  .one .av { width: 52px; height: 52px; font-size: 20px; font-weight: 700; background: var(--accent); color: #fff; }
+  .one .acct-name { font-size: 18px; font-weight: 700; }
+  .one .acct-sub { font-size: 14px; color: var(--accent); }
+  .one .btn { height: 42px; padding: 0 22px; border-radius: 21px; background: var(--accent); color: #fff; font-size: 15px; font-weight: 700; }
+  .one .btn .i { display: none; }
+  .one .btn:active { filter: brightness(.9); }
+  .one .grp { margin: 26px 12px 0; }
+  .one .grp-title { margin: 0 22px 10px; font-size: 14px; font-weight: 700; color: var(--sub); }
+  .one .list { padding: 4px 0; border-radius: 26px; background: var(--surface); overflow: hidden; }
+  .one .row { min-height: 64px; padding: 16px 22px; }
+  .one .row + .row::before { content: ""; position: absolute; top: 0; left: 22px; right: 22px; height: 1px; background: var(--line); }
+  .one button.row:active { background: var(--fill); }
+  .one .row-ic, .one .row-val, .one .row-chev { display: none; }
+  .one .row-label { font-size: 17px; line-height: 1.35; }
+  .one .row-sub { display: block; margin-top: 3px; font-size: 14px; line-height: 1.45; color: var(--sub); }
+  .one .row-sub-val { display: block; margin-top: 3px; font-size: 14px; color: var(--accent); }
+  .one .row--danger .row-label { color: var(--danger); }
+  .one .sw { width: 48px; height: 26px; border-radius: 13px; background: color-mix(in srgb, var(--ink) 20%, transparent); transition: background .2s; }
+  .one .sw-k { top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); transition: transform .25s ease; }
+  .one [aria-checked="true"] .sw { background: var(--accent); }
+  .one [aria-checked="true"] .sw-k { transform: translateX(22px); }
+  .one .seg { margin-top: 14px; padding: 4px; border-radius: 999px; background: var(--fill); }
+  .one .seg-b { flex: 1; height: 36px; border-radius: 999px; font-size: 15px; transition: background .2s, color .2s; }
+  .one .seg-b[aria-checked="true"] { background: var(--accent); color: #fff; font-weight: 700; }
+  .one .swt { width: 36px; height: 36px; }
+  .one .nav { left: 0; right: 0; bottom: 0; height: 88px; padding: 10px 16px 32px; background: var(--bg); }
+  .one .nav-ind { display: none; }
+  .one .nav-l { padding: 8px 16px; border-radius: 999px; font-size: 15px; color: var(--sub); transition: background .2s; }
+  .one .nav-b[aria-current="page"] .nav-l { background: var(--fill); color: var(--ink); font-weight: 700; }
+  .one .hb { width: 108px; height: 4px; margin-left: -54px; bottom: 7px; }
+  .one .toast { left: 50%; bottom: 112px; max-width: calc(100% - 48px); padding: 11px 20px; border-radius: 22px; transform: translateX(-50%); background: rgba(58, 58, 58, .95); color: #fff; font-size: 14px; text-align: center; }
+  .dark .one .toast { background: rgba(78, 78, 78, .95); }
+  .one .dlg-wrap { align-items: flex-end; padding: 0 12px 28px; }
+  .one .dlg { width: 100%; padding: 26px 24px 6px; border-radius: 26px; background: var(--surface); transform: translateY(24px); }
+  .one .dlg-title { margin-bottom: 12px; font-size: 19px; font-weight: 700; line-height: 1.4; }
+  .one .dlg-msg { font-size: 15px; line-height: 1.55; }
+  .one .dlg-acts { margin-top: 14px; }
+  .one .dbtn { position: relative; flex: 1; height: 54px; color: var(--accent); font-size: 16px; font-weight: 700; text-align: center; border-radius: 16px; }
+  .one .dbtn:active { background: var(--fill); }
+  .one .dbtn + .dbtn::before { content: ""; position: absolute; left: 0; top: 19px; bottom: 19px; width: 1px; background: var(--line); }
+  .one .dbtn--danger { color: var(--danger); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phone *, .phone *::before { transition-duration: 0s !important; }
+  }
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="top__title">
+    <h1>UI のくらべっこ</h1>
+    <p>SK's Toolbox の設定画面を 4 つのデザインで再現した試作です</p>
+  </div>
+  <div class="pills" id="ui-pills" role="group" aria-label="デザイン"></div>
+  <div class="pills" id="theme-pills" role="group" aria-label="表示"></div>
+</div>
+<main id="main"></main>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, el) { return (el || document).querySelector(s); };
+  var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
+
+  var UIS = [
+    { key: "ios", cls: "ios", name: "iOS", by: "Apple" },
+    { key: "md", cls: "md", name: "Material 3", by: "Google" },
+    { key: "fluent", cls: "fl", name: "Fluent 2", by: "Microsoft" },
+    { key: "oneui", cls: "one", name: "One UI", by: "Samsung" }
+  ];
+  // 色の名前と見本は SK's Brand と同じ（toolbox/shared/settings.js の COLORS）
+  var COLORS = [
+    { key: "blue", name: "いつもの青", sw: "#2563eb" },
+    { key: "sakura", name: "さくら", sw: "#db2777" },
+    { key: "matcha", name: "抹茶", sw: "#16a34a" },
+    { key: "mikan", name: "みかん", sw: "#ea580c" },
+    { key: "fuji", name: "藤", sw: "#7c3aed" },
+    { key: "sora", name: "空", sw: "#0891b2" },
+    { key: "sumi", name: "墨", sw: "#334155" }
+  ];
+  var THEMES = [{ key: "auto", name: "自動" }, { key: "light", name: "ライト" }, { key: "dark", name: "ダーク" }];
+  var SECTIONS = [
+    { title: "表示", note: "アプリの色は、Calc・Memo・Todo のボタンや背景の色です。", rows: [
+      { t: "seg", ic: "moon", tile: "#5856d6", label: "テーマ" },
+      { t: "color", ic: "palette", tile: "#ff2d55", label: "アプリの色", sub: "Calc・Memo・Todo のボタンや背景の色" },
+      { t: "switch", id: "motion", ic: "motion", tile: "#32ade6", label: "動きを減らす", sub: "画面の切りかえや波紋を少なくします" }
+    ] },
+    { title: "通知", note: "Clock を開いていないときも、鳴った時刻に知らせます。", rows: [
+      { t: "switch", id: "alarm", ic: "bell", tile: "#ff3b30", label: "アラームとタイマーを通知する", sub: "Clock を開いていないときも、鳴った時刻に知らせます" },
+      { t: "switch", id: "badge", ic: "badge", tile: "#ff9500", label: "アイコンに数字を出す", sub: "期限切れと今日の Todo の数を出します" }
+    ] },
+    { title: "データ", note: "Toolbox のデータは、この端末のブラウザに保存し、オンライン同期で SK Hub Systems アカウントにも保存しています。", rows: [
+      { t: "link", ic: "backup", tile: "#34c759", label: "まとめてバックアップ", sub: "すべてのアプリのデータを 1 つのファイルに" },
+      { t: "link", ic: "globe", tile: "#007aff", label: "言語", val: "日本語" },
+      { t: "danger", ic: "trash", tile: "#ff3b30", label: "Toolbox のデータをすべて消去" }
+    ] }
+  ];
+  var NAV = [{ key: "home", ic: "home", name: "ホーム" }, { key: "apps", ic: "apps", name: "アプリ" }, { key: "settings", ic: "tune", name: "設定" }];
+
+  var NOTES = {
+    ios: {
+      where: "iPhone・iPad",
+      points: [
+        "左寄せの大きな見出し。スクロールすると、上のバーに小さく入る",
+        "角の丸いグループにまとめたリストと、色つきの四角いアイコン",
+        "iOS 26 の Liquid Glass: ボタン・タブバー・お知らせ・ダイアログが、ふちで背景が曲がって見えるガラスに（ふちの光り・内側の光つき）",
+        "上と下は、バーの代わりに中身をぼかして薄くする。下へスクロールするとタブバーが縮み、上へ戻すと広がる",
+        "タブを変えると、選んだ印がしずくのように伸びて移る。スイッチと切りかえは、押しているあいだつまみがガラスのレンズになる",
+        "危ない操作は、真ん中の赤い文字"
+      ],
+      web: ["△", "公式の部品はありません。フォントは system-ui と書けば、iPhone では SF Pro で出ます。アイコン（SF Symbols）は Web では使えません。ガラスのふちが曲がる効果は Chrome・Edge だけで、iPhone の Safari ではふつうのすりガラスになります。"],
+      fit: "使う人がいちばん見慣れているデザインです。ただ、Android の人には「iPhone のまね」に見えるかもしれません。"
+    },
+    md: {
+      where: "Android（Pixel・AQUOS・Xperia など）・Chromebook・Google のアプリ",
+      points: [
+        "いまの SK's Toolbox はこれ（SK's Blue の配色・M PLUS 1）",
+        "色を 1 つ決めると、背景やボタンの色まで自動でそろう（ダイナミックカラー）",
+        "Android 16 からの「Expressive」では、リストを角の丸いかたまりに区切る",
+        "押すと色が重なり、スイッチのつまみにはチェックが出る。選んだ色の丸は角丸の四角に変わる"
+      ],
+      web: ["◎", "部品・アイコン（Material Symbols）・フォント（Roboto）が、すべて無料で使えます。"],
+      fit: "Android・学校の Chromebook・Google Classroom と見た目がそろいます。いまのままでも筋のよいデザインです。"
+    },
+    fluent: {
+      where: "Windows 11・Teams・Outlook・Office",
+      points: [
+        "細い線のアイコンと、小さめの角丸（4〜8px）",
+        "1 行ずつのカードがすきまを空けて並ぶ（Windows 11 の設定アプリと同じ）",
+        "スイッチの横に「オン」「オフ」の文字。大事なボタンだけ色がつく",
+        "もともとパソコン向けなので、文字やすきまは小さめ"
+      ],
+      web: ["○", "部品は無料で使えます（Fluent UI）。フォントの Segoe UI は Windows でしか出ません。"],
+      fit: "パソコンで使う人には落ち着いて見えます。スマホでは、少し事務的な感じになります。"
+    },
+    oneui: {
+      where: "Galaxy",
+      points: [
+        "画面の上 3 分の 1 が大きな見出し。操作は、片手で届く下半分に集める",
+        "とても丸い白いカード、影なし、灰色の背景",
+        "アイコンを出さず、いまの値を色つきの小さな文字で見せる（言語 → 日本語）",
+        "確認のダイアログは画面の下に出て、ボタンは文字だけで左右に分かれる"
+      ],
+      web: ["✕", "公式の部品はありません。フォントの SamsungOne もアイコンも使えないので、似せて一から作ることになります。"],
+      fit: "日本では見慣れている人は少なめです。そのぶん目新しく、スマホを片手で使いやすくなります。"
+    }
+  };
+
+  // 自作の線のアイコン（24×24、線は currentColor）
+  var P = {
+    back: '<path d="M15 5l-7 7 7 7"/>',
+    arrow: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+    chev: '<path d="M9 5l7 7-7 7"/>',
+    search: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>',
+    moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/>',
+    palette: '<path d="M12 3.5a8.5 8.5 0 1 0 0 17c1 0 1.6-.7 1.6-1.5 0-.5-.2-.8-.5-1.1-.3-.3-.4-.6-.4-1 0-.9.7-1.6 1.6-1.6h1.6a4.6 4.6 0 0 0 4.6-4.6C20.5 6.9 16.7 3.5 12 3.5Z"/><circle cx="7.5" cy="11.5" r=".9" fill="currentColor"/><circle cx="10" cy="7.7" r=".9" fill="currentColor"/><circle cx="14.5" cy="7.7" r=".9" fill="currentColor"/>',
+    motion: '<path d="M3 12h3.5l2.5-6 4 12 2.5-6H21"/>',
+    bell: '<path d="M6 10a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 15 6 10Z"/><path d="M10 19.5a2 2 0 0 0 4 0"/>',
+    badge: '<path d="M13 5H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/><circle cx="18" cy="6" r="2.8"/>',
+    backup: '<path d="M7.5 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18.3 9.6 4.2 4.2 0 0 1 17 18"/><path d="M12 19v-7M9 14.5l3-3 3 3"/>',
+    globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.3 2.4 3.5 5.2 3.5 8.5s-1.2 6.1-3.5 8.5c-2.3-2.4-3.5-5.2-3.5-8.5S9.7 5.9 12 3.5Z"/>',
+    trash: '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l.9 12.5h9.2L17.5 7M10 11v5M14 11v5"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    sync: '<path d="M19.5 12a7.5 7.5 0 0 1-13.2 4.9M4.5 12a7.5 7.5 0 0 1 13.2-4.9"/><path d="M17.8 3.5v3.6h-3.6M6.2 20.5v-3.6h3.6"/>',
+    home: '<path d="M4.5 10.5 12 4l7.5 6.5V19a1 1 0 0 1-1 1H15v-5.5H9V20H5.5a1 1 0 0 1-1-1Z"/>',
+    apps: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/>',
+    tune: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>'
+  };
+  // Material 3 だけは Material Symbols（Google の無料アイコン）
+  var MSR = {
+    back: "arrow_back", arrow: "arrow_back", chev: "chevron_right", search: "search", moon: "dark_mode", palette: "palette",
+    motion: "animation", bell: "notifications", badge: "app_badging", backup: "backup", globe: "language", trash: "delete",
+    check: "check", sync: "sync", home: "home", apps: "apps", tune: "settings"
+  };
+  function ic(name, k) {
+    if (k === "md") return '<span class="msr" aria-hidden="true">' + MSR[name] + "</span>";
+    return '<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + P[name] + "</svg>";
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  var SB_ICONS =
+    '<svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx=".8"/><rect x="5" y="5.5" width="3" height="6.5" rx=".8"/><rect x="10" y="3" width="3" height="9" rx=".8"/><rect x="15" y="0" width="3" height="12" rx=".8"/></svg>' +
+    '<svg viewBox="0 0 16 12"><path d="M8 2.2c2.4 0 4.6.9 6.3 2.5l1.2-1.3A10.6 10.6 0 0 0 8 .4 10.6 10.6 0 0 0 .5 3.4l1.2 1.3A9 9 0 0 1 8 2.2Zm0 3.6c1.4 0 2.7.5 3.7 1.4l1.2-1.3A7 7 0 0 0 8 4a7 7 0 0 0-4.9 1.9l1.2 1.3c1-.9 2.3-1.4 3.7-1.4Zm0 3.5c.5 0 1 .2 1.3.5L8 11.2 6.7 9.8c.3-.3.8-.5 1.3-.5Z"/></svg>' +
+    '<svg viewBox="0 0 27 12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".45"/><rect x="2" y="2" width="17" height="8" rx="2"/><path d="M25 4v4c.8-.3 1.3-1.1 1.3-2S25.8 4.3 25 4Z" opacity=".5"/></svg>';
+
+  // ---- 状態（localStorage に覚える。ページを開いたときは URL の # を優先） ----
+  var STORE = "sk_ui_compare";
+  var state = { ui: "md", all: false, theme: "auto", color: "blue", sw: { motion: false, alarm: true, badge: true } };
+  try { var saved = JSON.parse(localStorage.getItem(STORE) || "{}"); Object.keys(saved).forEach(function (k) { if (k in state) state[k] = saved[k]; }); } catch (e) {}
+  (function () {
+    var h = location.hash.slice(1);
+    if (h === "all") state.all = true;
+    else if (UIS.some(function (u) { return u.key === h; })) { state.ui = h; state.all = false; }
+  })();
+  function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
+  function swHex() { var c = COLORS.filter(function (x) { return x.key === state.color; })[0] || COLORS[0]; return c.sw; }
+  function themeIndex() { for (var i = 0; i < THEMES.length; i++) if (THEMES[i].key === state.theme) return i; return 0; }
+
+  // ---- 電話 1 台ぶんの HTML ----
+  function rowHTML(r, k) {
+    var icon = '<span class="row-ic" style="--tile:' + r.tile + '">' + ic(r.ic, k) + "</span>";
+    var text = '<span class="row-text"><span class="row-label">' + esc(r.label) + "</span>" +
+      (r.sub ? '<span class="row-sub">' + esc(r.sub) + "</span>" : "") +
+      (r.val ? '<span class="row-sub-val">' + esc(r.val) + "</span>" : "") + "</span>";
+    if (r.t === "switch") {
+      return '<button type="button" class="row" role="switch" aria-checked="' + !!state.sw[r.id] + '" data-sw="' + r.id + '">' + icon + text +
+        '<span class="row-end"><span class="sw-t" aria-hidden="true"></span><span class="sw" aria-hidden="true"><span class="sw-k">' + (k === "md" ? ic("check", k) : "") + "</span></span></span></button>";
+    }
+    if (r.t === "link") {
+      return '<button type="button" class="row" data-act="link" data-label="' + esc(r.label) + '">' + icon + text +
+        '<span class="row-end">' + (r.val ? '<span class="row-val">' + esc(r.val) + "</span>" : "") + '<span class="row-chev">' + ic("chev", k) + "</span></span></button>";
+    }
+    if (r.t === "danger") return '<button type="button" class="row row--danger" data-act="danger">' + icon + text + "</button>";
+    if (r.t === "seg") {
+      return '<div class="row row--stack">' + icon + text + '<div class="row-body"><div class="seg" role="radiogroup" aria-label="テーマ" style="--i:' + themeIndex() + '"><span class="seg-ind" aria-hidden="true"></span>' +
+        THEMES.map(function (t) {
+          return '<button type="button" class="seg-b" role="radio" aria-checked="' + (state.theme === t.key) + '" data-theme-set="' + t.key + '">' + ic("check", k) + "<span>" + t.name + "</span></button>";
+        }).join("") + "</div></div></div>";
+    }
+    if (r.t === "color") {
+      return '<div class="row row--stack">' + icon + text + '<div class="row-body"><div class="sws" role="radiogroup" aria-label="アプリの色">' +
+        COLORS.map(function (c) {
+          return '<button type="button" class="swt" role="radio" style="--c:' + c.sw + '" aria-checked="' + (state.color === c.key) + '" aria-label="' + c.name + '" title="' + c.name + '" data-color="' + c.key + '">' + ic("check", k) + "</button>";
+        }).join("") + "</div></div></div>";
+    }
+    return "";
+  }
+
+  function phoneHTML(u) {
+    var k = u.key;
+    var groups = SECTIONS.map(function (s) {
+      return '<section class="grp"><h3 class="grp-title">' + s.title + '</h3><div class="list">' + s.rows.map(function (r) { return rowHTML(r, k); }).join("") + "</div>" +
+        (s.note ? '<p class="grp-note">' + esc(s.note) + "</p>" : "") + "</section>";
+    }).join("");
+    var nav = NAV.map(function (n) {
+      return '<button type="button" class="nav-b" data-tab="' + n.key + '"' + (n.key === "settings" ? ' aria-current="page"' : "") + '><span class="nav-ind">' + ic(n.ic, k) + '</span><span class="nav-l">' + n.name + "</span></button>";
+    }).join("");
+    return '<div class="phone ' + u.cls + '" data-ui="' + k + '" style="--sw:' + swHex() + '">' +
+      '<div class="sb" aria-hidden="true"><span>9:41</span><span class="sb-cam"></span><span class="sb-icons">' + SB_ICONS + "</span></div>" +
+      '<div class="scr">' +
+        '<div class="bar"><button type="button" class="ib lg" data-act="back" aria-label="戻る">' + ic(k === "fluent" ? "arrow" : "back", k) + '</button><span class="bar-title">設定</span><button type="button" class="ib" data-act="search" aria-label="検索">' + ic("search", k) + "</button></div>" +
+        '<header class="hero"><h2 class="hero-title">設定</h2><p class="hero-sub">SK\'s Toolbox</p></header>' +
+        '<section class="acct" aria-label="アカウント"><span class="av" aria-hidden="true">S</span><span class="acct-text"><span class="acct-name">SK</span><span class="acct-sub">SK Hub Systems アカウント・同期オン</span></span>' +
+          '<span class="acct-actions"><button type="button" class="btn" data-act="sync">' + ic("sync", k) + "<span>今すぐ同期</span></button></span></section>" +
+        groups +
+        '<p class="foot">SK\'s Toolbox は SK 利用規約・SK プライバシーポリシーのもとで提供しています。</p>' +
+      "</div>" +
+      '<div class="edgeb" aria-hidden="true"></div>' +
+      '<nav class="nav lg" aria-label="タブ"><span class="nav-pill" aria-hidden="true"></span>' + nav + "</nav>" +
+      '<button type="button" class="nav-search lg" data-act="search" aria-label="検索">' + ic("search", k) + "</button>" +
+      '<div class="toast lg" role="status" aria-live="polite"><span class="toast-ic">' + ic("check", k) + '</span><span class="toast-t"></span></div>' +
+      '<div class="dlg-wrap" data-act="scrim" inert><div class="dlg lg" role="alertdialog" aria-modal="true" aria-labelledby="dlg-' + k + '-t" aria-describedby="dlg-' + k + '-m">' +
+        '<span class="dlg-ic">' + ic("trash", k) + "</span>" +
+        '<h3 class="dlg-title" id="dlg-' + k + '-t">Toolbox のデータをすべて消去しますか？</h3>' +
+        '<p class="dlg-msg" id="dlg-' + k + '-m">Clock・Calc・Memo・Todo・Countdown・Timetable・Roulette のデータと、この設定を消去します。元に戻すことはできません。</p>' +
+        '<div class="dlg-acts"><button type="button" class="dbtn" data-act="cancel">キャンセル</button><button type="button" class="dbtn dbtn--danger" data-act="confirm">すべて消去</button></div>' +
+      "</div></div>" +
+      '<div class="hb" aria-hidden="true"></div>' +
+    "</div>";
+  }
+
+  function notesHTML(u) {
+    var n = NOTES[u.key];
+    return '<aside class="notes"><h2>' + u.name + '</h2><p class="by">' + u.by + "</p>" +
+      "<h3>どこで触れている</h3><p>" + n.where + "</p>" +
+      "<h3>特徴（この試作で再現したところ）</h3><ul>" + n.points.map(function (p) { return "<li>" + p + "</li>"; }).join("") + "</ul>" +
+      '<h3>Web で使えるか</h3><div class="web"><b>' + n.web[0] + "</b><p>" + n.web[1] + "</p></div>" +
+      '<h3>SK にとって</h3><p class="fit">' + n.fit + "</p>" +
+      '<p class="disclaimer">どれも似せて作った再現で、Apple・Google・Microsoft・Samsung の本物の部品ではありません。スイッチ・テーマ・アプリの色・消去の確認・今すぐ同期は、さわって動きます。</p></aside>';
+  }
+
+  // ---- 電話の中の操作 ----
+  var toastTimers = new WeakMap();
+  function toast(ph, msg) {
+    var t = $(".toast", ph);
+    $(".toast-t", t).textContent = msg;
+    t.classList.add("is-on");
+    clearTimeout(toastTimers.get(ph));
+    toastTimers.set(ph, setTimeout(function () { t.classList.remove("is-on"); }, 2400));
+  }
+  var lastFocus = null;
+  function openDlg(ph) {
+    var w = $(".dlg-wrap", ph);
+    lastFocus = document.activeElement;
+    w.removeAttribute("inert");
+    w.classList.add("is-on");
+    setTimeout(function () { $('[data-act="cancel"]', w).focus(); }, 30);
+  }
+  function closeDlg(ph) {
+    var w = $(".dlg-wrap", ph);
+    if (!w.classList.contains("is-on")) return;
+    w.classList.remove("is-on");
+    w.setAttribute("inert", "");
+    if (lastFocus && ph.contains(lastFocus)) lastFocus.focus();
+  }
+
+  // ---- Liquid Glass のレンズ（iOS だけ） ----
+  // ガラスの形（角丸の四角）のふちほど、背景を内側から引っぱってくる「ずらし地図」を canvas で作り、
+  // SVG の feDisplacementMap で backdrop-filter にかける。backdrop-filter に SVG を使えるのは Chromium（Chrome・Edge）だけなので、
+  // ほかのブラウザでは CSS のすりガラス（blur）のまま
+  var LENS_OK = (function () {
+    try { return !!(navigator.userAgentData && navigator.userAgentData.brands.some(function (b) { return /Chromium|Google Chrome|Microsoft Edge/.test(b.brand); })); } catch (e) { return false; }
+  })();
+  var NS = "http://www.w3.org/2000/svg", lensDefs = null, lensSeq = 0, lensMaps = {};
+  function lensMap(w, h, r, bez) {
+    var key = w + "x" + h + "x" + r + "x" + bez;
+    if (lensMaps[key]) return lensMaps[key];
+    var c = document.createElement("canvas"); c.width = w; c.height = h;
+    var ctx = c.getContext("2d"), img = ctx.createImageData(w, h), d = img.data, hw = w / 2, hh = h / 2;
+    function sdf(x, y) {
+      var qx = Math.abs(x) - (hw - r), qy = Math.abs(y) - (hh - r), ox = Math.max(qx, 0), oy = Math.max(qy, 0);
+      return Math.sqrt(ox * ox + oy * oy) + Math.min(Math.max(qx, qy), 0) - r;
+    }
+    for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) {
+      var px = x + .5 - hw, py = y + .5 - hh, dist = -sdf(px, py), i = (y * w + x) * 4, dx = 0, dy = 0;
+      if (dist < bez) {
+        var t = 1 - Math.max(dist, 0) / bez, m = t * t;
+        var gx = sdf(px + .5, py) - sdf(px - .5, py), gy = sdf(px, py + .5) - sdf(px, py - .5), gl = Math.sqrt(gx * gx + gy * gy) || 1;
+        dx = -gx / gl * m; dy = -gy / gl * m;
+      }
+      d[i] = 128 + dx * 127; d[i + 1] = 128 + dy * 127; d[i + 2] = 128; d[i + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    return (lensMaps[key] = c.toDataURL());
+  }
+  function lens(el, o) {
+    if (!LENS_OK || !el.isConnected) return;
+    o = o || {};
+    var w = Math.round(el.offsetWidth), h = Math.round(el.offsetHeight);
+    if (w < 4 || h < 4) return;
+    var r = Math.min(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0, w / 2, h / 2);
+    var bez = Math.round(Math.min(o.bezel || 16, Math.min(w, h) / 2));
+    var key = [w, h, r, bez].join(",");
+    if (el._lensKey === key) return;
+    el._lensKey = key;
+    if (!lensDefs) {
+      var svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("aria-hidden", "true");
+      svg.style.cssText = "position:absolute;width:0;height:0;overflow:hidden";
+      lensDefs = document.createElementNS(NS, "defs");
+      svg.appendChild(lensDefs);
+      document.body.appendChild(svg);
+    }
+    var id = el._lensId || (el._lensId = "lg" + (++lensSeq)), f = document.getElementById(id);
+    if (!f) { f = document.createElementNS(NS, "filter"); f.id = id; lensDefs.appendChild(f); }
+    f.setAttribute("filterUnits", "userSpaceOnUse"); f.setAttribute("primitiveUnits", "userSpaceOnUse");
+    f.setAttribute("x", 0); f.setAttribute("y", 0); f.setAttribute("width", w); f.setAttribute("height", h);
+    f.setAttribute("color-interpolation-filters", "sRGB");
+    f.innerHTML =
+      '<feGaussianBlur in="SourceGraphic" stdDeviation="' + (o.blur == null ? 1.5 : o.blur) + '" result="b"/>' +
+      '<feImage href="' + lensMap(w, h, r, bez) + '" x="0" y="0" width="' + w + '" height="' + h + '" preserveAspectRatio="none" result="m"/>' +
+      '<feDisplacementMap in="b" in2="m" scale="' + Math.round(bez * (o.power || 1.7)) + '" xChannelSelector="R" yChannelSelector="G" result="d"/>' +
+      '<feColorMatrix in="d" type="saturate" values="' + (o.sat || 1.7) + '"/>';
+    el.style.backdropFilter = el.style.webkitBackdropFilter = "url(#" + id + ")";
+  }
+  var LENS_OPTS = { nav: { bezel: 22, blur: .6, power: 2.2 }, "nav-search": { bezel: 22, blur: .6, power: 2.2 }, ib: { bezel: 15, blur: .6, power: 2.2 }, toast: { bezel: 14, blur: 4 }, dlg: { bezel: 22, blur: 8 } };
+  function lensOf(el) {
+    for (var k in LENS_OPTS) if (el.classList.contains(k)) return LENS_OPTS[k];
+    return {};
+  }
+  var lensRO = window.ResizeObserver ? new ResizeObserver(function (entries) {
+    entries.forEach(function (en) {
+      var el = en.target;
+      lens(el, lensOf(el));
+      if (el.classList.contains("nav")) placePill(el, true);
+    });
+  }) : null;
+  // instant: タブバーが縮む・広がるあいだは、しずくをばねで動かさずにタブにぴったり付ける
+  function placePill(nav, instant) {
+    var cur = $(".nav-b[aria-current]", nav), pill = $(".nav-pill", nav);
+    if (!cur || !pill) return;
+    if (instant) pill.style.transition = "none";
+    pill.style.left = cur.offsetLeft + "px";
+    pill.style.width = cur.offsetWidth + "px";
+    if (instant) { pill.offsetWidth; pill.style.transition = ""; }
+  }
+  // タブを変えたとき: しずくが伸びながら移り、動いているあいだはレンズ（下のアイコンが大きく見える）
+  function movePill(ph) {
+    var nav = $(".nav", ph), pill = $(".nav-pill", nav);
+    placePill(nav);
+    pill.classList.add("is-moving");
+    pill._lensKey = null;
+    lens(pill, { bezel: 14, blur: 0, power: 2.2, sat: 1.3 });
+    clearTimeout(pill._t);
+    pill._t = setTimeout(function () {
+      pill.classList.remove("is-moving");
+      pill.style.backdropFilter = pill.style.webkitBackdropFilter = "";
+    }, 520);
+  }
+
+  function bind(ph) {
+    var scr = $(".scr", ph), hero = $(".hero", ph), bar = $(".bar", ph), isIOS = ph.classList.contains("ios"), lastY = 0;
+    function onScroll() {
+      var y = scr.scrollTop, th = Math.max(8, hero.offsetTop + hero.offsetHeight - bar.offsetHeight - 24);
+      ph.classList.toggle("is-scrolled", y > th);
+      // iOS 26: 下へスクロールするとタブバーが縮み、上へ戻すと広がる
+      if (isIOS) {
+        if (y > lastY + 6 && y > 80) { ph.classList.add("nav-min"); lastY = y; }
+        else if (y < lastY - 6 || y <= 80) { ph.classList.remove("nav-min"); lastY = y; }
+      }
+    }
+    scr.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    if (isIOS) {
+      placePill($(".nav", ph), true);
+      $(".nav", ph).addEventListener("transitionend", function (e) {
+        if (e.target.classList.contains("nav-b") && e.propertyName === "flex-grow") placePill(this, true);
+      });
+      $$(".lg", ph).forEach(function (el) { lens(el, lensOf(el)); if (lensRO) lensRO.observe(el); });
+      $(".nav", ph).addEventListener("click", function (e) {
+        // 縮んでいるタブバーを押したら広げる
+        if (ph.classList.contains("nav-min")) { ph.classList.remove("nav-min"); lastY = scr.scrollTop; e.stopPropagation(); }
+      }, true);
+    }
+    scr.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    ph.addEventListener("click", function (e) {
+      var t = e.target.closest("button, [data-act]");
+      if (!t || !ph.contains(t)) return;
+      if (t.dataset.sw) { setSwitch(t.dataset.sw, t.getAttribute("aria-checked") !== "true"); return; }
+      if (t.dataset.themeSet) { setTheme(t.dataset.themeSet); return; }
+      if (t.dataset.color) { setColor(t.dataset.color); return; }
+      if (t.dataset.tab) {
+        if (t.hasAttribute("aria-current")) return;
+        $$(".nav-b", ph).forEach(function (b) { if (b === t) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+        if (isIOS) movePill(ph);
+        if (t.dataset.tab !== "settings") toast(ph, "試作なので、設定の画面だけです");
+        return;
+      }
+      switch (t.dataset.act) {
+        case "sync": toast(ph, "同期しました"); break;
+        case "link": toast(ph, "「" + t.dataset.label + "」は試作なので開きません"); break;
+        case "back": case "search": toast(ph, "試作なので、この画面だけです"); break;
+        case "danger": openDlg(ph); break;
+        case "cancel": closeDlg(ph); break;
+        case "confirm": closeDlg(ph); toast(ph, "消去しました（試作なので、実際には消えていません）"); break;
+        case "scrim": if (e.target === t) closeDlg(ph); break;
+      }
+    });
+  }
+
+  // ---- どの電話にも同じように効く設定 ----
+  var mq = matchMedia("(prefers-color-scheme: dark)");
+  function applyTheme() {
+    var dark = state.theme === "dark" || (state.theme === "auto" && mq.matches);
+    document.documentElement.classList.toggle("dark", dark);
+    $$("[data-theme-set]").forEach(function (b) { b.setAttribute("aria-checked", b.dataset.themeSet === state.theme); });
+    $$(".seg").forEach(function (s) { s.style.setProperty("--i", themeIndex()); });
+    $$("#theme-pills button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.theme === state.theme); });
+  }
+  if (mq.addEventListener) mq.addEventListener("change", applyTheme);
+  function setTheme(t) { state.theme = t; save(); applyTheme(); }
+  function setColor(c) {
+    state.color = c; save();
+    var hex = swHex();
+    $$(".phone").forEach(function (ph) { ph.style.setProperty("--sw", hex); });
+    $$("[data-color]").forEach(function (b) { b.setAttribute("aria-checked", b.dataset.color === c); });
+  }
+  function setSwitch(id, v) {
+    state.sw[id] = v; save();
+    $$('[data-sw="' + id + '"]').forEach(function (b) { b.setAttribute("aria-checked", v); });
+  }
+
+  // ---- ページ ----
+  $("#ui-pills").innerHTML = UIS.map(function (u, i) {
+    return '<button type="button" data-ui-set="' + u.key + '" title="キー ' + (i + 1) + '">' + u.name + "<small>" + u.by + "</small></button>";
+  }).join("") + '<button type="button" data-all title="キー A">4 つ並べる</button>';
+  $("#theme-pills").innerHTML = THEMES.map(function (t) { return '<button type="button" data-theme="' + t.key + '">' + t.name + "</button>"; }).join("");
+
+  function render() {
+    var main = $("#main");
+    if (lensRO) lensRO.disconnect();
+    if (lensDefs) lensDefs.innerHTML = "";
+    if (state.all) {
+      main.className = "grid";
+      main.innerHTML = UIS.map(function (u) {
+        return '<figure class="cell"><figcaption class="cap"><b>' + u.name + "</b><span>" + u.by + "</span></figcaption>" + phoneHTML(u) + "</figure>";
+      }).join("");
+    } else {
+      var u = UIS.filter(function (x) { return x.key === state.ui; })[0] || UIS[1];
+      main.className = "stage";
+      main.innerHTML = phoneHTML(u) + notesHTML(u);
+    }
+    $$(".phone", main).forEach(bind);
+    $$("#ui-pills [data-ui-set]").forEach(function (b) { b.setAttribute("aria-pressed", !state.all && b.dataset.uiSet === state.ui); });
+    $("#ui-pills [data-all]").setAttribute("aria-pressed", state.all);
+    try { history.replaceState(null, "", "#" + (state.all ? "all" : state.ui)); } catch (e) {}
+    save();
+    applyTheme();
+  }
+
+  $("#ui-pills").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (!b) return;
+    if (b.hasAttribute("data-all")) state.all = !state.all;
+    else { state.ui = b.dataset.uiSet; state.all = false; }
+    render();
+  });
+  $("#theme-pills").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (b) setTheme(b.dataset.theme);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { $$(".phone").forEach(closeDlg); return; }
+    if (e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
+    var n = parseInt(e.key, 10);
+    if (n >= 1 && n <= UIS.length) { state.ui = UIS[n - 1].key; state.all = false; render(); }
+    else if (e.key === "a" || e.key === "A") { state.all = !state.all; render(); }
+  });
+
+  window.addEventListener("hashchange", function () {
+    var h = location.hash.slice(1);
+    if (h === "all") state.all = true;
+    else if (UIS.some(function (u) { return u.key === h; })) { state.ui = h; state.all = false; }
+    else return;
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
