@@ -1,7 +1,8 @@
 // アカウントを探す（/admin/accounts/）。UID かサポート ID で調べる
-//   見てよいのは、障害・不正利用・本人や管理者からの依頼のときだけ（SK Hub Systems 規約 第六条4）。
-//   そのため出すのは必要最小限（作成日・規約の版・接続しているサービス・端末とリクエストの数・最後の接続）にして、
-//   端末のログインメール・設定・OS などは出さない。調べたら操作の記録（account.view）に残す
+//   見てよいのは、お問い合わせ・障害・不正利用・法令に基づく要請への対応のときだけ（SK Hub Systems アカウント規約 第四条4）。
+//   出すのは、規約で決めたもの: アカウントの情報（作成日・規約の版・接続しているサービス）と表示名、
+//   利用の記録（使ったブラウザのタイムゾーン＝おおまかな地域とサポート ID・最後に使った日時）、そのアカウントからのお問い合わせ。
+//   Y-FILTER. の情報（管理グループ・端末・リクエスト）は出さない（Y-FILTER. からは情報を取らない方針）。調べたら操作の記録（account.view）に残す
 //   ?uid=… / ?sid=… で開くと、すぐに調べる（お問い合わせから来るとき）
 import {
   collection, doc, getDoc, getDocs, limit, orderBy, query, where
@@ -15,7 +16,17 @@ import { SUPPORT_ID, block, isBlocked, unblock } from "/admin/shared/blocklist.j
 
 const SERVICE_LABEL = { yfilter: "Y-FILTER.", malu: "MALU", nagi: "Nagi" };
 const KIND = { bug: "不具合", question: "質問", request: "要望", data: "データ", other: "その他" };
-const ONLINE_MS = 15 * 60 * 1000;
+// タイムゾーン → おおまかな地域（よくあるものだけ。ほかは大陸の名前）
+const TZ_REGION = {
+  "Asia/Tokyo": "日本", "Asia/Seoul": "韓国", "Asia/Shanghai": "中国", "Asia/Chongqing": "中国", "Asia/Harbin": "中国", "Asia/Urumqi": "中国",
+  "Asia/Taipei": "台湾", "Asia/Hong_Kong": "香港", "Asia/Macau": "マカオ", "Asia/Singapore": "シンガポール", "Asia/Bangkok": "タイ",
+  "Asia/Ho_Chi_Minh": "ベトナム", "Asia/Manila": "フィリピン", "Asia/Jakarta": "インドネシア", "Asia/Kolkata": "インド", "Asia/Calcutta": "インド",
+  "Europe/London": "英国", "Europe/Paris": "フランス", "Europe/Berlin": "ドイツ", "Australia/Sydney": "オーストラリア", "Pacific/Auckland": "ニュージーランド",
+  "Pacific/Honolulu": "米国（ハワイ）", "America/New_York": "米国（東部）", "America/Chicago": "米国（中部）", "America/Denver": "米国（山岳部）",
+  "America/Los_Angeles": "米国（西部）", "America/Toronto": "カナダ", "America/Vancouver": "カナダ", "America/Sao_Paulo": "ブラジル"
+};
+const CONTINENT = { Asia: "アジア", Europe: "ヨーロッパ", America: "南北アメリカ", Africa: "アフリカ", Australia: "オセアニア", Pacific: "太平洋", Atlantic: "大西洋", Indian: "インド洋" };
+const regionOf = (tz) => (!tz ? "分かりません" : TZ_REGION[tz] || CONTINENT[tz.split("/")[0]] || "分かりません");
 
 const root = $("[data-page]");
 const form = el("form", "ad-search");
@@ -32,7 +43,7 @@ const result = el("div", "ad-stack");
 const recent = el("div");
 
 root.append(
-  note("アカウントの中身を見るのは、障害・不正利用・本人や管理者からの依頼のときだけです（SK Hub Systems 規約 第六条4）。調べると操作の記録に残ります。", "warn", "policy"),
+  note("アカウントを確かめるのは、お問い合わせ・障害・不正利用・法令に基づく要請への対応のときだけです（SK Hub Systems アカウント規約 第四条4）。調べると操作の記録に残ります。Y-FILTER. の情報は出しません。", "warn", "policy"),
   form, result, card("person_add", "最近できたアカウント", recent)
 );
 
@@ -72,12 +83,14 @@ async function showAccount(uid) {
 
   // アカウント
   const acctBody = el("div", "ad-stack");
+  let seen = null;
   try {
     const snap = await getDoc(doc(db, "accounts", uid));
     if (!snap.exists()) {
       acctBody.append(note("この UID のアカウントはありません（作っていないか、削除されています）。"));
     } else {
       const a = snap.data();
+      seen = a.seen || null;
       const services = Object.keys(a.services || {}).filter((k) => SERVICE_LABEL[k]);
       const terms = el("span", "ad-row");
       terms.append(document.createTextNode(`${a.termsVersion || "-"}（${fmtDate(a.termsAgreedAt)} に同意）`), a.termsVersion === ACCOUNT_TERMS_VERSION ? badge("最新", "ok") : badge("同意し直しが必要", "warn"));
@@ -97,44 +110,31 @@ async function showAccount(uid) {
   }
   parts.push(card("account_circle", "アカウント", head, acctBody));
 
-  // Y-FILTER.（管理グループ・端末・リクエスト）
-  const yf = el("div", "ad-stack");
-  try {
-    const [team, memberOf, devices, requests] = await Promise.all([
-      getDoc(doc(db, "teams", uid)),
-      getDocs(query(collection(db, "teams"), where("members", "array-contains", uid))),
-      getDocs(query(collection(db, "devices"), where("ownerUid", "==", uid))),
-      getDocs(query(collection(db, "requests"), where("ownerUid", "==", uid)))
-    ]);
-    const others = memberOf.docs.filter((d) => d.id !== uid);
-    const pending = requests.docs.filter((d) => d.data().status === "pending").length;
-    const now = Date.now();
-    yf.append(dl(
-      row("管理グループ", team.exists() ? `持ち主（メンバー ${num((team.data().members || []).length)} 人）` : "持っていない"),
-      row("共同管理者として", others.length ? `${num(others.length)} グループ` : "なし"),
-      row("端末", `${num(devices.size)} 台（いまオンライン ${num(devices.docs.filter((d) => now - (toMillis(d.data().reported && d.data().reported.lastSeenAt) || 0) < ONLINE_MS).length)} 台）`),
-      row("リクエスト", `${num(requests.size)} 件（未処理 ${num(pending)} 件）`)
+  // 利用の記録（タイムゾーン・サポート ID）
+  const usage = el("div", "ad-stack");
+  if (seen) {
+    usage.append(dl(
+      row("おおまかな地域", `${regionOf(seen.tz)}${seen.tz ? `（${seen.tz}）` : ""}`),
+      row("最後に使った", seen.at ? `${fmtDateTime(seen.at)}（${fmtAgo(seen.at)}）` : "-")
     ));
-    if (devices.size) {
+    const ids = Array.isArray(seen.ids) ? seen.ids : [];
+    if (!ids.length) usage.append(el("p", "ad-hint", "サポート ID はありません（アクセスチェックに同意していないブラウザで使っています）。"));
+    else {
       const list = el("ul", "ad-list");
-      devices.docs
-        .map((d) => d.data())
-        .sort((x, y) => (toMillis(y.reported && y.reported.lastSeenAt) || 0) - (toMillis(x.reported && x.reported.lastSeenAt) || 0))
-        .forEach((d) => {
-          const seen = toMillis(d.reported && d.reported.lastSeenAt);
-          list.append(listItem({
-            iconName: d.mode === "personal" ? "person" : "computer",
-            title: d.name || "（名前なし）",
-            sub: `${d.mode === "personal" ? "自分の端末" : "管理する端末"}・つないだ日 ${fmtDate(d.pairedAt)}`,
-            end: seen ? (now - seen < ONLINE_MS ? badge("オンライン", "ok") : badge(`最後 ${fmtAgo(seen)}`)) : badge("報告なし")
-          }));
-        });
-      yf.append(list);
+      ids.forEach((sid, i) => {
+        const end = badge("…");
+        const li = listItem({ iconName: "fingerprint", title: sid, sub: i === 0 ? "いちばん新しく使ったブラウザ" : "", end, href: `?sid=${encodeURIComponent(sid)}` });
+        li.querySelector(".ad-li__title").classList.add("ad-mono");
+        li.addEventListener("click", (e) => { e.preventDefault(); input.value = sid; form.requestSubmit(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+        isBlocked(sid).then((b) => end.replaceWith(b ? badge("制限中", "error") : badge("制限なし", "ok")), () => end.replaceWith(badge("-")));
+        list.append(li);
+      });
+      usage.append(list, el("p", "ad-hint", "サポート ID を選ぶと、そのブラウザのアクセスの記録と、アクセスの制限を見られます。"));
     }
-  } catch (err) {
-    yf.append(errorNote(err));
+  } else {
+    usage.append(note("まだ利用の記録はありません（新しい規約に同意したあとにログインすると、記録されます）。"));
   }
-  parts.push(card("shield", "Y-FILTER.", yf));
+  parts.push(card("travel_explore", "利用の記録", usage));
 
   // お問い合わせ
   const contacts = el("ul", "ad-list");

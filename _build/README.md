@@ -82,7 +82,7 @@ URL は変えずに、`/lang/` で選んだ言語でページを訳して表示�
 | お知らせを送る（`/admin/notices/`） | アカウントのお知らせ（`accounts/{UID}/notices`）を 1 人・全員・サービスごとに送る |
 | 記事エディター（`/admin/articles/`） | 前の `/studio/` |
 | メンテナンスの告知（`/admin/maintenance/`） | `config/maintenance`。sk-hub.jp の各ページの上の帯か、ページを閉じた「ただいまメンテナンス中です」の画面（`/assets/maintenance.js`）になる |
-| アカウントを探す（`/admin/accounts/`） | UID かサポート ID で調べる（必要最小限だけ出す。調べると記録に残る） |
+| アカウントを探す（`/admin/accounts/`） | UID かサポート ID で調べる。出すのはアカウント規約 第四条4 で決めたものだけ（アカウントの情報・表示名・利用の記録＝おおまかな地域とサポート ID・お問い合わせ）。Y-FILTER. の情報は出さない。調べると記録に残る |
 | アクセスの制限（`/admin/access/`） | `hub_blocklist` の追加・解除と、`hub_access_logs` を見る |
 | SK Share（`/admin/share/`） | 前の `/view/editor/`。配る URL は sk-hub.jp/view/ |
 | 試作品のファイル（`/admin/files/`） | `_mockups/` を GitHub API と jsDelivr で読む。HTML は管理画面から切り離した iframe でプレビュー |
