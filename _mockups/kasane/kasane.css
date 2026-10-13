@@ -1,0 +1,264 @@
+/* かさね — tokens.json から作った CSS。元はデザインシステム「かさね」の tokens.json と components/bundle.css。ここは手で直さず、元を直して作り直す */
+:root {
+  --ground: #eff0ec;
+  --surface: #fbfbf9;
+  --surface-sunk: #e5e6e0;
+  --line: #d5d6cf;
+  --line-strong: #80827b;
+  --ink: #1a1c20;
+  --ink-muted: #575a61;
+  --accent: var(--omote-blue);
+  --on-accent: #ffffff;
+  --accent-text: #1d4ed8;
+  --ura: var(--ura-blue);
+  --danger: #b42318;
+  --danger-text: #b42318;
+  --ura-danger: #f1a399;
+  --success: #1f7a4d;
+  --scrim: rgba(17, 19, 23, 0.48);
+  --omote-blue: #2563eb;
+  --ura-blue: #e9a23b;
+  --omote-sakura: #be185d;
+  --ura-sakura: #f4a3c0;
+  --omote-matcha: #15803d;
+  --ura-matcha: #6d28d9;
+  --omote-mikan: #c2410c;
+  --ura-mikan: #8a1c1c;
+  --omote-fuji: #7c3aed;
+  --ura-fuji: #8fbf3a;
+  --omote-sora: #0e7490;
+  --ura-sora: #9fd8e4;
+  --omote-sumi: #334155;
+  --ura-sumi: #d9481e;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+  --layer-1: 3px;
+  --layer-2: 6px;
+  --font-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-sans: "Zen Kaku Gothic New", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-mono: "M PLUS 1 Code", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #111317;
+    --surface: #1b1e24;
+    --surface-sunk: #0c0d10;
+    --line: #30343c;
+    --line-strong: #6c727e;
+    --ink: #ecece6;
+    --ink-muted: #a5a9b1;
+    --accent-text: #8db0ff;
+    --danger-text: #ff8f80;
+    --ura-danger: #6e1a12;
+    --success: #6fd3a0;
+    --scrim: rgba(0, 0, 0, 0.6);
+    --ura-matcha: #a78bfa;
+    --ura-mikan: #f87171;
+    --omote-sumi: #475569;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"], .dark {
+  --ground: #111317;
+  --surface: #1b1e24;
+  --surface-sunk: #0c0d10;
+  --line: #30343c;
+  --line-strong: #6c727e;
+  --ink: #ecece6;
+  --ink-muted: #a5a9b1;
+  --accent-text: #8db0ff;
+  --danger-text: #ff8f80;
+  --ura-danger: #6e1a12;
+  --success: #6fd3a0;
+  --scrim: rgba(0, 0, 0, 0.6);
+  --ura-matcha: #a78bfa;
+  --ura-mikan: #f87171;
+  --omote-sumi: #475569;
+  color-scheme: dark;
+}
+
+
+/* かさね — 部品のスタイル。色・文字・余白・角丸・重ねの長さは tokens.css から読む */
+
+/* 色目（data-kasane）: 表を accent、裏を ura にする */
+[data-kasane="blue"] { --accent: var(--omote-blue); --ura: var(--ura-blue); }
+[data-kasane="sakura"] { --accent: var(--omote-sakura); --ura: var(--ura-sakura); }
+[data-kasane="matcha"] { --accent: var(--omote-matcha); --ura: var(--ura-matcha); }
+[data-kasane="mikan"] { --accent: var(--omote-mikan); --ura: var(--ura-mikan); }
+[data-kasane="fuji"] { --accent: var(--omote-fuji); --ura: var(--ura-fuji); }
+[data-kasane="sora"] { --accent: var(--omote-sora); --ura: var(--ura-sora); }
+[data-kasane="sumi"] { --accent: var(--omote-sumi); --ura: var(--ura-sumi); }
+[data-kasane]:not([data-kasane="blue"]) { --accent-text: color-mix(in oklab, var(--accent) 85%, #000); }
+[data-theme="dark"] [data-kasane]:not([data-kasane="blue"]),
+[data-theme="dark"][data-kasane]:not([data-kasane="blue"]),
+.dark [data-kasane]:not([data-kasane="blue"]),
+.dark[data-kasane]:not([data-kasane="blue"]) { --accent-text: color-mix(in oklab, var(--accent) 45%, #fff); }
+
+/* 重ね: 影の代わりに、下の面がふちからのぞく */
+:root, [data-kasane] {
+  --accent-soft: color-mix(in oklab, var(--accent) 12%, var(--surface));
+  --hitoe: 0 var(--layer-1) 0 0 var(--line);
+  --ura-edge: 0 var(--layer-1) 0 0 var(--ura);
+  --futae: 0 var(--layer-1) 0 0 var(--ura), 0 var(--layer-2) 0 0 var(--accent);
+  --ks-press: 90ms;
+  --ks-move: 220ms;
+  --ks-ease: cubic-bezier(.3, .7, .2, 1);
+}
+
+.ks { background: var(--ground); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+.ks :focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+.ks-icon { width: 22px; height: 22px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ボタン: 押すと上の面が下の面に重なる（沈む） */
+.ks-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 44px; padding: 0 var(--space-5); border: 0; border-radius: var(--radius-md);
+  font: 700 15px/1 var(--font-sans); letter-spacing: .02em; white-space: nowrap; cursor: pointer;
+  transition: transform var(--ks-press) var(--ks-ease), box-shadow var(--ks-press) var(--ks-ease), background-color var(--ks-move);
+}
+.ks-btn .ks-icon { width: 20px; height: 20px; stroke-width: 2; }
+.ks-btn--primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--ura-edge); }
+.ks-btn--primary:active { transform: translateY(var(--layer-1)); box-shadow: 0 0 0 0 var(--ura); }
+.ks-btn--secondary { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line-strong), 0 var(--layer-1) 0 0 var(--line-strong); }
+.ks-btn--secondary:active { transform: translateY(var(--layer-1)); box-shadow: inset 0 0 0 1.5px var(--line-strong), 0 0 0 0 var(--line-strong); }
+.ks-btn--ghost { background: transparent; color: var(--accent-text); padding: 0 var(--space-3); }
+.ks-btn--ghost:hover { background: var(--accent-soft); }
+.ks-btn--ghost:active { background: var(--surface-sunk); }
+.ks-btn--danger { background: var(--danger); color: var(--on-accent); box-shadow: 0 var(--layer-1) 0 0 var(--ura-danger); }
+.ks-btn--danger:active { transform: translateY(var(--layer-1)); box-shadow: 0 0 0 0 var(--ura-danger); }
+.ks-btn--sm { min-height: 36px; padding: 0 var(--space-4); font-size: 14px; }
+.ks-btn--block { display: flex; width: 100%; }
+
+/* スイッチ: オンになると裏がのぞく */
+.ks-switch {
+  position: relative; flex: none; width: 52px; height: 30px; padding: 0; border: 0; border-radius: var(--radius-full);
+  background: var(--surface-sunk); box-shadow: inset 0 0 0 1.5px var(--line-strong); cursor: pointer;
+  transition: background-color var(--ks-move), box-shadow var(--ks-move);
+}
+.ks-switch-knob {
+  position: absolute; top: 5px; left: 5px; width: 20px; height: 20px; border-radius: 50%; background: var(--ink-muted);
+  transition: transform var(--ks-move) var(--ks-ease), background-color var(--ks-move);
+}
+.ks-switch[aria-checked="true"] { background: var(--accent); box-shadow: var(--ura-edge); }
+.ks-switch[aria-checked="true"] .ks-switch-knob { transform: translateX(22px); background: var(--on-accent); }
+
+/* 切りかえ: 選んだところにだけ裏がのぞく */
+.ks-seg { display: flex; gap: 4px; padding: 4px; border-radius: var(--radius-md); background: var(--surface-sunk); }
+.ks-seg > button {
+  flex: 1; min-width: 0; min-height: 36px; padding: 0 var(--space-2); border: 0; border-radius: 7px; background: none;
+  font: 500 14px/1 var(--font-sans); color: var(--ink-muted); cursor: pointer; white-space: nowrap;
+  transition: background-color var(--ks-move), color var(--ks-move), box-shadow var(--ks-move);
+}
+.ks-seg > button[aria-checked="true"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 2px 0 0 var(--ura); }
+
+/* リスト */
+.ks-list-title { margin: 0 var(--space-4) var(--space-2); font: 700 13px/1.4 var(--font-sans); letter-spacing: .08em; color: var(--ink-muted); }
+.ks-list { margin: 0; padding: 0; list-style: none; border-radius: var(--radius-lg); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line), var(--hitoe); }
+.ks-list-note { margin: calc(var(--space-2) + var(--layer-1)) var(--space-4) 0; font: 400 13px/1.55 var(--font-sans); color: var(--ink-muted); }
+.ks-row {
+  position: relative; display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: 56px;
+  padding: var(--space-3) var(--space-4); border: 0; background: none; color: inherit; font: inherit; text-align: left;
+}
+.ks-row:first-child { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+.ks-row:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.ks-row:only-child { border-radius: var(--radius-lg); }
+.ks-row + .ks-row::before { content: ""; position: absolute; top: 0; left: 60px; right: 0; border-top: 1px solid var(--line); }
+button.ks-row, a.ks-row { cursor: pointer; text-decoration: none; transition: background-color var(--ks-press); }
+button.ks-row:active, a.ks-row:active { background: var(--surface-sunk); }
+.ks-tile { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--accent-text); }
+.ks-tile .ks-icon { width: 19px; height: 19px; }
+.ks-row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ks-row-label { font: 500 15px/1.45 var(--font-sans); }
+.ks-row-sub { font: 400 13px/1.55 var(--font-sans); color: var(--ink-muted); }
+.ks-row-end { display: flex; align-items: center; gap: var(--space-1); flex: none; font-size: 14px; color: var(--ink-muted); }
+.ks-row-end .ks-icon { width: 18px; height: 18px; }
+.ks-row--danger .ks-row-label { color: var(--danger-text); font-weight: 700; }
+.ks-row--danger .ks-tile { background: color-mix(in oklab, var(--danger) 12%, var(--surface)); color: var(--danger-text); }
+
+/* カード */
+.ks-card { padding: var(--space-4); border-radius: var(--radius-lg); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line), var(--hitoe); }
+.ks-card--raised { box-shadow: inset 0 0 0 1px var(--line), var(--futae); }
+
+/* 入力欄: 打っているあいだ、裏がのぞく */
+.ks-field { display: flex; flex-direction: column; gap: 6px; }
+.ks-field-label { font: 700 13px/1.4 var(--font-sans); color: var(--ink); }
+.ks-input {
+  min-height: 44px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-sm); background: var(--surface); color: var(--ink);
+  font: 400 16px/1.5 var(--font-sans); box-shadow: inset 0 0 0 1.5px var(--line-strong); transition: box-shadow var(--ks-move);
+}
+.ks-input::placeholder { color: var(--ink-muted); }
+.ks .ks-input:focus-visible, .ks-input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--accent-text), var(--ura-edge); }
+.ks-field-help { font: 400 13px/1.55 var(--font-sans); color: var(--ink-muted); }
+.ks-field[data-invalid] .ks-input { box-shadow: inset 0 0 0 2px var(--danger-text), 0 var(--layer-1) 0 0 var(--ura-danger); }
+.ks-field[data-invalid] .ks-field-help { color: var(--danger-text); }
+
+/* チップ */
+.ks-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.ks-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-full);
+  background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong); font: 500 14px/1 var(--font-sans); cursor: pointer;
+  transition: background-color var(--ks-move), box-shadow var(--ks-move), color var(--ks-move);
+}
+.ks-chip[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-text); font-weight: 700; box-shadow: inset 0 0 0 1.5px var(--accent-text), 0 2px 0 0 var(--ura); }
+
+/* 上のバーと見出し: 見出しは明朝、下に帯（表と裏の 2 本） */
+.ks-topbar { display: flex; align-items: center; gap: var(--space-1); min-height: 56px; padding: 0 var(--space-2); }
+.ks-topbar-title { flex: 1; min-width: 0; font: 700 17px/1.3 var(--font-sans); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ks-iconbtn { display: grid; place-items: center; flex: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-md); background: none; color: var(--ink); cursor: pointer; }
+.ks-iconbtn:active { background: var(--surface-sunk); }
+.ks-headline { padding: var(--space-2) var(--space-4) var(--space-5); }
+.ks-eyebrow { margin: 0 0 4px; font: 700 13px/1.4 var(--font-sans); letter-spacing: .12em; color: var(--ink-muted); }
+.ks-title { margin: 0; font: 700 34px/1.25 var(--font-display); letter-spacing: .04em; text-wrap: balance; }
+.ks-title::after { content: ""; display: block; width: 32px; height: 3px; margin-top: 12px; border-radius: 2px; background: var(--accent); box-shadow: 0 3px 0 0 var(--ura); }
+
+/* 下のタブ: 選んだタブの上に帯 */
+.ks-tabbar { display: flex; padding: 0 var(--space-2) env(safe-area-inset-bottom, 0px); background: var(--surface); box-shadow: inset 0 1px 0 var(--line); }
+.ks-tab {
+  position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  min-height: 60px; padding: 6px 0 0; border: 0; background: none; color: var(--ink-muted); font: 500 12px/1.2 var(--font-sans); cursor: pointer;
+}
+.ks-tab::before { content: ""; position: absolute; top: 0; left: 50%; width: 28px; height: 3px; margin-left: -14px; border-radius: 0 0 2px 2px; background: transparent; transition: background-color var(--ks-move), box-shadow var(--ks-move); }
+.ks-tab[aria-current="page"] { color: var(--accent-text); font-weight: 700; }
+.ks-tab[aria-current="page"]::before { background: var(--accent); box-shadow: 0 3px 0 0 var(--ura); }
+
+/* ダイアログ: いちばん上に出るので二重 */
+.ks-scrim { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: var(--space-4); background: var(--scrim); }
+.ks-dialog { width: min(100%, 360px); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line), var(--futae); }
+.ks-dialog[data-tone="danger"] { box-shadow: inset 0 0 0 1px var(--line), 0 var(--layer-1) 0 0 var(--ura-danger), 0 var(--layer-2) 0 0 var(--danger); }
+.ks-dialog-title { margin: 0 0 var(--space-2); font: 700 20px/1.4 var(--font-display); letter-spacing: .02em; }
+.ks-dialog-body { margin: 0; font: 400 15px/1.75 var(--font-sans); color: var(--ink-muted); }
+.ks-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-5); }
+
+/* お知らせ: 墨の面に裏がのぞく */
+.ks-toast { display: inline-flex; align-items: center; gap: var(--space-2); max-width: 100%; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--ink); color: var(--surface); font: 500 14px/1.45 var(--font-sans); box-shadow: var(--ura-edge); }
+.ks-toast .ks-icon { width: 20px; height: 20px; stroke-width: 2.2; }
+
+/* 色目の見本: 表の丸の下に裏がのぞく */
+.ks-swatches { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-3); padding-bottom: 4px; }
+.ks-swatch {
+  position: relative; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
+  background: var(--accent); color: var(--on-accent); box-shadow: 0 4px 0 0 var(--ura); cursor: pointer; transition: transform var(--ks-press) var(--ks-ease), box-shadow var(--ks-press) var(--ks-ease);
+}
+.ks-swatch:active { transform: translateY(4px); box-shadow: 0 0 0 0 var(--ura); }
+.ks-swatch .ks-icon { width: 20px; height: 20px; stroke-width: 2.6; opacity: 0; }
+.ks-swatch[aria-checked="true"] { outline: 2px solid var(--ink); outline-offset: 3px; }
+.ks-swatch[aria-checked="true"] .ks-icon { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  [class^="ks-"], [class*=" ks-"], .ks-title::after, .ks-tab::before { transition: none !important; }
+  .ks-btn:active, .ks-swatch:active { transform: none; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) [data-kasane]:not([data-kasane="blue"]) { --accent-text: color-mix(in oklab, var(--accent) 45%, #fff); }
+}

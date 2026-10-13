@@ -6,16 +6,17 @@
 <meta name="robots" content="noindex">
 <title>UI のくらべっこ</title>
 <!--
-  SK's Toolbox の設定画面を、iOS・Material 3・Fluent 2・One UI の 4 つのデザインで再現した試作。配信しない（_ で始まるフォルダなので GitHub Pages には出ない）
-  どれも「似せて作った」もので、Apple・Google・Microsoft・Samsung の本物の部品ではない。
+  SK's Toolbox の設定画面を、iOS・Material 3・Fluent 2・One UI・HyperOS・デジタル庁デザインシステム・Toss・WeUI・shadcn/ui の 9 つのデザインと、SK オリジナルの「かさね」で再現した試作。配信しない（_ で始まるフォルダなので GitHub Pages には出ない）
+  どれも「似せて作った」もので、各社・デジタル庁の本物の部品ではない。
   アイコンは Material 3 だけ Material Symbols（無料で使える）、ほかは自作の線のアイコン（SF Symbols・One UI のアイコンは Web では使えないため）
   動くところ: スイッチ・テーマ（ページ全体が切りかわる）・アプリの色・消去の確認ダイアログ・同期のお知らせ・スクロールで縮む見出し
-  URL の #ios #md #fluent #oneui #all で開く画面を選べる。キーボードの 1〜4 で切りかえ、A で 4 つ並べる
+  URL の #ios #md #fluent #oneui #hyper #dads #toss #weui #shad #kasane #all で開く画面を選べる。キーボードの 1〜9 と 0 で切りかえ、A でぜんぶ並べる
   ローカルで見る: python3 -m http.server 8765 → http://localhost:8765/_mockups/ui-compare/
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Shippori+Mincho+B1:wght@700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=M+PLUS+1:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-jp-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block">
 <script>(function(){try{var s=JSON.parse(localStorage.getItem("sk_ui_compare")||"{}"),t=s.theme;if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark");}catch(e){if(matchMedia("(prefers-color-scheme: dark)").matches)document.documentElement.classList.add("dark");}})();</script>
 <style>
@@ -124,7 +125,7 @@
   .sw-k { position: absolute; display: grid; place-items: center; }
   .sw-t { display: none; }
   .seg { display: flex; }
-  .seg-ind, .nav-pill, .nav-search, .edgeb { display: none; }
+  .seg-ind, .nav-pill, .nav-search, .edgeb, .bar-brand, .ib-l, .ib-menu, .crumbs, .hero-lead, .hero-search, .capsule { display: none; }
   .seg-b { display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
   .seg-b .i, .seg-b .msr { display: none; }
   .sws { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
@@ -513,6 +514,534 @@
   .one .dbtn + .dbtn::before { content: ""; position: absolute; left: 0; top: 19px; bottom: 19px; width: 1px; background: var(--line); }
   .one .dbtn--danger { color: var(--danger); }
 
+  /* ===== デジタル庁デザインシステム（日本） =====
+     だれでも読めること・使えることがいちばん。文字は 16px 以上・行間 1.7、オン・オフはチェックボックス、選ぶものはラジオボタン、
+     リンクは下線つきの文字、キーボードの位置は黒と黄色の太い枠。下のタブバーはなく、ヘッダー（検索・メニュー）とパンくずリストで場所を示す。
+     ダークテーマはデザインシステムにないので、この試作で足したもの */
+  .dads {
+    --sbh: 40px; --font: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+    --bg: #ffffff; --surface: #ffffff; --ink: #1a1a1c; --sub: #626264; --line: #d8d8db; --edge: #767678;
+    --accent: color-mix(in srgb, var(--sw) 72%, #000); --accent-soft: color-mix(in srgb, var(--sw) 9%, #fff);
+    --danger: #ec0000; --ok: #197a4b; --focus: #ffd43d;
+    border-radius: 40px;
+  }
+  .dads[data-c="blue"] { --accent: #0017c1; --accent-soft: #e8f1fe; }
+  .dark .dads {
+    --bg: #1a1a1c; --surface: #1a1a1c; --ink: #f2f2f2; --sub: #b4b4b7; --line: #3d3d40; --edge: #9e9ea2;
+    --accent: color-mix(in srgb, var(--sw) 45%, #fff); --accent-soft: color-mix(in srgb, var(--sw) 20%, #1a1a1c);
+    --danger: #ff7b7b; --ok: #5fd39a;
+  }
+  .dark .dads[data-c="blue"] { --accent: #9db7f9; --accent-soft: #1b2557; }
+  .dads button:focus-visible, .dads a:focus-visible { outline: 4px solid var(--ink); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus); border-radius: 4px; }
+  .dads .sb { padding: 0 24px; font-size: 14px; font-weight: 500; }
+  .dads .sb-cam, .toss .sb-cam { top: 13px; width: 13px; height: 13px; margin-left: -6.5px; }
+  .dads .bar { min-height: calc(var(--sbh) + 64px); padding: var(--sbh) 4px 0 16px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .dads [data-act="back"], .dads .bar-title { display: none; }
+  .dads .bar-brand { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; font-size: 18px; font-weight: 700; }
+  .dads .bar-brand::before { content: ""; width: 26px; height: 26px; border-radius: 6px; background: var(--accent); flex: none; }
+  .dads .ib { width: 56px; height: 56px; border-radius: 8px; flex-direction: column; gap: 0; display: flex; align-items: center; justify-content: center; }
+  .dads .ib:hover { background: var(--accent-soft); }
+  .dads .ib .i { width: 24px; height: 24px; stroke-width: 2; }
+  .dads .ib-l { display: block; font-size: 11px; font-weight: 700; line-height: 1.3; }
+  .dads .ib-menu { display: flex; }
+  .dads .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 16px 16px 0; font-size: 14px; line-height: 1.7; color: var(--sub); }
+  .dads .crumbs a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .dads .crumbs i { font-style: normal; }
+  .dads .hero { padding: 16px 16px 8px; }
+  .dads .hero-title { font-size: 32px; font-weight: 700; line-height: 1.5; letter-spacing: .02em; }
+  .dads .hero-lead { display: block; margin-top: 8px; font-size: 16px; line-height: 1.7; color: var(--sub); }
+  .dads .acct { margin: 16px 16px 0; padding: 24px 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+  .dads .av { width: 48px; height: 48px; font-size: 20px; font-weight: 700; background: var(--accent-soft); color: var(--accent); }
+  .dads .acct-name { font-size: 20px; font-weight: 700; line-height: 1.5; }
+  .dads .acct-sub { font-size: 16px; line-height: 1.7; color: var(--sub); }
+  .dads .btn { width: 100%; min-height: 56px; padding: 0 24px; gap: 8px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; }
+  .dark .dads .btn { color: #1a1a1c; }
+  .dads .btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .dads .btn .i { width: 22px; height: 22px; stroke-width: 2.2; }
+  .dads .grp { margin: 40px 16px 0; }
+  .dads .grp-title { margin: 0 0 12px; font-size: 24px; font-weight: 700; line-height: 1.5; }
+  .dads .list { border-top: 1px solid var(--line); }
+  .dads .row { min-height: 64px; padding: 16px 0; gap: 14px; align-items: flex-start; border-bottom: 1px solid var(--line); }
+  .dads .row-ic { display: none; }
+  .dads .row-label { font-size: 16px; line-height: 1.7; }
+  .dads .row-sub { display: block; font-size: 16px; line-height: 1.7; color: var(--sub); }
+  .dads .row-end { order: -1; margin-top: 1px; }
+  .dads button.row[data-act="link"] .row-end { order: 0; align-self: center; }
+  .dads button.row[data-act="link"] .row-label { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .dads button.row[data-act="link"]:hover .row-label { text-decoration-thickness: 3px; }
+  .dads .row-val { font-size: 16px; color: var(--sub); }
+  .dads .row-chev { color: var(--accent); }
+  .dads .row-chev .i { width: 20px; height: 20px; stroke-width: 2.4; }
+  .dads .sw { width: 28px; height: 28px; border: 2px solid var(--edge); border-radius: 6px; background: var(--surface); }
+  .dads .sw-k { inset: 0; }
+  .dads [aria-checked="true"] .sw { background: var(--accent); border-color: var(--accent); }
+  .dads [aria-checked="true"] .sw-k::after { content: ""; width: 12px; height: 7px; margin-top: -3px; border-left: 3px solid var(--surface); border-bottom: 3px solid var(--surface); transform: rotate(-45deg); }
+  .dads .seg { flex-direction: column; gap: 4px; margin-top: 8px; }
+  .dads .seg-b { justify-content: flex-start; gap: 12px; min-height: 44px; font-size: 16px; }
+  .dads .seg-b::before { content: ""; flex: none; width: 28px; height: 28px; border: 2px solid var(--edge); border-radius: 50%; background: var(--surface); box-sizing: border-box; }
+  .dads .seg-b[aria-checked="true"]::before { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 5px var(--surface); }
+  .dads .row--stack .row-end { display: none; }
+  .dads .sws { gap: 32px 24px; margin: 12px 0 24px; }
+  .dads .swt { width: 44px; height: 44px; border-radius: 8px; }
+  .dads .swt::after { content: attr(title); position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); font-size: 13px; line-height: 1.4; color: var(--ink); white-space: nowrap; }
+  .dads .swt[aria-checked="true"] { box-shadow: 0 0 0 3px var(--surface), 0 0 0 6px var(--ink); }
+  .dads .row--danger { justify-content: center; align-items: center; margin-top: 24px; min-height: 56px; border: 2px solid var(--danger); border-radius: 8px; color: var(--danger); }
+  .dads .row--danger .row-text { flex: none; }
+  .dads .row--danger .row-label { font-weight: 700; color: var(--danger); }
+  .dads .row--danger:hover .row-label { text-decoration: underline; text-underline-offset: 3px; }
+  .dads .foot { margin: 48px 0 0; padding: 24px 16px; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.7; }
+  .dads .nav { display: none; }
+  .dads .scr { padding-bottom: 32px; }
+  .dads .hb { width: 108px; height: 4px; margin-left: -54px; bottom: 7px; }
+  .dads .toast { top: calc(var(--sbh) + 76px); left: 12px; right: 12px; gap: 12px; padding: 14px 16px; border: 2px solid var(--ok); border-radius: 12px; background: var(--surface); font-size: 16px; font-weight: 700; line-height: 1.6; box-shadow: 0 4px 12px rgba(0, 0, 0, .12); translate: 0 -8px; }
+  .dads .toast.is-on { translate: 0 0; }
+  .dads .toast-ic { display: block; color: var(--ok); }
+  .dads .toast-ic .i { width: 24px; height: 24px; stroke-width: 2.6; }
+  .dads .dlg-wrap { background: rgba(0, 0, 0, .5); padding: 16px; }
+  .dads .dlg { width: 100%; padding: 32px 20px 20px; border-radius: 16px; background: var(--surface); }
+  .dads .dlg-title { margin-bottom: 12px; font-size: 22px; font-weight: 700; line-height: 1.5; }
+  .dads .dlg-msg { font-size: 16px; line-height: 1.7; }
+  .dads .dlg-acts { flex-direction: column; gap: 12px; margin-top: 28px; }
+  .dads .dbtn { min-height: 56px; border: 1px solid var(--accent); border-radius: 8px; color: var(--accent); font-size: 16px; font-weight: 700; text-align: center; }
+  .dads .dbtn:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .dads .dbtn--danger { order: -1; border-color: var(--danger); background: var(--danger); color: #fff; }
+  .dark .dads .dbtn--danger { color: #1a1a1c; }
+
+  /* ===== Toss（韓国の送金・金融アプリ） =====
+     大きく太い見出しと話しかけるような文、灰色の背景に角の丸い白いカード（区切り線なし）、押すと少し縮む、確認は下から出るシート。
+     フォントの Toss Product Sans は使えないので、Pretendard（無料・日本語版あり）。本物のアイコンは立体的な絵文字のようなもの */
+  .toss {
+    --sbh: 40px; --font: "Toss Product Sans", "Pretendard JP Variable", "Pretendard JP", -apple-system, "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+    --bg: #f2f4f6; --surface: #ffffff; --ink: #191f28; --sub: #6b7684; --sub2: #8b95a1; --line: #e5e8eb; --fill: #f2f4f6; --chev: #b0b8c1;
+    --accent: var(--sw); --accent-weak: color-mix(in srgb, var(--sw) 11%, #fff); --danger: #f04452; --toast: rgba(51, 61, 75, .96);
+    --press: cubic-bezier(.2, .9, .3, 1);
+    border-radius: 40px;
+  }
+  .toss[data-c="blue"] { --accent: #3182f6; --accent-weak: #e8f3ff; }
+  .dark .toss {
+    --bg: #17171c; --surface: #202027; --ink: #ffffff; --sub: #9e9ea4; --sub2: #7e7e87; --line: #2c2c35; --fill: #2c2c35; --chev: #62626d;
+    --accent: color-mix(in srgb, var(--sw) 75%, #fff); --accent-weak: color-mix(in srgb, var(--sw) 22%, #202027); --danger: #f66570; --toast: rgba(70, 70, 82, .96);
+  }
+  .dark .toss[data-c="blue"] { --accent: #4593fc; --accent-weak: #1d2c45; }
+  .toss .sb { padding: 0 24px; font-size: 14px; font-weight: 600; }
+  .toss .bar { min-height: calc(var(--sbh) + 54px); padding: var(--sbh) 8px 0; }
+  .toss.is-scrolled .bar { background: var(--bg); }
+  .toss [data-act="search"] { visibility: hidden; }
+  .toss .ib { transition: transform .2s var(--press), background .15s; }
+  .toss .ib:active { transform: scale(.9); background: var(--fill); }
+  .toss .ib .i { width: 26px; height: 26px; stroke-width: 2.2; }
+  .toss .bar-title { text-align: center; font-size: 17px; font-weight: 700; }
+  .toss .hero { padding: 6px 24px 22px; }
+  .toss .hero-title { font-size: 26px; font-weight: 700; line-height: 1.4; letter-spacing: -.01em; }
+  .toss .hero-lead { display: block; margin-top: 6px; font-size: 17px; line-height: 1.5; color: var(--sub); }
+  .toss .acct { margin: 0 12px; padding: 24px 20px 20px; border-radius: 24px; background: var(--surface); }
+  .toss .av { width: 48px; height: 48px; font-size: 20px; font-weight: 700; background: var(--accent-weak); color: var(--accent); }
+  .toss .acct-name { font-size: 20px; font-weight: 700; }
+  .toss .acct-sub { font-size: 15px; color: var(--sub); }
+  .toss .acct-actions { margin-top: 6px; }
+  .toss .btn { width: 100%; height: 54px; border-radius: 16px; background: var(--accent); color: #fff; font-size: 17px; font-weight: 700; transition: transform .2s var(--press), filter .15s; }
+  .toss .btn .i { display: none; }
+  .toss .btn:active { transform: scale(.96); filter: brightness(.92); }
+  .toss .grp { margin: 12px 12px 0; padding: 24px 0 10px; border-radius: 24px; background: var(--surface); }
+  .toss .grp-title { margin: 0 24px 6px; font-size: 20px; font-weight: 700; }
+  .toss .row { min-height: 64px; padding: 12px 24px; gap: 16px; border-radius: 16px; transition: transform .2s var(--press), background .15s; }
+  .toss button.row:active { transform: scale(.98); background: var(--fill); }
+  .toss .row-ic { width: 40px; height: 40px; border-radius: 50%; background: color-mix(in srgb, var(--tile) 14%, var(--surface)); color: var(--tile); }
+  .toss .row-ic .i { width: 22px; height: 22px; stroke-width: 2.2; }
+  .toss .row-label { font-size: 17px; font-weight: 500; line-height: 1.4; }
+  .toss .row-sub { display: block; margin-top: 2px; font-size: 14px; line-height: 1.45; color: var(--sub2); }
+  .toss .row-val { font-size: 15px; color: var(--sub); }
+  .toss .row-chev { color: var(--chev); }
+  .toss .row-chev .i { width: 18px; height: 18px; stroke-width: 2.6; }
+  .toss .row--danger .row-label { color: var(--danger); }
+  .toss .row--danger .row-ic { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); color: var(--danger); }
+  .toss .row-body { padding-left: 56px; }
+  .toss .sw { width: 50px; height: 30px; border-radius: 15px; background: var(--line); transition: background .25s; }
+  .toss .sw-k { top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, .15); transition: transform .3s var(--press); }
+  .toss [aria-checked="true"] .sw { background: var(--accent); }
+  .toss [aria-checked="true"] .sw-k { transform: translateX(20px); }
+  .toss .seg { margin-top: 10px; padding: 4px; border-radius: 12px; background: var(--fill); }
+  .toss .seg-b { flex: 1; height: 38px; border-radius: 9px; font-size: 15px; font-weight: 600; color: var(--sub); transition: background .2s, color .2s, transform .2s var(--press); }
+  .toss .seg-b:active { transform: scale(.95); }
+  .toss .seg-b[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, .08); }
+  .dark .toss .seg-b[aria-checked="true"] { background: #3c3c47; }
+  .toss .swt { width: 36px; height: 36px; transition: transform .2s var(--press); }
+  .toss .swt:active { transform: scale(.88); }
+  .toss .foot { margin: 24px 36px 0; color: var(--sub2); }
+  .toss .nav { left: 0; right: 0; bottom: 0; height: 84px; padding: 8px 8px 28px; background: var(--surface); border-top: 1px solid var(--line); }
+  .toss .nav-b { gap: 3px; font-size: 10px; font-weight: 600; color: var(--chev); transition: transform .2s var(--press); }
+  .toss .nav-b:active { transform: scale(.9); }
+  .toss .nav-b .i { width: 26px; height: 26px; stroke-width: 2.2; }
+  .toss .nav-b[aria-current="page"] { color: var(--ink); }
+  .toss .hb { width: 108px; height: 4px; margin-left: -54px; bottom: 7px; }
+  .toss .toast { left: 50%; bottom: 100px; max-width: calc(100% - 32px); gap: 10px; padding: 14px 20px; border-radius: 16px; transform: translateX(-50%); background: var(--toast); color: #fff; font-size: 15px; font-weight: 600; translate: 0 16px; transition: opacity .2s, translate .35s var(--press); }
+  .toss .toast.is-on { translate: 0 0; }
+  .toss .toast-ic { display: grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: 50%; background: #15c47e; color: #fff; }
+  .toss .toast-ic .i { width: 14px; height: 14px; stroke-width: 3; }
+  .toss .dlg-wrap { align-items: flex-end; background: rgba(0, 0, 0, .4); }
+  .toss .dlg { position: relative; width: 100%; padding: 30px 24px 34px; border-radius: 28px 28px 0 0; background: var(--surface); transform: translateY(100%); transition: transform .4s var(--press); }
+  .toss .dlg::before { content: ""; position: absolute; top: 10px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--line); }
+  .toss .dlg-title { margin-bottom: 10px; font-size: 22px; font-weight: 700; line-height: 1.4; }
+  .toss .dlg-msg { font-size: 16px; line-height: 1.55; color: var(--sub); }
+  .toss .dlg-acts { gap: 8px; margin-top: 28px; }
+  .toss .dbtn { flex: 1; height: 56px; border-radius: 16px; background: var(--fill); color: var(--sub); font-size: 17px; font-weight: 700; text-align: center; transition: transform .2s var(--press), filter .15s; }
+  .toss .dbtn:active { transform: scale(.96); filter: brightness(.94); }
+  .toss .dbtn--danger { background: var(--danger); color: #fff; }
+
+  /* ===== HyperOS（Xiaomi） =====
+     左寄せの大きな見出し＋その下の丸い検索欄、カードも区切り線もない白い背景に色つきの角丸アイコン、
+     確認は画面の下に浮かぶカードで丸いボタンが左右に並ぶ。フォントの MiSans は使っていない */
+  .hyper {
+    --sbh: 40px; --font: "MiSans", "Noto Sans JP", "Hiragino Sans", system-ui, sans-serif;
+    --bg: #ffffff; --surface: #ffffff; --ink: #000000; --sub: #8c8c8c; --fill: #f0f0f0; --line: #ebebeb; --chev: #c2c2c2;
+    --accent: var(--sw); --accent-soft: color-mix(in srgb, var(--sw) 12%, #fff); --danger: #e94634; --off: #e6e6e6;
+    border-radius: 40px;
+  }
+  .hyper[data-c="blue"] { --accent: #0d84ff; --accent-soft: #e7f2ff; }
+  .dark .hyper {
+    --bg: #000000; --surface: #1a1a1a; --ink: #ffffff; --sub: #8c8c8c; --fill: #262626; --line: #262626; --chev: #5c5c5c;
+    --accent: color-mix(in srgb, var(--sw) 72%, #fff); --accent-soft: color-mix(in srgb, var(--sw) 22%, #000); --danger: #ff6b5b; --off: #3a3a3a;
+  }
+  .dark .hyper[data-c="blue"] { --accent: #3482ff; --accent-soft: #0f2340; }
+  .hyper .sb, .shad .sb { padding: 0 24px; font-size: 14px; font-weight: 600; }
+  .hyper .sb-cam, .shad .sb-cam { top: 13px; width: 13px; height: 13px; margin-left: -6.5px; }
+  .hyper .bar { min-height: calc(var(--sbh) + 52px); padding: var(--sbh) 8px 0; }
+  .hyper.is-scrolled .bar { background: var(--bg); }
+  .hyper .bar [data-act="search"] { visibility: hidden; }
+  .hyper .bar-title { margin-left: 4px; font-size: 18px; font-weight: 600; }
+  .hyper .ib .i { stroke-width: 2; }
+  .hyper .ib:active { background: var(--fill); }
+  .hyper .hero { padding: 0 24px 4px; }
+  .hyper .hero-title { font-size: 34px; font-weight: 600; line-height: 1.3; }
+  .hyper .hero-search { display: flex; align-items: center; gap: 8px; width: 100%; height: 44px; margin-top: 14px; padding: 0 16px; border-radius: 22px; background: var(--fill); color: var(--sub); font-size: 16px; }
+  .hyper .hero-search .i { width: 20px; height: 20px; stroke-width: 2; }
+  .hyper .acct { flex-wrap: nowrap; margin: 16px 8px 0; padding: 14px 16px; border-radius: 20px; }
+  .hyper .av { width: 56px; height: 56px; font-size: 22px; font-weight: 600; background: linear-gradient(135deg, #ffb36b, #ff6a3d); color: #fff; }
+  .hyper .acct-name { font-size: 18px; font-weight: 600; }
+  .hyper .acct-sub { font-size: 13px; line-height: 1.45; color: var(--sub); }
+  .hyper .acct-actions { flex-basis: auto; }
+  .hyper .btn { height: 32px; padding: 0 14px; border-radius: 16px; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 600; }
+  .hyper .btn .i { display: none; }
+  .hyper .btn:active { filter: brightness(.94); }
+  .hyper .grp { margin: 18px 0 0; }
+  .hyper .grp-title { margin: 0 24px 4px; font-size: 13px; font-weight: 400; color: var(--sub); }
+  .hyper .row { min-height: 64px; padding: 12px 24px; gap: 16px; transition: background .15s; }
+  .hyper button.row:active { background: var(--fill); }
+  .hyper .row-ic { width: 32px; height: 32px; border-radius: 10px; background: var(--tile); color: #fff; }
+  .hyper .row-ic .i { width: 20px; height: 20px; stroke-width: 2.1; }
+  .hyper .row-label { font-size: 16px; line-height: 1.4; }
+  .hyper .row-sub { display: block; margin-top: 2px; font-size: 13px; line-height: 1.45; color: var(--sub); }
+  .hyper .row-val { font-size: 14px; color: var(--sub); }
+  .hyper .row-chev { color: var(--chev); }
+  .hyper .row-chev .i { width: 16px; height: 16px; stroke-width: 2.4; }
+  .hyper .row--danger .row-label { color: var(--danger); }
+  .hyper .row-body { padding-left: 48px; }
+  .hyper .sw { width: 50px; height: 28px; border-radius: 14px; background: var(--off); transition: background .25s; }
+  .hyper .sw-k { top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .35s cubic-bezier(.3, 1.3, .5, 1); }
+  .hyper [aria-checked="true"] .sw { background: var(--accent); }
+  .hyper [aria-checked="true"] .sw-k { transform: translateX(22px); }
+  .hyper .seg { margin-top: 12px; padding: 4px; border-radius: 14px; background: var(--fill); }
+  .hyper .seg-b { flex: 1; height: 36px; border-radius: 10px; font-size: 15px; color: var(--sub); transition: background .2s, color .2s; }
+  .hyper .seg-b[aria-checked="true"] { background: var(--surface); color: var(--accent); font-weight: 600; box-shadow: 0 1px 4px rgba(0, 0, 0, .08); }
+  .dark .hyper .seg-b[aria-checked="true"] { background: #3a3a3a; }
+  .hyper .swt[aria-checked="true"] { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--c); }
+  .hyper .nav { left: 0; right: 0; bottom: 0; height: 84px; padding: 8px 8px 28px; background: var(--bg); border-top: 1px solid var(--line); }
+  .hyper .nav-b { gap: 3px; font-size: 11px; color: var(--sub); }
+  .hyper .nav-b .i { width: 26px; height: 26px; stroke-width: 1.9; }
+  .hyper .nav-b[aria-current="page"] { color: var(--accent); font-weight: 600; }
+  .hyper .hb, .shad .hb { width: 108px; height: 4px; margin-left: -54px; bottom: 7px; }
+  .hyper .toast { left: 50%; bottom: 104px; max-width: calc(100% - 48px); padding: 12px 22px; border-radius: 24px; transform: translateX(-50%); background: var(--surface); color: var(--ink); font-size: 14px; text-align: center; box-shadow: 0 6px 24px rgba(0, 0, 0, .14); }
+  .dark .hyper .toast { background: #2b2b2b; }
+  .hyper .dlg-wrap { align-items: flex-end; padding: 0 12px 20px; background: rgba(0, 0, 0, .3); }
+  .hyper .dlg { width: 100%; padding: 28px 24px 24px; border-radius: 32px; background: var(--surface); text-align: center; transform: translateY(30px); transition: transform .4s cubic-bezier(.3, 1.25, .5, 1); }
+  .dark .hyper .dlg { background: #232323; }
+  .hyper .dlg-title { margin-bottom: 12px; font-size: 19px; font-weight: 600; line-height: 1.4; }
+  .hyper .dlg-msg { font-size: 15px; line-height: 1.55; color: var(--sub); }
+  .hyper .dlg-acts { gap: 12px; margin-top: 24px; }
+  .hyper .dbtn { flex: 1; height: 50px; border-radius: 25px; background: var(--fill); font-size: 16px; font-weight: 600; text-align: center; }
+  .hyper .dbtn:active { filter: brightness(.92); }
+  .hyper .dbtn--danger { background: var(--danger); color: #fff; }
+
+  /* ===== shadcn/ui（Web） =====
+     白と黒が基本、細い枠線ととても薄い影のカード、小さめの文字（14px）、フォントは Geist。スマホのタブバーはなく Web サイトのヘッダー。
+     お知らせは下に出る小さなカード（Sonner）、確認は AlertDialog（スマホではボタンが縦に並ぶ）。
+     「いつもの青」のときは shadcn/ui の基本の黒（neutral）、ほかの色ではその色を主役の色にする */
+  .shad {
+    --sbh: 40px; --font: "Geist", "Noto Sans JP", "Hiragino Sans", system-ui, sans-serif;
+    --bg: #ffffff; --surface: #ffffff; --ink: #0a0a0a; --sub: #737373; --muted: #f5f5f5; --line: #e5e5e5; --ring: #a1a1a1;
+    --primary: var(--sw); --on-primary: #ffffff; --danger: #e7000b; --accent: var(--primary); --xs: 0 1px 2px rgba(0, 0, 0, .05);
+    border-radius: 40px;
+  }
+  .shad[data-c="blue"] { --primary: #171717; --on-primary: #fafafa; }
+  .dark .shad {
+    --bg: #0a0a0a; --surface: #171717; --ink: #fafafa; --sub: #a1a1a1; --muted: #262626; --line: rgba(255, 255, 255, .1); --ring: #737373;
+    --primary: color-mix(in srgb, var(--sw) 70%, #fff); --on-primary: #0a0a0a; --danger: #ff6467;
+  }
+  .dark .shad[data-c="blue"] { --primary: #e5e5e5; --on-primary: #171717; }
+  .shad button:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 50%, transparent); }
+  .shad .bar { min-height: calc(var(--sbh) + 56px); padding: var(--sbh) 12px 0 16px; gap: 8px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .shad [data-act="back"], .shad .bar-title { display: none; }
+  .shad .bar-brand { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+  .shad .bar-brand::before { content: ""; flex: none; width: 22px; height: 22px; border-radius: 6px; background: var(--ink); }
+  .shad .ib { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); box-shadow: var(--xs); transition: background .15s; }
+  .shad .ib:hover { background: var(--muted); }
+  .shad .ib-menu { display: grid; border-color: transparent; box-shadow: none; }
+  .shad .ib .i { width: 16px; height: 16px; stroke-width: 2; }
+  .shad .hero { padding: 28px 16px 4px; }
+  .shad .hero-title { font-size: 30px; font-weight: 600; line-height: 1.2; letter-spacing: -.025em; }
+  .shad .hero-lead { display: block; margin-top: 6px; font-size: 15px; line-height: 1.6; color: var(--sub); }
+  .shad .acct { margin: 24px 16px 0; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--xs); }
+  .shad .av { width: 40px; height: 40px; font-size: 15px; font-weight: 500; background: var(--muted); color: var(--ink); }
+  .shad .acct-name { font-size: 15px; font-weight: 600; }
+  .shad .acct-sub { font-size: 13px; color: var(--sub); }
+  .shad .acct-actions { margin-top: 4px; }
+  .shad .btn { height: 36px; padding: 0 16px; gap: 8px; border-radius: 8px; background: var(--primary); color: var(--on-primary); font-size: 14px; font-weight: 500; box-shadow: var(--xs); transition: opacity .15s; }
+  .shad .btn:hover { opacity: .9; }
+  .shad .btn .i { width: 16px; height: 16px; stroke-width: 2; }
+  .shad .grp { display: flex; flex-direction: column; margin: 16px 16px 0; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--xs); }
+  .shad .grp-title { order: 0; font-size: 16px; font-weight: 600; line-height: 1.2; }
+  .shad .grp-note { display: block; order: 1; margin-top: 6px; font-size: 14px; line-height: 1.5; color: var(--sub); }
+  .shad .list { order: 2; display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+  .shad .row { padding: 12px; gap: 12px; border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--xs); transition: background .15s; }
+  .shad button.row:hover { background: var(--muted); }
+  .shad .row-ic { display: none; }
+  .shad .row-label { font-size: 14px; font-weight: 500; line-height: 1.4; }
+  .shad .row-sub { display: block; margin-top: 2px; font-size: 13px; line-height: 1.45; color: var(--sub); }
+  .shad .row-val { font-size: 13px; color: var(--sub); }
+  .shad .row-chev { color: var(--sub); }
+  .shad .row-chev .i { width: 16px; height: 16px; stroke-width: 2; }
+  .shad .row--danger { justify-content: center; min-height: 36px; padding: 0 16px; border-color: transparent; background: var(--danger); }
+  .shad .row--danger .row-text { flex: none; }
+  .shad .row--danger .row-label { color: #fff; }
+  .shad button.row--danger:hover { background: color-mix(in srgb, var(--danger) 90%, #000); }
+  .shad .sw { width: 32px; height: 18px; border-radius: 9px; background: var(--line); box-shadow: var(--xs); transition: background .15s; }
+  .dark .shad .sw { background: rgba(255, 255, 255, .15); }
+  .shad .sw-k { top: 1px; left: 1px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); transition: transform .15s; }
+  .shad [aria-checked="true"] .sw { background: var(--primary); }
+  .shad [aria-checked="true"] .sw-k { transform: translateX(14px); }
+  .dark .shad [aria-checked="true"] .sw-k { background: var(--on-primary); }
+  .shad .seg { height: 36px; margin-top: 12px; padding: 3px; border-radius: 10px; background: var(--muted); }
+  .shad .seg-b { flex: 1; border: 1px solid transparent; border-radius: 7px; font-size: 14px; font-weight: 500; color: var(--sub); transition: background .15s, color .15s; }
+  .shad .seg-b[aria-checked="true"] { background: var(--bg); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .1); }
+  .dark .shad .seg-b[aria-checked="true"] { background: rgba(255, 255, 255, .08); border-color: var(--line); }
+  .shad .swt { width: 28px; height: 28px; }
+  .shad .swt .i { width: 14px; height: 14px; }
+  .shad .swt[aria-checked="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ring); }
+  .shad .foot { margin: 24px 16px 0; text-align: center; }
+  .shad .nav { display: none; }
+  .shad .scr { padding-bottom: 40px; }
+  .shad .toast { left: 16px; right: 16px; bottom: 24px; gap: 8px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: 14px; font-weight: 500; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1), 0 4px 6px -4px rgba(0, 0, 0, .1); translate: 0 16px; transition: opacity .2s, translate .35s cubic-bezier(.2, .9, .3, 1); }
+  .shad .toast.is-on { translate: 0 0; }
+  .shad .toast-ic { display: block; }
+  .shad .toast-ic .i { width: 16px; height: 16px; stroke-width: 2.4; }
+  .shad .dlg-wrap { padding: 16px; background: rgba(0, 0, 0, .5); }
+  .shad .dlg { width: 100%; padding: 24px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1); transform: scale(.95); transition: transform .2s; }
+  .shad .dlg-title { margin-bottom: 8px; font-size: 18px; font-weight: 600; line-height: 1.4; }
+  .shad .dlg-msg { font-size: 14px; line-height: 1.6; color: var(--sub); }
+  .shad .dlg-acts { flex-direction: column-reverse; gap: 8px; margin-top: 20px; }
+  .shad .dbtn { height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: 14px; font-weight: 500; text-align: center; box-shadow: var(--xs); transition: background .15s; }
+  .shad .dbtn:hover { background: var(--muted); }
+  .shad .dbtn--danger { border-color: transparent; background: var(--danger); color: #fff; }
+  .shad .dbtn--danger:hover { background: color-mix(in srgb, var(--danger) 90%, #000); }
+
+  /* ===== WeUI（WeChat のミニプログラム） =====
+     WeChat の緑、右上のミニプログラムのカプセル（…・閉じる）、灰色の背景に端から端までの白いリスト（角丸カードなし）、
+     選ぶものは右に緑のチェックが付く行、お知らせは画面の真ん中の黒い四角、アカウントの写真は角丸の四角。
+     「いつもの青」のときは WeChat の緑、ほかの色ではその色 */
+  .weui {
+    --sbh: 40px; --font: -apple-system, "PingFang SC", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+    --bg: #ededed; --surface: #ffffff; --ink: rgba(0, 0, 0, .9); --sub: rgba(0, 0, 0, .55); --line: rgba(0, 0, 0, .1); --fill: #ececec; --chev: rgba(0, 0, 0, .3);
+    --accent: var(--sw); --link: #576b95; --danger: #fa5151; --tab: #f7f7f7;
+    border-radius: 40px;
+  }
+  .weui[data-c="blue"] { --accent: #07c160; }
+  .dark .weui {
+    --bg: #111111; --surface: #191919; --ink: rgba(255, 255, 255, .85); --sub: rgba(255, 255, 255, .5); --line: rgba(255, 255, 255, .08); --fill: #252525; --chev: rgba(255, 255, 255, .3);
+    --accent: color-mix(in srgb, var(--sw) 80%, #fff); --link: #7d90a9; --danger: #fa5151; --tab: #191919;
+  }
+  .dark .weui[data-c="blue"] { --accent: #07c160; }
+  .weui .sb { padding: 0 24px; font-size: 14px; font-weight: 600; }
+  .weui .sb-cam { top: 13px; width: 13px; height: 13px; margin-left: -6.5px; }
+  .weui .bar { min-height: calc(var(--sbh) + 48px); padding: var(--sbh) 8px 0; background: var(--bg); }
+  .weui .bar-title { position: absolute; left: 100px; right: 100px; bottom: 0; height: 48px; line-height: 48px; opacity: 1; text-align: center; font-size: 17px; font-weight: 600; }
+  .weui .bar > [data-act="search"] { display: none; }
+  .weui .ib .i { stroke-width: 2; }
+  .weui .capsule { display: flex; align-items: center; height: 32px; margin: 0 2px 0 auto; border: .5px solid rgba(0, 0, 0, .12); border-radius: 16px; background: rgba(255, 255, 255, .6); }
+  .dark .weui .capsule { border-color: rgba(255, 255, 255, .15); background: rgba(0, 0, 0, .3); }
+  .weui .capsule button { display: grid; place-items: center; width: 43px; height: 100%; }
+  .weui .capsule .i { width: 20px; height: 20px; }
+  .weui .capsule i { width: .5px; height: 18px; background: rgba(0, 0, 0, .15); }
+  .dark .weui .capsule i { background: rgba(255, 255, 255, .2); }
+  .weui .hero { display: none; }
+  .weui .acct { flex-wrap: nowrap; gap: 16px; margin: 0; padding: 24px 16px; background: var(--surface); }
+  .weui .av { width: 64px; height: 64px; border-radius: 8px; font-size: 26px; font-weight: 600; background: var(--accent); color: #fff; }
+  .weui .acct-name { font-size: 20px; font-weight: 600; color: var(--ink); }
+  .weui .acct-sub { font-size: 14px; line-height: 1.4; color: var(--sub); }
+  .weui .acct-actions { flex-basis: auto; }
+  .weui .btn { height: 32px; padding: 0 12px; border-radius: 6px; background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; }
+  .weui .btn .i { display: none; }
+  .weui .btn:active { filter: brightness(.9); }
+  .weui .grp-title { padding: 16px 16px 8px; font-size: 14px; font-weight: 400; color: var(--sub); }
+  .weui .list { background: var(--surface); }
+  .weui .row { min-height: 56px; padding: 16px; gap: 16px; }
+  .weui .row + .row::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: .5px; background: var(--line); }
+  .weui button.row:active { background: var(--fill); }
+  .weui .row-ic { display: none; }
+  .weui .row-label { font-size: 17px; line-height: 1.4; color: var(--ink); }
+  .weui .row-val { font-size: 17px; color: var(--sub); }
+  .weui .row-chev { color: var(--chev); }
+  .weui .row-chev .i { width: 16px; height: 16px; stroke-width: 2; }
+  .weui .row--danger { justify-content: center; }
+  .weui .row--danger .row-text { align-items: center; }
+  .weui .row--danger .row-label { color: var(--danger); }
+  .weui .grp-note { display: block; padding: 8px 16px 0; font-size: 14px; line-height: 1.4; color: var(--sub); }
+  .weui .row--stack { padding-bottom: 0; }
+  .weui .seg { flex-direction: column; margin: 12px -16px 0 0; }
+  .weui .seg-b { justify-content: space-between; min-height: 52px; padding-right: 16px; border-top: .5px solid var(--line); font-size: 17px; }
+  .weui .seg-b:active { background: var(--fill); }
+  .weui .seg-b .i { display: block; order: 2; width: 22px; height: 22px; stroke-width: 2.4; color: var(--accent); opacity: 0; }
+  .weui .seg-b[aria-checked="true"] .i { opacity: 1; }
+  .weui .sws { margin-bottom: 16px; }
+  .weui .swt { width: 32px; height: 32px; border-radius: 6px; }
+  .weui .sw { width: 52px; height: 32px; border-radius: 16px; background: var(--fill); box-shadow: inset 0 0 0 1px var(--line); transition: background .3s; }
+  .weui .sw-k { top: 1px; left: 1px; width: 30px; height: 30px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .4); transition: transform .3s; }
+  .weui [aria-checked="true"] .sw { background: var(--accent); box-shadow: none; }
+  .weui [aria-checked="true"] .sw-k { transform: translateX(20px); }
+  .weui .foot { margin: 32px 16px 0; text-align: center; font-size: 13px; color: var(--sub); }
+  .weui .nav { left: 0; right: 0; bottom: 0; height: 84px; padding: 6px 0 28px; background: var(--tab); box-shadow: inset 0 .5px 0 var(--line); }
+  .weui .nav-b { gap: 2px; font-size: 10px; color: var(--ink); }
+  .weui .nav-b .i { width: 27px; height: 27px; stroke-width: 1.7; }
+  .weui .nav-b[aria-current="page"] { color: var(--accent); }
+  .weui .hb { width: 108px; height: 4px; margin-left: -54px; bottom: 7px; }
+  .weui .toast {
+    top: 50%; left: 50%; width: max-content; min-width: 136px; max-width: 200px; min-height: 136px; flex-direction: column; justify-content: center; gap: 8px;
+    padding: 16px 14px; border-radius: 12px; transform: translate(-50%, -50%); background: rgba(76, 76, 76, .92); color: #fff;
+    font-size: 14px; line-height: 1.4; text-align: center; translate: none; scale: .9; transition: opacity .15s, scale .15s;
+  }
+  .weui .toast.is-on { translate: none; scale: 1; }
+  .weui .toast-ic { display: block; color: #fff; }
+  .weui .toast-ic .i { width: 52px; height: 52px; stroke-width: 2; }
+  .weui .dlg-wrap { background: rgba(0, 0, 0, .6); }
+  .weui .dlg { width: calc(100% - 64px); max-width: 320px; overflow: hidden; border-radius: 12px; background: var(--surface); text-align: center; transform: scale(.95); }
+  .dark .weui .dlg { background: #2c2c2c; }
+  .weui .dlg-title { padding: 32px 24px 16px; font-size: 17px; font-weight: 700; line-height: 1.4; }
+  .weui .dlg-msg { padding: 0 24px 32px; font-size: 15px; line-height: 1.5; color: var(--sub); }
+  .weui .dlg-acts { border-top: .5px solid var(--line); }
+  .weui .dbtn { flex: 1; height: 56px; font-size: 17px; font-weight: 700; color: var(--ink); text-align: center; }
+  .weui .dbtn + .dbtn { border-left: .5px solid var(--line); }
+  .weui .dbtn:active { background: var(--fill); }
+  .weui .dbtn--danger { color: var(--danger); }
+
+  /* ===== かさね（SK オリジナル） =====
+     平安時代の「襲の色目」がもと。ぼかした影の代わりに、重ねた面のふちから裏の色がのぞく（一重・二重）。
+     色は表（accent）と裏（ura）の 2 色の組み合わせ「色目」で、SK の 7 色に 1 つずつ。見出しは明朝（Shippori Mincho B1）、本文は Zen Kaku Gothic New。
+     決まりの元はデザインシステム「かさね」、部品の見本は _mockups/kasane/ */
+  .kas {
+    --sbh: 44px; --font: "Zen Kaku Gothic New", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; --display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+    --bg: #eff0ec; --surface: #fbfbf9; --sunk: #e5e6e0; --line: #d5d6cf; --line-strong: #80827b; --ink: #1a1c20; --sub: #575a61;
+    --accent: #2563eb; --ura: #e9a23b; --accent-text: color-mix(in oklab, var(--accent) 85%, #000);
+    --accent-soft: color-mix(in oklab, var(--accent) 12%, var(--surface));
+    --danger: #b42318; --danger-text: #b42318; --ura-danger: #f1a399; --scrim: rgba(17, 19, 23, .48);
+    --l1: 3px; --l2: 6px; --ease: cubic-bezier(.3, .7, .2, 1);
+    border-radius: 40px;
+  }
+  .kas[data-c="blue"] { --accent-text: #1d4ed8; }
+  .kas[data-c="sakura"] { --accent: #be185d; --ura: #f4a3c0; }
+  .kas[data-c="matcha"] { --accent: #15803d; --ura: #6d28d9; }
+  .kas[data-c="mikan"] { --accent: #c2410c; --ura: #8a1c1c; }
+  .kas[data-c="fuji"] { --accent: #7c3aed; --ura: #8fbf3a; }
+  .kas[data-c="sora"] { --accent: #0e7490; --ura: #9fd8e4; }
+  .kas[data-c="sumi"] { --accent: #334155; --ura: #d9481e; }
+  .dark .kas {
+    --bg: #111317; --surface: #1b1e24; --sunk: #0c0d10; --line: #30343c; --line-strong: #6c727e; --ink: #ecece6; --sub: #a5a9b1;
+    --accent-text: color-mix(in oklab, var(--accent) 45%, #fff); --danger-text: #ff8f80; --ura-danger: #6e1a12; --scrim: rgba(0, 0, 0, .6);
+  }
+  .dark .kas[data-c="blue"] { --accent-text: #8db0ff; }
+  .dark .kas[data-c="matcha"] { --ura: #a78bfa; }
+  .dark .kas[data-c="mikan"] { --ura: #f87171; }
+  .dark .kas[data-c="sumi"] { --accent: #475569; }
+  .kas button:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+  .kas .sb { padding: 0 26px 0 30px; font-size: 15px; font-weight: 700; }
+  .kas .bar { min-height: calc(var(--sbh) + 52px); padding: var(--sbh) 8px 0; }
+  .kas.is-scrolled .bar { background: var(--bg); box-shadow: inset 0 -1px 0 var(--line); }
+  .kas .ib { width: 44px; height: 44px; border-radius: 10px; }
+  .kas .ib:active { background: var(--sunk); }
+  .kas .ib .i { width: 22px; height: 22px; stroke-width: 1.8; }
+  .kas .bar-title { font-size: 17px; font-weight: 700; }
+  .kas .hero { display: flex; flex-direction: column; padding: 4px 20px 26px; }
+  .kas .hero-sub { display: block; order: -1; margin-bottom: 4px; font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--sub); }
+  .kas .hero-title { font: 700 34px/1.25 var(--display); letter-spacing: .04em; }
+  .kas .hero-title::after { content: ""; display: block; width: 32px; height: 3px; margin-top: 12px; border-radius: 2px; background: var(--accent); box-shadow: 0 3px 0 0 var(--ura); transition: background .22s, box-shadow .22s; }
+  .kas .acct { margin: 0 16px; padding: 16px; gap: 12px; border-radius: 16px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line), 0 var(--l1) 0 0 var(--line); }
+  .kas .av { width: 44px; height: 44px; font-size: 18px; font-weight: 700; background: var(--accent-soft); color: var(--accent-text); }
+  .kas .acct-name { font-size: 16px; font-weight: 700; }
+  .kas .acct-sub { font-size: 13px; color: var(--sub); }
+  .kas .acct-actions { margin-top: 4px; }
+  .kas .btn { width: 100%; height: 44px; gap: 8px; border-radius: 10px; background: var(--accent); color: #fff; font-size: 15px; font-weight: 700; letter-spacing: .02em; box-shadow: 0 var(--l1) 0 0 var(--ura); transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), background .22s; }
+  .kas .btn:active { transform: translateY(var(--l1)); box-shadow: 0 0 0 0 var(--ura); }
+  .kas .btn .i { width: 20px; height: 20px; stroke-width: 2; }
+  .kas .grp { margin: 32px 16px 0; }
+  .kas .grp-title { margin: 0 16px 8px; font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--sub); }
+  .kas .list { border-radius: 16px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line), 0 var(--l1) 0 0 var(--line); }
+  .kas .grp-note { display: block; margin: 11px 16px 0; font-size: 13px; line-height: 1.55; color: var(--sub); }
+  .kas .row { min-height: 56px; padding: 12px 16px; gap: 12px; transition: background 90ms; }
+  .kas .row:first-child { border-radius: 16px 16px 0 0; }
+  .kas .row:last-child { border-radius: 0 0 16px 16px; }
+  .kas .row + .row::before { content: ""; position: absolute; top: 0; left: 60px; right: 0; border-top: 1px solid var(--line); }
+  .kas button.row:active { background: var(--sunk); }
+  .kas .row-ic { width: 32px; height: 32px; border-radius: 6px; background: var(--accent-soft); color: var(--accent-text); transition: background .22s, color .22s; }
+  .kas .row-ic .i { width: 19px; height: 19px; stroke-width: 1.8; }
+  .kas .row-label { font-size: 15px; font-weight: 500; line-height: 1.45; }
+  .kas .row-sub { display: block; margin-top: 2px; font-size: 13px; line-height: 1.55; color: var(--sub); }
+  .kas .row-val { font-size: 14px; color: var(--sub); }
+  .kas .row-chev { color: var(--sub); }
+  .kas .row-chev .i { width: 18px; height: 18px; stroke-width: 1.8; }
+  .kas .row--danger .row-label { font-weight: 700; color: var(--danger-text); }
+  .kas .row--danger .row-ic { background: color-mix(in oklab, var(--danger) 12%, var(--surface)); color: var(--danger-text); }
+  .kas .sw { width: 52px; height: 30px; border-radius: 15px; background: var(--sunk); box-shadow: inset 0 0 0 1.5px var(--line-strong); transition: background .22s, box-shadow .22s; }
+  .kas .sw-k { top: 5px; left: 5px; width: 20px; height: 20px; border-radius: 50%; background: var(--sub); transition: transform .22s var(--ease), background .22s; }
+  .kas [aria-checked="true"] .sw { background: var(--accent); box-shadow: 0 var(--l1) 0 0 var(--ura); }
+  .kas [aria-checked="true"] .sw-k { transform: translateX(22px); background: #fff; }
+  .kas .row-body { padding-left: 44px; }
+  .kas .seg { gap: 4px; margin-top: 10px; padding: 4px; border-radius: 10px; background: var(--sunk); }
+  .kas .seg-b { flex: 1; height: 36px; border-radius: 7px; font-size: 14px; font-weight: 500; color: var(--sub); transition: background .22s, color .22s, box-shadow .22s; }
+  .kas .seg-b[aria-checked="true"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 2px 0 0 var(--ura); }
+  .kas .sws { gap: 16px 12px; padding-bottom: 4px; }
+  .kas .swt { width: 36px; height: 36px; box-shadow: 0 4px 0 0 var(--u); transition: transform 90ms var(--ease), box-shadow 90ms var(--ease); }
+  .kas .swt:active { transform: translateY(4px); box-shadow: 0 0 0 0 var(--u); }
+  .kas .swt[aria-checked="true"] { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .kas .swt[data-color="blue"] { --c: #2563eb !important; --u: #e9a23b; }
+  .kas .swt[data-color="sakura"] { --c: #be185d !important; --u: #f4a3c0; }
+  .kas .swt[data-color="matcha"] { --c: #15803d !important; --u: #6d28d9; }
+  .kas .swt[data-color="mikan"] { --c: #c2410c !important; --u: #8a1c1c; }
+  .kas .swt[data-color="fuji"] { --c: #7c3aed !important; --u: #8fbf3a; }
+  .kas .swt[data-color="sora"] { --c: #0e7490 !important; --u: #9fd8e4; }
+  .kas .swt[data-color="sumi"] { --c: #334155 !important; --u: #d9481e; }
+  .dark .kas .swt[data-color="matcha"] { --u: #a78bfa; }
+  .dark .kas .swt[data-color="mikan"] { --u: #f87171; }
+  .dark .kas .swt[data-color="sumi"] { --c: #475569 !important; }
+  .kas .foot { margin: 32px 24px 0; font-size: 12px; color: var(--sub); }
+  .kas .nav { left: 0; right: 0; bottom: 0; height: 86px; padding: 0 8px 26px; background: var(--surface); box-shadow: inset 0 1px 0 var(--line); }
+  .kas .nav-b { position: relative; gap: 3px; padding-top: 6px; font-size: 12px; font-weight: 500; color: var(--sub); }
+  .kas .nav-b::before { content: ""; position: absolute; top: 0; left: 50%; width: 28px; height: 3px; margin-left: -14px; border-radius: 0 0 2px 2px; transition: background .22s, box-shadow .22s; }
+  .kas .nav-b .i { width: 24px; height: 24px; stroke-width: 1.8; }
+  .kas .nav-b[aria-current="page"] { color: var(--accent-text); font-weight: 700; }
+  .kas .nav-b[aria-current="page"]::before { background: var(--accent); box-shadow: 0 3px 0 0 var(--ura); }
+  .kas .hb { width: 120px; height: 4px; margin-left: -60px; bottom: 7px; }
+  .kas .toast { left: 50%; bottom: 104px; max-width: calc(100% - 32px); gap: 8px; padding: 12px 16px; border-radius: 10px; transform: translateX(-50%); background: var(--ink); color: var(--surface); font-size: 14px; font-weight: 500; box-shadow: 0 var(--l1) 0 0 var(--ura); }
+  .kas .toast-ic { display: block; }
+  .kas .toast-ic .i { width: 20px; height: 20px; stroke-width: 2.2; }
+  .kas .dlg-wrap { padding: 16px; background: var(--scrim); }
+  .kas .dlg { width: 100%; max-width: 340px; padding: 24px; border-radius: 16px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line), 0 var(--l1) 0 0 var(--ura-danger), 0 var(--l2) 0 0 var(--danger); transform: translateY(12px); transition: transform .22s var(--ease); }
+  .kas .is-on > .dlg { transform: none; }
+  .kas .dlg-title { margin-bottom: 8px; font: 700 20px/1.4 var(--display); letter-spacing: .02em; }
+  .kas .dlg-msg { font-size: 15px; line-height: 1.75; color: var(--sub); }
+  .kas .dlg-acts { justify-content: flex-end; gap: 8px; margin-top: 24px; }
+  .kas .dbtn { height: 44px; padding: 0 20px; border-radius: 10px; background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 700; box-shadow: inset 0 0 0 1.5px var(--line-strong), 0 var(--l1) 0 0 var(--line-strong); transition: transform 90ms var(--ease), box-shadow 90ms var(--ease); }
+  .kas .dbtn:active { transform: translateY(var(--l1)); box-shadow: inset 0 0 0 1.5px var(--line-strong), 0 0 0 0 var(--line-strong); }
+  .kas .dbtn--danger { background: var(--danger); color: #fff; box-shadow: 0 var(--l1) 0 0 var(--ura-danger); }
+  .kas .dbtn--danger:active { box-shadow: 0 0 0 0 var(--ura-danger); }
+
   @media (prefers-reduced-motion: reduce) {
     .phone *, .phone *::before { transition-duration: 0s !important; }
   }
@@ -522,7 +1051,7 @@
 <div class="top">
   <div class="top__title">
     <h1>UI のくらべっこ</h1>
-    <p>SK's Toolbox の設定画面を 4 つのデザインで再現した試作です</p>
+    <p>SK's Toolbox の設定画面を 9 つのデザインと SK オリジナルの「かさね」で再現した試作です</p>
   </div>
   <div class="pills" id="ui-pills" role="group" aria-label="デザイン"></div>
   <div class="pills" id="theme-pills" role="group" aria-label="表示"></div>
@@ -539,8 +1068,20 @@
     { key: "ios", cls: "ios", name: "iOS", by: "Apple" },
     { key: "md", cls: "md", name: "Material 3", by: "Google" },
     { key: "fluent", cls: "fl", name: "Fluent 2", by: "Microsoft" },
-    { key: "oneui", cls: "one", name: "One UI", by: "Samsung" }
+    { key: "oneui", cls: "one", name: "One UI", by: "Samsung" },
+    { key: "hyper", cls: "hyper", name: "HyperOS", by: "Xiaomi" },
+    { key: "dads", cls: "dads", name: "デジタル庁", by: "日本" },
+    { key: "toss", cls: "toss", name: "Toss", by: "韓国" },
+    { key: "weui", cls: "weui", name: "WeUI", by: "WeChat" },
+    { key: "shad", cls: "shad", name: "shadcn/ui", by: "Web" },
+    { key: "kasane", cls: "kas", name: "かさね", by: "SK" }
   ];
+  // 見出しの下の文（デジタル庁は説明、Toss は話しかけるような文）
+  var LEAD = {
+    dads: "表示・通知・データの設定を変えられます。変えた内容は、すぐにこの端末に反映されます。",
+    toss: "使いやすいように変えてみましょう",
+    shad: "Toolbox の表示・通知・データを管理します。"
+  };
   // 色の名前と見本は SK's Brand と同じ（toolbox/shared/settings.js の COLORS）
   var COLORS = [
     { key: "blue", name: "いつもの青", sw: "#2563eb" },
@@ -616,6 +1157,78 @@
       ],
       web: ["✕", "公式の部品はありません。フォントの SamsungOne もアイコンも使えないので、似せて一から作ることになります。"],
       fit: "日本では見慣れている人は少なめです。そのぶん目新しく、スマホを片手で使いやすくなります。"
+    },
+    hyper: {
+      where: "Xiaomi・Redmi・POCO のスマホ（アジア・ヨーロッパ・インドなどで多い。日本でも Redmi は安くて人気）",
+      points: [
+        "左寄せの大きな見出しのすぐ下に、丸い検索欄（設定を探しやすい）",
+        "カードも区切り線も使わず、白い背景に色つきの角丸アイコンを並べる",
+        "いまの値は右に灰色の文字と小さな「›」",
+        "スイッチやボタンは丸くて大きい。確認は画面の下に浮かぶカードで、丸いボタンが左右に並ぶ",
+        "基本の色は明るい青。アカウントのアイコンには Xiaomi らしいオレンジ"
+      ],
+      web: ["✕", "公式の部品はありません。フォントの MiSans は Xiaomi が配っていますが、Web で使えるかは使う前に確認が必要です（この試作では使っていません）。"],
+      fit: "iOS に近い見た目なので、iPhone の人にも Android の人にもなじみます。そのぶん SK らしさは出しにくいです。"
+    },
+    dads: {
+      where: "デジタル庁や国・自治体の Web サイト（これから増えていく見込み）",
+      points: [
+        "だれでも読みやすいように、文字は 16px 以上、行間は広め（1.7 倍）",
+        "オン・オフはスイッチではなくチェックボックス、選ぶものはラジオボタン。どれも押しやすい大きさ",
+        "リンクは青い下線つきの文字。どこが押せるか、見ただけでわかる",
+        "キーボードで選んでいるところは、黒と黄色の太い枠で目立たせる（Tab キーで試せます）",
+        "下のタブバーや凝った動きはない。ヘッダーの「検索」「メニュー」とパンくずリストで、いまの場所がわかる。お知らせは緑の枠のバナー"
+      ],
+      web: ["◎", "デザインのデータとコードの例が公開されていて、無料で使えます（使う前にライセンスを確認）。フォントは Noto Sans JP。ダークテーマは決まっていないので、この試作のダークはこちらで足したものです。"],
+      fit: "学校や保護者向けの SK Hub Systems・SK Share と相性がよいです。Toolbox のように遊び心のあるアプリには、少しかたく見えます。"
+    },
+    toss: {
+      where: "韓国の送金・金融アプリ Toss（韓国ではとても多くの人が使う）",
+      points: [
+        "大きく太い見出しと、話しかけるような文。1 画面で伝えることは 1 つだけ",
+        "灰色の背景に、角の丸い白いカード。区切り線はほとんど使わない",
+        "押すと、ボタンや行が少しだけ縮む。動きは短くてなめらか",
+        "確認は画面の下から出るシート。大きなボタンが左右に 2 つ",
+        "青（#3182F6）が基本の色。アイコンは色つきの丸に入れる（本物は立体的な絵文字のようなアイコン）"
+      ],
+      web: ["△", "ふつうの Web サイトでそのまま使える形の部品集は、公開されていないはずです（使う前に確認が必要）。フォントの Toss Product Sans も使えないので、この試作は Pretendard（無料・日本語版あり）です。"],
+      fit: "SK Share のパスワード入力や、アカウント登録のような「手順」の画面に向いています。日本ではあまり知られていないので、新しく見えます。"
+    },
+    shad: {
+      where: "Vercel・Linear・Cursor など、最近の Web サービスや開発者向けのサイト。AI が作る Web サイトもこれが多い",
+      points: [
+        "白と黒が基本で、色はほとんど使わない（この試作では「いつもの青」のときに基本の黒、ほかの色ではその色）",
+        "細い枠線と、とても薄い影のカード。角丸は 8〜14px くらい",
+        "文字は小さめ（14px）で、見出しは太く字間を少しつめる。フォントは Geist",
+        "スマホの下のタブバーはなく、Web サイトのヘッダー。お知らせは下に出る小さなカード（Sonner）",
+        "部品のコードを自分のプロジェクトにコピーして、自由に書きかえて使う仕組み"
+      ],
+      web: ["○", "無料（MIT ライセンス）。ただし React と Tailwind CSS が前提です。いまの SK のサイト（React を使わない HTML・CSS・JS）では、見た目だけまねて CSS を自分で書くことになります。"],
+      fit: "いまの Web らしい、すっきりした見た目になります。そのかわり、どこにでもある見た目になりやすく、SK らしさは色やロゴで出す必要があります。"
+    },
+    kasane: {
+      where: "SK のオリジナル。SK Hub Systems のアプリと Web のために作ったデザインシステム（まだどこにも使っていない）",
+      points: [
+        "平安時代の「襲の色目」がもと。ぼかした影は使わず、重ねた面のふちから下の色がのぞく（カードは一重、ダイアログは二重）",
+        "色は表と裏の 2 色の組み合わせ。いつもの青は瑠璃と山吹、抹茶は松（緑と紫）、藤は藤と萌黄、のように SK の 7 色に 1 つずつ",
+        "押すと、上の面が下の面まで沈んで、のぞいていた色が消える",
+        "大きな見出しは明朝（Shippori Mincho B1）で、下に表と裏の 2 本の短い帯。選んだタブにも同じ帯が付く",
+        "行のアイコンは、1 つずつ色を変えず、表の色の薄い四角にそろえる"
+      ],
+      web: ["◎", "SK が作ったものなので、自由に使えます。部品は HTML と CSS だけ（React は使わない）なので、いまの SK のサイトにそのまま入れられます。部品の見本は _mockups/kasane/ にあります。"],
+      fit: "SK の色の名前（さくら・抹茶・藤・墨）と日本の伝統の色の組み合わせがつながるので、ほかのどのデザインとも見た目がちがいます。まだ試作なので、使いながら決まりを直していく段階です。"
+    },
+    weui: {
+      where: "WeChat（微信）のミニプログラムと、WeChat の中で開く Web ページ（中国ではとても多くの人が毎日使う）",
+      points: [
+        "WeChat の緑（#07C160）が基本の色（この試作では「いつもの青」のときに WeChat の緑、ほかの色ではその色）",
+        "右上に、ミニプログラムの「…」と「閉じる」のカプセル（どのミニプログラムにも出る）",
+        "灰色の背景に、端から端までの白いリスト。角丸のカードは使わず、下に小さな説明文",
+        "選ぶものは、右に緑のチェックが付く行。お知らせは、画面の真ん中の黒い四角に大きなチェック",
+        "アカウントの写真は、丸ではなく角丸の四角"
+      ],
+      web: ["◎", "公開されていて無料で使えます（ミニプログラム用と、ふつうの Web 用の CSS があります）。ライセンスは使う前に確認を。"],
+      fit: "LINE ミニアプリ版の Toolbox と立場が同じなので、ミニアプリらしい作り（右上のボタン・シンプルなリスト）の参考になります。見た目は地味なので、SK のサイト全体には向きません。"
     }
   };
 
@@ -637,13 +1250,16 @@
     sync: '<path d="M19.5 12a7.5 7.5 0 0 1-13.2 4.9M4.5 12a7.5 7.5 0 0 1 13.2-4.9"/><path d="M17.8 3.5v3.6h-3.6M6.2 20.5v-3.6h3.6"/>',
     home: '<path d="M4.5 10.5 12 4l7.5 6.5V19a1 1 0 0 1-1 1H15v-5.5H9V20H5.5a1 1 0 0 1-1-1Z"/>',
     apps: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/>',
-    tune: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>'
+    tune: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+    menu: '<path d="M4 6.5h16M4 12h16M4 17.5h16"/>',
+    dots: '<circle cx="5.5" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.7" fill="currentColor" stroke="none"/>',
+    ring: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.8" fill="currentColor" stroke="none"/>'
   };
   // Material 3 だけは Material Symbols（Google の無料アイコン）
   var MSR = {
     back: "arrow_back", arrow: "arrow_back", chev: "chevron_right", search: "search", moon: "dark_mode", palette: "palette",
     motion: "animation", bell: "notifications", badge: "app_badging", backup: "backup", globe: "language", trash: "delete",
-    check: "check", sync: "sync", home: "home", apps: "apps", tune: "settings"
+    check: "check", sync: "sync", home: "home", apps: "apps", tune: "settings", menu: "menu", dots: "more_horiz", ring: "radio_button_checked"
   };
   function ic(name, k) {
     if (k === "md") return '<span class="msr" aria-hidden="true">' + MSR[name] + "</span>";
@@ -708,11 +1324,17 @@
     var nav = NAV.map(function (n) {
       return '<button type="button" class="nav-b" data-tab="' + n.key + '"' + (n.key === "settings" ? ' aria-current="page"' : "") + '><span class="nav-ind">' + ic(n.ic, k) + '</span><span class="nav-l">' + n.name + "</span></button>";
     }).join("");
-    return '<div class="phone ' + u.cls + '" data-ui="' + k + '" style="--sw:' + swHex() + '">' +
+    return '<div class="phone ' + u.cls + '" data-ui="' + k + '" data-c="' + state.color + '" style="--sw:' + swHex() + '">' +
       '<div class="sb" aria-hidden="true"><span>9:41</span><span class="sb-cam"></span><span class="sb-icons">' + SB_ICONS + "</span></div>" +
       '<div class="scr">' +
-        '<div class="bar"><button type="button" class="ib lg" data-act="back" aria-label="戻る">' + ic(k === "fluent" ? "arrow" : "back", k) + '</button><span class="bar-title">設定</span><button type="button" class="ib" data-act="search" aria-label="検索">' + ic("search", k) + "</button></div>" +
-        '<header class="hero"><h2 class="hero-title">設定</h2><p class="hero-sub">SK\'s Toolbox</p></header>' +
+        '<div class="bar"><button type="button" class="ib lg" data-act="back" aria-label="戻る">' + ic(k === "fluent" ? "arrow" : "back", k) + '</button>' +
+          '<span class="bar-brand">SK\'s Toolbox</span><span class="bar-title">設定</span>' +
+          '<button type="button" class="ib" data-act="search" aria-label="検索">' + ic("search", k) + '<span class="ib-l" aria-hidden="true">検索</span></button>' +
+          '<button type="button" class="ib ib-menu" data-act="menu" aria-label="メニュー">' + ic("menu", k) + '<span class="ib-l" aria-hidden="true">メニュー</span></button>' +
+          '<span class="capsule"><button type="button" data-act="menu" aria-label="その他">' + ic("dots", k) + '</button><i aria-hidden="true"></i><button type="button" data-act="back" aria-label="閉じる">' + ic("ring", k) + "</button></span></div>" +
+        '<nav class="crumbs" aria-label="現在位置"><a href="#" data-act="link" data-label="ホーム">ホーム</a><i aria-hidden="true">›</i><a href="#" data-act="link" data-label="SK\'s Toolbox">SK\'s Toolbox</a><i aria-hidden="true">›</i><span aria-current="page">設定</span></nav>' +
+        '<header class="hero"><h2 class="hero-title">設定</h2><p class="hero-sub">SK\'s Toolbox</p>' + (LEAD[k] ? '<p class="hero-lead">' + LEAD[k] + "</p>" : "") +
+          '<button type="button" class="hero-search" data-act="search">' + ic("search", k) + "<span>設定を検索</span></button></header>" +
         '<section class="acct" aria-label="アカウント"><span class="av" aria-hidden="true">S</span><span class="acct-text"><span class="acct-name">SK</span><span class="acct-sub">SK Hub Systems アカウント・同期オン</span></span>' +
           '<span class="acct-actions"><button type="button" class="btn" data-act="sync">' + ic("sync", k) + "<span>今すぐ同期</span></button></span></section>" +
         groups +
@@ -739,7 +1361,7 @@
       "<h3>特徴（この試作で再現したところ）</h3><ul>" + n.points.map(function (p) { return "<li>" + p + "</li>"; }).join("") + "</ul>" +
       '<h3>Web で使えるか</h3><div class="web"><b>' + n.web[0] + "</b><p>" + n.web[1] + "</p></div>" +
       '<h3>SK にとって</h3><p class="fit">' + n.fit + "</p>" +
-      '<p class="disclaimer">どれも似せて作った再現で、Apple・Google・Microsoft・Samsung の本物の部品ではありません。スイッチ・テーマ・アプリの色・消去の確認・今すぐ同期は、さわって動きます。</p></aside>';
+      '<p class="disclaimer">どれも似せて作った再現で、各社・デジタル庁の本物の部品ではありません。スイッチ・テーマ・アプリの色・消去の確認・今すぐ同期は、さわって動きます。</p></aside>';
   }
 
   // ---- 電話の中の操作 ----
@@ -757,14 +1379,14 @@
     lastFocus = document.activeElement;
     w.removeAttribute("inert");
     w.classList.add("is-on");
-    setTimeout(function () { $('[data-act="cancel"]', w).focus(); }, 30);
+    setTimeout(function () { $('[data-act="cancel"]', w).focus({ preventScroll: true }); }, 30);
   }
   function closeDlg(ph) {
     var w = $(".dlg-wrap", ph);
     if (!w.classList.contains("is-on")) return;
     w.classList.remove("is-on");
     w.setAttribute("inert", "");
-    if (lastFocus && ph.contains(lastFocus)) lastFocus.focus();
+    if (lastFocus && ph.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
   }
 
   // ---- Liquid Glass のレンズ（iOS だけ） ----
@@ -890,6 +1512,7 @@
     ph.addEventListener("click", function (e) {
       var t = e.target.closest("button, [data-act]");
       if (!t || !ph.contains(t)) return;
+      if (t.tagName === "A") e.preventDefault();
       if (t.dataset.sw) { setSwitch(t.dataset.sw, t.getAttribute("aria-checked") !== "true"); return; }
       if (t.dataset.themeSet) { setTheme(t.dataset.themeSet); return; }
       if (t.dataset.color) { setColor(t.dataset.color); return; }
@@ -903,7 +1526,7 @@
       switch (t.dataset.act) {
         case "sync": toast(ph, "同期しました"); break;
         case "link": toast(ph, "「" + t.dataset.label + "」は試作なので開きません"); break;
-        case "back": case "search": toast(ph, "試作なので、この画面だけです"); break;
+        case "back": case "search": case "menu": toast(ph, "試作なので、この画面だけです"); break;
         case "danger": openDlg(ph); break;
         case "cancel": closeDlg(ph); break;
         case "confirm": closeDlg(ph); toast(ph, "消去しました（試作なので、実際には消えていません）"); break;
@@ -926,7 +1549,7 @@
   function setColor(c) {
     state.color = c; save();
     var hex = swHex();
-    $$(".phone").forEach(function (ph) { ph.style.setProperty("--sw", hex); });
+    $$(".phone").forEach(function (ph) { ph.style.setProperty("--sw", hex); ph.setAttribute("data-c", c); });
     $$("[data-color]").forEach(function (b) { b.setAttribute("aria-checked", b.dataset.color === c); });
   }
   function setSwitch(id, v) {
@@ -936,8 +1559,8 @@
 
   // ---- ページ ----
   $("#ui-pills").innerHTML = UIS.map(function (u, i) {
-    return '<button type="button" data-ui-set="' + u.key + '" title="キー ' + (i + 1) + '">' + u.name + "<small>" + u.by + "</small></button>";
-  }).join("") + '<button type="button" data-all title="キー A">4 つ並べる</button>';
+    return '<button type="button" data-ui-set="' + u.key + '" title="キー ' + ((i + 1) % 10) + '">' + u.name + "<small>" + u.by + "</small></button>";
+  }).join("") + '<button type="button" data-all title="キー A">ぜんぶ並べる</button>';
   $("#theme-pills").innerHTML = THEMES.map(function (t) { return '<button type="button" data-theme="' + t.key + '">' + t.name + "</button>"; }).join("");
 
   function render() {
@@ -976,7 +1599,7 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { $$(".phone").forEach(closeDlg); return; }
     if (e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
-    var n = parseInt(e.key, 10);
+    var n = e.key === "0" ? 10 : parseInt(e.key, 10);
     if (n >= 1 && n <= UIS.length) { state.ui = UIS[n - 1].key; state.all = false; render(); }
     else if (e.key === "a" || e.key === "A") { state.all = !state.all; render(); }
   });
