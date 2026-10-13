@@ -45,13 +45,15 @@
   <div class="hd-menu" id="hd-menu"><div class="hd-menu-inner"><div class="hd-menu-content"></div></div></div>
   <div class="hd-backdrop" id="hd-backdrop"></div>
   <!-- sk-hub.jp への引っ越しのお知らせ（ヘッダーの下の帯。スタイルは /assets/site.css の sk-dn）
-       閉じたら、同じ段階（data-stage）のあいだは出さない（localStorage の sk_domain_notice）。日程が決まった・切り替えたときは data-stage と文を変える -->
+       閉じたら、同じ段階（data-stage）のあいだは出さない（localStorage の sk_domain_notice）。日程が決まった・切り替えたときは data-stage と文を変える
+       sk-hub.jp の公開（2026-10-14 12:00 日本時間）からは、下の .sk-dn-old（オレンジの「古いアドレスです」。閉じられない）に入れかえる -->
   <div class="sk-dn" id="sk-dn" data-stage="prep" role="region" aria-label="お知らせ" hidden>
     <p class="sk-dn-text"><strong>SK のサイトは sk-hub.jp に引っ越します</strong><span>いまは準備中です。日程は決まりしだいお知らせします。</span></p>
     <a class="sk-dn-more" href="/domain/">詳しく</a>
+    <div class="sk-dn-old" hidden><p class="sk-dn-text"><strong>ここは SK の古いアドレスです</strong><span>SK は sk-hub.jp に引っ越しました。データを移してから、新しいアドレスをお使いください。</span></p><a class="sk-dn-more" href="/move/">データを移す</a><a class="sk-dn-more sk-dn-new" href="https://sk-hub.jp/">sk-hub.jp で開く</a></div>
     <button class="sk-dn-close" type="button" aria-label="閉じる"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   </div>
-  <script>(function(){var b=document.getElementById("sk-dn"),k="sk_domain_notice",s=b.getAttribute("data-stage");try{if(localStorage.getItem(k)===s||/^\/domain\//.test(location.pathname)||/[?&](embed|line)\b/.test(location.search)||sessionStorage.getItem("sk_line"))return;}catch(e){return;}b.hidden=false;function done(){try{localStorage.setItem(k,s);}catch(e){}}b.querySelector(".sk-dn-close").addEventListener("click",function(){done();b.hidden=true;});b.querySelector(".sk-dn-more").addEventListener("click",done);})();</script>
+  <script>(function(){var b=document.getElementById("sk-dn"),k="sk_domain_notice",s=b.getAttribute("data-stage");if(Date.now()>=Date.UTC(2026,9,14,3)){var o=b.querySelector(".sk-dn-old");b.querySelector(".sk-dn-text").remove();b.querySelector(".sk-dn-more").remove();b.querySelector(".sk-dn-close").remove();o.hidden=false;b.classList.add("sk-dn--old");var n=b.querySelector(".sk-dn-new");if(n)n.href="https://sk-hub.jp"+location.pathname+location.search+location.hash;try{if(/^\/domain\//.test(location.pathname)||/[?&](embed|line)\b/.test(location.search)||sessionStorage.getItem("sk_line"))return;}catch(e){}b.hidden=false;return;}try{if(localStorage.getItem(k)===s||/^\/domain\//.test(location.pathname)||/[?&](embed|line)\b/.test(location.search)||sessionStorage.getItem("sk_line"))return;}catch(e){return;}b.hidden=false;function done(){try{localStorage.setItem(k,s);}catch(e){}}b.querySelector(".sk-dn-close").addEventListener("click",function(){done();b.hidden=true;});b.querySelector(".sk-dn-more").addEventListener("click",done);})();</script>
 
   <main id="main">
     <section class="plist band band--plain">

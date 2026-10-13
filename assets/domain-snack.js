@@ -7,9 +7,11 @@
 //   ・日程が決まった・切り替えたときは、STAGE を index.html の #sk-dn の data-stage とそろえて変える
 //     （MALU は Service Worker がこのファイルを保存するので、dictionary/sw.js の CACHE_NAME も上げる）
 //   ・出さないところ: iframe の中・LINE のミニアプリ・?embed
+//   ・sk-hub.jp の公開（2026-10-14 12:00 日本時間）からは「ここは古いアドレスです」に変え、データを移すページ（/move/）へのリンクを出す（段階 old）
 (function () {
   "use strict";
-  var STAGE = "prep";
+  var OLD = Date.now() >= Date.UTC(2026, 9, 14, 3); // sk-hub.jp の公開のあと
+  var STAGE = OLD ? "old" : "prep";
   if (window.top !== window.self) return;
   if (/[?&](embed|line)\b|[?&]liff\./.test(location.search)) return;
   try {
@@ -56,13 +58,13 @@
     var text = document.createElement("span");
     text.className = "sk-snack-text";
     // 「sk-hub.jp」の途中で改行しない
-    t("SK のサイトは sk-hub.jp に引っ越します").split("sk-hub.jp").forEach(function (part, i) {
+    t(OLD ? "ここは古いアドレスです。SK は sk-hub.jp に引っ越しました" : "SK のサイトは sk-hub.jp に引っ越します").split("sk-hub.jp").forEach(function (part, i) {
       if (i) { var d = document.createElement("span"); d.className = "sk-snack-domain"; d.textContent = "sk-hub.jp"; text.appendChild(d); }
       text.appendChild(document.createTextNode(part));
     });
     var more = document.createElement("a");
-    more.href = "/domain/";
-    more.textContent = t("詳しく");
+    more.href = OLD ? "/move/" : "/domain/";
+    more.textContent = t(OLD ? "データを移す" : "詳しく");
     var close = document.createElement("button");
     close.type = "button";
     close.setAttribute("aria-label", t("閉じる"));

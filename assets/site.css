@@ -2072,3 +2072,14 @@ a.ha-service:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px va
   .sk-dn-close { right: 6px; }
 }
 html.in-line .sk-dn { display: none; }
+/* sk-hub.jp の公開のあと: 古いアドレスの帯（オレンジ・閉じられない） */
+.sk-dn-old { display: contents; }
+.sk-dn-old[hidden] { display: none; }
+.sk-dn--old { background: var(--warn-bg); border-bottom-color: color-mix(in srgb, var(--amber) 45%, transparent); padding-right: 16px; }
+.sk-dn--old .sk-dn-text span { color: var(--warn-ink); }
+.sk-dn--old .sk-dn-more { background: var(--amber-ink); color: #fff; }
+.sk-dn--old .sk-dn-new { background: transparent; color: var(--warn-ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn-ink) 40%, transparent); }
+@media (max-width: 600px) {
+  .sk-dn--old { flex-wrap: wrap; padding-right: 16px; }
+  .sk-dn--old .sk-dn-text { flex-basis: 100%; }
+}

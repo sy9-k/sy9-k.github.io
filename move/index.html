@@ -10,7 +10,8 @@
 <!-- データの引っ越し（sy9-k.github.io → sk-hub.jp）。移行期間が終わったら、古いアドレスでこの画面だけを出す。
      最初に「移し方は 2 つ」を出し、選んだ方の画面に進んで案内する: choose → device（選ぶ → moving → done）/ account
      見た目は Material 3（/move/theme.css・move.css。部品は /toolbox/shared/m3.css・m3.js）、動きは /move/move.js
-     いまは形だけ（データは移さない）。本番にするときは .prep を消し、move.js の PREVIEW を false にして中身を作る -->
+     公開（2026-10-14 12:00）までは形だけ（.prep を出して、データは移さない）。公開のあとは本当に移す（move.js の PREVIEW）
+     移し方: sk-hub.jp/move/ を別のタブで開いて postMessage で渡す（/assets/move-data.js）。開けないときはファイルに書き出す（error → file） -->
 <!-- 表示（ライト・ダーク）。サイトで選んだものに合わせる -->
 <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}");if(t.mode==="light"||t.mode==="dark")document.documentElement.setAttribute("data-theme",t.mode);}catch(e){}})();</script>
 <!-- 文字は M PLUS 1（M+）。アイコンは Material Symbols -->
@@ -28,7 +29,7 @@
 </header>
 
 <div class="stage">
-  <p class="prep"><span class="msr" aria-hidden="true">construction</span><span><b>このページは準備中です。</b>いまはまだデータは移りません。流れだけを確かめられます。</span></p>
+  <p class="prep" id="prep"><span class="msr" aria-hidden="true">construction</span><span><b>このページは準備中です。</b>いまはまだデータは移りません。流れだけを確かめられます。</span></p>
 
   <!-- 1. 選ぶ -->
   <section class="screen is-on" data-screen="choose" aria-labelledby="choose-h">
@@ -66,11 +67,11 @@
     <div class="body">
       <p class="list-h">この端末のデータ</p>
       <ul class="list" id="pick">
-        <li><label class="item m3-state"><span class="avatar avatar--toolbox"><span class="msr">home_repair_service</span></span><span class="item-text"><b>SK's Toolbox</b><small>Todo・Memo（画像も）・時間割など</small></span><input class="check" type="checkbox" checked data-name="SK's Toolbox"></label></li>
-        <li><label class="item m3-state"><span class="avatar avatar--nagi"><span class="msr">timer</span></span><span class="item-text"><b>Nagi</b><small>集中の記録・目標・連続日数</small></span><input class="check" type="checkbox" checked data-name="Nagi"></label></li>
-        <li><label class="item m3-state"><span class="avatar avatar--malu"><span class="msr">menu_book</span></span><span class="item-text"><b>MALU</b><small>単語帳・検索の履歴・設定</small></span><input class="check" type="checkbox" checked data-name="MALU"></label></li>
-        <li><label class="item m3-state"><span class="avatar avatar--lab"><span class="msr">science</span></span><span class="item-text"><b>SK's Lab</b><small>QR Drop・スマートダッシュボード</small></span><input class="check" type="checkbox" checked data-name="SK's Lab"></label></li>
-        <li><label class="item m3-state"><span class="avatar avatar--site"><span class="msr">tune</span></span><span class="item-text"><b>サイトの設定</b><small>表示・言語・お知らせの既読</small></span><input class="check" type="checkbox" checked data-name="サイトの設定"></label></li>
+        <li><label class="item m3-state"><span class="avatar avatar--toolbox"><span class="msr">home_repair_service</span></span><span class="item-text"><b>SK's Toolbox</b><small>Todo・Memo（画像も）・時間割など</small></span><input class="check" type="checkbox" checked data-name="SK's Toolbox" data-group="toolbox"></label></li>
+        <li><label class="item m3-state"><span class="avatar avatar--nagi"><span class="msr">timer</span></span><span class="item-text"><b>Nagi</b><small>集中の記録・目標・連続日数</small></span><input class="check" type="checkbox" checked data-name="Nagi" data-group="nagi"></label></li>
+        <li><label class="item m3-state"><span class="avatar avatar--malu"><span class="msr">menu_book</span></span><span class="item-text"><b>MALU</b><small>検索の履歴・設定（単語帳はログインで戻ります）</small></span><input class="check" type="checkbox" checked data-name="MALU" data-group="malu"></label></li>
+        <li><label class="item m3-state"><span class="avatar avatar--lab"><span class="msr">science</span></span><span class="item-text"><b>SK's Lab</b><small>QR Drop・スマートダッシュボード</small></span><input class="check" type="checkbox" checked data-name="SK's Lab" data-group="lab"></label></li>
+        <li><label class="item m3-state"><span class="avatar avatar--site"><span class="msr">tune</span></span><span class="item-text"><b>サイトの設定</b><small>表示・言語</small></span><input class="check" type="checkbox" checked data-name="サイトの設定" data-group="site"></label></li>
       </ul>
       <p class="note"><span class="msr" aria-hidden="true">info</span><span>ログインの状態は移りません。新しいアドレスで、もう一度ログインしてください。</span></p>
     </div>
@@ -112,6 +113,39 @@
     </div>
   </section>
 
+  <!-- 2a-4. 移せなかった -->
+  <section class="screen" data-screen="error" aria-labelledby="error-h">
+    <div class="head">
+      <div class="hero hero--err" aria-hidden="true"><span class="msr">error</span></div>
+      <h1 id="error-h">移せませんでした</h1>
+      <p class="sub" id="error-sub">sk-hub.jp のタブから返事がありませんでした。</p>
+    </div>
+    <div class="body">
+      <div class="callout"><span class="msr" aria-hidden="true">info</span><span>ホーム画面に入れたアプリから開いているときなど、タブで渡せないことがあります。そのときは、ファイルに書き出して、sk-hub.jp で読み込んでください。</span></div>
+    </div>
+    <div class="bottom">
+      <button class="text-btn m3-state" type="button" id="to-file">ファイルで移す</button>
+      <button class="m3-btn m3-state" type="button" id="retry">もう一度</button>
+    </div>
+  </section>
+  <!-- 2a-5. ファイルで移す -->
+  <section class="screen" data-screen="file" aria-labelledby="file-h">
+    <div class="head">
+      <div class="hero" aria-hidden="true"><span class="msr">download</span></div>
+      <h1 id="file-h">ファイルに書き出しました</h1>
+      <p class="sub">次の手順で、sk-hub.jp に読み込んでください。</p>
+    </div>
+    <div class="body">
+      <ol class="steps">
+        <li><b>sk-hub.jp/move/ を開く</b><small>このあとのボタンで開けます</small></li>
+        <li><b>「ファイルから読み込む」を押す</b><small>いま書き出したファイル（sk-move-…json）を選びます</small></li>
+      </ol>
+      <div class="callout"><span class="msr" aria-hidden="true">lock</span><span>ファイルには、この端末のデータがそのまま入っています。読み込んだら消してください。人に送らないでください。</span></div>
+    </div>
+    <div class="bottom">
+      <a class="m3-btn m3-state" href="https://sk-hub.jp/move/" data-new="/move/"><span class="msr">open_in_new</span>sk-hub.jp/move/ を開く</a>
+    </div>
+  </section>
   <!-- 2b. アカウントで -->
   <section class="screen" data-screen="account" aria-labelledby="account-h">
     <div class="head">
@@ -146,6 +180,7 @@
 <!-- 先に訳す（訳すと文の中の要素が作り直されるので、動きのスクリプトより前） -->
 <script>window.SKI18N && SKI18N.translatePage();</script>
 <script src="/toolbox/shared/m3.js"></script>
+<script src="/assets/move-data.js"></script>
 <script src="/move/move.js"></script>
 </body>
 </html>
