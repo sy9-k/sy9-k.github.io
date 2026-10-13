@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>saetab Bridge</title>
+<style>
+  body { font-family: system-ui, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+  .status { padding: 10px; border-radius: 6px; margin: 10px 0; }
+  .enabled { background: #e6ffed; border: 1px solid #2ecc71; color: #155724; }
+  .disabled { background: #fff3cd; border: 1px solid #ffc107; color: #856404; }
+  pre { background: #f6f8fa; padding: 12px; border-radius: 4px; overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<h1>saetab Bridge 連携</h1>
+
+<div id="bridgeStatus" class="status">状態を確認中...</div>
+
+<h2>時間割データ</h2>
+<pre id="timetableDisplay">読み込み中...</pre>
+
+<h2>メモデータ</h2>
+<pre id="memoDisplay">読み込み中...</pre>
+
+<script>
+// ===== 設定 =====
+const STORAGE_KEY = 'saetab_bridge_enabled';
+// 必要に応じて許可する送信元を指定（* はすべて許可、本番環境では特定オリジンに制限推奨）
+const TARGET_ORIGIN = '*';
+
+// ===== データ取得（サンプル：実際のデータ取得処理に置き換えて利用）=====
+function getTimetableData() {
+  // 実際は画面表示中の時間割要素やDBから取得する形に書き換えてください
+  return [
+    { day: '月', time: '1限', subject: '国語', room: '1-A' },
+    { day: '火', time: '2限', subject: '数学', room: '2-B' },
+    { day: '水', time: '3限', subject: '英語', room: '3-C' }
+  ];
+}
+
+function getMemoData() {
+  // 実際はメモ入力欄や保存先から取得する形に書き換えてください
+  return {
+    lastUpdated: new Date().toISOString(),
+    items: [
+      { id: 1, text: '課題提出 10/20 まで', done: false },
+      { id: 2, text: '次回テスト範囲 P30～P45', done: true }
+    ]
+  };
+}
+
+// ===== ブリッジ処理 =====
+function checkBridgeEnabled() {
+  try {
+    const value = localStorage.getItem(STORAGE_KEY);
+    // "true" 文字列または真偽値trueの場合に有効
+    return value === 'true' || value === true;
+  } catch (e) {
+    console.warn('localStorageへのアクセスに失敗:', e);
+    return false;
+  }
+}
+
+function sendToParent(data) {
+  if (!window.parent || window.parent === window) {
+    console.log('親ウィンドウが存在しません（トップフレームとして実行中）');
+    return false;
+  }
+
+  try {
+    window.parent.postMessage({
+      type: 'saetab_bridge_data',
+      timestamp: Date.now(),
+      data: data
+    }, TARGET_ORIGIN);
+    console.log('親ウィンドウへ送信しました', data);
+    return true;
+  } catch (e) {
+    console.error('postMessage送信エラー:', e);
+    return false;
+  }
+}
+
+// ===== 画面表示更新 =====
+function updateUI(isEnabled, timetable, memo) {
+  const statusEl = document.getElementById('bridgeStatus');
+  const timetableEl = document.getElementById('timetableDisplay');
+  const memoEl = document.getElementById('memoDisplay');
+
+  if (isEnabled) {
+    statusEl.className = 'status enabled';
+    statusEl.textContent = '✅ ブリッジ有効 — 親ウィンドウへデータを送信しました';
+  } else {
+    statusEl.className = 'status disabled';
+    statusEl.textContent = '⚠️ ブリッジ無効 — データ送信はスキップされました';
+  }
+
+  timetableEl.textContent = JSON.stringify(timetable, null, 2);
+  memoEl.textContent = JSON.stringify(memo, null, 2);
+}
+
+// ===== メイン処理 =====
+document.addEventListener('DOMContentLoaded', () => {
+  const isEnabled = checkBridgeEnabled();
+  const timetable = getTimetableData();
+  const memo = getMemoData();
+
+  if (isEnabled) {
+    sendToParent({ timetable, memo });
+  }
+
+  updateUI(isEnabled, timetable, memo);
+
+  // ストレージの変更を監視して動的に反映
+  window.addEventListener('storage', (e) => {
+    if (e.key === STORAGE_KEY) {
+      const nowEnabled = e.newValue === 'true';
+      const newTimetable = getTimetableData();
+      const newMemo = getMemoData();
+      
+      if (nowEnabled) {
+        sendToParent({ timetable: newTimetable, memo: newMemo });
+      }
+      updateUI(nowEnabled, newTimetable, newMemo);
+    }
+  });
+});
+</script>
+
+</body>
+</html>
