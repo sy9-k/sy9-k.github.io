@@ -1,11 +1,14 @@
-// 移行期間が終わったあとの古いアドレスのページ（/moved/）の動き
-//   残っていない人（none）: 5 秒数えて sk-hub.jp の同じページへ。残っている人（left）: 書き出し・消すの案内
-//   いまは形だけ（PREVIEW）: 端末のデータは見ず、移動・書き出し・消すもしない。.prep の中のボタンで状態を切り替える
-//   本番にするときは PREVIEW を false にし、端末に古いデータ（localStorage の sk_*・IndexedDB）があるかで state を決める
+// 古いアドレスのページ（/moved/。旧ドメインのサポートを終えたあとは、どのページを開いてもこの中身＝404.html・index.html）の動き
+//   残っていない人（none）: 5 秒数えて sk-hub.jp の同じページへ。「移動しない」で止められる
+//   残っている人（left）: 自動では移動しない。残っているアプリを出し、ファイルに書き出す・/move/ でそのまま移す・このアドレスのデータを消す
+//   古いデータ = この端末のこのアドレスに、アプリで使う人が作ったデータ（Todo・記録・履歴など）があるか
+//     調べ方・書き出し・消し方は /assets/move-data.js（window.SKMove。/move/ と sk-hub.jp/move/ と同じ部品）
+//     表示の設定・同意の記録（site）だけなら「残っていない」とする
 (function () {
   "use strict";
-  var PREVIEW = true;
   var I18N = window.SKI18N;
+  var M = window.SKMove;
+  var APPS = ["toolbox", "nagi", "malu", "lab"]; // 「残っている」と数えるアプリ
   function t(s) { return I18N ? I18N.t(s) : s; }
 
   var page = document.getElementById("page");
@@ -38,32 +41,58 @@
       sec.textContent = secText.textContent = Math.max(n, 0);
       if (n > 0) return;
       clearInterval(timer);
-      if (PREVIEW) toast(t("準備中なので、移動はしません"));
-      else location.replace(dest);
+      location.replace(dest);
     }, 1000);
   }
   document.getElementById("stay").addEventListener("click", function () { clearInterval(timer); page.classList.add("stopped"); });
 
+  var left = []; // 古いデータが残っているアプリ
   function show(state) {
     page.setAttribute("data-state", state);
-    document.querySelectorAll(".prep-switch button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.demo === state)); });
+    document.querySelectorAll("#chips [data-group]").forEach(function (c) { c.hidden = left.indexOf(c.dataset.group) < 0; });
     if (state === "none") countdown(); else clearInterval(timer);
   }
-  document.querySelectorAll(".prep-switch button").forEach(function (b) { b.addEventListener("click", function () { show(b.dataset.demo); }); });
 
-  document.getElementById("export").addEventListener("click", function () { toast(t("準備中なので、まだ書き出しません")); });
+  function check() {
+    if (!M) return Promise.resolve([]);
+    return Promise.all(APPS.map(function (id) { return M.hasData(id).catch(function () { return false; }); }))
+      .then(function (has) { return APPS.filter(function (id, i) { return has[i]; }); });
+  }
+
+  // ファイルに書き出す（/move/ の「ファイルに書き出す」と同じ形。sk-hub.jp/move/ で読み込める）
+  document.getElementById("export").addEventListener("click", function () {
+    if (!M) return;
+    var btn = this;
+    btn.disabled = true;
+    M.collect(left.concat(["site"])).then(M.toFile).then(function (blob) {
+      var d = new Date();
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "sk-move-" + d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0") + ".json";
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      toast(t("書き出しました。sk-hub.jp/move/ で読み込んでください"));
+    }, function () { toast(t("書き出せませんでした")); }).then(function () { btn.disabled = false; });
+  });
+
+  // このアドレスのデータを消す（アプリのデータだけ。表示の設定などは残す）
   document.getElementById("erase").addEventListener("click", function () {
     var ask = window.M3 && M3.confirm
       ? M3.confirm({ title: t("このアドレスのデータを消しますか？"), text: t("sy9-k.github.io に残っている SK's Toolbox・Nagi・MALU のデータを、この端末から消します。元に戻すことはできません。"), ok: t("消す"), danger: true, icon: "delete" })
       : Promise.resolve(confirm(t("このアドレスのデータを消しますか？")));
-    ask.then(function (ok) { if (ok) toast(t("準備中なので、消していません")); });
+    ask.then(function (ok) {
+      if (!ok || !M) return;
+      Promise.all(APPS.map(function (id) { return M.apply(id, { ls: {}, idb: [] }).catch(function () {}); })).then(check).then(function (rest) {
+        left = rest;
+        if (rest.length) { toast(t("消せなかったデータがあります")); show("left"); return; }
+        toast(t("消しました"));
+        show("none");
+      });
+    });
   });
 
-  // 準備中は sk-hub.jp を開かない
-  if (PREVIEW) {
-    document.querySelectorAll('a[href^="https://sk-hub.jp"]').forEach(function (a) {
-      a.addEventListener("click", function (e) { e.preventDefault(); toast(t("準備中なので、sk-hub.jp には移動しません")); });
-    });
-  }
-  show(PREVIEW && /[?&]state=left\b/.test(location.search) ? "left" : "none");
+  check().then(function (found) {
+    left = found;
+    show(found.length ? "left" : "none");
+  }, function () { show("none"); });
 })();

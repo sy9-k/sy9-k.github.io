@@ -11,7 +11,7 @@
        ・端末に古いデータが残っていない（data-state="none"）→ sk-hub.jp の同じページへ自動で移動
        ・残っている（data-state="left"）→ 自動では移動しない。ファイルに書き出す・このアドレスのデータを消す を出す
      見た目は Material 3（/move/theme.css・/moved/moved.css。部品は /toolbox/shared/m3.css・m3.js）、動きは /moved/moved.js
-     いまは形だけ（データを見ない・移動しない）。.prep の中のボタンで 2 つの状態を切り替えて見られる。本番にするときは .prep を消し、moved.js の PREVIEW を false にする -->
+     古いデータがあるかは /assets/move-data.js（/move/ と同じ部品）で調べる。いちばん下に、管理者の入り口（/admin/）を小さく出す -->
 <!-- 表示（ライト・ダーク）。サイトで選んだものに合わせる -->
 <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}");if(t.mode==="light"||t.mode==="dark")document.documentElement.setAttribute("data-theme",t.mode);}catch(e){}})();</script>
 <!-- 文字は M PLUS 1（M+）。アイコンは Material Symbols -->
@@ -25,17 +25,6 @@
 </head>
 <body>
 <main id="page" data-state="none">
-  <div class="prep">
-    <span class="msr" aria-hidden="true">construction</span>
-    <div>
-      <p class="prep-text"><b>このページは準備中です。</b>いまはまだデータを見たり、移動したりしません。</p>
-      <div class="prep-switch" role="group" aria-label="見せる状態">
-        <button type="button" data-demo="none" aria-pressed="true">データが残っていない人</button>
-        <button type="button" data-demo="left" aria-pressed="false">データが残っている人</button>
-      </div>
-    </div>
-  </div>
-
   <span class="hero-ico" aria-hidden="true"><span class="msr">move_location</span></span>
   <h1>このアドレスは使われていません</h1>
   <p class="supporting">SK のサイトとプロダクトは、sk-hub.jp に移りました。アドレスの「/」から後ろはそのままです。</p>
@@ -71,10 +60,12 @@
       </div>
     </div>
     <div class="left-body">
-      <div class="chips" aria-label="残っているデータ">
-        <span class="chip"><span class="msr">home_repair_service</span>SK's Toolbox</span>
-        <span class="chip"><span class="msr">timer</span>Nagi</span>
-        <span class="chip"><span class="msr">menu_book</span>MALU</span>
+      <!-- 残っているアプリだけ出す（moved.js） -->
+      <div class="chips" id="chips" aria-label="残っているデータ">
+        <span class="chip" data-group="toolbox" hidden><span class="msr">home_repair_service</span>SK's Toolbox</span>
+        <span class="chip" data-group="nagi" hidden><span class="msr">timer</span>Nagi</span>
+        <span class="chip" data-group="malu" hidden><span class="msr">menu_book</span>MALU</span>
+        <span class="chip" data-group="lab" hidden><span class="msr">science</span>SK's Lab</span>
       </div>
       <ol class="steps">
         <li><b>ファイルに書き出す</b><small>データを 1 つのファイルにまとめて保存します</small></li>
@@ -87,12 +78,15 @@
       </div>
       <div class="left-actions">
         <button class="m3-btn m3-state" type="button" id="export"><span class="msr">download</span>ファイルに書き出す</button>
+        <a class="m3-btn m3-btn--tonal m3-state" href="/move/"><span class="msr">move_up</span>タブを開いてそのまま移す</a>
         <button class="text-btn m3-state danger" type="button" id="erase"><span class="msr">delete</span>このアドレスのデータを消す</button>
       </div>
     </div>
   </section>
 
-  <p class="foot"><span class="msr" aria-hidden="true">verified_user</span><span>SK の公式のアドレスは sk-hub.jp だけです。このアドレスで、ログインやパスワードの入力を求めることはありません。</span></p>
+  <p class="foot"><span class="msr" aria-hidden="true">verified_user</span><span>SK の公式のアドレスは sk-hub.jp だけです。このアドレスで、みなさんにログインやパスワードの入力を求めることはありません。</span></p>
+  <!-- SK の管理者だけが使う入り口（/admin/。旧ドメインのサポートを終えたあとも残る） -->
+  <a class="admin-link m3-state" href="/admin/"><span class="msr" aria-hidden="true">admin_panel_settings</span>管理者ログイン</a>
 </main>
 
 <div class="snackbar" id="snack" role="status"><span id="snack-text"></span></div>
@@ -100,6 +94,7 @@
 <!-- 先に訳す（訳すと文の中の要素が作り直されるので、動きのスクリプトより前） -->
 <script>window.SKI18N && SKI18N.translatePage();</script>
 <script src="/toolbox/shared/m3.js"></script>
+<script src="/assets/move-data.js"></script>
 <script src="/moved/moved.js"></script>
 </body>
 </html>

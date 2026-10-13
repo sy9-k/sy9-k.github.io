@@ -69,7 +69,7 @@ URL は変えずに、`/lang/` で選んだ言語でページを訳して表示�
 
 開発者（Firestore の `config/developers` に UID がある Google アカウント）だけが使えるページです。**旧ドメイン（sy9-k.github.io）だけに置き、sk-hub.jp には置きません。** 旧ドメインのサポートを終えたあとも、ここで使い続けます。
 
-- 入り口は https://sy9-k.github.io/admin/（ダッシュボード）。ログインしていない人には「管理者のログイン」、開発者でない人には「管理者専用です」と sk-hub.jp へのリンクが出ます。
+- 入り口は https://sy9-k.github.io/admin/（ダッシュボード）。「このアドレスは使われていません」の画面（/moved/）のいちばん下の「管理者ログイン」からも開けます。ログインしていない人には「管理者のログイン」、開発者でない人には「管理者専用です」と sk-hub.jp へのリンクが出ます。
 - 共通部分は `admin/shared/`（`admin.js` = ログインの確認・ナビゲーション・操作の記録、`admin.css` = 見た目、`housekeeping.js` = 期限切れの掃除、`blocklist.js` = アクセスの制限）。見た目は Material 3（`/toolbox/shared/m3.css`・`/view/view.css`）。
 - ページを足すときは、`admin/<名前>/index.html`（ほかのページの `<head>` をまねる）と `admin/<名前>/<名前>.js`（`startAdmin({ page, onReady })` を呼ぶ）を作り、`admin/shared/admin.js` の `NAV` に足します。
 - データを書きかえる操作は `logAction()` で `adminLogs` に残します（「操作の記録」で見られる。1 年で消える）。
@@ -99,11 +99,10 @@ URL は変えずに、`/lang/` で選んだ言語でページを訳して表示�
 `_build/retire.py` を 1 回だけ動かします。
 
 1. 管理画面の「移行の進み具合」で、旧ドメインで開いている人が十分に少なくなったことを確かめる。
-2. `moved/moved.js` の古いデータの確かめ方を作り、`PREVIEW` を `false` にする（`true` のままだと retire.py は止まります）。
-3. `python _build/retire.py` で、残すもの・消すものの一覧を確かめる（何も変えません）。
-4. `python _build/retire.py --apply` で変える。
+2. `python _build/retire.py` で、残すもの・消すものの一覧を確かめる（何も変えません）。
+3. `python _build/retire.py --apply` で変える。
    - 残すのは、管理画面（`admin/`）・アカウント（`account/`）・RedFlag Checker（`frameworks/`）・同意と制限の画面（`usercheck/`）・引っ越しのページ（`move/`・`moved/`）と、それらが読み込むファイルだけ。
    - `index.html` と `404.html` は `/moved/` の中身になります（ほかのページを開くと 404.html が出るので、どのページでも案内が出る）。
    - 各アプリの `sw.js` は、自分を解除してキャッシュを消す中身に置きかえます（ホーム画面に追加したアプリにも案内が出るように）。
    - `robots.txt` は `Disallow: /`、`sitemap.xml` は消します。`_build/RETIRED` ができ、このあと `build.py` は動かなくなります。
-5. `git status` で確かめてからコミット・プッシュする。
+4. `git status` で確かめてからコミット・プッシュする。
