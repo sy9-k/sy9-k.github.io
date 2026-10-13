@@ -6,14 +6,14 @@
 //     3. sk-move:progress（アプリごと）・sk-move:conflict（向こうにもデータがある）・sk-move:done / sk-move:error を受け取って表示する
 //     タブを開けない・返事がないときは「移せませんでした」→ ファイルに書き出す
 //   ?file で開いたとき（sk-hub.jp 側でタブがつながらなかったときの案内）は、選ぶ画面から直接ファイルに書き出す
-//   公開（SKMove.LAUNCH）までは形だけ（PREVIEW）: データは読まず・送らない。sk-hub.jp へのリンクも開かずにスナックバーで知らせる
-//   手元（localhost）や ?preview のときは、公開の前でも本当に送る（相手は localhost:8766 か sk-hub.jp/move/?preview）
+//   本当に送る。sk-hub.jp の公開（SKMove.LAUNCH）の前は、受け取るページを ?preview で開く（Coming Soon を通らずに受け取れる）
+//   PREVIEW を true にすると形だけ（データは読まず・送らない。sk-hub.jp へのリンクも開かずにスナックバーで知らせる）
 (function () {
   "use strict";
   var M = window.SKMove;
   var EARLY = Date.now() < M.LAUNCH;
   var FILE = /[?&]file\b/.test(location.search);
-  var PREVIEW = EARLY && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !/[?&]preview\b/.test(location.search);
+  var PREVIEW = false;
   var I18N = window.SKI18N;
   function t(s, v) { return I18N ? I18N.t(s, v) : s.replace(/\{(\w+)\}/g, function (m, k) { return v && v[k] != null ? v[k] : m; }); }
 

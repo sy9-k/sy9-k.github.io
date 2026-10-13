@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>かさね</title>
+<!--
+  SK のデザインシステム「かさね」の部品の見本。配信しない（_ で始まるフォルダなので GitHub Pages には出ない）
+  元はデザインシステム「かさね」（claude.ai の Artifact）。kasane.css もこのページも、そこから作ったもの
+  ローカルで見る: python3 -m http.server 8765 → http://localhost:8765/_mockups/kasane/
+-->
+<script src="/assets/fonts.js" data-fonts="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=M+PLUS+1+Code:wght@400;500&display=swap"></script>
+<link rel="stylesheet" href="kasane.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .g-top { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 16px; background: var(--surface); box-shadow: inset 0 -1px 0 var(--line); }
+  .g-top h1 { margin: 0 auto 0 0; font: 700 22px/1.2 var(--font-display); letter-spacing: .04em; }
+  .g-top .ks-seg { width: 200px; }
+  .g-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 32px 20px; max-width: 1200px; margin: 0 auto; padding: 24px 16px 64px; }
+  .g-cap { margin: 0 0 8px; font: 700 13px/1.4 var(--font-sans); letter-spacing: .06em; color: var(--ink-muted); }
+  .g-cap code { font: 500 12px/1 var(--font-mono); margin-left: 6px; }
+  .g-box { border-radius: var(--radius-lg); overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+</style>
+</head>
+<body class="ks" data-kasane="blue">
+<header class="g-top">
+  <h1>かさね</h1>
+  <div class="ks-seg" role="radiogroup" aria-label="昼と夜" id="g-theme">
+    <button type="button" role="radio" aria-checked="true" data-t="auto">自動</button>
+    <button type="button" role="radio" aria-checked="false" data-t="light">昼</button>
+    <button type="button" role="radio" aria-checked="false" data-t="dark">夜</button>
+  </div>
+  <div class="ks-swatches" role="radiogroup" aria-label="色目" id="g-kasane">
+    <button type="button" class="ks-swatch" role="radio" data-kasane="blue" data-k="blue" aria-checked="true" aria-label="瑠璃" title="瑠璃"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="ks-swatch" role="radio" data-kasane="sakura" data-k="sakura" aria-checked="false" aria-label="桜" title="桜"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="ks-swatch" role="radio" data-kasane="matcha" data-k="matcha" aria-checked="false" aria-label="松" title="松"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="ks-swatch" role="radio" data-kasane="mikan" data-k="mikan" aria-checked="false" aria-label="紅葉" title="紅葉"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="ks-swatch" role="radio" data-kasane="fuji" data-k="fuji" aria-checked="false" aria-label="藤" title="藤"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="ks-swatch" role="radio" data-kasane="sora" data-k="sora" aria-checked="false" aria-label="水" title="水"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="ks-swatch" role="radio" data-kasane="sumi" data-k="sumi" aria-checked="false" aria-label="墨" title="墨"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+  </div>
+</header>
+<main class="g-grid">
+<section class="g-cell"><h2 class="g-cap">上のバーと見出し <code>TopBar</code></h2><div class="g-box"><div class="ks">
+  <div class="ks-topbar"><button type="button" class="ks-iconbtn" aria-label="戻る"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="ks-topbar-title"></span><button type="button" class="ks-iconbtn" aria-label="検索"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></button></div>
+  <div class="ks-headline"><p class="ks-eyebrow">SK's Toolbox</p><h1 class="ks-title">設定</h1></div>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">ボタン <code>Button</code></h2><div class="g-box"><div class="ks" style="display:flex;flex-wrap:wrap;align-items:center;gap:16px 12px;padding:20px">
+  <button type="button" class="ks-btn ks-btn--primary"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 0 1-13.2 4.9M4.5 12a7.5 7.5 0 0 1 13.2-4.9"/><path d="M17.8 3.5v3.6h-3.6M6.2 20.5v-3.6h3.6"/></svg>今すぐ同期</button>
+  <button type="button" class="ks-btn ks-btn--secondary">キャンセル</button>
+  <button type="button" class="ks-btn ks-btn--ghost">くわしく見る</button>
+  <button type="button" class="ks-btn ks-btn--danger">すべて消去</button>
+  <button type="button" class="ks-btn ks-btn--primary ks-btn--sm">保存</button>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">チップ <code>Chip</code></h2><div class="g-box"><div class="ks" style="padding:20px">
+  <div class="ks-chips">
+    <button type="button" class="ks-chip" aria-pressed="true"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>今日</button>
+    <button type="button" class="ks-chip" aria-pressed="false">期限切れ</button>
+    <button type="button" class="ks-chip" aria-pressed="false">メモつき</button>
+    <button type="button" class="ks-chip" aria-pressed="false">完了</button>
+  </div>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">スイッチ <code>Switch</code></h2><div class="g-box"><div class="ks" style="padding:20px">
+  <div class="ks-list">
+    <div class="ks-row"><span class="ks-row-text"><span class="ks-row-label" id="Switch-sw1">動きを減らす</span><span class="ks-row-sub">画面の切りかえを少なくします</span></span>
+      <button type="button" class="ks-switch" role="switch" aria-checked="false" aria-labelledby="Switch-sw1"><span class="ks-switch-knob"></span></button></div>
+    <div class="ks-row"><span class="ks-row-text"><span class="ks-row-label" id="Switch-sw2">アラームとタイマーを通知する</span></span>
+      <button type="button" class="ks-switch" role="switch" aria-checked="true" aria-labelledby="Switch-sw2"><span class="ks-switch-knob"></span></button></div>
+  </div>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">切りかえ <code>Segmented</code></h2><div class="g-box"><div class="ks" style="padding:20px">
+  <div class="ks-seg" role="radiogroup" aria-label="テーマ">
+    <button type="button" role="radio" aria-checked="true">自動</button>
+    <button type="button" role="radio" aria-checked="false">昼</button>
+    <button type="button" role="radio" aria-checked="false">夜</button>
+  </div>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">入力欄 <code>TextField</code></h2><div class="g-box"><div class="ks" style="display:grid;gap:20px;padding:20px">
+  <label class="ks-field"><span class="ks-field-label">表示名</span>
+    <input class="ks-input" placeholder="SK" value="SK"><span class="ks-field-help">ほかの人にも見えます。</span></label>
+  <label class="ks-field" data-invalid><span class="ks-field-label">メールアドレス</span>
+    <input class="ks-input" value="sk@example" aria-invalid="TextField-true"><span class="ks-field-help">@ のあとが足りません。「example.com」のように入れてください。</span></label>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">色目の見本 <code>Swatch</code></h2><div class="g-box"><div class="ks" style="padding:20px">
+  <div class="ks-swatches" role="radiogroup" aria-label="色目">
+    <button type="button" class="ks-swatch" role="radio" data-kasane="blue" aria-checked="true" aria-label="瑠璃（いつもの青）" title="瑠璃（いつもの青）"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+    <button type="button" class="ks-swatch" role="radio" data-kasane="sakura" aria-checked="false" aria-label="桜（さくら）" title="桜（さくら）"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+    <button type="button" class="ks-swatch" role="radio" data-kasane="matcha" aria-checked="false" aria-label="松（抹茶）" title="松（抹茶）"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+    <button type="button" class="ks-swatch" role="radio" data-kasane="mikan" aria-checked="false" aria-label="紅葉（みかん）" title="紅葉（みかん）"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+    <button type="button" class="ks-swatch" role="radio" data-kasane="fuji" aria-checked="false" aria-label="藤" title="藤"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+    <button type="button" class="ks-swatch" role="radio" data-kasane="sora" aria-checked="false" aria-label="水（空）" title="水（空）"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+    <button type="button" class="ks-swatch" role="radio" data-kasane="sumi" aria-checked="false" aria-label="墨" title="墨"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+  </div>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">リスト <code>List</code></h2><div class="g-box"><div class="ks" style="padding:20px 16px">
+  <h3 class="ks-list-title">通知</h3>
+  <div class="ks-list">
+    <div class="ks-row"><span class="ks-tile"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 15 6 10Z"/><path d="M10 19.5a2 2 0 0 0 4 0"/></svg></span><span class="ks-row-text"><span class="ks-row-label" id="List-l1">アラームとタイマーを通知する</span><span class="ks-row-sub">Clock を開いていないときも知らせます</span></span>
+      <button type="button" class="ks-switch" role="switch" aria-checked="true" aria-labelledby="List-l1"><span class="ks-switch-knob"></span></button></div>
+    <button type="button" class="ks-row"><span class="ks-tile"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.3 2.4 3.5 5.2 3.5 8.5s-1.2 6.1-3.5 8.5c-2.3-2.4-3.5-5.2-3.5-8.5S9.7 5.9 12 3.5Z"/></svg></span><span class="ks-row-text"><span class="ks-row-label">言語</span></span><span class="ks-row-end">日本語<svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></span></button>
+    <button type="button" class="ks-row ks-row--danger"><span class="ks-tile"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l.9 12.5h9.2L17.5 7M10 11v5M14 11v5"/></svg></span><span class="ks-row-text"><span class="ks-row-label">Toolbox のデータをすべて消去</span></span></button>
+  </div>
+  <p class="ks-list-note">データはこの端末のブラウザに保存しています。</p>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">カード <code>Card</code></h2><div class="g-box"><div class="ks" style="display:grid;gap:20px;padding:20px">
+  <div class="ks-card" style="display:flex;align-items:center;gap:12px">
+    <span class="ks-tile" style="width:44px;height:44px;border-radius:50%;font:700 18px/1 var(--font-sans)">S</span>
+    <span class="ks-row-text"><span class="ks-row-label">SK</span><span class="ks-row-sub">SK Hub Systems アカウント・同期オン</span></span>
+    <button type="button" class="ks-btn ks-btn--secondary ks-btn--sm"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 0 1-13.2 4.9M4.5 12a7.5 7.5 0 0 1 13.2-4.9"/><path d="M17.8 3.5v3.6h-3.6M6.2 20.5v-3.6h3.6"/></svg>同期</button>
+  </div>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">下のタブ <code>TabBar</code></h2><div class="g-box"><div class="ks" style="padding-top:24px">
+  <nav class="ks-tabbar" aria-label="タブ">
+    <button type="button" class="ks-tab"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 10.5 12 4l7.5 6.5V19a1 1 0 0 1-1 1H15v-5.5H9V20H5.5a1 1 0 0 1-1-1Z"/></svg>ホーム</button>
+    <button type="button" class="ks-tab"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/></svg>アプリ</button>
+    <button type="button" class="ks-tab" aria-current="page"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>設定</button>
+  </nav>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">お知らせ <code>Toast</code></h2><div class="g-box"><div class="ks" style="padding:20px">
+  <div class="ks-toast" role="status"><svg class="ks-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>同期しました</div>
+</div></div></section>
+<section class="g-cell"><h2 class="g-cap">ダイアログ <code>Dialog</code></h2><div class="g-box"><div class="ks">
+  <div class="ks-scrim" style="position:relative;min-height:280px">
+    <div class="ks-dialog" data-tone="danger" role="alertdialog" aria-modal="true" aria-labelledby="Dialog-dt" aria-describedby="Dialog-dm">
+      <h2 class="ks-dialog-title" id="Dialog-dt">Toolbox のデータをすべて消去しますか？</h2>
+      <p class="ks-dialog-body" id="Dialog-dm">Clock・Memo・Todo のデータと、この設定を消去します。元に戻すことはできません。</p>
+      <div class="ks-dialog-actions"><button type="button" class="ks-btn ks-btn--secondary">キャンセル</button><button type="button" class="ks-btn ks-btn--danger">すべて消去</button></div>
+    </div>
+  </div>
+</div></div></section>
+</main>
+<script>
+document.addEventListener("click", function (e) {
+  var t = e.target.closest('[role="switch"],[role="radio"],[aria-pressed],.ks-tab');
+  if (!t) return;
+  if (t.classList.contains("ks-tab")) {
+    t.parentNode.querySelectorAll(".ks-tab").forEach(function (b) { if (b === t) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  } else if (t.getAttribute("role") === "radio") {
+    t.parentNode.querySelectorAll('[role="radio"]').forEach(function (b) { b.setAttribute("aria-checked", b === t); });
+    if (t.dataset.k) { document.body.dataset.kasane = t.dataset.k; document.querySelectorAll("#g-kasane [data-k]").forEach(function (b) { b.setAttribute("aria-checked", b === t); }); }
+    if (t.dataset.t) { if (t.dataset.t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.dataset.theme = t.dataset.t; }
+  } else if (t.hasAttribute("aria-pressed")) {
+    t.setAttribute("aria-pressed", t.getAttribute("aria-pressed") !== "true");
+  } else {
+    t.setAttribute("aria-checked", t.getAttribute("aria-checked") !== "true");
+  }
+});
+</script>
+</body>
+</html>

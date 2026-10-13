@@ -10,7 +10,7 @@
 <!-- データの引っ越し（sy9-k.github.io → sk-hub.jp）。移行期間が終わったら、古いアドレスでこの画面だけを出す。
      最初に「移し方は 2 つ」を出し、選んだ方の画面に進んで案内する: choose → device（選ぶ → moving → done）/ account
      見た目は Material 3（/move/theme.css・move.css。部品は /toolbox/shared/m3.css・m3.js）、動きは /move/move.js
-     公開（2026-10-14 12:00）までは形だけ（.prep を出して、データは移さない）。公開のあとは本当に移す（move.js の PREVIEW）
+     本当に移す（形だけにするときは move.js の PREVIEW を true にすると .prep が出る）
      移し方: sk-hub.jp/move/ を別のタブで開いて postMessage で渡す（/assets/move-data.js）。開けないときはファイルに書き出す（error → file） -->
 <!-- 表示（ライト・ダーク）。サイトで選んだものに合わせる -->
 <script>(function(){try{var t=JSON.parse(localStorage.getItem("sk_theme")||"{}");if(t.mode==="light"||t.mode==="dark")document.documentElement.setAttribute("data-theme",t.mode);}catch(e){}})();</script>

@@ -3105,5 +3105,11 @@
   "このブラウザでは、古いアドレスのタブとつながりませんでした。古いアドレスのページで、データをファイルに書き出してから読み込んでください。": "This browser couldn't connect to the old address tab. Save your data to a file on the old address's page, then load it here.",
   "読み込めませんでした。古いアドレスの「ファイルで移す」で書き出したファイルを選んでください。": "Couldn't load it. Choose the file saved with \"Move with a file\" on the old address.",
   "古いアドレスのタブから、データが届きませんでした。": "No data arrived from the old address tab.",
-  "データを書き込めませんでした。ブラウザの空き容量が足りないかもしれません。": "Couldn't write the data. Your browser may be low on storage."
+  "データを書き込めませんでした。ブラウザの空き容量が足りないかもしれません。": "Couldn't write the data. Your browser may be low on storage.",
+  "10月13日まで": "Until Oct 13",
+  "いま（10月14日 12:00〜）": "Now (from Oct 14, 12:00)",
+  "サイトとプロダクトが sk-hub.jp で開けるようになりました。このあいだは sy9-k.github.io もそのまま使えますが、更新は止まっています。": "The site and products now open on sk-hub.jp. During this period sy9-k.github.io still works, but it's no longer updated.",
+  "新しいドメインの手続きと、引っ越しの準備をしました。": "We registered the new domain and got ready for the move.",
+  "準備": "Preparation",
+  "sk-hub.jp の公開は、2026年10月14日（水）12:00 です。データの引っ越し（<a href=\"/move/\">データを移す</a>）は、もうできます。": "sk-hub.jp opens at 12:00 on Wednesday, October 14, 2026 (JST). You can already move your data (<a href=\"/move/\">Move data</a>)."
 }
