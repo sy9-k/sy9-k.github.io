@@ -167,6 +167,12 @@ a.ad-card:hover { background: var(--md-surface-container); }
 .ad-preview ol, .ad-preview ul { margin: 0 0 10px; padding-left: 1.4em; }
 .ad-preview code { padding: 1px 5px; border-radius: 5px; background: var(--md-surface-container-highest); font-size: .9em; }
 
+/* メンテナンスの告知のプレビュー（/assets/maintenance.js の帯・閉じた画面を、枠の中に出す） */
+.ad-banner-preview .skm { border-radius: 12px; }
+.ad-closed-preview { border-radius: 20px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--md-outline-variant); }
+.ad-closed-preview .skm-closed { position: relative; inset: auto; z-index: auto; min-height: 440px; padding: 24px 16px; }
+.ad-closed-preview .skm-closed__card { animation: none; }
+
 /* ファイルブラウザ（/admin/files/） */
 .ad-files { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); gap: 16px; align-items: start; }
 .ad-tree { position: sticky; top: 72px; max-height: calc(100dvh - 96px); overflow: auto; padding: 8px; border-radius: 24px; background: var(--md-surface-container-low); }

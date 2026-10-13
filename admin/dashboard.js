@@ -159,7 +159,7 @@ function maintenancePanel() {
     const live = m && m.active && (!m.startsAt || toMillis(m.startsAt) <= now) && (!m.endsAt || toMillis(m.endsAt) > now);
     const scheduled = m && m.active && !live && m.startsAt && toMillis(m.startsAt) > now;
     const row = el("div", "ad-row");
-    row.append(live ? badge("表示中", "warn") : scheduled ? badge("予定", "info") : badge("出していません", "ok"));
+    row.append(live ? badge(m.close ? "ページを閉じています" : "帯を出しています", m.close ? "error" : "warn") : scheduled ? badge(m.close ? "閉じる予定" : "帯の予定", "info") : badge("出していません", "ok"));
     if (m && m.active && m.endsAt) row.append(el("span", "ad-hint", `${fmtDateTime(m.endsAt)} まで`));
     body.replaceChildren(row);
     if (m && m.active && m.message) body.append(el("p", "ad-msg", m.message));

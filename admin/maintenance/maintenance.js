@@ -1,11 +1,12 @@
-// メンテナンスの告知（/admin/maintenance/）。config/maintenance を変えると、sk-hub.jp の各ページの上に帯が出る（/assets/maintenance.js）
-//   { active, level: info|warning|maintenance, message, services: [], startsAt, endsAt, updatedAt, updatedBy（管理者の UID） }
+// メンテナンスの告知（/admin/maintenance/）。config/maintenance を変えると、sk-hub.jp の各ページに出る（/assets/maintenance.js）
+//   帯を出す（close: false）か、ページを閉じて「ただいまメンテナンス中です」の画面にする（close: true）か
+//   { active, close, level: info|warning|maintenance, message, services: [], startsAt, endsAt, updatedAt, updatedBy（管理者の UID） }
 //   ページ側は 5 分だけ覚えておくので、変えてから出る・消えるまで最大 5 分かかる
 import {
   Timestamp, doc, getDoc, serverTimestamp, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-  $, NEW_ORIGIN, badge, busy, button, card, db, el, errorNote, explain, fmtDateTime, logAction, me, note, startAdmin, toMillis, toast
+  $, NEW_ORIGIN, badge, busy, button, card, confirmDialog, db, el, errorNote, explain, fmtDateTime, logAction, me, note, startAdmin, toMillis, toast
 } from "/admin/shared/admin.js";
 
 const MESSAGE_MAX = 500;
@@ -18,14 +19,27 @@ const TEMPLATES = [
 ];
 
 const root = $("[data-page]");
-const state = { active: false, level: "maintenance", message: "", services: [], startsAt: null, endsAt: null };
+const state = { active: false, close: false, level: "maintenance", message: "", services: [], startsAt: null, endsAt: null };
+const MODES = [[false, "帯を出す", "view_day", "ページのいちばん上に帯を出します。ページはふつうに使えます。"], [true, "ページを閉じる", "block", "ページ全体を「ただいまメンテナンス中です」の画面にして、使えなくします。終わると自動で開き直します。稼働状況・規約のページは閉じません。"]];
 
 const current = el("div", "ad-stack");
 const form = el("form", "ad-form");
 const activeRow = el("label", "ad-switch-row");
 const active = el("input", "tbs-switch");
 active.type = "checkbox";
-activeRow.append(el("span", null, "帯を出す"), active);
+activeRow.append(el("span", null, "告知を出す"), active);
+const modeTabs = el("div", "ad-tabs");
+const modeHint = el("p", "ad-hint");
+MODES.forEach(([v, label, ic]) => {
+  const b = el("button", "tbs-chip m3-state");
+  b.type = "button";
+  b.dataset.mode = String(v);
+  const i = el("span", "msr", ic);
+  i.setAttribute("aria-hidden", "true");
+  b.append(i, document.createTextNode(label));
+  b.addEventListener("click", () => { state.close = v; sync(); });
+  modeTabs.append(b);
+});
 const levelTabs = el("div", "ad-tabs");
 LEVELS.forEach(([v, label, ic]) => {
   const b = el("button", "tbs-chip m3-state");
@@ -72,7 +86,8 @@ const preview = el("div");
 const save = button("保存する", { iconName: "save", type: "submit" });
 const saveRow = el("div", "ad-row ad-row--end");
 saveRow.append(save);
-form.append(activeRow, levelTabs, msgField, templates, el("p", "ad-hint", "出すページ（選ばなければすべてのページ。選んだときも、ホーム・稼働状況・サポートには出ます）"), svcBox, svcHint, times, el("p", "ad-hint", "プレビュー"), preview, saveRow);
+const skipHint = el("p", "ad-hint", "閉じているあいだに自分でページを確かめるときは、URL の最後に ?maintenance=skip を付けて開きます（そのタブだけ、閉じずに帯になります）。");
+form.append(activeRow, modeTabs, modeHint, levelTabs, msgField, templates, el("p", "ad-hint", "出すページ（選ばなければすべてのページ）"), svcBox, svcHint, times, el("p", "ad-hint", "プレビュー"), preview, skipHint, saveRow);
 
 const toLocal = (ms) => {
   if (!ms) return "";
@@ -85,14 +100,22 @@ const fromLocal = (v) => (v ? new Date(v).getTime() : null);
 function sync() {
   levelTabs.querySelectorAll("[data-level]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.level === state.level)));
   svcBox.querySelectorAll("[data-service]").forEach((b) => b.setAttribute("aria-pressed", String(state.services.includes(b.dataset.service))));
-  svcHint.textContent = state.services.length ? `出すページ: ${state.services.map((s) => SERVICES.find((x) => x[0] === s)[1]).join("・")}（とホーム・稼働状況・サポート）` : "すべてのページに出します。";
+  modeTabs.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === String(state.close))));
+  modeHint.textContent = MODES.find((x) => x[0] === state.close)[3];
+  skipHint.hidden = !state.close;
+  const names = state.services.map((s) => SERVICES.find((x) => x[0] === s)[1]).join("・");
+  svcHint.textContent = state.close
+    ? (state.services.length ? `閉じるページ: ${names}（ほかのページには帯を出します）` : "すべてのページを閉じます（稼働状況・規約は閉じません）。")
+    : (state.services.length ? `出すページ: ${names}（とホーム・稼働状況・サポート）` : "すべてのページに出します。");
   renderPreview();
 }
 function renderPreview() {
-  const data = { level: state.level, message: msg.value.trim() || "（お知らせの文）", startsAt: fromLocal(startsAt.value), endsAt: fromLocal(endsAt.value) };
-  preview.replaceChildren(window.SKMaintenance ? window.SKMaintenance.render(data, true) : el("p", "ad-hint", "プレビューを読み込めませんでした"));
-  const box = preview.firstChild;
-  if (box && box.style) { box.style.borderRadius = "12px"; box.querySelector("button") && (box.querySelector("button").disabled = true); }
+  const M = window.SKMaintenance;
+  if (!M) { preview.replaceChildren(el("p", "ad-hint", "プレビューを読み込めませんでした")); return; }
+  const data = { level: state.level, message: msg.value.trim() || (state.close ? "" : "（お知らせの文）"), startsAt: fromLocal(startsAt.value), endsAt: fromLocal(endsAt.value) };
+  preview.className = state.close ? "ad-closed-preview" : "ad-banner-preview";
+  preview.replaceChildren(state.close ? M.renderClosed(data) : M.render(data, true));
+  preview.querySelectorAll("button, a").forEach((b) => { b.tabIndex = -1; b.addEventListener("click", (e) => e.preventDefault()); });
 }
 msg.addEventListener("input", renderPreview);
 startsAt.addEventListener("input", renderPreview);
@@ -104,7 +127,9 @@ function renderCurrent(m) {
   if (!m) { r.append(badge("まだ一度も出していません")); current.replaceChildren(r); return; }
   const live = window.SKMaintenance ? window.SKMaintenance.live(m, now) : m.active;
   const scheduled = m.active && !live && m.startsAt && toMillis(m.startsAt) > now;
-  r.append(live ? badge("いま出ています", "warn") : scheduled ? badge(`${fmtDateTime(m.startsAt)} から出ます`, "info") : badge("出していません", "ok"));
+  const what = m.close ? "ページを閉じて" : "帯を出して";
+  r.append(live ? badge(m.close ? "ページを閉じています" : "帯を出しています", m.close ? "error" : "warn")
+    : scheduled ? badge(`${fmtDateTime(m.startsAt)} から${what}います`, "info") : badge("出していません", "ok"));
   r.append(el("span", "ad-hint", `最後に変えた日時 ${fmtDateTime(m.updatedAt)}${m.updatedBy && me() && m.updatedBy === me().uid ? "（自分）" : ""}`));
   const open = el("a", "text-btn m3-state", "sk-hub.jp で見る");
   open.href = `${NEW_ORIGIN}/`;
@@ -121,6 +146,7 @@ async function load() {
     const m = snap.exists() ? snap.data() : null;
     if (m) {
       state.active = !!m.active;
+      state.close = !!m.close;
       state.level = m.level || "maintenance";
       state.services = Array.isArray(m.services) ? m.services : [];
       msg.value = m.message || "";
@@ -141,10 +167,20 @@ form.addEventListener("submit", (e) => {
     const message = msg.value.trim();
     const start = fromLocal(startsAt.value);
     const end = fromLocal(endsAt.value);
-    if (active.checked && !message) { toast("お知らせの文を入れてください"); msg.focus(); return; }
+    if (active.checked && !state.close && !message) { toast("お知らせの文を入れてください"); msg.focus(); return; }
     if (start && end && end <= start) { toast("消す日時は、出し始める日時より後にしてください"); endsAt.focus(); return; }
+    if (active.checked && state.close) {
+      const where = state.services.length ? state.services.map((x) => SERVICES.find((y) => y[0] === x)[1]).join("・") : "sk-hub.jp のすべて";
+      const ok = await confirmDialog({
+        title: "ページを閉じますか？",
+        text: `${where}のページが${start && start > Date.now() ? ` ${fmtDateTime(start)} から` : ""}使えなくなります（稼働状況・規約は閉じません）。5 分ほどで閉じます。`,
+        ok: "閉じる", danger: true, icon: "block"
+      });
+      if (!ok) return;
+    }
     const data = {
       active: active.checked,
+      close: state.close,
       level: state.level,
       message: message.slice(0, MESSAGE_MAX),
       services: state.services,
@@ -155,8 +191,8 @@ form.addEventListener("submit", (e) => {
     };
     try {
       await setDoc(doc(db, "config", "maintenance"), data);
-      logAction("maintenance.save", state.level, `${data.active ? "出す" : "出さない"}「${message.slice(0, 60)}」`);
-      toast(data.active ? "保存しました。5 分ほどで各ページに出ます" : "保存しました。5 分ほどで消えます");
+      logAction("maintenance.save", state.level, `${!data.active ? "出さない" : data.close ? "ページを閉じる" : "帯を出す"}「${message.slice(0, 60)}」`);
+      toast(!data.active ? "保存しました。5 分ほどで元に戻ります" : data.close ? "保存しました。5 分ほどでページが閉じます" : "保存しました。5 分ほどで各ページに出ます");
       load();
     } catch (err) {
       toast(explain(err));
