@@ -3134,5 +3134,17 @@
   "引っ越しのくわしいお知らせ・よくある質問": "Full moving notice and FAQ",
   "引っ越し専用に": "Moving only",
   "新しいアドレスで使うために": "To use the new address",
-  "端末のデータを移す": "Move your device's data"
+  "端末のデータを移す": "Move your device's data",
+  "SK's Toolbox は sk-hub.jp に引っ越しました": "SK's Toolbox has moved to sk-hub.jp",
+  "SK's Toolbox は sk-hub.jp に引っ越しました。Todo・Memo・時間割などを、そのまま移せます": "SK's Toolbox has moved to sk-hub.jp. You can move your Todo, Memo, timetable and more as is",
+  "sk-hub.jp への引っ越し": "Moving to sk-hub.jp",
+  "{date} に移しました。もう一度移すと、sk-hub.jp のデータが置きかわります": "Moved on {date}. Moving again replaces the data on sk-hub.jp",
+  "いまは移行期間です。そのあと、このアドレスは引っ越し専用になり、使えなくなります": "We're in the transition period. After that, this address will be for moving only, and then stop working",
+  "くわしく": "Details",
+  "ここは古いアドレスです。いまはこのまま使えますが、更新は止まっています。Todo・Memo・時間割などのデータを移して、新しいアドレスで使ってください。": "This is the old address. It still works for now, but it's no longer updated. Move your Todo, Memo, timetable and other data, and use the new address.",
+  "この端末のデータは、sk-hub.jp に移してあります。これからは sk-hub.jp の SK's Toolbox を使ってください。": "This device's data has been moved to sk-hub.jp. Please use SK's Toolbox on sk-hub.jp from now on.",
+  "これから: いまは移行期間 → 古いアドレスは引っ越し専用に → 使えなくなります（日にちは決まったらお知らせします）": "Next: transition period now → the old address becomes moving-only → it stops working (we'll announce the dates)",
+  "これからの予定": "What's next",
+  "新しいアドレスの SK's Toolbox。新しい機能や修正は、こちらにだけ入ります": "SK's Toolbox at the new address. New features and fixes only go here",
+  "データを移して、新しいアドレスで使ってください。予定は「全般」にあります": "Move your data and use the new address. See \"General\" for the schedule"
 }

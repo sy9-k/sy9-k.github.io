@@ -705,6 +705,15 @@
     if (!IN_LINE) listHead.appendChild(me);
     listHead.append(bigTitle, search);
     side.appendChild(listHead);
+    // 古いアドレス: 引っ越しの案内（カテゴリの一覧のいちばん上。押すとデータを移すページへ。予定などは「全般」の「sk-hub.jp への引っ越し」）
+    if (!IN_LINE) {
+      var mvCard = el("a", "tbs-item tbs-item--link tbs-movecard m3-state");
+      mvCard.href = "/move/";
+      mvCard.appendChild(icon("move_up"));
+      mvCard.appendChild(label(t("SK's Toolbox は sk-hub.jp に引っ越しました"), t("データを移して、新しいアドレスで使ってください。予定は「全般」にあります")));
+      mvCard.appendChild(icon("chevron_right"));
+      side.appendChild(mvCard);
+    }
     // 検索: カテゴリの名前・要約と、そのページの中の文字で、一覧をしぼる
     q.addEventListener("input", function () {
       var v = q.value.trim().toLowerCase(), any = false;
@@ -781,15 +790,22 @@
 
     // ---- 全般 ----
     var general = page("general", "tune", t("全般"), null, t("言語・ホームの最初の画面"), "#3b82f6");
-    // お知らせ: sk-hub.jp への引っ越し（/domain/。LINE の中では出さない。アプリを開いたときの 1 回だけの知らせは /assets/domain-snack.js）
+    // sk-hub.jp への引っ越し（古いアドレスの SK's Toolbox。いつでもここから見られるように、全般のいちばん上に置く。
+    // LINE の中では出さない。アプリを開いたときのダイアログは /assets/domain-snack.js、ホームのカードは _build/pages/toolbox.html）
     if (!IN_LINE) {
-      var news = section(t("お知らせ"));
+      var moved = null;
+      try { moved = JSON.parse(localStorage.getItem("sk_moved") || "null"); } catch (e) { moved = null; }
+      var news = section(t("sk-hub.jp への引っ越し"));
       var newsRow = el("a", "tbs-item tbs-item--link tbs-item--news m3-state");
-      newsRow.href = "/domain/";
-      newsRow.appendChild(icon("campaign"));
-      newsRow.appendChild(label(t("SK のサイトは sk-hub.jp に引っ越します"), t("いまは準備中です。日程は決まりしだいお知らせします。")));
+      newsRow.href = "/move/";
+      newsRow.appendChild(icon("move_up"));
+      newsRow.appendChild(label(t("データを sk-hub.jp に移す"), moved && moved.at
+        ? t("{date} に移しました。もう一度移すと、sk-hub.jp のデータが置きかわります", { date: new Date(moved.at).toLocaleDateString() })
+        : t("SK's Toolbox は sk-hub.jp に引っ越しました。Todo・Memo・時間割などを、そのまま移せます")));
       newsRow.appendChild(icon("chevron_right"));
       news.appendChild(newsRow);
+      news.appendChild(linkRow("https://sk-hub.jp/toolbox/", "open_in_new", t("sk-hub.jp で開く"), t("新しいアドレスの SK's Toolbox。新しい機能や修正は、こちらにだけ入ります")));
+      news.appendChild(linkRow("/domain/", "event", t("これからの予定"), t("いまは移行期間です。そのあと、このアドレスは引っ越し専用になり、使えなくなります")));
       general.appendChild(news);
     }
     var basic = section(t("基本"));

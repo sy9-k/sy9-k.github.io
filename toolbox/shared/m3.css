@@ -693,6 +693,22 @@ html.in-line [data-install], html.in-line .tbh-tip--install { display: none !imp
 html.in-line .tbh-views, html.in-line #home-edit, html.in-line .tbh-tips, html.in-line .tbh-app--noline,
 html.in-line #receive-hint, html.in-line [data-menu="notify"], html.in-line .tt-notify-on, html.in-line [data-menu="refresh"] { display: none !important; }
 .tbh-line { display: none; }
+/* 古いアドレスの SK's Toolbox: 引っ越しの案内（ホームのいちばん上） */
+.tbh-move { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin: 0 0 18px; padding: 18px 20px; border-radius: 24px; background: color-mix(in srgb, #f0a000 18%, transparent); }
+.tbh-move__ico { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; background: #f0a000; color: #2a1d00; }
+.tbh-move__ico .msr { font-size: 28px; }
+.tbh-move__text { flex: 1 1 320px; min-width: 0; }
+.tbh-move h2 { margin: 0; font-size: 17px; line-height: 1.4; font-weight: 700; color: var(--md-on-surface, #191c20); }
+.tbh-move p { margin: 4px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--md-on-surface-variant, #44474e); }
+.tbh-move p[hidden] { display: none; }
+.tbh-move .tbh-move__plan { font-size: 12.5px; }
+.tbh-move__btns { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tbh-move__more { padding: 8px 10px; font-size: 13.5px; font-weight: 600; color: var(--md-primary, #415f91); text-decoration: none; }
+html.in-line .tbh-move { display: none; }
+/* 設定のカテゴリの一覧のいちばん上: 引っ越しの案内（toolbox/shared/settings.js） */
+.tbs-movecard { margin: 4px 0 12px; border-radius: 20px; background: color-mix(in srgb, #f0a000 20%, transparent); color: inherit; text-decoration: none; }
+.tbs-movecard > .msr:first-child { color: #b77900; }
+@media (max-width: 600px) { .tbh-move__btns { width: 100%; } .tbh-move__btns .m3-btn { flex: 1; } }
 html.in-line .tbh-line { display: flex; align-items: center; gap: 14px; margin: 0 0 18px; padding: 16px 18px; border-radius: 24px; background: color-mix(in srgb, #06c755 12%, var(--md-surface-container-low, #f3f3fa)); }
 .tbh-line > svg { flex: none; width: 40px; height: 40px; }
 .tbh-line p { flex: 1; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 1.6; color: var(--md-on-surface-variant, #44474e); }
