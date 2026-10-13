@@ -2072,6 +2072,12 @@ a.ha-service:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px va
   .sk-dn-close { right: 6px; }
 }
 html.in-line .sk-dn { display: none; }
+/* 古いアドレスのホーム（index.html。引っ越しの案内だけ） */
+.home-move-btns { margin-top: 28px; }
+.home-move-note { margin-top: 14px; color: var(--muted); font-size: 14px; }
+.home-move-more { margin-top: 20px; font-weight: 700; }
+.dm-steps--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 800px) { .dm-steps--3 { grid-template-columns: 1fr; } }
 /* 古いアドレスの帯（オレンジ・閉じられない） */
 .sk-dn--old { background: var(--warn-bg); border-bottom-color: color-mix(in srgb, var(--amber) 45%, transparent); padding-right: 16px; }
 .sk-dn--old .sk-dn-text span { color: var(--warn-ink); }
