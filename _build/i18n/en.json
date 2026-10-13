@@ -3146,5 +3146,7 @@
   "これから: いまは移行期間 → 古いアドレスは引っ越し専用に → 使えなくなります（日にちは決まったらお知らせします）": "Next: transition period now → the old address becomes moving-only → it stops working (we'll announce the dates)",
   "これからの予定": "What's next",
   "新しいアドレスの SK's Toolbox。新しい機能や修正は、こちらにだけ入ります": "SK's Toolbox at the new address. New features and fixes only go here",
-  "データを移して、新しいアドレスで使ってください。予定は「全般」にあります": "Move your data and use the new address. See \"General\" for the schedule"
+  "データを移して、新しいアドレスで使ってください。予定は「全般」にあります": "Move your data and use the new address. See \"General\" for the schedule",
+  "管理画面": "Admin console",
+  "お問い合わせ・お知らせ・記事・SK Share・アクセスの制限・メンテナンスの告知などをまとめて扱えます。": "Handle inquiries, notices, articles, SK Share, access restrictions, maintenance notices and more in one place."
 }
