@@ -3148,5 +3148,12 @@
   "新しいアドレスの SK's Toolbox。新しい機能や修正は、こちらにだけ入ります": "SK's Toolbox at the new address. New features and fixes only go here",
   "データを移して、新しいアドレスで使ってください。予定は「全般」にあります": "Move your data and use the new address. See \"General\" for the schedule",
   "管理画面": "Admin console",
-  "お問い合わせ・お知らせ・記事・SK Share・アクセスの制限・メンテナンスの告知などをまとめて扱えます。": "Handle inquiries, notices, articles, SK Share, access restrictions, maintenance notices and more in one place."
+  "お問い合わせ・お知らせ・記事・SK Share・アクセスの制限・メンテナンスの告知などをまとめて扱えます。": "Handle inquiries, notices, articles, SK Share, access restrictions, maintenance notices and more in one place.",
+  "<span aria-hidden=\"true\" class=\"msr\">admin_panel_settings</span>管理者ログイン": "<span aria-hidden=\"true\" class=\"msr\">admin_panel_settings</span>Admin login",
+  "<span class=\"msr\">move_up</span>タブを開いてそのまま移す": "<span class=\"msr\">move_up</span>Move directly in a new tab",
+  "SK の公式のアドレスは sk-hub.jp だけです。このアドレスで、みなさんにログインやパスワードの入力を求めることはありません。": "SK's only official address is sk-hub.jp. This address will never ask you to log in or enter a password.",
+  "書き出しました。sk-hub.jp/move/ で読み込んでください": "Exported. Import it at sk-hub.jp/move/",
+  "書き出せませんでした": "Couldn't export",
+  "消しました": "Deleted",
+  "消せなかったデータがあります": "Some data couldn't be deleted"
 }

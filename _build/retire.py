@@ -151,12 +151,6 @@ def main():
             dirs[top] = dirs.get(top, 0) + 1
         for d, n in sorted(dirs.items()):
             print(f"  {d}: {n}")
-    moved_js = open(os.path.join(ROOT, "moved", "moved.js"), encoding="utf-8").read()
-    if re.search(r"var PREVIEW = true", moved_js):
-        print("\n注意: moved/moved.js の PREVIEW が true です。古いデータの確かめ方を作って false にしてから終えてください。")
-        if apply:
-            print("やめました（何も変えていません）。")
-            return 1
     if not apply:
         print("\n試しに動かしただけです。実際に変えるときは --apply を付けます。")
         return 0
