@@ -1,9 +1,7 @@
-/* SK Share の管理（/view/editor/）— Material 3。色・共通の部品は /view/view.css と /toolbox/shared/m3.css */
-.ve-app { max-width: 1240px; margin: 0 auto; padding: max(4px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) calc(112px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
-.ve-bar { position: sticky; top: 0; z-index: 10; background: var(--md-surface); }
-.ve-gate { display: flex; justify-content: center; padding-top: clamp(8px, 8vh, 80px); }
-.ve-gate > .vw-spinner { display: inline-block; width: 36px; height: 36px; border-width: 3.5px; color: var(--md-primary); margin-top: 40px; }
-.ve-gate__icon--error { background: var(--md-error-container); color: var(--md-on-error-container); }
+/* SK Share の管理（/admin/share/。もとは /view/editor/）— Material 3。色・共通の部品は /view/view.css と /toolbox/shared/m3.css、
+   上のバー・ナビゲーション・ログインの確認は /admin/shared/admin.css
+   一覧と編集を横に並べるのは、左のナビゲーションの分も見て、画面の幅が 1080px より広いときだけ */
+.ad-main:has(.ve-main) { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }
 
 .ve-main { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 24px; align-items: start; }
 .ve-main > * { min-width: 0; }
@@ -40,6 +38,7 @@
 /* ---- 編集 ---- */
 .ve-editor { display: flex; flex-direction: column; gap: 16px; animation: vw-rise .4s var(--md-emphasized) both; }
 .ve-editor__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 4px 0; }
+.ve-editor__head .ve-editor__title { flex: 1; min-width: 0; }
 .ve-editor__title { margin: 0; font-size: 24px; font-weight: 700; overflow-wrap: anywhere; }
 .ve-switch-row { display: inline-flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; cursor: pointer; flex: none; }
 .ve-card { display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 24px; background: var(--md-surface-container-low); }
@@ -90,8 +89,6 @@
 }
 .ve-actions .m3-btn { height: 48px; padding: 0 28px; border-radius: 24px; font-size: 15px; }
 .ve-actions .text-btn { gap: 6px; white-space: nowrap; }
-.ve-bar .vw-brand { min-width: 0; }
-.ve-bar .vw-brand span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ve-actions .msr { font-size: 20px; }
 .ve-actions .m3-btn.is-busy .msr { display: none; }
 .ve-danger { color: var(--md-error); }
@@ -108,8 +105,8 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, .3), 0 4px 8px 3px rgba(0, 0, 0, .15);
 }
 
-/* せまい画面: 一覧と編集を切りかえる */
-@media (max-width: 840px) {
+/* せまい画面: 一覧と編集を切りかえる（share.js の NARROW と同じ幅） */
+@media (max-width: 1080px) {
   .ve-main { grid-template-columns: minmax(0, 1fr); }
   .ve-side { position: static; max-height: none; }
   .ve-main.is-editing .ve-side, .ve-main:not(.is-editing) .ve-editor, .ve-placeholder { display: none; }

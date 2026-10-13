@@ -14,7 +14,7 @@
   // （Firebase と一緒に作られたアカウント「Default Account for Firebase」のプロパティ、データストリーム「SK」）
   var MEASUREMENT_ID = "G-LLN7RGHRTE";
   var KEY = "sk_analytics";
-  var EXCLUDE = /^\/(account|inbox|studio|y-filter|usercheck)\//;
+  var EXCLUDE = /^\/(account|admin|inbox|studio|y-filter|usercheck)\//;
 
   var t = window.SKI18N ? window.SKI18N.t : function (s) { return s; };
 

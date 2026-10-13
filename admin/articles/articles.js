@@ -1,17 +1,18 @@
-// 記事エディター（/studio/）。開発者（config/developers に UID がある SK Hub Systems アカウント）だけが使える
-// 記事は Cloud Firestore の articles（ID = 記事 ID = URL の /support/?a=ID）。保存するとサポートページにすぐ出る。
+// 記事エディター（/admin/articles/）。もとは /studio/（そこからはここへ転送する）
+// 記事は Cloud Firestore の articles（ID = 記事 ID = URL の /support/?a=ID）。保存するとサポートページ（sk-hub.jp/support/）にすぐ出る。
 // 本文の書き方・表示は support/articles.js（window.SKArticles）と同じ
-import { db, signIn, signOutAccount, watchAccount } from "/assets/hub/account.js";
 import {
   collection, deleteDoc, doc, getDoc, onSnapshot, serverTimestamp, setDoc, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  NEW_ORIGIN, $, $$, badge, confirmDialog, db, el, empty, explain, logAction, startAdmin, toast
+} from "/admin/shared/admin.js";
 
-const SK = () => window.SKArticles; // ページの最後で読み込む support/articles.js（使うときに取る）
+const SK = () => window.SKArticles; // support/articles.js（defer で読み込む。使うときに取る）
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const TYPE_LABEL = { news: "お知らせ", guide: "サポート記事" };
+const LANG_CODES = ["ja", "en", "zh-CN", "zh-TW", "ko"];
 
-const root = document.querySelector("[data-studio]");
-const $ = (sel) => root.querySelector(sel);
 const form = $("[data-studio-form]");
 const listEl = $("[data-studio-list]");
 const previewEl = $("[data-studio-preview]");
@@ -21,29 +22,20 @@ let items = [];          // Firestore の記事（下書きも含む）
 let editingId = null;    // 編集中の記事 ID（新しい記事なら null）
 let dirty = false;
 // 言語ごとのタイトル・要約・本文。ja が元（title / summary / body）、ほかは translations に入る
-const LANG_CODES = ["ja", "en", "zh-CN", "zh-TW", "ko"];
 let drafts = {};
 let currentLang = "ja";
-let unsubscribe = null;
 
-const el = (tag, className, text) => {
-  const e = document.createElement(tag);
-  if (className) e.className = className;
-  if (text != null) e.textContent = text;
-  return e;
-};
 const today = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 const formatDate = (s) => { const [y, m, d] = String(s).split("-").map(Number); return y ? `${y}年${m}月${d}日` : ""; };
 const byDate = (a, b) => String(b.date).localeCompare(String(a.date)) || (Number(a.order) - Number(b.order));
+const articleUrl = (id) => `${NEW_ORIGIN}/support/?a=${encodeURIComponent(id)}`;
 function message(text, isError = false) {
   msgEl.textContent = text;
-  msgEl.classList.toggle("is-error", isError);
-}
-function showView(name) {
-  root.querySelectorAll("[data-studio-view]").forEach((v) => { v.hidden = v.dataset.studioView !== name; });
+  msgEl.hidden = !text;
+  msgEl.classList.toggle("ad-note--error", isError);
 }
 
 // ---------- 一覧 ----------
@@ -52,23 +44,31 @@ function renderList() {
   const shown = items.filter((a) => !q || `${a.title} ${a.summary} ${a.category} ${a.id}`.toLowerCase().includes(q)).sort(byDate);
   $("[data-studio-import]").hidden = items.length > 0;
   if (!shown.length) {
-    listEl.replaceChildren(el("p", "studio-empty", items.length ? "見つかりませんでした。" : ""));
+    listEl.replaceChildren(items.length ? empty("見つかりませんでした。", "search_off") : "");
     return;
   }
   listEl.replaceChildren(...shown.map((a) => {
-    const b = el("button", `studio-item${a.id === editingId ? " is-active" : ""}`);
+    const b = el("button", "ad-li ad-li--btn m3-state");
     b.type = "button";
-    const meta = el("span", "studio-item-meta");
-    meta.append(el("span", `help-type help-type--${a.type}`, TYPE_LABEL[a.type] || a.type));
-    if (!a.published) meta.append(el("span", "studio-draft", "下書き"));
-    if (a.important) meta.append(el("span", "news-tag", "重要"));
-    b.append(meta, el("strong", null, a.title || "（タイトルなし）"), el("small", null, `${formatDate(a.date)}・${a.category}`));
+    if (a.id === editingId) b.setAttribute("aria-current", "true");
+    const text = el("span", "ad-li__text");
+    const meta = el("span", "ad-row");
+    meta.append(badge(TYPE_LABEL[a.type] || a.type, a.type === "news" ? "info" : ""));
+    if (!a.published) meta.append(badge("下書き", "warn"));
+    if (a.important) meta.append(badge("重要", "error"));
+    text.append(meta, el("span", "ad-li__title", a.title || "（タイトルなし）"), el("span", "ad-li__sub", `${formatDate(a.date)}・${a.category}`));
+    b.append(text);
     b.addEventListener("click", () => openArticle(a.id));
     return b;
   }));
 }
 
 // ---------- 編集 ----------
+function setLink(id) {
+  const link = $("[data-studio-view-link]");
+  link.hidden = !id;
+  if (id) link.href = articleUrl(id);
+}
 function setForm(a) {
   form.elements.type.value = a.type || "guide";
   form.elements.category.value = a.category || SK().CATEGORIES[0];
@@ -86,9 +86,7 @@ function setForm(a) {
   form.elements.order.value = a.order ?? -Math.floor(Date.now() / 1000); // 新しいものほど上
   $("[data-studio-mode]").textContent = a.id ? "記事を編集" : "新しい記事";
   $("[data-studio-delete]").hidden = !a.id;
-  const link = $("[data-studio-view-link]");
-  link.hidden = !a.id;
-  if (a.id) link.href = `/support/?a=${encodeURIComponent(a.id)}`;
+  setLink(a.id);
   syncImportant();
   renderPreview();
   dirty = false;
@@ -106,21 +104,22 @@ function showLang(code, keep = true) {
   form.elements.title.value = d.title;
   form.elements.summary.value = d.summary;
   form.elements.body.value = d.body;
-  root.querySelectorAll("[data-studio-lang]").forEach((b) => {
-    b.setAttribute("aria-selected", String(b.dataset.studioLang === code));
+  $$("[data-studio-lang]").forEach((b) => {
+    b.setAttribute("aria-pressed", String(b.dataset.studioLang === code));
     b.classList.toggle("has-text", b.dataset.studioLang !== "ja" && !!(drafts[b.dataset.studioLang] || {}).title);
   });
-  [data-studio-lang-hint].hidden = code === "ja";
+  // もとの /studio/ では、ここがセレクターになっておらず、言語を切りかえるたびにエラーになっていた
+  $("[data-studio-lang-hint]").hidden = code === "ja";
   renderPreview();
 }
-root.querySelectorAll("[data-studio-lang]").forEach((b) => b.addEventListener("click", () => showLang(b.dataset.studioLang)));
+$$("[data-studio-lang]").forEach((b) => b.addEventListener("click", () => showLang(b.dataset.studioLang)));
 
-function confirmDiscard() {
-  return !dirty || confirm("保存していない変更があります。破棄しますか？");
+async function confirmDiscard() {
+  return !dirty || confirmDialog({ title: "保存していない変更があります", text: "変更を捨てて移りますか？", ok: "捨てる", danger: true, icon: "edit_off" });
 }
 
-function openArticle(id) {
-  if (id === editingId || !confirmDiscard()) return;
+async function openArticle(id) {
+  if (id === editingId || !(await confirmDiscard())) return;
   const a = items.find((x) => x.id === id);
   if (!a) return;
   editingId = id;
@@ -129,8 +128,8 @@ function openArticle(id) {
   if (window.innerWidth < 900) form.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function newArticle() {
-  if (!confirmDiscard()) return;
+async function newArticle() {
+  if (!(await confirmDiscard())) return;
   editingId = null;
   setForm({});
   renderList();
@@ -145,12 +144,11 @@ function syncImportant() {
 
 function renderPreview() {
   const f = form.elements;
-  const meta = el("div", "help-meta");
-  meta.append(el("span", `help-type help-type--${f.type.value}`, TYPE_LABEL[f.type.value]));
-  if (f.important.checked) meta.append(el("span", "news-tag", "重要"));
-  meta.append(el("span", "update-cat cat-sk", f.category.value || "カテゴリ"), el("time", null, formatDate(f.date.value)));
-  const h1 = el("h1", null, f.title.value || "タイトル");
-  previewEl.replaceChildren(meta, h1, SK().renderBody(SK().parseBody(f.body.value)));
+  const meta = el("div", "ad-row");
+  meta.append(badge(TYPE_LABEL[f.type.value], f.type.value === "news" ? "info" : ""));
+  if (f.important.checked) meta.append(badge("重要", "error"));
+  meta.append(badge(f.category.value || "カテゴリ"), el("span", "ad-hint", formatDate(f.date.value)));
+  previewEl.replaceChildren(meta, el("h1", null, f.title.value || "タイトル"), SK().renderBody(SK().parseBody(f.body.value)));
 }
 
 form.addEventListener("input", () => { dirty = true; renderPreview(); });
@@ -191,11 +189,12 @@ form.addEventListener("submit", async (e) => {
 
   const btn = $("[data-studio-save]");
   btn.disabled = true;
+  btn.classList.add("is-busy");
   try {
     const ref = doc(db, "articles", id);
     if (!editingId && (await getDoc(ref)).exists()) { message("その記事 ID はもう使われています。", true); return; }
     const existing = items.find((x) => x.id === id);
-    await setDoc(ref, { ...data, createdAt: existing?.createdAt || serverTimestamp(), updatedAt: serverTimestamp() });
+    await setDoc(ref, { ...data, createdAt: (existing && existing.createdAt) || serverTimestamp(), updatedAt: serverTimestamp() });
     SK().clearCache();
     editingId = id;
     dirty = false;
@@ -203,27 +202,32 @@ form.addEventListener("submit", async (e) => {
     f.id.readOnly = true;
     $("[data-studio-mode]").textContent = "記事を編集";
     $("[data-studio-delete]").hidden = false;
-    const link = $("[data-studio-view-link]");
-    link.hidden = false;
-    link.href = `/support/?a=${encodeURIComponent(id)}`;
+    setLink(id);
+    logAction("article.save", id, `${data.published ? "公開" : "下書き"}「${data.title}」`);
     message(data.published ? "保存しました。サポートのページに公開されています。" : "下書きとして保存しました（サイトには出ません）。");
   } catch (err) {
-    message(`保存できませんでした（${err.code || err.message}）`, true);
+    message(explain(err), true);
   } finally {
     btn.disabled = false;
+    btn.classList.remove("is-busy");
   }
 });
 
 $("[data-studio-delete]").addEventListener("click", async () => {
-  if (!editingId || !confirm("この記事を削除します。元に戻せません。")) return;
+  if (!editingId) return;
+  const ok = await confirmDialog({ title: "この記事を削除しますか？", text: "サポートのページから消えます。元に戻せません。", ok: "削除", danger: true, icon: "delete" });
+  if (!ok) return;
   try {
-    await deleteDoc(doc(db, "articles", editingId));
+    const id = editingId;
+    const title = (items.find((x) => x.id === id) || {}).title || "";
+    await deleteDoc(doc(db, "articles", id));
     SK().clearCache();
     editingId = null;
     setForm({});
-    message("削除しました。");
+    logAction("article.delete", id, `「${title}」`);
+    toast("削除しました");
   } catch (err) {
-    message(`削除できませんでした（${err.code || err.message}）`, true);
+    message(explain(err), true);
   }
 });
 
@@ -235,7 +239,7 @@ window.addEventListener("beforeunload", (e) => { if (dirty) e.preventDefault(); 
 // 今の articles.json の記事を、すべて公開中として取り込む（記事がまだ 1 件もないときだけ出すボタン）
 $("[data-studio-import-btn]").addEventListener("click", async (e) => {
   const btn = e.currentTarget;
-  if (!confirm("articles.json の記事を取り込みます。")) return;
+  if (!(await confirmDialog({ title: "articles.json の記事を取り込みますか？", ok: "取り込む", icon: "upload" }))) return;
   btn.disabled = true;
   try {
     const articles = await SK().fromJson();
@@ -251,7 +255,6 @@ $("[data-studio-import-btn]").addEventListener("click", async (e) => {
         body: SK().bodyToText(a.body),
         published: true,
         order: i,
-        // articles.json の訳（i18n）も一緒に
         translations: Object.fromEntries(Object.entries(a.i18n || {}).map(([code, tr]) => [code, { title: tr.title || "", summary: tr.summary || "", body: SK().bodyToText(tr.body) }])),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
@@ -261,18 +264,18 @@ $("[data-studio-import-btn]").addEventListener("click", async (e) => {
     SK().clearCache();
     message(`${articles.length} 件の記事を取り込みました。`);
   } catch (err) {
-    message(`取り込めませんでした（${err.code || err.message}）`, true);
+    message(explain(err), true);
   } finally {
     btn.disabled = false;
   }
 });
 
-// 公開中の記事を articles.json の形で書き出す。support/articles.json と入れ替えてプッシュすると、
+// 公開中の記事を articles.json の形で書き出す。sk-hub.jp リポジトリの support/articles.json と入れ替えてプッシュすると、
 // SK Hub Systems に届かないときの予備も新しくなる
 $("[data-studio-backup]").addEventListener("click", () => {
   const published = items.filter((a) => a.published).sort(byDate);
   const data = {
-    _note: "サポートの記事の予備（記事エディター /studio/ の「バックアップ」で書き出したもの）。ふだんは SK Hub Systems の記事が使われ、届かないときだけこのファイルが使われる。",
+    _note: "サポートの記事の予備（管理画面の記事エディターの「バックアップ」で書き出したもの）。ふだんは SK Hub Systems の記事が使われ、届かないときだけこのファイルが使われる。",
     categories: SK().CATEGORIES,
     articles: published.map((a) => {
       const out = { id: a.id, type: a.type };
@@ -291,26 +294,16 @@ $("[data-studio-backup]").addEventListener("click", () => {
   setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 });
 
-// ---------- ログイン ----------
-$("[data-studio-signin]").addEventListener("click", () => signIn().catch(() => {}));
-$("[data-studio-signout]").addEventListener("click", () => signOutAccount());
-
-watchAccount(async ({ status, user }) => {
-  // support/articles.js（ページの最後）の読み込みを待つ
-  await new Promise((r) => (document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", r, { once: true }) : r()));
-  if (unsubscribe) { unsubscribe(); unsubscribe = null; }
-  if (status === "signed-out" || !user) { showView("signed-out"); return; }
-  try {
-    await getDoc(doc(db, "config", "developers"));
-  } catch (err) {
-    showView("denied");
-    return;
+startAdmin({
+  page: "articles",
+  onReady: async () => {
+    // support/articles.js（defer）の読み込みを待つ
+    await new Promise((r) => (document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", r, { once: true }) : r()));
+    $("[data-studio-categories]").replaceChildren(...SK().CATEGORIES.map((c) => { const o = el("option"); o.value = c; return o; }));
+    if (!form.elements.date.value) setForm({});
+    return onSnapshot(collection(db, "articles"), (snap) => {
+      items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      renderList();
+    }, (err) => message(explain(err), true));
   }
-  showView("ready");
-  $("[data-studio-categories]").replaceChildren(...SK().CATEGORIES.map((c) => { const o = el("option"); o.value = c; return o; }));
-  if (!form.elements.date.value) setForm({});
-  unsubscribe = onSnapshot(collection(db, "articles"), (snap) => {
-    items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    renderList();
-  }, (err) => message(`記事を読み込めませんでした（${err.code || err.message}）`, true));
 });

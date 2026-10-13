@@ -1,11 +1,11 @@
-// SK Share の管理（/view/editor/）。開発者（config/developers に UID がある SK Hub Systems アカウント）だけが使える
-// データの形は /view/view-core.js。保存すると /view/ ですぐ見られる
+// SK Share の管理（/admin/share/）。もとは /view/editor/（そこからはここへ転送する）
+// データの形は /view/view-core.js。保存すると sk-hub.jp/view/ ですぐ見られる
 //   ・ページの ID はパスワードから作るので、パスワードを変える = 新しい ID に中身ごと移して、前の ID を消す（1 回の書き込みでまとめて）
 //   ・パスワードは private/admin に入れておく（開発者だけが読める）。配るときの URL・QR を作り直せるように
-import { db, signIn, signOutAccount, watchAccount } from "/assets/hub/account.js";
 import {
   Timestamp, collection, doc, getDoc, onSnapshot, serverTimestamp, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { NEW_ORIGIN, confirmDialog, db, explain, logAction, startAdmin, toast } from "/admin/shared/admin.js";
 import {
   HTML_MAX, ITEMS_MAX, NOTE_MAX, PAGES, PASSWORD_MAX, PASSWORD_MIN, TITLE_MAX,
   DRIVE_KINDS, driveOf, driveOpenUrl, generatePassword, makeHtmlFrame, normalizePassword, pageIdOf, randomId, youtubeIdOf
@@ -30,7 +30,9 @@ const iconBtn = (name, label) => {
 const bytesOf = (s) => new TextEncoder().encode(s).length;
 const kb = (n) => `${Math.max(1, Math.round(n / 1024)).toLocaleString()}KB`;
 
-const main = $("[data-ve-view=ready]");
+// 一覧と編集を切りかえる幅（share.css の @media と同じ）
+const NARROW = "(max-width: 1080px)";
+const main = $("[data-ve-main]");
 const form = $("[data-ve-form]");
 const itemsEl = $("[data-ve-items]");
 const fileInput = $("[data-ve-file]");
@@ -41,21 +43,6 @@ let dirty = false;
 let saving = false;
 let fileTarget = null; // HTML ファイルを選んでいる中身
 
-function toast(text) {
-  const box = $("[data-ve-toast]");
-  $("[data-ve-toast-text]").textContent = text;
-  box.classList.add("is-on");
-  clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => box.classList.remove("is-on"), 4000);
-}
-function showView(name) {
-  document.querySelectorAll("[data-ve-view]").forEach((v) => { v.hidden = v.dataset.veView !== name; });
-  document.body.classList.toggle("ve-ready", name === "ready");
-  $("[data-ve-signout]").hidden = name !== "ready";
-}
-function confirmDialog(opts) {
-  return window.M3 ? window.M3.confirm(opts) : Promise.resolve(confirm(`${opts.title}\n${opts.text || ""}`));
-}
 async function okToLeave() {
   if (!dirty) return true;
   return confirmDialog({ title: "保存していない変更があります", text: "変更を捨てて移りますか？", ok: "捨てる", danger: true, icon: "edit_off" });
@@ -99,7 +86,7 @@ function renderList() {
 // ---------- 編集 ----------
 function setEditing(on) {
   main.classList.toggle("is-editing", on);
-  $("[data-ve-back]").hidden = !on || !matchMedia("(max-width: 840px)").matches;
+  $("[data-ve-back]").hidden = !on || !matchMedia(NARROW).matches;
   form.hidden = !current;
   $("[data-ve-placeholder]").hidden = !!current;
 }
@@ -153,7 +140,7 @@ async function openPage(id) {
     $("[data-ve-mode]").textContent = p.title || "（タイトルなし）";
     dirty = false;
   } catch (err) {
-    toast(`読み込めませんでした（${err.code || err.message}）`);
+    toast(explain(err));
   }
 }
 
@@ -332,7 +319,8 @@ $("[data-ve-clear-expires]").addEventListener("click", () => { form.elements.exp
 function savedPassword() {
   return current && current.id && current.password && normalizePassword(form.elements.password.value) === normalizePassword(current.password) ? current.password : "";
 }
-const viewUrl = () => `${location.origin}/view/`;
+// 見る人のページは sk-hub.jp（管理画面は旧ドメインにあるので location.origin は使わない）
+const viewUrl = () => `${NEW_ORIGIN}/view/`;
 const qrUrl = (pw) => `${viewUrl()}#p=${encodeURIComponent(normalizePassword(pw))}`;
 
 function renderShare() {
@@ -467,9 +455,10 @@ form.addEventListener("submit", async (e) => {
     $("[data-ve-delete]").hidden = false;
     renderItems();
     renderShare();
+    logAction("share.save", newId, `「${f.title.value.trim()}」${moving ? "（パスワードを変えた）" : ""}`);
     toast(moving ? "保存しました（パスワードを変えました）" : "保存しました");
   } catch (err) {
-    toast(`保存できませんでした（${err.code || err.message}）`);
+    toast(explain(err));
   } finally {
     saving = false;
     saveBtn.classList.remove("is-busy");
@@ -486,6 +475,7 @@ $("[data-ve-delete]").addEventListener("click", async () => {
   if (!ok) return;
   try {
     const id = current.id;
+    const title = form.elements.title.value.trim();
     const batch = writeBatch(db);
     current.oldDocIds.forEach((docId) => batch.delete(doc(db, PAGES, id, "docs", docId)));
     batch.delete(doc(db, PAGES, id, "private", "admin"));
@@ -495,9 +485,10 @@ $("[data-ve-delete]").addEventListener("click", async () => {
     dirty = false;
     setEditing(false);
     renderList();
+    logAction("share.delete", id, `「${title}」`);
     toast("削除しました");
   } catch (err) {
-    toast(`削除できませんでした（${err.code || err.message}）`);
+    toast(explain(err));
   }
 });
 
@@ -524,25 +515,15 @@ $("[data-ve-back]").addEventListener("click", async () => {
 });
 window.addEventListener("beforeunload", (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
 
-// ---------- ログイン ----------
-$("[data-ve-signin]").addEventListener("click", () => signIn().catch(() => {}));
-$("[data-ve-signout]").addEventListener("click", () => signOutAccount());
-$("[data-ve-signout-2]").addEventListener("click", () => signOutAccount());
-
-let unsubscribe = null;
-watchAccount(async ({ status, user }) => {
-  if (unsubscribe) { unsubscribe(); unsubscribe = null; }
-  if (status === "signed-out" || !user) { showView("signed-out"); return; }
-  try {
-    await getDoc(doc(db, "config", "developers"));
-  } catch (err) {
-    showView("denied");
-    return;
+startAdmin({
+  page: "share",
+  onReady: () => {
+    document.body.classList.add("ve-ready");
+    setEditing(false);
+    const unsubscribe = onSnapshot(collection(db, PAGES), (snap) => {
+      pages = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      renderList();
+    }, (err) => toast(explain(err)));
+    return () => { unsubscribe(); document.body.classList.remove("ve-ready"); };
   }
-  showView("ready");
-  setEditing(false);
-  unsubscribe = onSnapshot(collection(db, PAGES), (snap) => {
-    pages = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    renderList();
-  }, (err) => toast(`ページを読み込めませんでした（${err.code || err.message}）`));
 });
