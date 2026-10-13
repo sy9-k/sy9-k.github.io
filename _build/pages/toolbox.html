@@ -11,6 +11,24 @@
         <button type="button" class="icon-btn m3-state" data-open-settings aria-label="Toolbox の設定" title="Toolbox の設定"><span class="msr" aria-hidden="true">settings</span></button>
       </div>
 
+      <!-- 古いアドレスの SK's Toolbox: sk-hub.jp への引っ越しの案内（いつも出す。閉じられない。LINE の中では出さない）
+           データを移した端末（/move/ が付ける localStorage の sk_moved）では、文とボタンの順番を変える -->
+      <section class="tbh-move" id="tbh-move" aria-labelledby="tbh-move-h">
+        <span class="tbh-move__ico" aria-hidden="true"><span class="msr">move_up</span></span>
+        <div class="tbh-move__text">
+          <h2 id="tbh-move-h">SK's Toolbox は sk-hub.jp に引っ越しました</h2>
+          <p class="tbh-move__todo">ここは古いアドレスです。いまはこのまま使えますが、更新は止まっています。Todo・Memo・時間割などのデータを移して、新しいアドレスで使ってください。</p>
+          <p class="tbh-move__done" hidden>この端末のデータは、sk-hub.jp に移してあります。これからは sk-hub.jp の SK's Toolbox を使ってください。</p>
+          <p class="tbh-move__plan">これから: いまは移行期間 → 古いアドレスは引っ越し専用に → 使えなくなります（日にちは決まったらお知らせします）</p>
+        </div>
+        <div class="tbh-move__btns">
+          <a class="m3-btn m3-state tbh-move__go" href="/move/">データを移す</a>
+          <a class="m3-btn m3-btn--tonal m3-state tbh-move__new" href="https://sk-hub.jp/toolbox/">sk-hub.jp で開く</a>
+          <a class="tbh-move__more" href="/domain/">くわしく</a>
+        </div>
+      </section>
+      <script>(function(){try{if(!localStorage.getItem("sk_moved"))return;}catch(e){return;}var c=document.getElementById("tbh-move");c.querySelector(".tbh-move__todo").hidden=true;c.querySelector(".tbh-move__done").hidden=false;var g=c.querySelector(".tbh-move__go"),n=c.querySelector(".tbh-move__new");g.classList.add("m3-btn--tonal");n.classList.remove("m3-btn--tonal");g.parentNode.insertBefore(n,g);})();</script>
+
       <!-- ウィジェットとアプリ一覧の切りかえ（/toolbox/#apps でアプリ一覧から開く） -->
       <div class="tbh-views" role="tablist" aria-label="ホームの表示">
         <button type="button" class="tbh-view m3-state" role="tab" id="view-widgets" data-view="widgets" aria-selected="true" aria-controls="bento"><span class="msr" aria-hidden="true">dashboard</span><span>ウィジェット</span></button>

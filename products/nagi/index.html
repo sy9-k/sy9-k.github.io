@@ -46,13 +46,14 @@
   <div class="hd-backdrop" id="hd-backdrop"></div>
   <!-- 古いアドレスのお知らせ（ヘッダーの下の帯。スタイルは /assets/site.css の sk-dn・sk-dn--old）
        SK は sk-hub.jp に引っ越したので、オレンジの「ここは SK の古いアドレスです」を出す（閉じられない）。
-       データを移すページ（/move/）と、sk-hub.jp の同じページへのリンク（下のスクリプトで、いま開いているページのアドレスにする） -->
+       データを移すページ（/move/）と、sk-hub.jp の同じページへのリンク（下のスクリプトで、いま開いているページのアドレスにする）
+       ホーム（ページ全体が引っ越しの案内）・SK's Toolbox のホーム（引っ越しのカードがある）・/domain/ では出さない -->
   <div class="sk-dn sk-dn--old" id="sk-dn" data-stage="old" role="region" aria-label="お知らせ" hidden>
     <p class="sk-dn-text"><strong>ここは SK の古いアドレスです</strong><span>SK は sk-hub.jp に引っ越しました。データを移してから、新しいアドレスをお使いください。</span></p>
     <a class="sk-dn-more" href="/move/">データを移す</a>
     <a class="sk-dn-more sk-dn-new" href="https://sk-hub.jp/">sk-hub.jp で開く</a>
   </div>
-  <script>(function(){var b=document.getElementById("sk-dn"),n=b.querySelector(".sk-dn-new");n.href="https://sk-hub.jp"+location.pathname+location.search+location.hash;try{if(/^\/domain\//.test(location.pathname)||/[?&](embed|line)\b/.test(location.search)||sessionStorage.getItem("sk_line"))return;}catch(e){}b.hidden=false;})();</script>
+  <script>(function(){var b=document.getElementById("sk-dn"),n=b.querySelector(".sk-dn-new");n.href="https://sk-hub.jp"+location.pathname+location.search+location.hash;try{if(location.pathname==="/"||location.pathname==="/toolbox/"||/^\/domain\//.test(location.pathname)||/[?&](embed|line)\b/.test(location.search)||sessionStorage.getItem("sk_line"))return;}catch(e){}b.hidden=false;})();</script>
 
   <main id="main">
     <section class="p-hero band band--nagi">
