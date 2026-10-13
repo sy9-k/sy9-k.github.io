@@ -3155,5 +3155,6 @@
   "書き出しました。sk-hub.jp/move/ で読み込んでください": "Exported. Import it at sk-hub.jp/move/",
   "書き出せませんでした": "Couldn't export",
   "消しました": "Deleted",
-  "消せなかったデータがあります": "Some data couldn't be deleted"
+  "消せなかったデータがあります": "Some data couldn't be deleted",
+  "使ったブラウザのタイムゾーン（おおまかな地域）とサポートID（お問い合わせ・不正な利用への対応に使います）": "The time zone (approximate region) and support ID of the browsers you use (used to respond to inquiries and abuse)"
 }
