@@ -118,12 +118,13 @@
       button.setAttribute("aria-label", "新しいタブに設定");
     }
   };
+  const BRIDGE_PAGE_URL = "http://127.0.0.1:5501/extension/saetab-bridge.html";
 
   // ボタンクリック時の処理
   const handleButtonClick = () => {
     if (isBridgeEnabled()) {
       // 有効時 → 連携解除確認
-      if (confirm("Saetabとの連携を解除しますか？")) {
+      if (confirm("Saetabとの連携を解除しますか？解除後、Saetabの'同期と管理'欄から拡張機能を削除してください。")) {
         setBridgeEnabled(false);
         log("bridgeを無効にしました。");
       }
@@ -135,6 +136,12 @@
       if (confirmed) {
         setBridgeEnabled(true);
         log("bridgeを有効にしました。");
+
+        // 指定ページを新しいタブで開く
+        const opened = window.open(BRIDGE_PAGE_URL, "_blank", "noopener");
+        if (!opened) {
+          log("ポップアップがブロックされた可能性があります。");
+        }
       }
     }
   };
