@@ -4,7 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>saetab Bridge</title>
-
+<style>
+  body { font-family: system-ui, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+  .status { padding: 10px; border-radius: 6px; margin: 10px 0; }
+  .enabled { background: #e6ffed; border: 1px solid #2ecc71; color: #155724; }
+  .disabled { background: #fff3cd; border: 1px solid #ffc107; color: #856404; }
+  pre { background: #f6f8fa; padding: 12px; border-radius: 4px; overflow-x: auto; }
+</style>
 </head>
 <body>
 
@@ -26,13 +32,8 @@
 const BRIDGE_KEY = 'saetab_bridge_enabled';
 const REQUEST_TYPE = 'saetab_bridge_request';
 const BRIDGE_TYPE = 'saetab_bridge_data';
-
-// 許可する親ページのオリジン（送信先・受信元の両方で使用）
-const TARGET_ORIGINS = [
-  'http://localhost:5500',
-  'https://search3958.github.io'
-];
-
+// 許可する送信元（* はすべて。本番では特定オリジンに制限推奨）
+const TARGET_ORIGIN = '*';
 const TIMETABLE_KEY = 'sk_timetable';
 const MEMO_KEY = 'sk_memo';
 const MEMO_LIMIT = 10;
@@ -146,25 +147,19 @@ function checkBridgeEnabled() {
   }
 }
 
-// 許可された各オリジンへ送る（一致しないオリジンにはブラウザが届けない）
 function sendToParent(data) {
   if (!window.parent || window.parent === window) return false;
-  const message = { type: BRIDGE_TYPE, timestamp: Date.now(), data: data };
-  let sent = false;
-  for (const origin of TARGET_ORIGINS) {
-    try {
-      window.parent.postMessage(message, origin);
-      sent = true;
-    } catch (e) {
-      console.error('postMessage送信エラー:', origin, e);
-    }
+  try {
+    window.parent.postMessage({ type: BRIDGE_TYPE, timestamp: Date.now(), data: data }, TARGET_ORIGIN);
+    return true;
+  } catch (e) {
+    console.error('postMessage送信エラー:', e);
+    return false;
   }
-  return sent;
 }
 
 // 親ページ（受信側）からの「送って」に答える
 window.addEventListener('message', (e) => {
-  if (!TARGET_ORIGINS.includes(e.origin)) return;
   if (!e.data || e.data.type !== REQUEST_TYPE) return;
   if (e.source !== window.parent) return;
   if (!checkBridgeEnabled()) return;
