@@ -118,7 +118,7 @@
       button.setAttribute("aria-label", "新しいタブに設定");
     }
   };
-  const BRIDGE_PAGE_URL = "http://127.0.0.1:5501/extension/saetab-bridge.html";
+  const BRIDGE_PAGE_URL = "https://search3958.github.io/newtab/extension/saetab-bridge.html";
 
   // ボタンクリック時の処理
   const handleButtonClick = () => {

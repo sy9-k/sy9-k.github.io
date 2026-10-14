@@ -57,7 +57,7 @@
       var e = tm && minutes(tm.e) !== null ? tm.e : DEFAULT_TIMES[p][1];
       times.push({ s: s, e: e });
     }
-    var cells = {};
+    var cellas = {};
     if (x.cells && typeof x.cells === "object") {
       Object.keys(x.cells).forEach(function (k) {
         var m = /^([0-5])-(\d)$/.exec(k), c = x.cells[k];

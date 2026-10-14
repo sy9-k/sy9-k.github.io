@@ -4,11 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>saetab Bridge</title>
-
 </head>
 <body>
 
 <h1>saetab Bridge 連携</h1>
+
+<label>
+  <input type="checkbox" id="enableToggle">
+  親ページへのデータ共有を許可する（この画面 127.0.0.1:5500 に保存）
+</label>
 
 <div id="bridgeStatus" class="status">状態を確認中...</div>
 
@@ -27,9 +31,12 @@ const BRIDGE_KEY = 'saetab_bridge_enabled';
 const REQUEST_TYPE = 'saetab_bridge_request';
 const BRIDGE_TYPE = 'saetab_bridge_data';
 
-// 許可する親ページのオリジン（送信先・受信元の両方で使用）
+// 応答を返してよい親ページのオリジン（末尾スラッシュなし）
 const TARGET_ORIGINS = [
+  'http://localhost:5501',
   'http://localhost:5500',
+  'https://sy9-k.github.io',
+  'https://sk-hub.jp',
   'https://search3958.github.io'
 ];
 
@@ -39,18 +46,48 @@ const MEMO_LIMIT = 10;
 const REFRESH_MS = 60 * 1000;
 
 const dateFmt = new Intl.DateTimeFormat('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
-const timeFmt = new Intl.DateTimeFormat('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+// 親ページから届いたデータ（時間割・メモの中身のみ。許可のスイッチには使わない）
+let parentStorage = null;
+let lastRequestOrigin = '（まだ要求なし）';
+
+const PARENT_KEY_MAP = {
+  [TIMETABLE_KEY]: 'timetable',
+  [MEMO_KEY]: 'memo'
+};
 
 // ===== ユーティリティ =====
 function pad(n) { return (n < 10 ? '0' : '') + n; }
 function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+
+// 自分（ブリッジ 127.0.0.1:5500）の localStorage
+function ownGet(key) {
+  try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+function ownSet(key, value) {
+  try { localStorage.setItem(key, value); } catch (e) { console.warn('保存できません:', e); }
+}
+
+// 共有を許可しているか（ブリッジ自身の保存値だけで判断する）
+function isEnabled() {
+  return ownGet(BRIDGE_KEY) === 'true';
+}
+
+// データは、親から届いていればそれを使い、なければ自分の localStorage
+function storageGet(key) {
+  if (parentStorage && PARENT_KEY_MAP[key]) {
+    const v = parentStorage[PARENT_KEY_MAP[key]];
+    if (v !== undefined && v !== null) return v;
+  }
+  return ownGet(key);
+}
+
 function readJson(key) {
-  try { return JSON.parse(localStorage.getItem(key) || 'null'); }
+  try { return JSON.parse(storageGet(key) || 'null'); }
   catch (e) { console.warn('読み込みに失敗:', key, e); return null; }
 }
 
 // ===== 時間割：指定した日の分を取り出す =====
-// 見ている時間割（自分 or 配信された時間割）を使う。特別な日程（試験・休みなど）があればそちらを優先する
 function getTimetableData(now = new Date()) {
   const store = readJson(TIMETABLE_KEY) || {};
   let tb = store.table || null;
@@ -103,7 +140,6 @@ function getTimetableData(now = new Date()) {
   return result;
 }
 
-// 明日の時間割（今日と同じ関数に、明日の日付を渡す）
 function getTomorrowData() {
   const now = new Date();
   return getTimetableData(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
@@ -126,7 +162,6 @@ function getMemoData() {
   return { lastUpdated: new Date().toISOString(), items };
 }
 
-// 親ページへ送るデータ一式
 function buildPayload() {
   return {
     timetable: getTimetableData(),
@@ -135,71 +170,61 @@ function buildPayload() {
   };
 }
 
-// ===== ブリッジ処理 =====
-function checkBridgeEnabled() {
-  try {
-    const value = localStorage.getItem(BRIDGE_KEY);
-    return value === 'true' || value === true;
-  } catch (e) {
-    console.warn('localStorageへのアクセスに失敗:', e);
-    return false;
-  }
-}
-
-// 許可された各オリジンへ送る（一致しないオリジンにはブラウザが届けない）
+// ===== 親ページへ送る（許可されているときだけ） =====
 function sendToParent(data) {
   if (!window.parent || window.parent === window) return false;
   const message = { type: BRIDGE_TYPE, timestamp: Date.now(), data: data };
-  let sent = false;
   for (const origin of TARGET_ORIGINS) {
-    try {
-      window.parent.postMessage(message, origin);
-      sent = true;
-    } catch (e) {
-      console.error('postMessage送信エラー:', origin, e);
-    }
+    try { window.parent.postMessage(message, origin); }
+    catch (e) { console.error('postMessage送信エラー:', origin, e); }
   }
-  return sent;
+  return true;
 }
 
-// 親ページ（受信側）からの「送って」に答える
+// ===== 親ページからの要求に答える =====
 window.addEventListener('message', (e) => {
-  if (!TARGET_ORIGINS.includes(e.origin)) return;
+  if (!TARGET_ORIGINS.includes(e.origin)) {
+    console.warn('許可されていないオリジンからの要求を無視:', e.origin);
+    return;
+  }
   if (!e.data || e.data.type !== REQUEST_TYPE) return;
   if (e.source !== window.parent) return;
-  if (!checkBridgeEnabled()) return;
-  sendToParent(buildPayload());
+
+  lastRequestOrigin = e.origin;
+  if (e.data.storage) parentStorage = e.data.storage;
+  refresh();
 });
 
 // ===== 画面表示 =====
-function updateUI(isEnabled, timetable, tomorrow, memo) {
+function updateUI(enabled, timetable, tomorrow, memo) {
   const statusEl = document.getElementById('bridgeStatus');
-  statusEl.className = isEnabled ? 'status enabled' : 'status disabled';
-  statusEl.textContent = isEnabled
-    ? '✅ ブリッジ有効 — 親ウィンドウへデータを送信しています'
-    : '⚠️ ブリッジ無効 — 表示のみ（親ウィンドウへの送信はスキップ）';
+  statusEl.className = enabled ? 'status enabled' : 'status disabled';
+  statusEl.textContent = enabled
+    ? `✅ 共有を許可中 — 要求元: ${lastRequestOrigin}`
+    : `⚠️ 共有オフ — 上のチェックを入れると、親ページへ送ります（要求元: ${lastRequestOrigin}）`;
 
   document.getElementById('timetableDisplay').textContent = JSON.stringify(timetable, null, 2);
   document.getElementById('tomorrowDisplay').textContent = JSON.stringify(tomorrow, null, 2);
   document.getElementById('memoDisplay').textContent = JSON.stringify(memo, null, 2);
 }
 
-// ===== 更新（読み込み・表示・送信をまとめて行う）=====
+// ===== 更新（読み込み・表示・送信）=====
 function refresh() {
-  const enabled = checkBridgeEnabled();
+  const enabled = isEnabled();
+  document.getElementById('enableToggle').checked = enabled;
   const payload = buildPayload();
   updateUI(enabled, payload.timetable, payload.tomorrow, payload.memo);
   if (enabled) sendToParent(payload);
 }
 
 // ===== メイン処理 =====
+document.getElementById('enableToggle').addEventListener('change', (e) => {
+  ownSet(BRIDGE_KEY, e.target.checked ? 'true' : 'false');
+  refresh();
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   refresh();
-  // 別のタブや同じオリジンの変更を反映
-  window.addEventListener('storage', (e) => {
-    if (e.key === BRIDGE_KEY || e.key === TIMETABLE_KEY || e.key === MEMO_KEY) refresh();
-  });
-  // 定期的に更新（日付が変わったときも反映）
   setInterval(refresh, REFRESH_MS);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
 });
