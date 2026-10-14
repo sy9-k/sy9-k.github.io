@@ -1,11 +1,12 @@
 // お問い合わせ（/admin/inbox/）。もとは /inbox/（そこからはここへ転送する）
 // 届いたものは contacts。対応済みにすると expireAt（1 年後）が入る。期限を過ぎたものは自動の掃除（/admin/shared/housekeeping.js）で消える
 // アカウントでログインして送られたもの（uid がある）は、アカウントのお知らせ（accounts/{UID}/notices）で返事ができる
+// 公式 LINE から来たもの（via: line・line-chat）は、LINE のトークに返事ができる（api.sk-hub.jp の /line/reply。プッシュなので月の無料枠を使う）
 import {
   Timestamp, addDoc, collection, deleteDoc, deleteField, doc, limit, onSnapshot, orderBy, query, serverTimestamp, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-  YEAR_MS, $, $$, badge, button, confirmDialog, copyText, db, el, empty, errorNote, explain, fmtDate, fmtDateTime, icon, logAction, num,
+  YEAR_MS, $, $$, badge, button, confirmDialog, copyText, db, el, empty, errorNote, explain, fmtDate, fmtDateTime, icon, logAction, me, num,
   setBadge, startAdmin, toast
 } from "/admin/shared/admin.js";
 import { autoCleanup } from "/admin/shared/housekeeping.js";
@@ -18,6 +19,9 @@ const baseTitle = document.title;
 let items = [];
 let filter = "new";
 const replyOpen = new Set(); // 返事の欄を開いているお問い合わせ
+const lineOpen = new Set(); // LINE の返事の欄を開いているお問い合わせ
+const LINE_API = "https://api.sk-hub.jp/line/reply";
+const fromLine = (item) => item.via === "line" || item.via === "line-chat";
 const drafts = {}; // 書きかけの返事（一覧は届くたびに描き直すので、ここに取っておく）
 
 const receipt = (id) => id.slice(0, 8).toUpperCase();
@@ -74,7 +78,19 @@ function itemCard(item) {
     addInfo("アカウント", acct);
   }
 
+  if (fromLine(item)) {
+    addInfo("LINE", el("span", "ad-muted", item.via === "line-chat"
+      ? "公式 LINE のチャットで相談中。LINE のトークに返事できます（LINE Official Account Manager のチャットからも返せます）"
+      : "公式 LINE のトークから届きました。LINE のトークに返事できます"));
+  }
+
   const actions = el("div", "ad-row");
+  if (fromLine(item)) {
+    actions.append(button("LINE で返事を送る", {
+      iconName: "chat", small: true,
+      onClick: () => { if (lineOpen.has(item.id)) lineOpen.delete(item.id); else lineOpen.add(item.id); render(); }
+    }));
+  }
   if (item.uid) {
     actions.append(button(item.repliedAt ? "もう一度返事を送る" : "アカウントに返事を送る", {
       iconName: "reply", small: true,
@@ -100,7 +116,65 @@ function itemCard(item) {
 
   box.append(meta, el("p", "ad-msg", item.message || ""), info, actions);
   if (item.uid && replyOpen.has(item.id)) box.append(replyForm(item));
+  if (fromLine(item) && lineOpen.has(item.id)) box.append(lineReplyForm(item));
   return box;
+}
+
+// LINE のトークに返事をする（api.sk-hub.jp が相手の LINE に送り、お問い合わせの中身にも【SK の返事】として足す）
+//   「内容をまとめて送る」で来たもの（via: line）は、送ったら対応済みにする。チャットで相談中のもの（line-chat）は、続くので未対応のまま
+function lineReplyForm(item) {
+  const form = el("form", "ad-form");
+  const field = el("label", "m3-field");
+  const text = el("textarea");
+  text.rows = 5;
+  text.maxLength = 4000;
+  text.required = true;
+  text.value = drafts[`line:${item.id}`] || "";
+  text.addEventListener("input", () => { drafts[`line:${item.id}`] = text.value; });
+  field.append(el("span", "m3-field__label", "返事（相手の LINE のトークに届きます。公式 LINE の月の無料枠を 1 通使います）"), text);
+  const send = button("LINE で送る", { iconName: "send", type: "submit" });
+  const cancel = button("やめる", { kind: "text-btn", onClick: () => { lineOpen.delete(item.id); render(); } });
+  const row = el("div", "ad-row ad-row--end");
+  row.append(cancel, send);
+  form.append(field, row);
+  requestAnimationFrame(() => text.focus());
+
+  const REASONS = {
+    "not-from-line": "このお問い合わせは、LINE で返事をする仕組みができる前に届いたため、LINE では返せません。LINE Official Account Manager のチャットから返してください。",
+    "not-friend": "相手が公式 LINE をブロックしているか、友だちではないため送れませんでした。",
+    "not-developer": "開発者のアカウントでログインしてください。",
+    "signed-out": "ログインし直してください。"
+  };
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const bodyText = text.value.trim();
+    if (!bodyText) return;
+    send.disabled = true;
+    send.classList.add("is-busy");
+    try {
+      const user = me();
+      if (!user) throw Object.assign(new Error("signed-out"), { reason: "signed-out" });
+      const res = await fetch(LINE_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${await user.getIdToken()}` },
+        body: JSON.stringify({ contactId: item.id, text: bodyText })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw Object.assign(new Error(data.error || "line-error"), { reason: data.error });
+      delete drafts[`line:${item.id}`];
+      lineOpen.delete(item.id);
+      await updateDoc(doc(db, "contacts", item.id), item.via === "line-chat"
+        ? { repliedAt: serverTimestamp() }
+        : { repliedAt: serverTimestamp(), status: "done", handledAt: serverTimestamp(), expireAt: Timestamp.fromMillis(Date.now() + YEAR_MS) });
+      logAction("contact.reply", item.id, `受付番号 ${receipt(item.id)}（LINE）`);
+      toast("LINE で返事を送りました");
+    } catch (err) {
+      toast(REASONS[err.reason] || (err instanceof TypeError ? "api.sk-hub.jp に届きませんでした。インターネットの接続を確認してください。" : `送れませんでした（${err.message}）`));
+      send.disabled = false;
+      send.classList.remove("is-busy");
+    }
+  });
+  return form;
 }
 
 // アカウントのお知らせで返事をする。送ったら対応済みにする
