@@ -61,7 +61,7 @@ URL は変えずに、`/lang/` で選んだ言語でページを訳して表示�
 - `dictionary/`（MALU）
 - `y-filter/`（Y-FILTER. 管理コンソール。共通部分は y-filter リポジトリの `systems/sync-console.mjs` でコピー）
 - `qr-prj/`・`smart-dash/`（SK's Lab）
-- `news/`（サポートへの転送）・`usercheck/`（同意・アクセス制限の画面）
+- `news/`（サポートへの転送）・`status/`（稼働状況は https://sk-hub.online/ に移ったので、そこへの転送だけ）・`usercheck/`（同意・アクセス制限の画面）
 - `view/`（SK Share。マテリアルデザイン）
 - `admin/`（管理画面。下の「管理画面」）・`inbox/`・`studio/`・`view/editor/`（管理画面へ転送するだけのページ）
 

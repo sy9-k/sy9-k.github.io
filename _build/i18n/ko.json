@@ -9,7 +9,6 @@
   "6 つのカテゴリの辞書と翻訳サイト": "6개 카테고리의 사전과 번역 사이트",
   "6 つの辞書カテゴリ": "6개 사전 카테고리",
   "<a href=\"/policies/#sk-terms\" target=\"_blank\" rel=\"noopener\">SK 利用規約</a>・<a href=\"/policies/#sk-privacy\" target=\"_blank\" rel=\"noopener\">SK プライバシーポリシー</a>・<a href=\"/policies/#sk-hub-account\" target=\"_blank\" rel=\"noopener\">SK Hub Systems アカウント規約</a>に同意します": "<a href=\"/policies/#sk-terms\" target=\"_blank\" rel=\"noopener\">SK 이용약관</a>, <a href=\"/policies/#sk-privacy\" target=\"_blank\" rel=\"noopener\">SK 개인정보 처리방침</a>, <a href=\"/policies/#sk-hub-account\" target=\"_blank\" rel=\"noopener\">SK Hub Systems 계정 약관</a>에 동의합니다",
-  "<a href=\"/status/\">システム稼働状況</a>と<a href=\"/support/?type=news\">お知らせ</a>で、障害や変更がないか確認する": "<a href=\"/status/\">시스템 가동 상태</a>와 <a href=\"/support/?type=news\">공지사항</a>에서 장애나 변경이 없는지 확인하기",
   "<em>のぞかない</em>。": "<em>들여다보지는 않습니다</em>.",
   "<em>ひと目で</em>わかる。": "<em>한눈에</em> 알 수 있습니다.",
   "<i class=\"st-down\"></i>停止（接続できない）": "<i class=\"st-down\"></i>중단(연결할 수 없음)",
@@ -2936,5 +2935,6 @@
   "書き出せませんでした": "내보낼 수 없습니다",
   "消しました": "삭제했습니다",
   "消せなかったデータがあります": "삭제하지 못한 데이터가 있습니다",
-  "使ったブラウザのタイムゾーン（おおまかな地域）とサポートID（お問い合わせ・不正な利用への対応に使います）": "사용한 브라우저의 시간대(대략적인 지역)와 지원 ID(문의 및 부정 이용 대응에 사용합니다)"
+  "使ったブラウザのタイムゾーン（おおまかな地域）とサポートID（お問い合わせ・不正な利用への対応に使います）": "사용한 브라우저의 시간대(대략적인 지역)와 지원 ID(문의 및 부정 이용 대응에 사용합니다)",
+  "<a href=\"https://sk-hub.online/\">システム稼働状況</a>と<a href=\"/support/?type=news\">お知らせ</a>で、障害や変更がないか確認する": "<a href=\"https://sk-hub.online/\">시스템 가동 상태</a>와 <a href=\"/support/?type=news\">공지사항</a>에서 장애나 변경이 없는지 확인하기"
 }

@@ -9,7 +9,6 @@
   "6 つのカテゴリの辞書と翻訳サイト": "Dictionaries and translators in 6 categories",
   "6 つの辞書カテゴリ": "6 dictionary categories",
   "<a href=\"/policies/#sk-terms\" target=\"_blank\" rel=\"noopener\">SK 利用規約</a>・<a href=\"/policies/#sk-privacy\" target=\"_blank\" rel=\"noopener\">SK プライバシーポリシー</a>・<a href=\"/policies/#sk-hub-account\" target=\"_blank\" rel=\"noopener\">SK Hub Systems アカウント規約</a>に同意します": "I agree to the <a href=\"/policies/#sk-terms\" target=\"_blank\" rel=\"noopener\">SK Terms of Service</a>, the <a href=\"/policies/#sk-privacy\" target=\"_blank\" rel=\"noopener\">SK Privacy Policy</a>, and the <a href=\"/policies/#sk-hub-account\" target=\"_blank\" rel=\"noopener\">SK Hub Systems Account Terms</a>",
-  "<a href=\"/status/\">システム稼働状況</a>と<a href=\"/support/?type=news\">お知らせ</a>で、障害や変更がないか確認する": "Check <a href=\"/status/\">System Status</a> and <a href=\"/support/?type=news\">News</a> for outages or changes",
   "<em>のぞかない</em>。": "<em>never snoops</em>.",
   "<em>ひと目で</em>わかる。": "<em>at a glance</em>.",
   "<i class=\"st-down\"></i>停止（接続できない）": "<i class=\"st-down\"></i>Down (can't connect)",
@@ -3156,5 +3155,6 @@
   "書き出せませんでした": "Couldn't export",
   "消しました": "Deleted",
   "消せなかったデータがあります": "Some data couldn't be deleted",
-  "使ったブラウザのタイムゾーン（おおまかな地域）とサポートID（お問い合わせ・不正な利用への対応に使います）": "The time zone (approximate region) and support ID of the browsers you use (used to respond to inquiries and abuse)"
+  "使ったブラウザのタイムゾーン（おおまかな地域）とサポートID（お問い合わせ・不正な利用への対応に使います）": "The time zone (approximate region) and support ID of the browsers you use (used to respond to inquiries and abuse)",
+  "<a href=\"https://sk-hub.online/\">システム稼働状況</a>と<a href=\"/support/?type=news\">お知らせ</a>で、障害や変更がないか確認する": "Check <a href=\"https://sk-hub.online/\">System Status</a> and <a href=\"/support/?type=news\">News</a> for outages or changes"
 }

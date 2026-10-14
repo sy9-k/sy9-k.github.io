@@ -9,7 +9,6 @@
   "6 つのカテゴリの辞書と翻訳サイト": "6 个分类的词典与翻译网站",
   "6 つの辞書カテゴリ": "6 个词典分类",
   "<a href=\"/policies/#sk-terms\" target=\"_blank\" rel=\"noopener\">SK 利用規約</a>・<a href=\"/policies/#sk-privacy\" target=\"_blank\" rel=\"noopener\">SK プライバシーポリシー</a>・<a href=\"/policies/#sk-hub-account\" target=\"_blank\" rel=\"noopener\">SK Hub Systems アカウント規約</a>に同意します": "我同意<a href=\"/policies/#sk-terms\" target=\"_blank\" rel=\"noopener\">SK 使用条款</a>、<a href=\"/policies/#sk-privacy\" target=\"_blank\" rel=\"noopener\">SK 隐私政策</a>和<a href=\"/policies/#sk-hub-account\" target=\"_blank\" rel=\"noopener\">SK Hub Systems 账户条款</a>",
-  "<a href=\"/status/\">システム稼働状況</a>と<a href=\"/support/?type=news\">お知らせ</a>で、障害や変更がないか確認する": "在<a href=\"/status/\">系统运行状态</a>和<a href=\"/support/?type=news\">公告</a>中确认是否有故障或变更",
   "<em>のぞかない</em>。": "<em>但不窥探</em>。",
   "<em>ひと目で</em>わかる。": "<em>一目了然</em>。",
   "<i class=\"st-down\"></i>停止（接続できない）": "<i class=\"st-down\"></i>停止（无法连接）",
@@ -2936,5 +2935,6 @@
   "書き出せませんでした": "无法导出",
   "消しました": "已删除",
   "消せなかったデータがあります": "有些数据无法删除",
-  "使ったブラウザのタイムゾーン（おおまかな地域）とサポートID（お問い合わせ・不正な利用への対応に使います）": "所使用浏览器的时区（大致地区）和支持 ID（用于处理咨询和应对不当使用）"
+  "使ったブラウザのタイムゾーン（おおまかな地域）とサポートID（お問い合わせ・不正な利用への対応に使います）": "所使用浏览器的时区（大致地区）和支持 ID（用于处理咨询和应对不当使用）",
+  "<a href=\"https://sk-hub.online/\">システム稼働状況</a>と<a href=\"/support/?type=news\">お知らせ</a>で、障害や変更がないか確認する": "在<a href=\"https://sk-hub.online/\">系统运行状态</a>和<a href=\"/support/?type=news\">公告</a>中确认是否有故障或变更"
 }
