@@ -199,7 +199,7 @@
       location.reload();
     });
     var status = el("a", "skm-closed__status", t("稼働状況を見る"));
-    status.href = "/status/";
+    status.href = "https://sk-hub.online/";
     actions.appendChild(reload);
     actions.appendChild(status);
     card.appendChild(actions);

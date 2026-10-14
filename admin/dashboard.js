@@ -127,7 +127,7 @@ const STATE = { ok: ["正常", "ok"], slow: ["遅延", "warn"], down: ["停止",
 function statusPanel() {
   const list = el("ul", "ad-list");
   const more = el("a", "ad-card__more", "公開の稼働状況 ›");
-  more.href = `${NEW_ORIGIN}/status/`;
+  more.href = "https://sk-hub.online/";
   more.target = "_blank";
   more.rel = "noopener";
   const c = card("monitor_heart", "稼働状況", list);

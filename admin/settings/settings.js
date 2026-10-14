@@ -90,7 +90,7 @@ const LINKS = [
   ["Firestore のルール", "https://console.firebase.google.com/project/y-filter-systems/firestore/databases/-default-/rules", "gavel"],
   ["Firestore の使用量", "https://console.firebase.google.com/project/y-filter-systems/firestore/databases/-default-/usage", "monitoring"],
   ["Google アナリティクス", "https://analytics.google.com/", "insights"],
-  ["sk-hub.jp の稼働状況", `${NEW_ORIGIN}/status/`, "monitor_heart"],
+  ["稼働状況（sk-hub.online）", "https://sk-hub.online/", "monitor_heart"],
   ["GitHub: sy9-k/sk-hub.jp（新しいサイト）", "https://github.com/sy9-k/sk-hub.jp", "code"],
   ["GitHub: sy9-k/sy9-k.github.io（旧ドメイン・この管理画面）", "https://github.com/sy9-k/sy9-k.github.io", "code"],
   ["GitHub: sy9-k/y-filter（拡張機能・ルール）", "https://github.com/sy9-k/y-filter", "code"]
